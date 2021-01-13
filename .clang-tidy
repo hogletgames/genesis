@@ -1,0 +1,37 @@
+Checks:             '*,
+                    -cppcoreguidelines-macro-usage,
+                    -cppcoreguidelines-non-private-member-variables-in-classes,
+                    -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+                    -cppcoreguidelines-pro-bounds-constant-array-index,
+                    -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+                    -cppcoreguidelines-pro-type-reinterpret-cast,
+                    -cppcoreguidelines-pro-type-union-access,
+                    -cppcoreguidelines-pro-type-vararg,
+                    -cppcoreguidelines-special-member-functions,
+                    -fuchsia-default-arguments-calls,
+                    -fuchsia-default-arguments-declarations,
+                    -fuchsia-overloaded-operator,
+                    -fuchsia-statically-constructed-objects,
+                    -google-default-arguments,
+                    -google-readability-todo,
+                    -hicpp-no-array-decay,
+                    -hicpp-signed-bitwise,
+                    -hicpp-special-member-functions,
+                    -hicpp-uppercase-literal-suffix,
+                    -hicpp-use-auto,
+                    -hicpp-vararg,
+                    -llvmlibc-callee-namespace,
+                    -llvmlibc-implementation-in-namespace,
+                    -llvmlibc-restrict-system-libc-headers,
+                    -misc-non-private-member-variables-in-classes,
+                    -modernize-avoid-bind,
+                    -modernize-use-nodiscard,
+                    -modernize-use-trailing-return-type,
+                    -readability-uppercase-literal-suffix'
+WarningsAsErrors:   '*'
+HeaderFilterRegex:  '.*'
+FormatStyle:        'file'
+CheckOptions:
+  - {key: cppcoreguidelines-avoid-magic-numbers.IgnoreAllFloatingPointValues, value: '1' }
+  - {key: readability-magic-numbers.IgnoreAllFloatingPointValues,             value: '1' }
+...
