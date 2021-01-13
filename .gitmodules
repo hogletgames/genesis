@@ -1,0 +1,3 @@
+[submodule "third-party/SDL2"]
+	path = third-party/SDL2
+	url = https://github.com/hogletgames/SDL-mirror.git
