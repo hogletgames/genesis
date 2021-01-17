@@ -1,3 +1,6 @@
 [submodule "third-party/SDL2"]
 	path = third-party/SDL2
 	url = https://github.com/hogletgames/SDL-mirror.git
+[submodule "third-party/spdlog"]
+	path = third-party/spdlog
+	url = https://github.com/hogletgames/spdlog.git
