@@ -7,3 +7,6 @@
 [submodule "third-party/glm"]
 	path = third-party/glm
 	url = https://github.com/hogletgames/glm.git
+[submodule "third-party/Vulkan/Vulkan-Headers"]
+	path = third-party/Vulkan/Vulkan-Headers
+	url = https://github.com/hogletgames/Vulkan-Headers.git
