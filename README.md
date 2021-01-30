@@ -7,6 +7,7 @@
 - [glm](https://github.com/g-truc/glm) ([MIT](https://github.com/g-truc/glm/blob/0.9.9.8/copying.txt))
 - Vulkan SDK:
   - [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-Headers/blob/sdk-1.2.162.0/LICENSE.txt))
+  - [Vulkan-Loader](https://github.com/KhronosGroup/Vulkan-Loader) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-Loader/blob/sdk-1.2.162.0/LICENSE.txt))
 
 ### To build manually
 
