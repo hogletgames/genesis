@@ -19,3 +19,6 @@
 [submodule "third-party/Vulkan/SPIRV-Headers"]
 	path = third-party/Vulkan/SPIRV-Headers
 	url = https://github.com/hogletgames/SPIRV-Headers.git
+[submodule "third-party/Vulkan/SPIRV-Tools"]
+	path = third-party/Vulkan/SPIRV-Tools
+	url = https://github.com/hogletgames/SPIRV-Tools.git
