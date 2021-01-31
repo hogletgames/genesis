@@ -22,3 +22,6 @@
 [submodule "third-party/Vulkan/SPIRV-Tools"]
 	path = third-party/Vulkan/SPIRV-Tools
 	url = https://github.com/hogletgames/SPIRV-Tools.git
+[submodule "third-party/Vulkan/Vulkan-ValidationLayers"]
+	path = third-party/Vulkan/Vulkan-ValidationLayers
+	url = https://github.com/hogletgames/Vulkan-ValidationLayers.git
