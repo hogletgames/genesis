@@ -25,3 +25,6 @@
 [submodule "third-party/Vulkan/Vulkan-ValidationLayers"]
 	path = third-party/Vulkan/Vulkan-ValidationLayers
 	url = https://github.com/hogletgames/Vulkan-ValidationLayers.git
+[submodule "third-party/Vulkan/shaderc"]
+	path = third-party/Vulkan/shaderc
+	url = https://github.com/hogletgames/shaderc.git
