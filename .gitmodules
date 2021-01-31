@@ -13,3 +13,6 @@
 [submodule "third-party/Vulkan/Vulkan-Loader"]
 	path = third-party/Vulkan/Vulkan-Loader
 	url = https://github.com/hogletgames/Vulkan-Loader.git
+[submodule "third-party/Vulkan/glslang"]
+	path = third-party/Vulkan/glslang
+	url = https://github.com/hogletgames/glslang.git
