@@ -16,3 +16,6 @@
 [submodule "third-party/Vulkan/glslang"]
 	path = third-party/Vulkan/glslang
 	url = https://github.com/hogletgames/glslang.git
+[submodule "third-party/Vulkan/SPIRV-Headers"]
+	path = third-party/Vulkan/SPIRV-Headers
+	url = https://github.com/hogletgames/SPIRV-Headers.git
