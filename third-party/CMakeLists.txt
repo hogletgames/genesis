@@ -17,3 +17,6 @@ add_library(stb-image INTERFACE)
 target_include_directories(stb-image INTERFACE stb)
 target_compile_definitions(stb-image INTERFACE -DSTB_IMAGE_IMPLEMENTATION)
 add_library(stb::image ALIAS stb-image)
+
+# tinyobjloader
+add_subdirectory(tinyobjloader)
