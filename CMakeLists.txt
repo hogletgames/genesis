@@ -8,10 +8,14 @@ option(GE_BUILD_EXAMPLES "Build examples" OFF)
 
 set(GE_THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third-party)
 
+include(cmake/SanitizeHelpers.cmake)
+
 if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "Build type is empty, configuring as 'Release'")
     set(CMAKE_BUILD_TYPE "Release")
 endif()
+
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 # Build options
 set(CMAKE_CXX_STANDARD 17)
