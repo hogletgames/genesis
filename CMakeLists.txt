@@ -3,6 +3,7 @@ project(genesis LANGUAGES CXX)
 
 # CMake options
 option(GE_STATIC "Build static library" OFF)
+option(GE_DISABLE_ASSERTS "Disable asserts" OFF)
 
 set(GE_THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third-party)
 
@@ -36,6 +37,13 @@ if(GE_STATIC)
 else()
     message(STATUS "Building SHARED library")
     set(GE_LIB_TYPE SHARED)
+endif()
+
+if(GE_DISABLE_ASSERTS)
+    message(STATUS "Asserts are disabled")
+    add_definitions(-DGE_DISABLE_ASSERTS)
+else()
+    message(STATUS "Asserts are enabled")
 endif()
 
 # Subdirectories

@@ -30,13 +30,53 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_H_
-#define GENESIS_CORE_H_
+#ifndef GENESIS_CORE_ASSERTS_H_
+#define GENESIS_CORE_ASSERTS_H_
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/export.h>
 #include <genesis/core/log.h>
-#include <genesis/core/memory.h>
 #include <genesis/core/utils.h>
 
-#endif // GENESIS_CORE_H_
+#ifndef GE_DISABLE_ASSERTS
+    #define GE_CORE_ASSERT(expr, ...) \
+        static_cast<bool>(expr)       \
+            ? static_cast<void>(expr) \
+            : ::GE::Details::coreAssert(__FILE__, __LINE__, #expr, __VA_ARGS__)
+
+    #define GE_ASSERT(expr, ...)      \
+        static_cast<bool>(expr)       \
+            ? static_cast<void>(expr) \
+            : ::GE::Details::clientAssert(__FILE__, __LINE__, #expr, __VA_ARGS__)
+
+namespace GE::Details {
+
+template<typename... Args>
+inline void coreAssert(const char* file, int line, const char* expr, Args&&... args)
+{
+    GE_CORE_CRIT("assert failed: {}:{} '{}'", file, line, expr);
+
+    if constexpr (sizeof...(Args) > 0) {
+        GE_CORE_CRIT(std::forward<Args>(args)...);
+    }
+
+    GE_DBGBREAK();
+}
+
+template<typename... Args>
+inline void clientAssert(const char* file, int line, const char* expr, Args&&... args)
+{
+    GE_CRIT("assert failed: {}:{} '{}'", file, line, expr);
+
+    if constexpr (sizeof...(Args) > 0) {
+        GE_CRIT(std::forward<Args>(args)...);
+    }
+
+    GE_DBGBREAK();
+}
+
+} // namespace GE::Details
+#else
+    #define GE_CORE_ASSERT(expr, ...) static_cast<void>(expr)
+    #define GE_ASSERT(expr, ...)      static_cast<void>(expr)
+#endif // GE_DISABLE_ASSERTS
+
+#endif // GENESIS_CORE_ASSERTS_H_

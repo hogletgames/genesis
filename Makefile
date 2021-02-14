@@ -1,10 +1,12 @@
 BUILD_TYPE          ?= Relese
 BUILD_STATIC        ?= OFF
+DISABLE_ASSERTS     ?= OFF
 
 SRC_DIR             := $(PWD)
 BUILD_DIR           := build
 
-CMAKE_OPTIONS       := -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DGE_STATIC=$(BUILD_STATIC)
+CMAKE_OPTIONS       := -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DGE_STATIC=$(BUILD_STATIC) \
+                       -DGE_DISABLE_ASSERTS=$(DISABLE_ASSERTS)
 
 # Building project
 .PHONY: all
