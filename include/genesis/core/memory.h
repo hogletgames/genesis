@@ -30,11 +30,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_H_
-#define GENESIS_CORE_H_
+#ifndef GENESIS_CORE_MEMORY_H_
+#define GENESIS_CORE_MEMORY_H_
 
-#include <genesis/core/export.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/utils.h>
+#include <memory>
 
-#endif // GENESIS_CORE_H_
+namespace GE {
+
+template<typename T>
+using Scoped = std::unique_ptr<T>;
+
+template<typename T>
+using Shared = std::shared_ptr<T>;
+
+template<typename T, typename... Args>
+constexpr Scoped<T> makeScoped(Args&&... args)
+{
+    return std::make_unique<T>(std::forward<Args>(args)...);
+}
+
+template<typename T, typename... Args>
+constexpr Shared<T> makeShared(Args&&... args)
+{
+    return std::make_shared<T>(std::forward<Args>(args)...);
+}
+
+} // namespace GE
+
+#endif // GENESIS_CORE_MEMORY_H_

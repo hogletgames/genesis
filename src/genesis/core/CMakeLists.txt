@@ -2,6 +2,7 @@ set(GE_CORE_INCLUDE_DIR ${GE_INCLUDE_DIR}/core)
 
 list(APPEND GE_CORE_HEADERS
     ${GE_CORE_INCLUDE_DIR}/export.h
+    ${GE_CORE_INCLUDE_DIR}/memory.h
     ${GE_CORE_INCLUDE_DIR}/utils.h
 )
 
