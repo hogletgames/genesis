@@ -30,11 +30,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#ifndef GENESIS_WINDOW_WINDOW_H_
+#define GENESIS_WINDOW_WINDOW_H_
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/window.h>
+#include <genesis/core/export.h>
+#include <genesis/core/memory.h>
+#include <genesis/math/math.h>
 
-#endif // GENESIS_GENESIS_H_
+#include <string>
+
+namespace GE {
+
+class GE_API Window
+{
+public:
+    struct settings_t {
+        std::string title{TITLE_DEFAULT};
+        Vec2 size{SIZE_DEFAULT};
+        bool vsync{VSYNC_DEFAULT};
+
+        static constexpr auto TITLE_DEFAULT = "Genesis";
+        static constexpr Vec2 SIZE_DEFAULT{1280.0f, 720.0f};
+        static constexpr bool VSYNC_DEFAULT{true};
+    };
+
+    virtual ~Window() = default;
+
+    static bool initialize();
+    static void shutdown();
+
+    static Scoped<Window> create(const settings_t& settings);
+
+    virtual const Vec2& getSize() const = 0;
+    virtual void setVSync(bool enabled) = 0;
+    virtual const settings_t& getSettings() const = 0;
+
+    virtual void* getNativeWindow() = 0;
+    virtual void* getNativeContext() = 0;
+
+protected:
+    Window() = default;
+};
+
+} // namespace GE
+
+#endif // GENESIS_WINDOW_WINDOW_H_

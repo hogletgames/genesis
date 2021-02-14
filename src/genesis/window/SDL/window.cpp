@@ -29,12 +29,54 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "window.h"
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#include "genesis/core/asserts.h"
+#include "genesis/core/log.h"
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/window.h>
+#include <SDL.h>
 
-#endif // GENESIS_GENESIS_H_
+namespace GE::SDL {
+
+Window::Window(settings_t settings)
+    : m_settings{std::move(settings)}
+{
+    auto flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN;
+
+    m_window = SDL_CreateWindow(m_settings.title.c_str(), SDL_WINDOWPOS_CENTERED,
+                                SDL_WINDOWPOS_CENTERED, m_settings.size.x,
+                                m_settings.size.y, flags);
+    GE_CORE_ASSERT(m_window, "Failed to create SDL Window: {}", SDL_GetError());
+
+    GE_CORE_INFO("Window '{}' has been created", m_settings.title);
+}
+
+Window::~Window()
+{
+    if (m_window != nullptr) {
+        SDL_DestroyWindow(m_window);
+        GE_CORE_INFO("Window '{}' has been destroyed", m_settings.title);
+    }
+}
+
+bool Window::initialize()
+{
+    GE_CORE_INFO("Initializing SDL Window...");
+
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        GE_CORE_ERR("Failed to initialize SDL: {}", SDL_GetError());
+        return false;
+    }
+
+    return true;
+}
+
+void Window::shutdown()
+{
+    GE_CORE_INFO("Shutting down SDL Window...");
+    SDL_Quit();
+}
+
+void Window::setVSync([[maybe_unused]] bool enabled) {}
+
+} // namespace GE::SDL

@@ -30,11 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_WINDOW_SDL_WINDOW_H_
+#define GENESIS_WINDOW_SDL_WINDOW_H_
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/window.h>
+#include <genesis/window/window.h>
 
-#endif // GENESIS_GENESIS_H_
+struct SDL_Window;
+
+namespace GE::SDL {
+
+class Window: public GE::Window
+{
+public:
+    explicit Window(settings_t settings);
+    ~Window();
+
+    static bool initialize();
+    static void shutdown();
+
+    const Vec2& getSize() const override { return m_settings.size; }
+    void setVSync(bool enabled) override;
+    const settings_t& getSettings() const override { return m_settings; }
+
+    void* getNativeWindow() override { return nullptr; }
+    void* getNativeContext() override { return nullptr; }
+
+private:
+    settings_t m_settings;
+    SDL_Window* m_window{nullptr};
+};
+
+} // namespace GE::SDL
+
+#endif // GENESIS_WINDOW_SDL_WINDOW_H_

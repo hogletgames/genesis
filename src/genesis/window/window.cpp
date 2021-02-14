@@ -30,11 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#include "window.h"
+#include "SDL/window.h"
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/window.h>
+using PlatformWindow = GE::SDL::Window;
 
-#endif // GENESIS_GENESIS_H_
+namespace GE {
+
+bool Window::initialize()
+{
+    return PlatformWindow::initialize();
+}
+
+void Window::shutdown()
+{
+    PlatformWindow::shutdown();
+}
+
+Scoped<Window> Window::create(const settings_t &settings)
+{
+    return makeScoped<PlatformWindow>(settings);
+}
+
+} // namespace GE
