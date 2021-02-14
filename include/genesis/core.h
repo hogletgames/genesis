@@ -34,6 +34,7 @@
 #define GENESIS_CORE_H_
 
 #include <genesis/core/export.h>
+#include <genesis/core/log.h>
 #include <genesis/core/memory.h>
 #include <genesis/core/utils.h>
 
