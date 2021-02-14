@@ -30,10 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_H_
-#define GENESIS_CORE_H_
+#ifndef GENESIS_CORE_UTILS_H_
+#define GENESIS_CORE_UTILS_H_
 
-#include <genesis/core/export.h>
-#include <genesis/core/utils.h>
+#include <unordered_map>
 
-#endif // GENESIS_CORE_H_
+// Breakpoint
+#if defined(GE_PLATFORM_UNIX)
+    #include <csignal>
+    #define GE_DBGBREAK() ::raise(SIGTRAP)
+#elif defined(GE_PLATFORM_WINDOWS)
+    #define GE_DBGBREAK() __debugbreak()
+#else
+    #error "Platform is not defined!"
+#endif
+
+namespace GE {
+
+template<typename FromType, typename ToType>
+inline ToType toType(const std::unordered_map<FromType, ToType>& container,
+                     const FromType& from_value, ToType&& def_ret)
+{
+    if (auto it = container.find(from_value); it != container.end()) {
+        return it->second;
+    }
+
+    return std::forward<ToType>(def_ret);
+}
+
+} // namespace GE
+
+#endif // GENESIS_CORE_UTILS_H_
