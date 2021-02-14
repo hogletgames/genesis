@@ -52,10 +52,13 @@ else()
 endif()
 
 # Subdirectories
+add_subdirectory(src)
+
 if(GE_BUILD_EXAMPLES)
     message(STATUS "Build '${CMAKE_PROJECT_NAME}' examples")
     add_subdirectory(examples)
 endif()
 
-add_subdirectory(src)
-add_subdirectory(third-party)
+if(NOT CMAKE_EXPORT_COMPILE_COMMANDS)
+    add_subdirectory(third-party)
+endif()
