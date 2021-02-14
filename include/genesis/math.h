@@ -30,10 +30,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#ifndef GENESIS_MATH_H_
+#define GENESIS_MATH_H_
 
-#include <genesis/core.h>
-#include <genesis/math.h>
+#include <genesis/math/math.h>
 
-#endif // GENESIS_GENESIS_H_
+#endif // GENESIS_MATH_H_
