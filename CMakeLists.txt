@@ -4,6 +4,7 @@ project(genesis LANGUAGES CXX)
 # CMake options
 option(GE_STATIC "Build static library" OFF)
 option(GE_DISABLE_ASSERTS "Disable asserts" OFF)
+option(GE_BUILD_EXAMPLES "Build examples" OFF)
 
 set(GE_THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third-party)
 
@@ -47,5 +48,10 @@ else()
 endif()
 
 # Subdirectories
+if(GE_BUILD_EXAMPLES)
+    message(STATUS "Build '${CMAKE_PROJECT_NAME}' examples")
+    add_subdirectory(examples)
+endif()
+
 add_subdirectory(src)
 add_subdirectory(third-party)
