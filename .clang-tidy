@@ -32,6 +32,8 @@ WarningsAsErrors:   '*'
 HeaderFilterRegex:  '.*'
 FormatStyle:        'file'
 CheckOptions:
-  - {key: cppcoreguidelines-avoid-magic-numbers.IgnoreAllFloatingPointValues, value: '1' }
-  - {key: readability-magic-numbers.IgnoreAllFloatingPointValues,             value: '1' }
+  - {key: cppcoreguidelines-avoid-magic-numbers.IgnoreAllFloatingPointValues, value: true }
+  - {key: readability-magic-numbers.IgnoreAllFloatingPointValues,             value: true }
+  - {key: modernize-use-override.IgnoreDestructors,                           value: true }
+  - {key: hicpp-use-override.IgnoreDestructors,                               value: true }
 ...
