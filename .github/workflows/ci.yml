@@ -70,7 +70,7 @@ jobs:
     needs: update_docker
     env:
       CLANG_FORMAT_BIN: clang-format-11
-      RUN_CLANG_TIDY_BIN: run-clang-tidy-11
+      CLANG_TIDY_BIN: clang-tidy-11
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -80,4 +80,4 @@ jobs:
       - name: clnag-format
         run: make clang-format
       - name: clang-tidy
-        run: make clang-tidy
+        run: make clang-tidy -j$(nproc)

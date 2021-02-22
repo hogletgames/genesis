@@ -46,7 +46,7 @@ bash tools/clang_format.sh --fix    # Fix format
 | `DISABLE_ASSERTS` | `GE_DISABLE_ASSERTS` | `OFF` | Exclude asserts from final binary |
 | `BUILD_EXAMPLES` | `GE_BUILD_EXAMPLES` | `OFF` | Build examples |
 | `CLANG_FORMAT_BIN` | - | `clang-format` | Path to `clang-format` binary |
-| `RUN_CLANG_TIDY_BIN` | - | `run-clang-tidy` | Path to `run-clang-tidy` tool |
+| `CLANG_TIDY_BIN` | - | `clang-tidy` | Path to `clang-tidy` binary |
 | `DOCKER_CMD` | - | `make -j$(nproc)` | Command which will be executed by `make docker_run` |
 
 ### Licence

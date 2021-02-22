@@ -13,7 +13,7 @@ list(APPEND GE_CORE_HEADERS
 )
 
 add_library(genesis-core STATIC ${GE_CORE_SRC} ${GE_CORE_HEADERS})
-target_link_libraries(genesis-core PUBLIC spdlog)
+target_link_libraries(genesis-core PUBLIC spdlog::spdlog)
 target_include_directories(genesis-core SYSTEM PUBLIC
     ${GE_THIRD_PARTY_DIR}/spdlog/include
 )

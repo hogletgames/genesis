@@ -10,7 +10,7 @@ CMAKE_OPTIONS       := -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DGE_STATIC=$(BUILD_STAT
                        -DGE_DISABLE_ASSERTS=$(DISABLE_ASSERTS) -DGE_BUILD_EXAMPLES=$(BUILD_EXAMPLES)
 
 CLANG_FORMAT_BIN    ?= clang-format
-RUN_CLANG_TIDY_BIN  ?= run-clang-tidy
+CLANG_TIDY_BIN      ?= clang-tidy
 
 DOCKER_IMAGE_NAME   := genesis-engine-image
 DOCKER_CMD          ?= make -j$$(nproc)
@@ -37,9 +37,8 @@ clang-format:
 	bash tools/clang_format.sh --clang-format-bin $(CLANG_FORMAT_BIN)
 
 .PHONY: clang-tidy
-clang-tidy: CMAKE_OPTIONS += -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-clang-tidy: generate_makefiles
-	$(RUN_CLANG_TIDY_BIN) -p $(BUILD_DIR)
+clang-tidy: CMAKE_OPTIONS += -DGE_CLANG_TIDY=$(CLANG_TIDY_BIN)
+clang-tidy: build_project
 
 # Docker
 .PHONY: docker_initialize
