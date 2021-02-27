@@ -15,6 +15,7 @@ target_link_libraries(genesis-window PUBLIC
     genesis::window::platform
 )
 target_include_directories(genesis-window PRIVATE ${GE_WINDOW_INCLUDE_DIR})
+ge_default_target_config(genesis-window)
 add_library(genesis::window ALIAS genesis-window)
 
 add_subdirectory(SDL)

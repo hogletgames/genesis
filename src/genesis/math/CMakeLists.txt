@@ -6,7 +6,5 @@ list(APPEND GE_MATH_HEADERS
 
 add_library(genesis-math INTERFACE)
 target_link_libraries(genesis-math INTERFACE glm)
-target_include_directories(genesis-math SYSTEM INTERFACE
-    ${GE_THIRD_PARTY_DIR}/glm
-)
+target_include_directories(genesis-math SYSTEM INTERFACE ${GE_THIRD_PARTY_DIR}/glm)
 add_library(genesis::math ALIAS genesis-math)

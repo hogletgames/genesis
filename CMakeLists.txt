@@ -6,9 +6,8 @@ option(GE_STATIC "Build static library" OFF)
 option(GE_DISABLE_ASSERTS "Disable asserts" OFF)
 option(GE_BUILD_EXAMPLES "Build examples" OFF)
 
-set(GE_THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third-party)
-
 include(cmake/SanitizeHelpers.cmake)
+include(cmake/Utils.cmake)
 
 if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "Build type is empty, configuring as 'Release'")
@@ -21,10 +20,6 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
-add_compile_options(-Werror -Wextra -Wall -Wpedantic -Wshadow)
-
-include_directories(include)
 
 # Platform specific macros
 if(UNIX)

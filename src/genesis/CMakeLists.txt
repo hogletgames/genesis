@@ -15,6 +15,7 @@ target_link_libraries(genesis PUBLIC
     genesis::math
     genesis::window
 )
+ge_default_target_config(genesis)
 add_library(genesis::genesis ALIAS genesis)
 
 add_subdirectory(core)
