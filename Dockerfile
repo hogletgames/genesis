@@ -16,6 +16,9 @@ RUN apt-get install -y libx11-dev libsamplerate-dev libasound2-dev \
                        libxrandr-dev libxss-dev libxxf86vm-dev \
                        libdbus-1-dev
 
+# Vulkan dependencies
+RUN apt-get install -y libwayland-dev
+
 # Compilers
 RUN apt-add-repository ppa:ubuntu-toolchain-r/test && \
     apt-get update && apt-get install -y gcc-10 g++-10 && \

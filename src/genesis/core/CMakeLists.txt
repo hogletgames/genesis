@@ -14,11 +14,8 @@ list(APPEND GE_CORE_HEADERS
 
 add_library(genesis-core STATIC ${GE_CORE_SRC} ${GE_CORE_HEADERS})
 target_link_libraries(genesis-core PUBLIC spdlog)
-target_include_directories(genesis-core SYSTEM PUBLIC
-    ${GE_THIRD_PARTY_DIR}/spdlog/include
-)
+target_include_directories(genesis-core SYSTEM PUBLIC ${GE_THIRD_PARTY_DIR}/spdlog/include)
 target_include_directories(genesis-core PRIVATE ${GE_CORE_INCLUDE_DIR})
-set_target_properties(genesis-core
-    PROPERTIES POSITION_INDEPENDENT_CODE ON
-)
+set_target_properties(genesis-core PROPERTIES POSITION_INDEPENDENT_CODE ON)
+ge_default_target_config(genesis-core)
 add_library(genesis::core ALIAS genesis-core)
