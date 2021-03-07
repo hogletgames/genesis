@@ -30,10 +30,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_H_
-#define GENESIS_RENDERER_H_
+#include "render_context.h"
 
-#include <genesis/renderer/render_context.h>
-#include <genesis/renderer/renderer.h>
+#include "genesis/core/log.h"
 
-#endif // GENESIS_RENDERER_H_
+namespace GE {
+
+Scoped<RenderContext> RenderContext::create(Renderer::API api)
+{
+    switch (api) {
+        case Renderer::API::VULKAN:
+        case Renderer::API::NONE:
+        default: break;
+    }
+
+    GE_CORE_ERR("Failed to create Render Context: unsupported API '{}'", toString(api));
+    return nullptr;
+}
+
+} // namespace GE
