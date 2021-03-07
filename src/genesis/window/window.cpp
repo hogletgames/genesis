@@ -47,7 +47,7 @@ void Window::shutdown()
     PlatformWindow::shutdown();
 }
 
-Scoped<Window> Window::create(const settings_t &settings)
+Scoped<Window> Window::create(const settings_t& settings)
 {
     return makeScoped<PlatformWindow>(settings);
 }
