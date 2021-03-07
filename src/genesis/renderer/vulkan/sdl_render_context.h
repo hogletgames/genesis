@@ -30,26 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_RENDERER_VULKAN_SDL_RENDER_CONTEXT_H_
+#define GENESIS_RENDERER_VULKAN_SDL_RENDER_CONTEXT_H_
+
 #include "render_context.h"
 
-#include "vulkan/sdl_render_context.h"
-using VulkanPlatformContext = GE::Vulkan::SDL::RenderContext;
+struct SDL_Window;
 
-#include "genesis/core/log.h"
-#include "genesis/core/memory.h"
+namespace GE::Vulkan::SDL {
 
-namespace GE {
-
-Scoped<RenderContext> RenderContext::create(Renderer::API api)
+class RenderContext: public GE::Vulkan::RenderContext
 {
-    switch (api) {
-        case Renderer::API::VULKAN: return makeScoped<VulkanPlatformContext>();
-        case Renderer::API::NONE:
-        default: break;
-    }
+public:
+    using GE::Vulkan::RenderContext::RenderContext;
 
-    GE_CORE_ERR("Failed to create Render Context: unsupported API '{}'", toString(api));
-    return nullptr;
-}
+private:
+    std::vector<const char*> getWindowExtensions(void* window) const override;
+    const char* getAppName(void* window) const override;
 
-} // namespace GE
+    bool createSurface(void* window) override;
+};
+
+} // namespace GE::Vulkan::SDL
+
+#endif // GENESIS_RENDERER_VULKAN_SDL_RENDER_CONTEXT_H_

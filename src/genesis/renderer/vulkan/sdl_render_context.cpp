@@ -30,26 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "render_context.h"
+#include "sdl_render_context.h"
 
-#include "vulkan/sdl_render_context.h"
-using VulkanPlatformContext = GE::Vulkan::SDL::RenderContext;
+// To suppress clang-tidy warnings about missed `memcpy()` in SDL2
+#include <cstring>
 
-#include "genesis/core/log.h"
-#include "genesis/core/memory.h"
+#include <SDL_vulkan.h>
 
-namespace GE {
+namespace {
 
-Scoped<RenderContext> RenderContext::create(Renderer::API api)
+inline SDL_Window* toSDLWindow(void* window)
 {
-    switch (api) {
-        case Renderer::API::VULKAN: return makeScoped<VulkanPlatformContext>();
-        case Renderer::API::NONE:
-        default: break;
-    }
-
-    GE_CORE_ERR("Failed to create Render Context: unsupported API '{}'", toString(api));
-    return nullptr;
+    return reinterpret_cast<SDL_Window*>(window);
 }
 
-} // namespace GE
+} // namespace
+
+namespace GE::Vulkan::SDL {
+
+std::vector<const char*> RenderContext::getWindowExtensions(void* window) const
+{
+    auto* sdl_window = toSDLWindow(window);
+
+    uint32_t name_count{0};
+    SDL_Vulkan_GetInstanceExtensions(sdl_window, &name_count, nullptr);
+
+    std::vector<const char*> names(name_count);
+    SDL_Vulkan_GetInstanceExtensions(sdl_window, &name_count, names.data());
+
+    return names;
+}
+
+const char* RenderContext::getAppName(void* window) const
+{
+    return SDL_GetWindowTitle(toSDLWindow(window));
+}
+
+bool RenderContext::createSurface(void* window)
+{
+    return SDL_Vulkan_CreateSurface(toSDLWindow(window), m_instance, &m_surface) ==
+           SDL_TRUE;
+}
+
+} // namespace GE::Vulkan::SDL

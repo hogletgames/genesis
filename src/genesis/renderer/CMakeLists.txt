@@ -13,7 +13,10 @@ list(APPEND GE_RENDERER_HEADERS
 add_library(genesis-renderer STATIC ${GE_RENDERER_SRC} ${GE_RENDERER_HEADERS})
 target_link_libraries(genesis-renderer PUBLIC
     genesis::core
+    genesis::renderer::vulkan
 )
 target_include_directories(genesis-renderer PRIVATE ${GE_RENDERER_INCLUDE_DIR})
 ge_default_target_config(genesis-renderer)
 add_library(genesis::renderer ALIAS genesis-renderer)
+
+add_subdirectory(vulkan)

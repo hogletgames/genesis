@@ -30,26 +30,41 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "render_context.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
+#define GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
 
-#include "vulkan/sdl_render_context.h"
-using VulkanPlatformContext = GE::Vulkan::SDL::RenderContext;
+#include <genesis/renderer/render_context.h>
 
-#include "genesis/core/log.h"
-#include "genesis/core/memory.h"
+#include <vulkan/vulkan.h>
 
-namespace GE {
+#include <vector>
 
-Scoped<RenderContext> RenderContext::create(Renderer::API api)
+struct SDL_Window;
+
+namespace GE::Vulkan {
+
+class RenderContext: public GE::RenderContext
 {
-    switch (api) {
-        case Renderer::API::VULKAN: return makeScoped<VulkanPlatformContext>();
-        case Renderer::API::NONE:
-        default: break;
-    }
+public:
+    bool initialize(void* window) override;
+    void shutdown() override;
 
-    GE_CORE_ERR("Failed to create Render Context: unsupported API '{}'", toString(api));
-    return nullptr;
-}
+protected:
+    virtual std::vector<const char*> getWindowExtensions(void* window) const = 0;
+    virtual const char* getAppName(void* window) const = 0;
+    virtual bool createSurface(void* window) = 0;
 
-} // namespace GE
+    VkInstance m_instance{VK_NULL_HANDLE};
+    VkSurfaceKHR m_surface{VK_NULL_HANDLE};
+
+private:
+    bool createInstance(void* window);
+    bool setupDebugUtils();
+
+    VkDebugUtilsMessengerEXT m_debug_utils{VK_NULL_HANDLE};
+};
+
+} // namespace GE::Vulkan
+
+#endif // GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
