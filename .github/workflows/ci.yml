@@ -68,6 +68,9 @@ jobs:
     runs-on: ubuntu-18.04
     container: hogletgames/genesis-engine:ci
     needs: update_docker
+    strategy:
+      matrix:
+        build-type: [Release, Debug]
     env:
       CLANG_FORMAT_BIN: clang-format-11
       RUN_CLANG_TIDY_BIN: run-clang-tidy-11
@@ -80,4 +83,6 @@ jobs:
       - name: clnag-format
         run: make clang-format
       - name: clang-tidy
+        env:
+          BUILD_TYPE: ${{ matrix.build-type }}
         run: make clang-tidy
