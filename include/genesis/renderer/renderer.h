@@ -30,12 +30,43 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#ifndef GENESIS_RENDERER_RENDERER_H_
+#define GENESIS_RENDERER_RENDERER_H_
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/renderer.h>
-#include <genesis/window.h>
+#include <genesis/core/export.h>
 
-#endif // GENESIS_GENESIS_H_
+#include <string>
+
+namespace GE {
+
+class GE_API Renderer
+{
+public:
+    enum class API
+    {
+        NONE = 0,
+        VULKAN
+    };
+
+    static bool initialize(API api);
+    static void shutdown();
+
+    static API getAPI() { return get()->m_api; }
+
+private:
+    Renderer() = default;
+
+    static Renderer* get()
+    {
+        static Renderer instance;
+        return &instance;
+    }
+
+    API m_api{API::NONE};
+};
+
+std::string toString(Renderer::API api);
+
+} // namespace GE
+
+#endif // GENESIS_RENDERER_RENDERER_H_
