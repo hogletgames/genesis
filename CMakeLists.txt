@@ -6,6 +6,10 @@ option(GE_STATIC "Build static library" OFF)
 option(GE_DISABLE_ASSERTS "Disable asserts" OFF)
 option(GE_BUILD_EXAMPLES "Build examples" OFF)
 
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    set(GE_DISABLE_DEBUG True)
+endif()
+
 include(cmake/SanitizeHelpers.cmake)
 include(cmake/Utils.cmake)
 
@@ -44,6 +48,13 @@ if(GE_DISABLE_ASSERTS)
     add_definitions(-DGE_DISABLE_ASSERTS)
 else()
     message(STATUS "Asserts are enabled")
+endif()
+
+if(GE_DISABLE_DEBUG)
+    message(STATUS "Disable debug output")
+    add_definitions(-DGE_DISABLE_DEBUG)
+else()
+    message(STATUS "Keep debug output")
 endif()
 
 # Subdirectories
