@@ -7,6 +7,7 @@ list(APPEND GE_CORE_SRC
 list(APPEND GE_CORE_HEADERS
     ${GE_CORE_INCLUDE_DIR}/asserts.h
     ${GE_CORE_INCLUDE_DIR}/export.h
+    ${GE_CORE_INCLUDE_DIR}/interface.h
     ${GE_CORE_INCLUDE_DIR}/log.h
     ${GE_CORE_INCLUDE_DIR}/memory.h
     ${GE_CORE_INCLUDE_DIR}/utils.h
