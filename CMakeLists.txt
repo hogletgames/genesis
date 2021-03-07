@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
-project(genesis LANGUAGES CXX)
+project(genesis VERSION 0.0.0 LANGUAGES CXX)
 
 # CMake options
 option(GE_STATIC "Build static library" OFF)
@@ -19,6 +19,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "${CMAKE_PROJECT_NAME} version ${CMAKE_PROJECT_VERSION}")
 
 # Build options
 set(CMAKE_CXX_STANDARD 17)

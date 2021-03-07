@@ -30,15 +30,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_H_
-#define GENESIS_CORE_H_
+#ifndef GENESIS_CORE_VERSION_H_
+#define GENESIS_CORE_VERSION_H_
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/export.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+namespace GE {
 
-#endif // GENESIS_CORE_H_
+inline constexpr auto ENGINE_NAME = "genesis";
+
+inline constexpr uint32_t VER_MAJOR{_GE_VER_MAJOR};
+inline constexpr uint32_t VER_MINOR{_GE_VER_MINOR};
+inline constexpr uint32_t VER_PATCH{_GE_VER_PATCH};
+
+} // namespace GE
+
+#endif // GENESIS_CORE_VERSION_H_
