@@ -30,12 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#include "sdl_render_context.h"
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/renderer.h>
-#include <genesis/window.h>
+// To suppress clang-tidy warnings about missed `memcpy()` in SDL2
+#include <cstring>
 
-#endif // GENESIS_GENESIS_H_
+#include <SDL_vulkan.h>
+
+namespace {
+
+inline SDL_Window* toSDLWindow(void* window)
+{
+    return reinterpret_cast<SDL_Window*>(window);
+}
+
+} // namespace
+
+namespace GE::Vulkan::SDL {
+
+std::vector<const char*> RenderContext::getWindowExtensions(void* window) const
+{
+    auto* sdl_window = toSDLWindow(window);
+
+    uint32_t name_count{0};
+    SDL_Vulkan_GetInstanceExtensions(sdl_window, &name_count, nullptr);
+
+    std::vector<const char*> names(name_count);
+    SDL_Vulkan_GetInstanceExtensions(sdl_window, &name_count, names.data());
+
+    return names;
+}
+
+const char* RenderContext::getAppName(void* window) const
+{
+    return SDL_GetWindowTitle(toSDLWindow(window));
+}
+
+bool RenderContext::createSurface(void* window)
+{
+    return SDL_Vulkan_CreateSurface(toSDLWindow(window), m_instance, &m_surface) ==
+           SDL_TRUE;
+}
+
+} // namespace GE::Vulkan::SDL

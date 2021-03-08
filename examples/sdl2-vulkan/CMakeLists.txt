@@ -16,4 +16,7 @@ target_include_directories(sdl2_vulkan_example SYSTEM PRIVATE
     ${GE_THIRD_PARTY_DIR}/Vulkan/shaderc/libshaderc/include
     ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include
 )
+if(NOT CMAKE_EXPORT_COMPILE_COMMANDS)
+    add_dependencies(sdl2_vulkan_example VkLayer_khronos_validation-json)
+endif()
 ge_default_target_config(sdl2_vulkan_example)

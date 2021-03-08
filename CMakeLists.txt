@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
-project(genesis LANGUAGES CXX)
+project(genesis VERSION 0.0.0 LANGUAGES CXX)
 
 # CMake options
 option(GE_STATIC "Build static library" OFF)
 option(GE_DISABLE_ASSERTS "Disable asserts" OFF)
 option(GE_BUILD_EXAMPLES "Build examples" OFF)
+
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    set(GE_DISABLE_DEBUG True)
+endif()
 
 include(cmake/SanitizeHelpers.cmake)
 include(cmake/Utils.cmake)
@@ -15,6 +19,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "${CMAKE_PROJECT_NAME} version ${CMAKE_PROJECT_VERSION}")
 
 # Build options
 set(CMAKE_CXX_STANDARD 17)
@@ -44,6 +49,13 @@ if(GE_DISABLE_ASSERTS)
     add_definitions(-DGE_DISABLE_ASSERTS)
 else()
     message(STATUS "Asserts are enabled")
+endif()
+
+if(GE_DISABLE_DEBUG)
+    message(STATUS "Disable debug output")
+    add_definitions(-DGE_DISABLE_DEBUG)
+else()
+    message(STATUS "Keep debug output")
 endif()
 
 # Subdirectories

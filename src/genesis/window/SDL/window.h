@@ -38,6 +38,10 @@
 
 struct SDL_Window;
 
+namespace GE {
+class RenderContext;
+} // namespace GE
+
 namespace GE::SDL {
 
 class Window: public GE::Window
@@ -59,6 +63,7 @@ public:
 private:
     settings_t m_settings;
     SDL_Window* m_window{nullptr};
+    GE::Scoped<RenderContext> m_context;
 };
 
 } // namespace GE::SDL

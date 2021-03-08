@@ -30,12 +30,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#ifndef GENESIS_RENDERER_RENDER_CONTEXT_H_
+#define GENESIS_RENDERER_RENDER_CONTEXT_H_
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/renderer.h>
-#include <genesis/window.h>
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
+#include <genesis/renderer/renderer.h>
 
-#endif // GENESIS_GENESIS_H_
+namespace GE {
+
+class GE_API RenderContext: public Interface
+{
+public:
+    virtual bool initialize(void* window) = 0;
+    virtual void shutdown() = 0;
+
+    static Scoped<RenderContext> create(Renderer::API api);
+};
+
+} // namespace GE
+
+#endif // GENESIS_RENDERER_RENDER_CONTEXT_H_

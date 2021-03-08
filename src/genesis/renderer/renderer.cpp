@@ -30,12 +30,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#include "renderer.h"
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/renderer.h>
-#include <genesis/window.h>
+#include "genesis/core/log.h"
+#include "genesis/core/utils.h"
 
-#endif // GENESIS_GENESIS_H_
+namespace GE {
+
+bool Renderer::initialize(Renderer::API api)
+{
+    switch (api) {
+        case Renderer::API::VULKAN: break;
+        case Renderer::API::NONE:
+        default: GE_CORE_ERR("Unknown Render API: {}", toString(api)); return false;
+    }
+
+    GE_CORE_INFO("Configuring '{}' as Renderer API", toString(api));
+
+    get()->m_api = api;
+    return true;
+}
+
+void Renderer::shutdown() {}
+
+std::string toString(Renderer::API api)
+{
+    std::string default_value = "Unknown (" + std::to_string(static_cast<int>(api)) + ")";
+    static const std::unordered_map<Renderer::API, std::string> api_to_str = {
+        {Renderer::API::NONE, "None"}, {Renderer::API::VULKAN, "Vulkan"}};
+
+    return toType(api_to_str, api, default_value);
+}
+
+} // namespace GE

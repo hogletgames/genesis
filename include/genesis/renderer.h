@@ -30,12 +30,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#ifndef GENESIS_RENDERER_H_
+#define GENESIS_RENDERER_H_
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/renderer.h>
-#include <genesis/window.h>
+#include <genesis/renderer/render_context.h>
+#include <genesis/renderer/renderer.h>
 
-#endif // GENESIS_GENESIS_H_
+#endif // GENESIS_RENDERER_H_

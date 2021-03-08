@@ -49,13 +49,13 @@ namespace GE {
 
 template<typename FromType, typename ToType>
 inline ToType toType(const std::unordered_map<FromType, ToType>& container,
-                     const FromType& from_value, ToType&& def_ret)
+                     const FromType& from_value, const ToType& def_ret)
 {
     if (auto it = container.find(from_value); it != container.end()) {
         return it->second;
     }
 
-    return std::forward<ToType>(def_ret);
+    return def_ret;
 }
 
 } // namespace GE

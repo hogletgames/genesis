@@ -33,28 +33,31 @@
 #ifndef GENESIS_WINDOW_WINDOW_H_
 #define GENESIS_WINDOW_WINDOW_H_
 
-#include <genesis/core/export.h>
+#include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
 #include <genesis/math/math.h>
+#include <genesis/renderer/renderer.h>
 
 #include <string>
 
 namespace GE {
 
-class GE_API Window
+class RenderContext;
+
+class GE_API Window: public Interface
 {
 public:
     struct settings_t {
         std::string title{TITLE_DEFAULT};
         Vec2 size{SIZE_DEFAULT};
         bool vsync{VSYNC_DEFAULT};
+        Renderer::API render_api{RENDERER_API_DEFAULT};
 
         static constexpr auto TITLE_DEFAULT = "Genesis";
         static constexpr Vec2 SIZE_DEFAULT{1280.0f, 720.0f};
         static constexpr bool VSYNC_DEFAULT{true};
+        static constexpr Renderer::API RENDERER_API_DEFAULT{Renderer::API::VULKAN};
     };
-
-    virtual ~Window() = default;
 
     static bool initialize();
     static void shutdown();
@@ -67,9 +70,6 @@ public:
 
     virtual void* getNativeWindow() = 0;
     virtual void* getNativeContext() = 0;
-
-protected:
-    Window() = default;
 };
 
 } // namespace GE

@@ -30,12 +30,41 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
+#define GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/renderer.h>
-#include <genesis/window.h>
+#include <genesis/renderer/render_context.h>
 
-#endif // GENESIS_GENESIS_H_
+#include <vulkan/vulkan.h>
+
+#include <vector>
+
+struct SDL_Window;
+
+namespace GE::Vulkan {
+
+class RenderContext: public GE::RenderContext
+{
+public:
+    bool initialize(void* window) override;
+    void shutdown() override;
+
+protected:
+    virtual std::vector<const char*> getWindowExtensions(void* window) const = 0;
+    virtual const char* getAppName(void* window) const = 0;
+    virtual bool createSurface(void* window) = 0;
+
+    VkInstance m_instance{VK_NULL_HANDLE};
+    VkSurfaceKHR m_surface{VK_NULL_HANDLE};
+
+private:
+    bool createInstance(void* window);
+    bool setupDebugUtils();
+
+    VkDebugUtilsMessengerEXT m_debug_utils{VK_NULL_HANDLE};
+};
+
+} // namespace GE::Vulkan
+
+#endif // GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_

@@ -33,8 +33,66 @@
 
 #include "genesis/core/asserts.h"
 #include "genesis/core/log.h"
+#include "genesis/core/utils.h"
+#include "genesis/renderer/render_context.h"
 
 #include <SDL.h>
+
+namespace {
+
+#ifndef GE_DISABLE_DEBUG
+const char* categoryToString(int category)
+{
+    const char* default_category = "Unknown";
+    static const std::unordered_map<int, const char*> cat_to_str = {
+        {SDL_LOG_CATEGORY_APPLICATION, "App"}, {SDL_LOG_CATEGORY_ERROR, "Error"},
+        {SDL_LOG_CATEGORY_ASSERT, "Assert"},   {SDL_LOG_CATEGORY_SYSTEM, "System"},
+        {SDL_LOG_CATEGORY_AUDIO, "Audio"},     {SDL_LOG_CATEGORY_VIDEO, "Video"},
+        {SDL_LOG_CATEGORY_RENDER, "Render"},   {SDL_LOG_CATEGORY_INPUT, "Input"},
+        {SDL_LOG_CATEGORY_TEST, "Test"},       {SDL_LOG_CATEGORY_CUSTOM, "Custom"}};
+
+    return GE::toType(cat_to_str, category, default_category);
+}
+
+void debugCallback([[maybe_unused]] void* userdata, int category,
+                   SDL_LogPriority priority, const char* message)
+{
+    const char* category_str = categoryToString(category);
+    const char* pattern = "[SDL {}]: {}";
+
+    switch (priority) {
+        case SDL_LOG_PRIORITY_VERBOSE:
+            GE_CORE_TRACE(pattern, category_str, message);
+            break;
+        case SDL_LOG_PRIORITY_DEBUG: GE_CORE_DBG(pattern, category_str, message); break;
+        case SDL_LOG_PRIORITY_INFO: GE_CORE_INFO(pattern, category_str, message); break;
+        case SDL_LOG_PRIORITY_WARN: GE_CORE_WARN(pattern, category_str, message); break;
+        case SDL_LOG_PRIORITY_ERROR: GE_CORE_ERR(pattern, category_str, message); break;
+        case SDL_LOG_PRIORITY_CRITICAL:
+            GE_CORE_CRIT(pattern, category_str, message);
+            break;
+        default: GE_CORE_ERR("[SDL {}/Unknown]: {}", category_str, message); break;
+    }
+}
+#endif // GE_DISABLE_DEBUG
+
+int renderAPIToWindowFlag(GE::Renderer::API api)
+{
+    using API = GE::Renderer::API;
+
+    static constexpr int default_flag{0};
+    static std::unordered_map<API, int> api_to_flag = {{API::VULKAN, SDL_WINDOW_VULKAN}};
+    int flag = GE::toType(api_to_flag, api, default_flag);
+
+    if (flag == default_flag) {
+        GE_CORE_ERR("Failed to get SDL Window Flag: unsupported API '{}'",
+                    GE::toString(api));
+    }
+
+    return flag;
+}
+
+} // namespace
 
 namespace GE::SDL {
 
@@ -42,11 +100,15 @@ Window::Window(settings_t settings)
     : m_settings{std::move(settings)}
 {
     auto flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN;
+    flags |= renderAPIToWindowFlag(settings.render_api);
 
     m_window = SDL_CreateWindow(m_settings.title.c_str(), SDL_WINDOWPOS_CENTERED,
                                 SDL_WINDOWPOS_CENTERED, m_settings.size.x,
                                 m_settings.size.y, flags);
     GE_CORE_ASSERT(m_window, "Failed to create SDL Window: {}", SDL_GetError());
+
+    m_context = RenderContext::create(settings.render_api);
+    GE_CORE_ASSERT(m_context->initialize(m_window), "Failed to init render context");
 
     GE_CORE_INFO("Window '{}' has been created", m_settings.title);
 }
@@ -54,6 +116,7 @@ Window::Window(settings_t settings)
 Window::~Window()
 {
     if (m_window != nullptr) {
+        m_context->shutdown();
         SDL_DestroyWindow(m_window);
         GE_CORE_INFO("Window '{}' has been destroyed", m_settings.title);
     }
@@ -62,6 +125,11 @@ Window::~Window()
 bool Window::initialize()
 {
     GE_CORE_INFO("Initializing SDL Window...");
+
+#ifndef GE_DISABLE_DEBUG
+    SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
+    SDL_LogSetOutputFunction(debugCallback, nullptr);
+#endif // GE_DISABLE_DEBUG
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         GE_CORE_ERR("Failed to initialize SDL: {}", SDL_GetError());

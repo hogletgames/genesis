@@ -30,12 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#ifndef GENESIS_CORE_INTERFACE_H_
+#define GENESIS_CORE_INTERFACE_H_
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/renderer.h>
-#include <genesis/window.h>
+#include <genesis/core/export.h>
 
-#endif // GENESIS_GENESIS_H_
+namespace GE {
+
+class GE_API Interface
+{
+public:
+    virtual ~Interface() = default;
+};
+
+} // namespace GE
+
+#endif // GENESIS_CORE_INTERFACE_H_

@@ -30,12 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#include "render_context.h"
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/renderer.h>
-#include <genesis/window.h>
+#include "vulkan/sdl_render_context.h"
+using VulkanPlatformContext = GE::Vulkan::SDL::RenderContext;
 
-#endif // GENESIS_GENESIS_H_
+#include "genesis/core/log.h"
+#include "genesis/core/memory.h"
+
+namespace GE {
+
+Scoped<RenderContext> RenderContext::create(Renderer::API api)
+{
+    switch (api) {
+        case Renderer::API::VULKAN: return makeScoped<VulkanPlatformContext>();
+        case Renderer::API::NONE:
+        default: break;
+    }
+
+    GE_CORE_ERR("Failed to create Render Context: unsupported API '{}'", toString(api));
+    return nullptr;
+}
+
+} // namespace GE

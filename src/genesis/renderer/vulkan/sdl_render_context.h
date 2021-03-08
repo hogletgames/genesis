@@ -30,12 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_RENDERER_VULKAN_SDL_RENDER_CONTEXT_H_
+#define GENESIS_RENDERER_VULKAN_SDL_RENDER_CONTEXT_H_
 
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/renderer.h>
-#include <genesis/window.h>
+#include "render_context.h"
 
-#endif // GENESIS_GENESIS_H_
+struct SDL_Window;
+
+namespace GE::Vulkan::SDL {
+
+class RenderContext: public GE::Vulkan::RenderContext
+{
+public:
+    using GE::Vulkan::RenderContext::RenderContext;
+
+private:
+    std::vector<const char*> getWindowExtensions(void* window) const override;
+    const char* getAppName(void* window) const override;
+
+    bool createSurface(void* window) override;
+};
+
+} // namespace GE::Vulkan::SDL
+
+#endif // GENESIS_RENDERER_VULKAN_SDL_RENDER_CONTEXT_H_
