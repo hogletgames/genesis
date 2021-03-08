@@ -30,17 +30,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_H_
-#define GENESIS_WINDOW_H_
+#include "window_events.h"
 
-#include <genesis/window/events/event.h>
-#include <genesis/window/events/event_dispatcher.h>
-#include <genesis/window/events/key_events.h>
-#include <genesis/window/events/mouse_events.h>
-#include <genesis/window/events/window_events.h>
-#include <genesis/window/input.h>
-#include <genesis/window/key_codes.h>
-#include <genesis/window/mouse_button_codes.h>
-#include <genesis/window/window.h>
+#include "genesis/core/format.h"
 
-#endif // GENESIS_WINDOW_H_
+namespace GE {
+
+WindowResizedEvent::WindowResizedEvent(const Vec2& size)
+    : m_size{size}
+{}
+
+std::string WindowResizedEvent::asString() const
+{
+    return GE_FMTSTR("WindowResizedEvent: {}", toString(m_size));
+}
+
+std::string WindowClosedEvent::asString() const
+{
+    return "WindowClosedEvent";
+}
+
+std::string WindowMaximizedEvent::asString() const
+{
+    return "WindowMaximizedEvent";
+}
+
+std::string WindowMinimizedEvent::asString() const
+{
+    return "WindowMinimizedEvent";
+}
+
+std::string WindowRestoredEvent::asString() const
+{
+    return "WindowRestoredEvent";
+}
+
+} // namespace GE

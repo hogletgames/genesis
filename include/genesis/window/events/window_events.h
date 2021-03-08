@@ -30,17 +30,60 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_H_
-#define GENESIS_WINDOW_H_
+#ifndef GENESIS_WINDOW_EVENTS_WINDOW_EVENTS_H_
+#define GENESIS_WINDOW_EVENTS_WINDOW_EVENTS_H_
 
+#include <genesis/math/types.h>
 #include <genesis/window/events/event.h>
-#include <genesis/window/events/event_dispatcher.h>
-#include <genesis/window/events/key_events.h>
-#include <genesis/window/events/mouse_events.h>
-#include <genesis/window/events/window_events.h>
-#include <genesis/window/input.h>
-#include <genesis/window/key_codes.h>
-#include <genesis/window/mouse_button_codes.h>
-#include <genesis/window/window.h>
 
-#endif // GENESIS_WINDOW_H_
+namespace GE {
+
+class GE_API WindowResizedEvent: public Event
+{
+public:
+    explicit WindowResizedEvent(const Vec2& size);
+
+    std::string asString() const override;
+    const Vec2& getSize() const { return m_size; }
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowResizedEvent)
+
+private:
+    Vec2 m_size{};
+};
+
+class GE_API WindowClosedEvent: public Event
+{
+public:
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowClosedEvent)
+};
+
+class GE_API WindowMaximizedEvent: public Event
+{
+public:
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowMaximizedEvent)
+};
+
+class GE_API WindowMinimizedEvent: public Event
+{
+public:
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowMinimizedEvent)
+};
+
+class GE_API WindowRestoredEvent: public Event
+{
+public:
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowRestoredEvent)
+};
+
+} // namespace GE
+
+#endif // GENESIS_WINDOW_EVENTS_WINDOW_EVENTS_H_
