@@ -30,19 +30,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_MATH_TYPES_H_
-#define GENESIS_MATH_TYPES_H_
+#include "types.h"
 
-#include <glm/glm.hpp>
-
-#include <string>
+#include "genesis/core/format.h"
 
 namespace GE {
 
-using Vec2 = glm::vec2;
-
-std::string toString(const Vec2& vec);
+std::string toString(const Vec2& vec)
+{
+    return GE_FMTSTR("({}, {})", vec.x, vec.y);
+}
 
 } // namespace GE
-
-#endif // GENESIS_MATH_TYPES_H_
