@@ -37,3 +37,6 @@
 [submodule "third-party/magic_enum"]
 	path = third-party/magic_enum
 	url = https://github.com/hogletgames/magic_enum.git
+[submodule "third-party/fmt"]
+	path = third-party/fmt
+	url = https://github.com/hogletgames/fmt.git

@@ -3,7 +3,11 @@ set(SDL_SHARED OFF CACHE BOOL "Build a shared version of the library" FORCE)
 set(SDL_STATIC ON CACHE BOOL "Build a static version of the library" FORCE)
 add_subdirectory(SDL2)
 
+# fmt
+add_subdirectory(fmt)
+
 # spdlog
+set(SPDLOG_FMT_EXTERNAL CACHE BOOL "Use external fmt library instead of bundled" ON)
 add_subdirectory(spdlog)
 
 # glm

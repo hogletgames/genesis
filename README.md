@@ -16,6 +16,7 @@
 - [stb](https://github.com/nothings/stb) ([MIT](https://github.com/nothings/stb/blob/b42009b3b9d4ca35bc703f5310eedc74f584be58/LICENSE))
 - [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) ([MIT](https://github.com/tinyobjloader/tinyobjloader/blob/v2.0.0rc8/LICENSE))
 - [magic_enum](https://github.com/Neargye/magic_enum) ([MIT](https://github.com/Neargye/magic_enum/blob/v0.7.2/LICENSE))
+- [fmt](https://github.com/fmtlib/fmt) ([MIT](https://github.com/fmtlib/fmt/blob/7.1.3/LICENSE.rst))
 
 ### To build manually
 
