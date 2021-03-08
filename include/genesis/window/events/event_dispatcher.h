@@ -30,14 +30,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_H_
-#define GENESIS_WINDOW_H_
+#ifndef GENESIS_WINDOW_EVENTS_EVENT_DISPATCHER_H_
+#define GENESIS_WINDOW_EVENTS_EVENT_DISPATCHER_H_
 
 #include <genesis/window/events/event.h>
-#include <genesis/window/events/event_dispatcher.h>
-#include <genesis/window/input.h>
-#include <genesis/window/key_codes.h>
-#include <genesis/window/mouse_button_codes.h>
-#include <genesis/window/window.h>
 
-#endif // GENESIS_WINDOW_H_
+#include <functional>
+
+namespace GE {
+
+class GE_API EventDispatcher
+{
+public:
+    explicit EventDispatcher(Event* event)
+        : m_event{event}
+    {}
+
+    template<typename EventType, typename Callback>
+    void dispatch(Callback callback)
+    {
+        if (m_event->getDescriptor() == EventType::getStaticDescriptor() &&
+            !m_event->handled()) {
+            auto* callback_event = static_cast<EventType*>(m_event);
+            m_event->setHandled(callback(*callback_event));
+        }
+    }
+
+private:
+    Event* m_event;
+};
+
+} // namespace GE
+
+#endif // GENESIS_WINDOW_EVENTS_EVENT_DISPATCHER_H_
