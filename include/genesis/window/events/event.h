@@ -30,13 +30,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_H_
-#define GENESIS_WINDOW_H_
+#ifndef GENESIS_WINDOW_EVENTS_EVENT_H_
+#define GENESIS_WINDOW_EVENTS_EVENT_H_
 
-#include <genesis/window/events/event.h>
-#include <genesis/window/input.h>
-#include <genesis/window/key_codes.h>
-#include <genesis/window/mouse_button_codes.h>
-#include <genesis/window/window.h>
+#include <genesis/core/interface.h>
 
-#endif // GENESIS_WINDOW_H_
+#include <string>
+#include <typeindex>
+
+#define DECLARE_EVENT_DESCRIPTOR(EventType)                \
+    ::GE::Event::Descriptor getDescriptor() const override \
+    {                                                      \
+        return getStaticDescriptor();                      \
+    }                                                      \
+                                                           \
+    static ::GE::Event::Descriptor getStaticDescriptor()   \
+    {                                                      \
+        return ::GE::Event::Descriptor{typeid(EventType)}; \
+    }
+
+namespace GE {
+
+class GE_API Event: public Interface
+{
+public:
+    using Descriptor = std::type_index;
+
+    virtual Descriptor getDescriptor() const = 0;
+    virtual std::string asString() const = 0;
+
+    bool handled() const { return m_handled; }
+    void setHandled(bool handled) { m_handled = handled; }
+
+private:
+    bool m_handled{false};
+};
+
+template<typename OStream>
+OStream& operator<<(OStream& os, const Event& event)
+{
+    return os << event.asString();
+}
+
+} // namespace GE
+
+#endif // GENESIS_WINDOW_EVENTS_EVENT_H_
