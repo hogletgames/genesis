@@ -30,48 +30,65 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_EVENTS_EVENT_H_
-#define GENESIS_WINDOW_EVENTS_EVENT_H_
+#ifndef GENESIS_WINDOW_EVENTS_KEY_EVENTS_H_
+#define GENESIS_WINDOW_EVENTS_KEY_EVENTS_H_
 
-#include <genesis/core/interface.h>
-
-#include <string>
-#include <typeindex>
-
-#define GE_DECLARE_EVENT_DESCRIPTOR(EventType)             \
-    ::GE::Event::Descriptor getDescriptor() const override \
-    {                                                      \
-        return getStaticDescriptor();                      \
-    }                                                      \
-                                                           \
-    static ::GE::Event::Descriptor getStaticDescriptor()   \
-    {                                                      \
-        return ::GE::Event::Descriptor{typeid(EventType)}; \
-    }
+#include <genesis/window/events/event.h>
+#include <genesis/window/key_codes.h>
 
 namespace GE {
 
-class GE_API Event: public Interface
+class GE_API KeyEvent: public Event
 {
 public:
-    using Descriptor = std::type_index;
+    KeyCode getCode() const { return m_code; }
+    KeyModFlags getMod() const { return m_mod; }
 
-    virtual Descriptor getDescriptor() const = 0;
-    virtual std::string asString() const = 0;
+protected:
+    KeyEvent(KeyCode code, KeyModFlags mod);
 
-    bool handled() const { return m_handled; }
-    void setHandled(bool handled) { m_handled = handled; }
-
-private:
-    bool m_handled{false};
+    KeyCode m_code{KeyCode::UNKNOWN};
+    KeyModFlags m_mod{KeyModFlags::NONE};
 };
 
-template<typename OStream>
-OStream& operator<<(OStream& os, const Event& event)
+class GE_API KeyPressedEvent: public KeyEvent
 {
-    return os << event.asString();
-}
+public:
+    KeyPressedEvent(KeyCode code, KeyModFlags mod, uint32_t repeat_count);
+
+    std::string asString() const override;
+    uint32_t getRepeatCount() const { return m_repeat_count; }
+
+    GE_DECLARE_EVENT_DESCRIPTOR(KeyPressedEvent)
+
+private:
+    uint32_t m_repeat_count{};
+};
+
+class GE_API KeyReleasedEvent: public KeyEvent
+{
+public:
+    KeyReleasedEvent(KeyCode code, KeyModFlags mod);
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(KeyReleasedEvent)
+};
+
+class GE_API KeyTypedEvent: public Event
+{
+public:
+    explicit KeyTypedEvent(const char* text);
+
+    std::string asString() const override;
+    const char* getText() const { return m_text; }
+
+    GE_DECLARE_EVENT_DESCRIPTOR(KeyTypedEvent)
+
+private:
+    const char* m_text{nullptr};
+};
 
 } // namespace GE
 
-#endif // GENESIS_WINDOW_EVENTS_EVENT_H_
+#endif // GENESIS_WINDOW_EVENTS_KEY_EVENTS_H_

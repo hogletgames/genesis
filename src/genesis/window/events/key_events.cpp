@@ -30,48 +30,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_EVENTS_EVENT_H_
-#define GENESIS_WINDOW_EVENTS_EVENT_H_
+#include "key_events.h"
 
-#include <genesis/core/interface.h>
-
-#include <string>
-#include <typeindex>
-
-#define GE_DECLARE_EVENT_DESCRIPTOR(EventType)             \
-    ::GE::Event::Descriptor getDescriptor() const override \
-    {                                                      \
-        return getStaticDescriptor();                      \
-    }                                                      \
-                                                           \
-    static ::GE::Event::Descriptor getStaticDescriptor()   \
-    {                                                      \
-        return ::GE::Event::Descriptor{typeid(EventType)}; \
-    }
+#include "genesis/core/format.h"
 
 namespace GE {
 
-class GE_API Event: public Interface
+KeyEvent::KeyEvent(KeyCode code, KeyModFlags mod)
+    : m_code{code}
+    , m_mod{mod}
+{}
+
+KeyPressedEvent::KeyPressedEvent(KeyCode code, KeyModFlags mod, uint32_t repeat_count)
+    : KeyEvent{code, mod}
+    , m_repeat_count{repeat_count}
+{}
+
+std::string KeyPressedEvent::asString() const
 {
-public:
-    using Descriptor = std::type_index;
+    return GE_FMTSTR("KeyPressedEvent: Key: '{}', Mod: '{:#010b}' ({})", toString(m_code),
+                     static_cast<uint8_t>(m_mod), m_repeat_count);
+}
 
-    virtual Descriptor getDescriptor() const = 0;
-    virtual std::string asString() const = 0;
+KeyReleasedEvent::KeyReleasedEvent(KeyCode code, KeyModFlags mod)
+    : KeyEvent{code, mod}
+{}
 
-    bool handled() const { return m_handled; }
-    void setHandled(bool handled) { m_handled = handled; }
-
-private:
-    bool m_handled{false};
-};
-
-template<typename OStream>
-OStream& operator<<(OStream& os, const Event& event)
+std::string KeyReleasedEvent::asString() const
 {
-    return os << event.asString();
+    return GE_FMTSTR("KeyReleasedEvent: Key: '{}', Mod: '{:#010b}'", toString(m_code),
+                     static_cast<uint8_t>(m_mod));
+}
+
+KeyTypedEvent::KeyTypedEvent(const char* text)
+    : m_text{text}
+{}
+
+std::string KeyTypedEvent::asString() const
+{
+    return GE_FMTSTR("KeyTypedEvent: '{}'", m_text);
 }
 
 } // namespace GE
-
-#endif // GENESIS_WINDOW_EVENTS_EVENT_H_
