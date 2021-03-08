@@ -48,7 +48,7 @@ Scoped<RenderContext> RenderContext::create(Renderer::API api)
         default: break;
     }
 
-    GE_CORE_ERR("Failed to create Render Context: unsupported API '{}'", toString(api));
+    GE_CORE_ERR("Failed to create Render Context: unsupported API '{}'", api);
     return nullptr;
 }
 

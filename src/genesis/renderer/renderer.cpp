@@ -42,10 +42,10 @@ bool Renderer::initialize(Renderer::API api)
     switch (api) {
         case Renderer::API::VULKAN: break;
         case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", toString(api)); return false;
+        default: GE_CORE_ERR("Unknown Render API: {}", api); return false;
     }
 
-    GE_CORE_INFO("Configuring '{}' as Renderer API", toString(api));
+    GE_CORE_INFO("Configuring '{}' as Renderer API", api);
 
     get()->m_api = api;
     return true;
@@ -53,13 +53,10 @@ bool Renderer::initialize(Renderer::API api)
 
 void Renderer::shutdown() {}
 
-std::string toString(Renderer::API api)
+Renderer::API toRendererAPI(const std::string& api_str)
 {
-    std::string default_value = "Unknown (" + std::to_string(static_cast<int>(api)) + ")";
-    static const std::unordered_map<Renderer::API, std::string> api_to_str = {
-        {Renderer::API::NONE, "None"}, {Renderer::API::VULKAN, "Vulkan"}};
-
-    return toType(api_to_str, api, default_value);
+    auto api = toEnum<Renderer::API>(api_str);
+    return api.has_value() ? api.value() : Renderer::API::NONE;
 }
 
 } // namespace GE
