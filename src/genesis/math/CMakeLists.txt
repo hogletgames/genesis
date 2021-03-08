@@ -1,8 +1,7 @@
 set(GE_MATH_INCLUDE_DIR ${GE_INCLUDE_DIR}/math)
 
 list(APPEND GE_MATH_HEADERS
-    ${GE_MATH_INCLUDE_DIR}/math.h
-)
+    ${GE_MATH_INCLUDE_DIR}/types.h)
 
 add_library(genesis-math INTERFACE)
 target_link_libraries(genesis-math INTERFACE glm)

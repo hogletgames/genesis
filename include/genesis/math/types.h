@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_MATH_MATH_H_
-#define GENESIS_MATH_MATH_H_
+#ifndef GENESIS_MATH_TYPES_H_
+#define GENESIS_MATH_TYPES_H_
 
 #include <glm/glm.hpp>
 
@@ -41,4 +41,4 @@ using Vec2 = glm::vec2;
 
 } // namespace GE
 
-#endif // GENESIS_MATH_MATH_H_
+#endif // GENESIS_MATH_TYPES_H_

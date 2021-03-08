@@ -35,7 +35,7 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
-#include <genesis/math/math.h>
+#include <genesis/math/types.h>
 #include <genesis/window/key_codes.h>
 #include <genesis/window/mouse_button_codes.h>
 

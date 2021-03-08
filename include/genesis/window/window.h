@@ -35,7 +35,7 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
-#include <genesis/math/math.h>
+#include <genesis/math/types.h>
 #include <genesis/renderer/renderer.h>
 
 #include <string>
