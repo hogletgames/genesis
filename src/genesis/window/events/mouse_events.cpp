@@ -30,16 +30,50 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_H_
-#define GENESIS_WINDOW_H_
+#include "mouse_events.h"
 
-#include <genesis/window/events/event.h>
-#include <genesis/window/events/event_dispatcher.h>
-#include <genesis/window/events/key_events.h>
-#include <genesis/window/events/mouse_events.h>
-#include <genesis/window/input.h>
-#include <genesis/window/key_codes.h>
-#include <genesis/window/mouse_button_codes.h>
-#include <genesis/window/window.h>
+#include "genesis/core/format.h"
 
-#endif // GENESIS_WINDOW_H_
+namespace GE {
+
+MouseMovedEvent::MouseMovedEvent(const Vec2& position)
+    : m_position{position}
+{}
+
+std::string MouseMovedEvent::asString() const
+{
+    return GE_FMTSTR("MouseMovedEvent: {}", toString(m_position));
+}
+
+MouseScrolledEvent::MouseScrolledEvent(const Vec2& offset)
+    : m_offset{offset}
+{}
+
+std::string MouseScrolledEvent::asString() const
+{
+    return GE_FMTSTR("MouseScrolledEvent: {}", toString(m_offset));
+}
+
+MouseButtonEvent::MouseButtonEvent(MouseButton button)
+    : m_button{button}
+{}
+
+MouseButtonPressedEvent::MouseButtonPressedEvent(MouseButton button)
+    : MouseButtonEvent{button}
+{}
+
+std::string MouseButtonPressedEvent::asString() const
+{
+    return GE_FMTSTR("MouseButtonPressedEvent: {}", toString(m_button));
+}
+
+MouseButtonReleasedEvent::MouseButtonReleasedEvent(MouseButton button)
+    : MouseButtonEvent{button}
+{}
+
+std::string MouseButtonReleasedEvent::asString() const
+{
+    return GE_FMTSTR("MouseButtonReleasedEvent: {}", toString(m_button));
+}
+
+} // namespace GE

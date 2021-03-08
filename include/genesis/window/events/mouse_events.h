@@ -30,16 +30,74 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_H_
-#define GENESIS_WINDOW_H_
+#ifndef GENESIS_WINDOW_EVENTS_MOUSE_EVENTS_H_
+#define GENESIS_WINDOW_EVENTS_MOUSE_EVENTS_H_
 
+#include <genesis/math/types.h>
 #include <genesis/window/events/event.h>
-#include <genesis/window/events/event_dispatcher.h>
-#include <genesis/window/events/key_events.h>
-#include <genesis/window/events/mouse_events.h>
-#include <genesis/window/input.h>
-#include <genesis/window/key_codes.h>
 #include <genesis/window/mouse_button_codes.h>
-#include <genesis/window/window.h>
 
-#endif // GENESIS_WINDOW_H_
+namespace GE {
+
+class GE_API MouseMovedEvent: public Event
+{
+public:
+    explicit MouseMovedEvent(const Vec2& position);
+
+    std::string asString() const override;
+    const Vec2& getPosition() const { return m_position; }
+
+    GE_DECLARE_EVENT_DESCRIPTOR(MouseMovedEvent);
+
+private:
+    Vec2 m_position{};
+};
+
+class GE_API MouseScrolledEvent: public Event
+{
+public:
+    explicit MouseScrolledEvent(const Vec2& offset);
+
+    std::string asString() const override;
+    const Vec2& getOffset() const { return m_offset; }
+
+    GE_DECLARE_EVENT_DESCRIPTOR(MouseScrolledEvent)
+
+private:
+    Vec2 m_offset{};
+};
+
+class GE_API MouseButtonEvent: public Event
+{
+public:
+    MouseButton getMouseButton() const { return m_button; }
+
+protected:
+    explicit MouseButtonEvent(MouseButton button);
+
+    MouseButton m_button{MouseButton::UNKNOWN};
+};
+
+class GE_API MouseButtonPressedEvent: public MouseButtonEvent
+{
+public:
+    explicit MouseButtonPressedEvent(MouseButton button);
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(MouseButtonPressedEvent)
+};
+
+class GE_API MouseButtonReleasedEvent: public MouseButtonEvent
+{
+public:
+    explicit MouseButtonReleasedEvent(MouseButton button);
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(MouseButtonReleasedEvent)
+};
+
+} // namespace GE
+
+#endif // GENESIS_WINDOW_EVENTS_MOUSE_EVENTS_H_
