@@ -1,9 +1,11 @@
 set(GE_WINDOW_INCLUDE_DIR ${GE_INCLUDE_DIR}/window)
 
 list(APPEND GE_WINDOW_SCR
+    input.cpp
     window.cpp)
 
 list(APPEND GE_WINDOW_HEADERS
+    ${GE_WINDOW_INCLUDE_DIR}/input.h
     ${GE_WINDOW_INCLUDE_DIR}/key_codes.h
     ${GE_WINDOW_INCLUDE_DIR}/mouse_button_codes.h
     ${GE_WINDOW_INCLUDE_DIR}/window.h
