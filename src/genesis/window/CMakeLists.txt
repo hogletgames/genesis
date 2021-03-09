@@ -5,7 +5,9 @@ list(APPEND GE_WINDOW_SCR
 
 list(APPEND GE_WINDOW_HEADERS
     ${GE_WINDOW_INCLUDE_DIR}/key_codes.h
-    ${GE_WINDOW_INCLUDE_DIR}/window.h)
+    ${GE_WINDOW_INCLUDE_DIR}/mouse_button_codes.h
+    ${GE_WINDOW_INCLUDE_DIR}/window.h
+)
 
 add_library(genesis-window STATIC ${GE_WINDOW_SCR} ${GE_WINDOW_HEADERS})
 target_link_libraries(genesis-window PUBLIC
