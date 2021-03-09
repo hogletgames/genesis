@@ -33,6 +33,7 @@
 #ifndef GENESIS_WINDOW_H_
 #define GENESIS_WINDOW_H_
 
+#include <genesis/window/key_codes.h>
 #include <genesis/window/window.h>
 
 #endif // GENESIS_WINDOW_H_
