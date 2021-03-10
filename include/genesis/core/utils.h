@@ -45,6 +45,9 @@
     #error "Platform is not defined!"
 #endif
 
+// Set bit to position
+#define GE_BIT(bit) (1 << (bit))
+
 namespace GE {
 
 template<typename FromType, typename ToType>

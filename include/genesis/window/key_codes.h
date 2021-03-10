@@ -34,6 +34,7 @@
 #define GENESIS_WINDOW_KEY_CODES_H_
 
 #include <genesis/core/enum.h>
+#include <genesis/core/utils.h>
 
 namespace GE {
 
@@ -187,6 +188,17 @@ enum class KeyCode : uint16_t
     RALT = 0x0144,
     RSUPER = 0x0145,
     MENU = 0x0146
+};
+
+enum KeyModFlags : uint8_t
+{
+    NONE = 0,
+    SHIFT_BIT = GE_BIT(1),
+    CTRL_BIT = GE_BIT(2),
+    ALT_BIT = GE_BIT(3),
+    SUPER_BIT = GE_BIT(4),
+    NUM_LOCK_BIT = GE_BIT(5),
+    CAPS_LOCK_BIT = GE_BIT(6)
 };
 
 } // namespace GE
