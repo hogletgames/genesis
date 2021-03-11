@@ -144,6 +144,23 @@ void Window::shutdown()
     SDL_Quit();
 }
 
+void Window::attachEventListener(EventListener* listener)
+{
+    m_event_listeners.push_back(listener);
+}
+
+void Window::detachEventListener(EventListener* listener)
+{
+    m_event_listeners.remove(listener);
+}
+
 void Window::setVSync([[maybe_unused]] bool enabled) {}
+
+void Window::emitEvent(Event* event)
+{
+    for (auto* listener : m_event_listeners) {
+        listener->onEvent(event);
+    }
+}
 
 } // namespace GE::SDL

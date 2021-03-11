@@ -36,6 +36,8 @@
 
 #include <genesis/window/window.h>
 
+#include <list>
+
 struct SDL_Window;
 
 namespace GE {
@@ -53,6 +55,9 @@ public:
     static bool initialize();
     static void shutdown();
 
+    void attachEventListener(EventListener* listener) override;
+    void detachEventListener(EventListener* listener) override;
+
     const Vec2& getSize() const override { return m_settings.size; }
     void setVSync(bool enabled) override;
     const settings_t& getSettings() const override { return m_settings; }
@@ -61,9 +66,13 @@ public:
     void* getNativeContext() override { return nullptr; }
 
 private:
+    void emitEvent(Event* event);
+
     settings_t m_settings;
     SDL_Window* m_window{nullptr};
     GE::Scoped<RenderContext> m_context;
+
+    std::list<EventListener*> m_event_listeners;
 };
 
 } // namespace GE::SDL
