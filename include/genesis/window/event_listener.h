@@ -30,18 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_H_
-#define GENESIS_WINDOW_H_
+#ifndef GENESIS_WINDOW_EVENT_LISTENER_H_
+#define GENESIS_WINDOW_EVENT_LISTENER_H_
 
-#include <genesis/window/event_listener.h>
 #include <genesis/window/events/event.h>
-#include <genesis/window/events/event_dispatcher.h>
-#include <genesis/window/events/key_events.h>
-#include <genesis/window/events/mouse_events.h>
-#include <genesis/window/events/window_events.h>
-#include <genesis/window/input.h>
-#include <genesis/window/key_codes.h>
-#include <genesis/window/mouse_button_codes.h>
-#include <genesis/window/window.h>
 
-#endif // GENESIS_WINDOW_H_
+namespace GE {
+
+class GE_API EventListener: public Interface
+{
+public:
+    virtual void onEvent(Event *event) = 0;
+};
+
+} // namespace GE
+
+#endif // GENESIS_WINDOW_EVENT_LISTENER_H_

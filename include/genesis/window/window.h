@@ -37,6 +37,7 @@
 #include <genesis/core/memory.h>
 #include <genesis/math/types.h>
 #include <genesis/renderer/renderer.h>
+#include <genesis/window/event_listener.h>
 
 #include <string>
 
@@ -63,6 +64,9 @@ public:
     static void shutdown();
 
     static Scoped<Window> create(const settings_t& settings);
+
+    virtual void attachEventListener(EventListener* listener) = 0;
+    virtual void detachEventListener(EventListener* listener) = 0;
 
     virtual const Vec2& getSize() const = 0;
     virtual void setVSync(bool enabled) = 0;
