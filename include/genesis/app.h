@@ -33,6 +33,7 @@
 #ifndef GENESIS_APP_H_
 #define GENESIS_APP_H_
 
+#include <genesis/app/application.h>
 #include <genesis/app/layer.h>
 
 #endif // GENESIS_APP_H_

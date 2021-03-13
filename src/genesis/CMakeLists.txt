@@ -13,6 +13,7 @@ list(APPEND GE_HEADERS
 
 add_library(genesis ${GE_LIB_TYPE} ${GE_HEADERS})
 target_link_libraries(genesis PUBLIC
+    genesis::app
     genesis::core
     genesis::math
     genesis::renderer
@@ -21,6 +22,7 @@ target_link_libraries(genesis PUBLIC
 ge_default_target_config(genesis)
 add_library(genesis::genesis ALIAS genesis)
 
+add_subdirectory(app)
 add_subdirectory(core)
 add_subdirectory(math)
 add_subdirectory(renderer)
