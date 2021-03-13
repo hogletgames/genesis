@@ -30,13 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#ifndef GENESIS_APP_LAYER_H_
+#define GENESIS_APP_LAYER_H_
 
-#include <genesis/app.h>
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/renderer.h>
-#include <genesis/window.h>
+#include <genesis/core/interface.h>
+#include <genesis/core/timestamp.h>
 
-#endif // GENESIS_GENESIS_H_
+namespace GE {
+
+class Event;
+
+class GE_API Layer: public Interface
+{
+public:
+    virtual void onAttached() = 0;
+    virtual void onDetached() = 0;
+
+    virtual void onUpdate(Timestamp ts) = 0;
+    virtual void onEvent(Event* event) = 0;
+    virtual void onRender() = 0;
+};
+
+} // namespace GE
+
+#endif // GENESIS_APP_LAYER_H_

@@ -30,13 +30,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#ifndef GENESIS_APP_H_
+#define GENESIS_APP_H_
 
-#include <genesis/app.h>
-#include <genesis/core.h>
-#include <genesis/math.h>
-#include <genesis/renderer.h>
-#include <genesis/window.h>
+#include <genesis/app/layer.h>
 
-#endif // GENESIS_GENESIS_H_
+#endif // GENESIS_APP_H_
