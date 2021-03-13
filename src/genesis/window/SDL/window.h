@@ -39,6 +39,7 @@
 #include <list>
 
 struct SDL_Window;
+union SDL_Event;
 
 namespace GE {
 class RenderContext;
@@ -67,6 +68,11 @@ public:
 
 private:
     void emitEvent(Event* event);
+
+    void pollEvents();
+    void onMouseEvent(const SDL_Event& sdl_event);
+    void onKeyboardEvent(const SDL_Event& sdl_event);
+    void onWindowEvent(const SDL_Event& sdl_event);
 
     settings_t m_settings;
     SDL_Window* m_window{nullptr};

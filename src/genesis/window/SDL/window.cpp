@@ -35,6 +35,10 @@
 #include "genesis/core/log.h"
 #include "genesis/core/utils.h"
 #include "genesis/renderer/render_context.h"
+#include "genesis/window/events/key_events.h"
+#include "genesis/window/events/mouse_events.h"
+#include "genesis/window/events/window_events.h"
+#include "genesis/window/input.h"
 
 #include <SDL.h>
 
@@ -160,6 +164,130 @@ void Window::emitEvent(Event* event)
 {
     for (auto* listener : m_event_listeners) {
         listener->onEvent(event);
+    }
+}
+
+void Window::pollEvents()
+{
+    SDL_Event sdl_event{};
+
+    while (SDL_PollEvent(&sdl_event) != 0) {
+        switch (sdl_event.type) {
+            case SDL_MOUSEMOTION:
+            case SDL_MOUSEWHEEL:
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP: {
+                onMouseEvent(sdl_event);
+                break;
+            }
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+            case SDL_TEXTINPUT: {
+                onKeyboardEvent(sdl_event);
+                break;
+            }
+            case SDL_WINDOWEVENT: {
+                onWindowEvent(sdl_event);
+                break;
+            }
+            case SDL_QUIT: {
+                WindowClosedEvent event{};
+                emitEvent(&event);
+                break;
+            }
+            default: break;
+        }
+    }
+}
+
+void Window::onMouseEvent(const SDL_Event& sdl_event)
+{
+    switch (sdl_event.type) {
+        case SDL_MOUSEMOTION: {
+            MouseMovedEvent event{{sdl_event.motion.x, sdl_event.motion.y}};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_MOUSEWHEEL: {
+            MouseScrolledEvent event{{sdl_event.wheel.x, sdl_event.wheel.y}};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_MOUSEBUTTONDOWN: {
+            MouseButton button = Input::fromNativeButton(sdl_event.button.button);
+            MouseButtonPressedEvent event{button};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_MOUSEBUTTONUP: {
+            MouseButton button = Input::fromNativeButton(sdl_event.button.button);
+            MouseButtonReleasedEvent event{button};
+            emitEvent(&event);
+            break;
+        }
+        default: break;
+    }
+}
+
+void Window::onKeyboardEvent(const SDL_Event& sdl_event)
+{
+    switch (sdl_event.type) {
+        case SDL_KEYDOWN: {
+            KeyCode code = Input::fromNativeKeyCode(sdl_event.key.keysym.sym);
+            KeyModFlags mod = Input::fromNativeKeyMod(sdl_event.key.keysym.mod);
+            uint32_t repeat_count = sdl_event.key.repeat;
+            KeyPressedEvent event{code, mod, repeat_count};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_KEYUP: {
+            KeyCode code = Input::fromNativeKeyCode(sdl_event.key.keysym.sym);
+            KeyModFlags mod = Input::fromNativeKeyMod(sdl_event.key.keysym.mod);
+            KeyReleasedEvent event{code, mod};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_TEXTINPUT: {
+            KeyTypedEvent event{sdl_event.text.text};
+            emitEvent(&event);
+            break;
+        }
+        default: break;
+    }
+}
+
+void Window::onWindowEvent(const SDL_Event& sdl_event)
+{
+    switch (sdl_event.window.event) {
+        case SDL_WINDOWEVENT_RESIZED: {
+            Vec2 size{sdl_event.window.data1, sdl_event.window.data2};
+            m_settings.size = size;
+            WindowResizedEvent event{size};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_CLOSE: {
+            WindowClosedEvent event{};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_MAXIMIZED: {
+            WindowMaximizedEvent event{};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_MINIMIZED: {
+            WindowMinimizedEvent event{};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_SHOWN:
+        case SDL_WINDOWEVENT_RESTORED: {
+            WindowRestoredEvent event{};
+            emitEvent(&event);
+            break;
+        }
+        default: break;
     }
 }
 
