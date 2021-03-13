@@ -56,6 +56,8 @@ public:
     static bool initialize();
     static void shutdown();
 
+    void onUpdate() override;
+
     void attachEventListener(EventListener* listener) override;
     void detachEventListener(EventListener* listener) override;
 
