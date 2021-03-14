@@ -1,5 +1,7 @@
 ## genesis
 
+[![CI](https://github.com/hogletgames/genesis/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/hogletgames/genesis/actions/workflows/ci.yml)
+
 ### Acknowledgements
 
 - [SDL](https://www.libsdl.org) ([zlib](https://www.libsdl.org/license.php))
