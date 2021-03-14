@@ -33,8 +33,10 @@
 #ifndef GENESIS_CORE_LOG_H_
 #define GENESIS_CORE_LOG_H_
 
+#include <genesis/core/enum.h>
 #include <genesis/core/export.h>
 
+#include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 
 #include <memory>
@@ -149,8 +151,7 @@ private:
     Logger m_client_logger;
 };
 
-std::string toString(Logger::Level level);
-Logger::Level toLogLvl(const std::string& level);
+Logger::Level toLoggerLevel(const std::string& level_str);
 
 } // namespace GE
 
