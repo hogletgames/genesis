@@ -34,3 +34,6 @@
 [submodule "third-party/tinyobjloader"]
 	path = third-party/tinyobjloader
 	url = https://github.com/hogletgames/tinyobjloader.git
+[submodule "third-party/magic_enum"]
+	path = third-party/magic_enum
+	url = https://github.com/hogletgames/magic_enum.git

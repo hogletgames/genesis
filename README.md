@@ -15,6 +15,7 @@
   - [shaderc](https://github.com/google/shaderc) ([Apache 2.0](https://github.com/google/shaderc/blob/v2020.4/LICENSE))
 - [stb](https://github.com/nothings/stb) ([MIT](https://github.com/nothings/stb/blob/b42009b3b9d4ca35bc703f5310eedc74f584be58/LICENSE))
 - [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) ([MIT](https://github.com/tinyobjloader/tinyobjloader/blob/v2.0.0rc8/LICENSE))
+- [magic_enum](https://github.com/Neargye/magic_enum) ([MIT](https://github.com/Neargye/magic_enum/blob/v0.7.2/LICENSE))
 
 ### To build manually
 

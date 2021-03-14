@@ -20,3 +20,6 @@ add_library(stb::image ALIAS stb-image)
 
 # tinyobjloader
 add_subdirectory(tinyobjloader)
+
+# magic_enum
+add_subdirectory(magic_enum)
