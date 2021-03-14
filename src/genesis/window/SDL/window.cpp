@@ -99,8 +99,8 @@ namespace GE::SDL {
 Window::Window(settings_t settings)
     : m_settings{std::move(settings)}
 {
-    auto flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN;
-    flags |= renderAPIToWindowFlag(settings.render_api);
+    auto flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN |
+                 renderAPIToWindowFlag(settings.render_api);
 
     m_window = SDL_CreateWindow(m_settings.title.c_str(), SDL_WINDOWPOS_CENTERED,
                                 SDL_WINDOWPOS_CENTERED, m_settings.size.x,
