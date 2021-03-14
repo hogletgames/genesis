@@ -33,6 +33,7 @@
 #ifndef GENESIS_WINDOW_H_
 #define GENESIS_WINDOW_H_
 
+#include <genesis/window/event_listener.h>
 #include <genesis/window/events/event.h>
 #include <genesis/window/events/event_dispatcher.h>
 #include <genesis/window/events/key_events.h>
