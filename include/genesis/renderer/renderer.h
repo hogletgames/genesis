@@ -33,6 +33,7 @@
 #ifndef GENESIS_RENDERER_RENDERER_H_
 #define GENESIS_RENDERER_RENDERER_H_
 
+#include <genesis/core/enum.h>
 #include <genesis/core/export.h>
 
 #include <string>
@@ -65,7 +66,7 @@ private:
     API m_api{API::NONE};
 };
 
-std::string toString(Renderer::API api);
+Renderer::API toRendererAPI(const std::string& api_str);
 
 } // namespace GE
 

@@ -30,33 +30,50 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_CORE_ENUM_H_
+#define GENESIS_CORE_ENUM_H_
 
-#include "genesis/core/log.h"
-#include "genesis/core/utils.h"
+#include <magic_enum.hpp>
+
+#define GE_EXTEND_ENUM_RANGE(enum_type, min_value, max_value)  \
+    namespace magic_enum::customize {                          \
+    template<>                                                 \
+    struct enum_range<enum_type> {                             \
+        static constexpr int min{static_cast<int>(min_value)}; \
+        static constexpr int max{static_cast<int>(max_value)}; \
+    };                                                         \
+    } // namespace magic_enum::customize
 
 namespace GE {
 
-bool Renderer::initialize(Renderer::API api)
+using magic_enum::bitwise_operators::operator~;
+using magic_enum::bitwise_operators::operator|;
+using magic_enum::bitwise_operators::operator&;
+using magic_enum::bitwise_operators::operator^;
+using magic_enum::bitwise_operators::operator|=;
+using magic_enum::bitwise_operators::operator&=;
+using magic_enum::bitwise_operators::operator^=;
+
+template<typename EnumType,
+         typename = std::enable_if<std::is_enum<EnumType>::value, bool>>
+std::string toString(EnumType value)
 {
-    switch (api) {
-        case Renderer::API::VULKAN: break;
-        case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", api); return false;
-    }
-
-    GE_CORE_INFO("Configuring '{}' as Renderer API", api);
-
-    get()->m_api = api;
-    return true;
+    return std::string{magic_enum::enum_name(value)};
 }
 
-void Renderer::shutdown() {}
-
-Renderer::API toRendererAPI(const std::string& api_str)
+template<typename EnumType>
+std::optional<EnumType> toEnum(const std::string& string)
 {
-    auto api = toEnum<Renderer::API>(api_str);
-    return api.has_value() ? api.value() : Renderer::API::NONE;
+    return magic_enum::enum_cast<EnumType>(string);
+}
+
+template<typename OStream, typename EnumType,
+         typename = std::enable_if<std::is_enum<EnumType>::value, bool>>
+OStream& operator<<(OStream& os, EnumType value)
+{
+    return os << toString(value);
 }
 
 } // namespace GE
+
+#endif // GENESIS_CORE_ENUM_H_

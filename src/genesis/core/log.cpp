@@ -45,14 +45,6 @@ constexpr auto CORE_LOGGER_NAME = "CORE";
 constexpr auto CLIENT_LOGGER_NAME = "APP";
 constexpr auto LOG_FTM_PATTERN = "[%H:%M:%S.%e] [%l] %n: %v%$";
 
-constexpr auto LOGLVL_TRACE_STR = "Trace";
-constexpr auto LOGLVL_DBG_STR = "Debug";
-constexpr auto LOGLVL_INFO_STR = "Info";
-constexpr auto LOGLVL_WARN_STR = "Warning";
-constexpr auto LOGLVL_ERR_STR = "Error";
-constexpr auto LOGLVL_CRIT_STR = "Critical";
-constexpr auto LOGLVL_UNKNOWN_STR = "Unknown";
-
 spdlogLevel toSpdlogLvl(GE::Logger::Level level)
 {
     std::unordered_map<GE::Logger::Level, spdlogLevel> level_to_spdlog = {
@@ -121,43 +113,22 @@ bool Log::initialize()
     core_logger.setLevel(Logger::Level::TRACE);
     client_logger.setLevel(Logger::Level::TRACE);
 
-    GE_CORE_DBG("Log system has been initialized");
+    GE_CORE_INFO("Log System initialization succeed: core level: {}, client level: {}",
+                 Logger::Level::TRACE, Logger::Level::TRACE);
     return true;
 }
 
 void Log::shutdown()
 {
-    GE_CORE_DBG("Shutdown log system");
+    GE_CORE_INFO("Shutdown log system");
     get()->m_client_logger.shutdown();
     get()->m_core_logger.shutdown();
 }
 
-std::string toString(Logger::Level level)
+Logger::Level toLoggerLevel(const std::string& level_str)
 {
-    std::unordered_map<Logger::Level, std::string> lvl_to_str = {
-        {Logger::Level::UNKNOWN, LOGLVL_UNKNOWN_STR},
-        {Logger::Level::CRITICAL, LOGLVL_CRIT_STR},
-        {Logger::Level::ERROR, LOGLVL_ERR_STR},
-        {Logger::Level::WARNING, LOGLVL_WARN_STR},
-        {Logger::Level::INFO, LOGLVL_INFO_STR},
-        {Logger::Level::DEBUG, LOGLVL_DBG_STR},
-        {Logger::Level::TRACE, LOGLVL_TRACE_STR}};
-
-    return toType(lvl_to_str, level, std::string(LOGLVL_UNKNOWN_STR));
-}
-
-Logger::Level toLogLvl([[maybe_unused]] const std::string& level)
-{
-    std::unordered_map<std::string, Logger::Level> str_to_lvl = {
-        {LOGLVL_UNKNOWN_STR, Logger::Level::UNKNOWN},
-        {LOGLVL_CRIT_STR, Logger::Level::CRITICAL},
-        {LOGLVL_ERR_STR, Logger::Level::ERROR},
-        {LOGLVL_WARN_STR, Logger::Level::WARNING},
-        {LOGLVL_INFO_STR, Logger::Level::INFO},
-        {LOGLVL_DBG_STR, Logger::Level::DEBUG},
-        {LOGLVL_TRACE_STR, Logger::Level::TRACE}};
-
-    return toType(str_to_lvl, level, Logger::Level::UNKNOWN);
+    auto level = toEnum<Logger::Level>(level_str);
+    return level.has_value() ? level.value() : Logger::Level::UNKNOWN;
 }
 
 } // namespace GE
