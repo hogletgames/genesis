@@ -63,6 +63,7 @@ public:
     static bool initialize();
     static void shutdown();
 
+    virtual void pollEvents() = 0;
     virtual void onUpdate() = 0;
 
     static Scoped<Window> create(const settings_t& settings);

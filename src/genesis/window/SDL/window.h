@@ -56,6 +56,7 @@ public:
     static bool initialize();
     static void shutdown();
 
+    void pollEvents() override;
     void onUpdate() override;
 
     void attachEventListener(EventListener* listener) override;
@@ -71,7 +72,6 @@ public:
 private:
     void emitEvent(Event* event);
 
-    void pollEvents();
     void onMouseEvent(const SDL_Event& sdl_event);
     void onKeyboardEvent(const SDL_Event& sdl_event);
     void onWindowEvent(const SDL_Event& sdl_event);
