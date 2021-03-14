@@ -94,11 +94,13 @@ namespace GE::Vulkan {
 
 bool RenderContext::initialize(void* window)
 {
+    GE_CORE_INFO("Initializing Vulkan Context...");
     return createInstance(window) && setupDebugUtils() && createSurface(window);
 }
 
 void RenderContext::shutdown()
 {
+    GE_CORE_INFO("Shutdown Vulkan Context");
 #ifndef GE_DISABLE_DEBUG
     destroyDebugUtilsMessengerEXT(m_instance, m_debug_utils, nullptr);
 #endif // GE_DISABLE_DEBUG

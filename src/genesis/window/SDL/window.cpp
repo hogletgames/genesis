@@ -140,7 +140,7 @@ bool Window::initialize()
 
 void Window::shutdown()
 {
-    GE_CORE_INFO("Shutting down SDL Window...");
+    GE_CORE_INFO("Shutdown SDL Window");
     SDL_Quit();
 }
 

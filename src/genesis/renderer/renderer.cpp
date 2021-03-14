@@ -39,6 +39,8 @@ namespace GE {
 
 bool Renderer::initialize(Renderer::API api)
 {
+    GE_CORE_INFO("Initializing Renderer...");
+
     switch (api) {
         case Renderer::API::VULKAN: break;
         case Renderer::API::NONE:
@@ -51,7 +53,10 @@ bool Renderer::initialize(Renderer::API api)
     return true;
 }
 
-void Renderer::shutdown() {}
+void Renderer::shutdown()
+{
+    GE_CORE_INFO("Shutdown Renderer");
+}
 
 Renderer::API toRendererAPI(const std::string& api_str)
 {
