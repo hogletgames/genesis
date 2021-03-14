@@ -30,15 +30,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_MATH_MATH_H_
-#define GENESIS_MATH_MATH_H_
+#include "window_events.h"
 
-#include <glm/glm.hpp>
+#include "genesis/core/format.h"
 
 namespace GE {
 
-using Vec2 = glm::vec2;
+WindowResizedEvent::WindowResizedEvent(const Vec2& size)
+    : m_size{size}
+{}
+
+std::string WindowResizedEvent::asString() const
+{
+    return GE_FMTSTR("WindowResizedEvent: {}", toString(m_size));
+}
+
+std::string WindowClosedEvent::asString() const
+{
+    return "WindowClosedEvent";
+}
+
+std::string WindowMaximizedEvent::asString() const
+{
+    return "WindowMaximizedEvent";
+}
+
+std::string WindowMinimizedEvent::asString() const
+{
+    return "WindowMinimizedEvent";
+}
+
+std::string WindowRestoredEvent::asString() const
+{
+    return "WindowRestoredEvent";
+}
 
 } // namespace GE
-
-#endif // GENESIS_MATH_MATH_H_

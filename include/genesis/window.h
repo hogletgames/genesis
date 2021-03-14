@@ -33,6 +33,11 @@
 #ifndef GENESIS_WINDOW_H_
 #define GENESIS_WINDOW_H_
 
+#include <genesis/window/events/event.h>
+#include <genesis/window/events/event_dispatcher.h>
+#include <genesis/window/events/key_events.h>
+#include <genesis/window/events/mouse_events.h>
+#include <genesis/window/events/window_events.h>
 #include <genesis/window/input.h>
 #include <genesis/window/key_codes.h>
 #include <genesis/window/mouse_button_codes.h>

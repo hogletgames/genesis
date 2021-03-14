@@ -30,39 +30,65 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_WINDOW_EVENTS_KEY_EVENTS_H_
+#define GENESIS_WINDOW_EVENTS_KEY_EVENTS_H_
 
-#include "genesis/core/format.h"
-#include "genesis/core/log.h"
-#include "genesis/core/utils.h"
+#include <genesis/window/events/event.h>
+#include <genesis/window/key_codes.h>
 
 namespace GE {
 
-bool Renderer::initialize(Renderer::API api)
+class GE_API KeyEvent: public Event
 {
-    GE_CORE_INFO("Initializing Renderer...");
+public:
+    KeyCode getCode() const { return m_code; }
+    KeyModFlags getMod() const { return m_mod; }
 
-    switch (api) {
-        case Renderer::API::VULKAN: break;
-        case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", api); return false;
-    }
+protected:
+    KeyEvent(KeyCode code, KeyModFlags mod);
 
-    GE_CORE_INFO("Configuring '{}' as Renderer API", api);
+    KeyCode m_code{KeyCode::UNKNOWN};
+    KeyModFlags m_mod{KeyModFlags::NONE};
+};
 
-    get()->m_api = api;
-    return true;
-}
-
-void Renderer::shutdown()
+class GE_API KeyPressedEvent: public KeyEvent
 {
-    GE_CORE_INFO("Shutdown Renderer");
-}
+public:
+    KeyPressedEvent(KeyCode code, KeyModFlags mod, uint32_t repeat_count);
 
-Renderer::API toRendererAPI(const std::string& api_str)
+    std::string asString() const override;
+    uint32_t getRepeatCount() const { return m_repeat_count; }
+
+    GE_DECLARE_EVENT_DESCRIPTOR(KeyPressedEvent)
+
+private:
+    uint32_t m_repeat_count{};
+};
+
+class GE_API KeyReleasedEvent: public KeyEvent
 {
-    auto api = toEnum<Renderer::API>(api_str);
-    return api.has_value() ? api.value() : Renderer::API::NONE;
-}
+public:
+    KeyReleasedEvent(KeyCode code, KeyModFlags mod);
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(KeyReleasedEvent)
+};
+
+class GE_API KeyTypedEvent: public Event
+{
+public:
+    explicit KeyTypedEvent(const char* text);
+
+    std::string asString() const override;
+    const char* getText() const { return m_text; }
+
+    GE_DECLARE_EVENT_DESCRIPTOR(KeyTypedEvent)
+
+private:
+    const char* m_text{nullptr};
+};
 
 } // namespace GE
+
+#endif // GENESIS_WINDOW_EVENTS_KEY_EVENTS_H_

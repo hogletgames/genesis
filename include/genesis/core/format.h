@@ -30,39 +30,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_CORE_FORMAT_H_
+#define GENESIS_CORE_FORMAT_H_
 
-#include "genesis/core/format.h"
-#include "genesis/core/log.h"
-#include "genesis/core/utils.h"
+#include <fmt/compile.h>
 
-namespace GE {
+#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
 
-bool Renderer::initialize(Renderer::API api)
-{
-    GE_CORE_INFO("Initializing Renderer...");
-
-    switch (api) {
-        case Renderer::API::VULKAN: break;
-        case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", api); return false;
-    }
-
-    GE_CORE_INFO("Configuring '{}' as Renderer API", api);
-
-    get()->m_api = api;
-    return true;
-}
-
-void Renderer::shutdown()
-{
-    GE_CORE_INFO("Shutdown Renderer");
-}
-
-Renderer::API toRendererAPI(const std::string& api_str)
-{
-    auto api = toEnum<Renderer::API>(api_str);
-    return api.has_value() ? api.value() : Renderer::API::NONE;
-}
-
-} // namespace GE
+#endif // GENESIS_CORE_FORMAT_H_

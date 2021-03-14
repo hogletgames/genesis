@@ -30,39 +30,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_WINDOW_EVENTS_EVENT_DISPATCHER_H_
+#define GENESIS_WINDOW_EVENTS_EVENT_DISPATCHER_H_
 
-#include "genesis/core/format.h"
-#include "genesis/core/log.h"
-#include "genesis/core/utils.h"
+#include <genesis/window/events/event.h>
+
+#include <functional>
 
 namespace GE {
 
-bool Renderer::initialize(Renderer::API api)
+class GE_API EventDispatcher
 {
-    GE_CORE_INFO("Initializing Renderer...");
+public:
+    explicit EventDispatcher(Event* event)
+        : m_event{event}
+    {}
 
-    switch (api) {
-        case Renderer::API::VULKAN: break;
-        case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", api); return false;
+    template<typename EventType, typename Callback>
+    void dispatch(Callback callback)
+    {
+        if (m_event->getDescriptor() == EventType::getStaticDescriptor() &&
+            !m_event->handled()) {
+            auto* callback_event = static_cast<EventType*>(m_event);
+            m_event->setHandled(callback(*callback_event));
+        }
     }
 
-    GE_CORE_INFO("Configuring '{}' as Renderer API", api);
-
-    get()->m_api = api;
-    return true;
-}
-
-void Renderer::shutdown()
-{
-    GE_CORE_INFO("Shutdown Renderer");
-}
-
-Renderer::API toRendererAPI(const std::string& api_str)
-{
-    auto api = toEnum<Renderer::API>(api_str);
-    return api.has_value() ? api.value() : Renderer::API::NONE;
-}
+private:
+    Event* m_event;
+};
 
 } // namespace GE
+
+#endif // GENESIS_WINDOW_EVENTS_EVENT_DISPATCHER_H_

@@ -36,6 +36,7 @@
 #include <genesis/core/asserts.h>
 #include <genesis/core/enum.h>
 #include <genesis/core/export.h>
+#include <genesis/core/format.h>
 #include <genesis/core/interface.h>
 #include <genesis/core/log.h>
 #include <genesis/core/memory.h>

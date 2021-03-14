@@ -33,6 +33,6 @@
 #ifndef GENESIS_MATH_H_
 #define GENESIS_MATH_H_
 
-#include <genesis/math/math.h>
+#include <genesis/math/types.h>
 
 #endif // GENESIS_MATH_H_

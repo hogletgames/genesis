@@ -30,39 +30,74 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_WINDOW_EVENTS_MOUSE_EVENTS_H_
+#define GENESIS_WINDOW_EVENTS_MOUSE_EVENTS_H_
 
-#include "genesis/core/format.h"
-#include "genesis/core/log.h"
-#include "genesis/core/utils.h"
+#include <genesis/math/types.h>
+#include <genesis/window/events/event.h>
+#include <genesis/window/mouse_button_codes.h>
 
 namespace GE {
 
-bool Renderer::initialize(Renderer::API api)
+class GE_API MouseMovedEvent: public Event
 {
-    GE_CORE_INFO("Initializing Renderer...");
+public:
+    explicit MouseMovedEvent(const Vec2& position);
 
-    switch (api) {
-        case Renderer::API::VULKAN: break;
-        case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", api); return false;
-    }
+    std::string asString() const override;
+    const Vec2& getPosition() const { return m_position; }
 
-    GE_CORE_INFO("Configuring '{}' as Renderer API", api);
+    GE_DECLARE_EVENT_DESCRIPTOR(MouseMovedEvent);
 
-    get()->m_api = api;
-    return true;
-}
+private:
+    Vec2 m_position{};
+};
 
-void Renderer::shutdown()
+class GE_API MouseScrolledEvent: public Event
 {
-    GE_CORE_INFO("Shutdown Renderer");
-}
+public:
+    explicit MouseScrolledEvent(const Vec2& offset);
 
-Renderer::API toRendererAPI(const std::string& api_str)
+    std::string asString() const override;
+    const Vec2& getOffset() const { return m_offset; }
+
+    GE_DECLARE_EVENT_DESCRIPTOR(MouseScrolledEvent)
+
+private:
+    Vec2 m_offset{};
+};
+
+class GE_API MouseButtonEvent: public Event
 {
-    auto api = toEnum<Renderer::API>(api_str);
-    return api.has_value() ? api.value() : Renderer::API::NONE;
-}
+public:
+    MouseButton getMouseButton() const { return m_button; }
+
+protected:
+    explicit MouseButtonEvent(MouseButton button);
+
+    MouseButton m_button{MouseButton::UNKNOWN};
+};
+
+class GE_API MouseButtonPressedEvent: public MouseButtonEvent
+{
+public:
+    explicit MouseButtonPressedEvent(MouseButton button);
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(MouseButtonPressedEvent)
+};
+
+class GE_API MouseButtonReleasedEvent: public MouseButtonEvent
+{
+public:
+    explicit MouseButtonReleasedEvent(MouseButton button);
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(MouseButtonReleasedEvent)
+};
 
 } // namespace GE
+
+#endif // GENESIS_WINDOW_EVENTS_MOUSE_EVENTS_H_

@@ -30,39 +30,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_WINDOW_EVENTS_EVENT_H_
+#define GENESIS_WINDOW_EVENTS_EVENT_H_
 
-#include "genesis/core/format.h"
-#include "genesis/core/log.h"
-#include "genesis/core/utils.h"
+#include <genesis/core/interface.h>
+
+#include <string>
+#include <typeindex>
+
+#define GE_DECLARE_EVENT_DESCRIPTOR(EventType)             \
+    ::GE::Event::Descriptor getDescriptor() const override \
+    {                                                      \
+        return getStaticDescriptor();                      \
+    }                                                      \
+                                                           \
+    static ::GE::Event::Descriptor getStaticDescriptor()   \
+    {                                                      \
+        return ::GE::Event::Descriptor{typeid(EventType)}; \
+    }
 
 namespace GE {
 
-bool Renderer::initialize(Renderer::API api)
+class GE_API Event: public Interface
 {
-    GE_CORE_INFO("Initializing Renderer...");
+public:
+    using Descriptor = std::type_index;
 
-    switch (api) {
-        case Renderer::API::VULKAN: break;
-        case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", api); return false;
-    }
+    virtual Descriptor getDescriptor() const = 0;
+    virtual std::string asString() const = 0;
 
-    GE_CORE_INFO("Configuring '{}' as Renderer API", api);
+    bool handled() const { return m_handled; }
+    void setHandled(bool handled) { m_handled = handled; }
 
-    get()->m_api = api;
-    return true;
-}
+private:
+    bool m_handled{false};
+};
 
-void Renderer::shutdown()
+template<typename OStream>
+OStream& operator<<(OStream& os, const Event& event)
 {
-    GE_CORE_INFO("Shutdown Renderer");
-}
-
-Renderer::API toRendererAPI(const std::string& api_str)
-{
-    auto api = toEnum<Renderer::API>(api_str);
-    return api.has_value() ? api.value() : Renderer::API::NONE;
+    return os << event.asString();
 }
 
 } // namespace GE
+
+#endif // GENESIS_WINDOW_EVENTS_EVENT_H_

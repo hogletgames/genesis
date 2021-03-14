@@ -30,39 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_MATH_TYPES_H_
+#define GENESIS_MATH_TYPES_H_
 
-#include "genesis/core/format.h"
-#include "genesis/core/log.h"
-#include "genesis/core/utils.h"
+#include <glm/glm.hpp>
+
+#include <string>
 
 namespace GE {
 
-bool Renderer::initialize(Renderer::API api)
-{
-    GE_CORE_INFO("Initializing Renderer...");
+using Vec2 = glm::vec2;
 
-    switch (api) {
-        case Renderer::API::VULKAN: break;
-        case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", api); return false;
-    }
-
-    GE_CORE_INFO("Configuring '{}' as Renderer API", api);
-
-    get()->m_api = api;
-    return true;
-}
-
-void Renderer::shutdown()
-{
-    GE_CORE_INFO("Shutdown Renderer");
-}
-
-Renderer::API toRendererAPI(const std::string& api_str)
-{
-    auto api = toEnum<Renderer::API>(api_str);
-    return api.has_value() ? api.value() : Renderer::API::NONE;
-}
+std::string toString(const Vec2& vec);
 
 } // namespace GE
+
+#endif // GENESIS_MATH_TYPES_H_

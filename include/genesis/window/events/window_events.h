@@ -30,39 +30,60 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_WINDOW_EVENTS_WINDOW_EVENTS_H_
+#define GENESIS_WINDOW_EVENTS_WINDOW_EVENTS_H_
 
-#include "genesis/core/format.h"
-#include "genesis/core/log.h"
-#include "genesis/core/utils.h"
+#include <genesis/math/types.h>
+#include <genesis/window/events/event.h>
 
 namespace GE {
 
-bool Renderer::initialize(Renderer::API api)
+class GE_API WindowResizedEvent: public Event
 {
-    GE_CORE_INFO("Initializing Renderer...");
+public:
+    explicit WindowResizedEvent(const Vec2& size);
 
-    switch (api) {
-        case Renderer::API::VULKAN: break;
-        case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", api); return false;
-    }
+    std::string asString() const override;
+    const Vec2& getSize() const { return m_size; }
 
-    GE_CORE_INFO("Configuring '{}' as Renderer API", api);
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowResizedEvent)
 
-    get()->m_api = api;
-    return true;
-}
+private:
+    Vec2 m_size{};
+};
 
-void Renderer::shutdown()
+class GE_API WindowClosedEvent: public Event
 {
-    GE_CORE_INFO("Shutdown Renderer");
-}
+public:
+    std::string asString() const override;
 
-Renderer::API toRendererAPI(const std::string& api_str)
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowClosedEvent)
+};
+
+class GE_API WindowMaximizedEvent: public Event
 {
-    auto api = toEnum<Renderer::API>(api_str);
-    return api.has_value() ? api.value() : Renderer::API::NONE;
-}
+public:
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowMaximizedEvent)
+};
+
+class GE_API WindowMinimizedEvent: public Event
+{
+public:
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowMinimizedEvent)
+};
+
+class GE_API WindowRestoredEvent: public Event
+{
+public:
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowRestoredEvent)
+};
 
 } // namespace GE
+
+#endif // GENESIS_WINDOW_EVENTS_WINDOW_EVENTS_H_

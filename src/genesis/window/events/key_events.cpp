@@ -30,39 +30,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#include "key_events.h"
 
 #include "genesis/core/format.h"
-#include "genesis/core/log.h"
-#include "genesis/core/utils.h"
 
 namespace GE {
 
-bool Renderer::initialize(Renderer::API api)
+KeyEvent::KeyEvent(KeyCode code, KeyModFlags mod)
+    : m_code{code}
+    , m_mod{mod}
+{}
+
+KeyPressedEvent::KeyPressedEvent(KeyCode code, KeyModFlags mod, uint32_t repeat_count)
+    : KeyEvent{code, mod}
+    , m_repeat_count{repeat_count}
+{}
+
+std::string KeyPressedEvent::asString() const
 {
-    GE_CORE_INFO("Initializing Renderer...");
-
-    switch (api) {
-        case Renderer::API::VULKAN: break;
-        case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", api); return false;
-    }
-
-    GE_CORE_INFO("Configuring '{}' as Renderer API", api);
-
-    get()->m_api = api;
-    return true;
+    return GE_FMTSTR("KeyPressedEvent: Key: '{}', Mod: '{:#010b}' ({})", toString(m_code),
+                     static_cast<uint8_t>(m_mod), m_repeat_count);
 }
 
-void Renderer::shutdown()
+KeyReleasedEvent::KeyReleasedEvent(KeyCode code, KeyModFlags mod)
+    : KeyEvent{code, mod}
+{}
+
+std::string KeyReleasedEvent::asString() const
 {
-    GE_CORE_INFO("Shutdown Renderer");
+    return GE_FMTSTR("KeyReleasedEvent: Key: '{}', Mod: '{:#010b}'", toString(m_code),
+                     static_cast<uint8_t>(m_mod));
 }
 
-Renderer::API toRendererAPI(const std::string& api_str)
+KeyTypedEvent::KeyTypedEvent(const char* text)
+    : m_text{text}
+{}
+
+std::string KeyTypedEvent::asString() const
 {
-    auto api = toEnum<Renderer::API>(api_str);
-    return api.has_value() ? api.value() : Renderer::API::NONE;
+    return GE_FMTSTR("KeyTypedEvent: '{}'", m_text);
 }
 
 } // namespace GE
