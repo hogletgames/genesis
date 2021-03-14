@@ -30,12 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_H_
-#define GENESIS_WINDOW_H_
+#include "input.h"
 
-#include <genesis/window/input.h>
-#include <genesis/window/key_codes.h>
-#include <genesis/window/mouse_button_codes.h>
-#include <genesis/window/window.h>
+#include "SDL/input.h"
+using InputControllerPlatform = GE::SDL::InputController;
 
-#endif // GENESIS_WINDOW_H_
+#include "genesis/core/log.h"
+
+namespace GE {
+
+bool Input::initialize()
+{
+    GE_CORE_INFO("Initializing Input...");
+    get()->m_pimpl = makeScoped<InputControllerPlatform>();
+    return get()->m_pimpl != nullptr;
+}
+
+void Input::shutdown()
+{
+    GE_CORE_INFO("Shutdown input");
+    get()->m_pimpl.reset();
+}
+
+} // namespace GE

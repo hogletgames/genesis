@@ -30,12 +30,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_H_
-#define GENESIS_WINDOW_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef SRC_GENESIS_WINDOW_SDL_INPUT_H_
+#define SRC_GENESIS_WINDOW_SDL_INPUT_H_
 
 #include <genesis/window/input.h>
-#include <genesis/window/key_codes.h>
-#include <genesis/window/mouse_button_codes.h>
-#include <genesis/window/window.h>
 
-#endif // GENESIS_WINDOW_H_
+namespace GE::SDL {
+
+class InputController: public GE::InputController
+{
+public:
+    int32_t toNativeKeyCode(KeyCode key_code) const override;
+    KeyCode fromNativeKeyCode(int32_t key_code) const override;
+    uint32_t toNativeKeyMod(KeyModFlags key_mod) const override;
+    KeyModFlags fromNativeKeyMod(uint32_t key_mod) const override;
+    bool isKeyPressed(KeyCode key_code) const override;
+
+    uint8_t toNativeButton(MouseButton button) const override;
+    MouseButton fromNativeButton(uint8_t button) const override;
+    bool isButtonPressed(MouseButton button) const override;
+    Vec2 getMousePosition() const override;
+};
+
+} // namespace GE::SDL
+
+#endif // SRC_GENESIS_WINDOW_SDL_INPUT_H_

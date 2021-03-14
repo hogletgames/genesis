@@ -30,12 +30,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_H_
-#define GENESIS_WINDOW_H_
+#ifndef GENESIS_WINDOW_MOUSE_BUTTON_CODES_H_
+#define GENESIS_WINDOW_MOUSE_BUTTON_CODES_H_
 
-#include <genesis/window/input.h>
-#include <genesis/window/key_codes.h>
-#include <genesis/window/mouse_button_codes.h>
-#include <genesis/window/window.h>
+#include <genesis/core/enum.h>
 
-#endif // GENESIS_WINDOW_H_
+namespace GE {
+
+enum class MouseButton : uint8_t
+{
+    UNKNOWN = 0,
+    LEFT = 1,
+    MIDDLE = 2,
+    RIGHT = 3,
+    X1 = 4,
+    X2 = 5
+};
+
+} // namespace GE
+
+#endif // GENESIS_WINDOW_MOUSE_BUTTON_CODES_H_
