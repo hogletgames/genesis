@@ -36,14 +36,26 @@
 
 using namespace std::chrono_literals;
 
+namespace {
+
+constexpr GE::Renderer::API RENDER_API{GE::Renderer::API::VULKAN};
+
+} // namespace
+
 int main()
 {
     GE::Log::initialize();
     GE::Window::initialize();
+    GE::Renderer::initialize(RENDER_API);
 
-    auto window = GE::Window::create({});
+    GE::Window::settings_t window_settings{};
+    window_settings.render_api = RENDER_API;
+
+    auto window = GE::Window::create(window_settings);
     std::this_thread::sleep_for(10s);
+    window.reset();
 
+    GE::Renderer::shutdown();
     GE::Window::shutdown();
     GE::Log::shutdown();
 

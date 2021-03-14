@@ -94,12 +94,16 @@ namespace GE::Vulkan {
 
 bool RenderContext::initialize(void* window)
 {
-    return createInstance(window) || setupDebugUtils() || createSurface(window);
+    GE_CORE_INFO("Initializing Vulkan Context...");
+    return createInstance(window) && setupDebugUtils() && createSurface(window);
 }
 
 void RenderContext::shutdown()
 {
+    GE_CORE_INFO("Shutdown Vulkan Context");
+#ifndef GE_DISABLE_DEBUG
     destroyDebugUtilsMessengerEXT(m_instance, m_debug_utils, nullptr);
+#endif // GE_DISABLE_DEBUG
     vkDestroyInstance(m_instance, nullptr);
 }
 
@@ -107,7 +111,9 @@ bool RenderContext::createInstance(void* window)
 {
     auto window_extensions = getWindowExtensions(window);
 
+#ifndef GE_DISABLE_DEBUG
     window_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif // GE_DISABLE_DEBUG
 
     VkApplicationInfo app_info{};
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
