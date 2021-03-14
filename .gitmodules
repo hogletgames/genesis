@@ -40,3 +40,6 @@
 [submodule "third-party/fmt"]
 	path = third-party/fmt
 	url = https://github.com/hogletgames/fmt.git
+[submodule "third-party/googletest"]
+	path = third-party/googletest
+	url = https://github.com/hogletgames/googletest.git

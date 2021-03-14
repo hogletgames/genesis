@@ -27,3 +27,6 @@ add_subdirectory(tinyobjloader)
 
 # magic_enum
 add_subdirectory(magic_enum)
+
+# googletest
+add_subdirectory(googletest)
