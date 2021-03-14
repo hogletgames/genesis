@@ -49,7 +49,13 @@ public:
         VULKAN
     };
 
-    static bool initialize(API api);
+    struct settings_t {
+        API api{API_DEFAULT};
+
+        static constexpr API API_DEFAULT{API::VULKAN};
+    };
+
+    static bool initialize(const settings_t& settings);
     static void shutdown();
 
     static API getAPI() { return get()->m_api; }

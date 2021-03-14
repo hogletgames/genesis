@@ -38,19 +38,19 @@
 
 namespace GE {
 
-bool Renderer::initialize(Renderer::API api)
+bool Renderer::initialize(const settings_t& settings)
 {
     GE_CORE_INFO("Initializing Renderer...");
 
-    switch (api) {
+    switch (settings.api) {
         case Renderer::API::VULKAN: break;
         case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", api); return false;
+        default: GE_CORE_ERR("Unknown Render API: {}", settings.api); return false;
     }
 
-    GE_CORE_INFO("Configuring '{}' as Renderer API", api);
+    GE_CORE_INFO("Configuring '{}' as Renderer API", settings.api);
 
-    get()->m_api = api;
+    get()->m_api = settings.api;
     return true;
 }
 
