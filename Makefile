@@ -2,12 +2,14 @@ BUILD_TYPE          ?= Release
 BUILD_STATIC        ?= OFF
 DISABLE_ASSERTS     ?= OFF
 BUILD_EXAMPLES      ?= OFF
+BUILD_TESTS         ?= OFF
 
 SRC_DIR             := $(PWD)
 BUILD_DIR           := build
 
 CMAKE_OPTIONS       ?= -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DGE_STATIC=$(BUILD_STATIC) \
-                       -DGE_DISABLE_ASSERTS=$(DISABLE_ASSERTS) -DGE_BUILD_EXAMPLES=$(BUILD_EXAMPLES)
+                       -DGE_DISABLE_ASSERTS=$(DISABLE_ASSERTS) -DGE_BUILD_EXAMPLES=$(BUILD_EXAMPLES) \
+                       -DGE_BUILD_TESTS=$(BUILD_TESTS)
 
 CLANG_FORMAT_BIN    ?= clang-format
 RUN_CLANG_TIDY_BIN  ?= run-clang-tidy
@@ -66,3 +68,8 @@ docker_run:
 .PHONY: docker_build
 docker_build: DOCKER_CMD = make -j$$(nproc)
 docker_build: docker_run
+
+# Tests
+.PHONY: test
+test:
+	$(MAKE) -C $(BUILD_DIR) test
