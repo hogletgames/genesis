@@ -76,6 +76,8 @@ using FormatVector = std::vector<VkFormat>;
 
 namespace {
 
+constexpr GE::Logger::Level LOG_LEVEL{GE::Logger::Level::TRACE};
+
 constexpr int WINDOW_HEIGHT{800};
 constexpr int WINDOW_WIDTH{600};
 
@@ -2270,7 +2272,11 @@ VkFormat HelloTriangleApplication::findDepthFormat()
 
 int main()
 {
-    GE::Log::initialize();
+    GE::Log::settings_t log_settings{};
+    log_settings.core_log_level = LOG_LEVEL;
+    log_settings.client_log_level = LOG_LEVEL;
+
+    GE::Log::initialize(log_settings);
 
     try {
         HelloTriangleApplication app;

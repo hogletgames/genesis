@@ -132,7 +132,14 @@ private:
 class GE_API Log
 {
 public:
-    static bool initialize();
+    struct settings_t {
+        Logger::Level core_log_level{LOG_LEVEL_DEFAULT};
+        Logger::Level client_log_level{LOG_LEVEL_DEFAULT};
+
+        static constexpr Logger::Level LOG_LEVEL_DEFAULT{Logger::Level::INFO};
+    };
+
+    static bool initialize(const settings_t& settings);
     static void shutdown();
 
     static Logger* core() { return &get()->m_core_logger; }
