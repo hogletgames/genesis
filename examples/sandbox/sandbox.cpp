@@ -46,6 +46,7 @@ int main()
 {
     GE::Log::initialize();
     GE::Window::initialize();
+    GE::Input::initialize();
     GE::Renderer::initialize(RENDER_API);
 
     GE::Window::settings_t window_settings{};
@@ -56,6 +57,7 @@ int main()
     window.reset();
 
     GE::Renderer::shutdown();
+    GE::Input::shutdown();
     GE::Window::shutdown();
     GE::Log::shutdown();
 
