@@ -6,6 +6,7 @@ list(APPEND GE_CORE_SRC
 
 list(APPEND GE_CORE_HEADERS
     ${GE_CORE_INCLUDE_DIR}/asserts.h
+    ${GE_CORE_INCLUDE_DIR}/enum.h
     ${GE_CORE_INCLUDE_DIR}/export.h
     ${GE_CORE_INCLUDE_DIR}/interface.h
     ${GE_CORE_INCLUDE_DIR}/log.h
@@ -15,8 +16,12 @@ list(APPEND GE_CORE_HEADERS
 )
 
 add_library(genesis-core STATIC ${GE_CORE_SRC} ${GE_CORE_HEADERS})
-target_link_libraries(genesis-core PUBLIC spdlog)
-target_include_directories(genesis-core SYSTEM PUBLIC ${GE_THIRD_PARTY_DIR}/spdlog/include)
+target_link_libraries(genesis-core PUBLIC
+    magic_enum
+    spdlog)
+target_include_directories(genesis-core SYSTEM PUBLIC
+    ${GE_THIRD_PARTY_DIR}/magic_enum/include
+    ${GE_THIRD_PARTY_DIR}/spdlog/include)
 target_include_directories(genesis-core PRIVATE ${GE_CORE_INCLUDE_DIR})
 target_compile_definitions(genesis-core PUBLIC
     -D_GE_VER_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}

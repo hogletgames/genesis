@@ -30,16 +30,50 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_H_
-#define GENESIS_CORE_H_
+#ifndef GENESIS_CORE_ENUM_H_
+#define GENESIS_CORE_ENUM_H_
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/enum.h>
-#include <genesis/core/export.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+#include <magic_enum.hpp>
 
-#endif // GENESIS_CORE_H_
+#define GE_EXTEND_ENUM_RANGE(enum_type, min_value, max_value)  \
+    namespace magic_enum::customize {                          \
+    template<>                                                 \
+    struct enum_range<enum_type> {                             \
+        static constexpr int min{static_cast<int>(min_value)}; \
+        static constexpr int max{static_cast<int>(max_value)}; \
+    };                                                         \
+    } // namespace magic_enum::customize
+
+namespace GE {
+
+using magic_enum::bitwise_operators::operator~;
+using magic_enum::bitwise_operators::operator|;
+using magic_enum::bitwise_operators::operator&;
+using magic_enum::bitwise_operators::operator^;
+using magic_enum::bitwise_operators::operator|=;
+using magic_enum::bitwise_operators::operator&=;
+using magic_enum::bitwise_operators::operator^=;
+
+template<typename EnumType,
+         typename = std::enable_if<std::is_enum<EnumType>::value, bool>>
+std::string toString(EnumType value)
+{
+    return std::string{magic_enum::enum_name(value)};
+}
+
+template<typename EnumType>
+std::optional<EnumType> toEnum(const std::string& string)
+{
+    return magic_enum::enum_cast<EnumType>(string);
+}
+
+template<typename OStream, typename EnumType,
+         typename = std::enable_if<std::is_enum<EnumType>::value, bool>>
+OStream& operator<<(OStream& os, EnumType value)
+{
+    return os << toString(value);
+}
+
+} // namespace GE
+
+#endif // GENESIS_CORE_ENUM_H_
