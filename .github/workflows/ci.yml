@@ -56,14 +56,17 @@ jobs:
       CXX: g++-10
       BUILD_TYPE: ${{ matrix.build-type }}
       DISABLE_ASSERTS: ${{ matrix.disable-asserts }}
+      BUILD_TESTS: ON
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           submodules: recursive
           fetch-depth: 0
-      - name: Build project
-        run: make -j$(nproc)
+      - name: Build project and run tests
+        run: |
+          make -j$(nproc)
+          make test
   linters:
     runs-on: ubuntu-18.04
     container: hogletgames/genesis-engine:ci
