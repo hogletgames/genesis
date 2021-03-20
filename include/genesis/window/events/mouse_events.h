@@ -42,6 +42,7 @@ namespace GE {
 class GE_API MouseMovedEvent: public Event
 {
 public:
+    MouseMovedEvent() = default;
     explicit MouseMovedEvent(const Vec2& position);
 
     std::string asString() const override;
@@ -56,6 +57,7 @@ private:
 class GE_API MouseScrolledEvent: public Event
 {
 public:
+    MouseScrolledEvent() = default;
     explicit MouseScrolledEvent(const Vec2& offset);
 
     std::string asString() const override;
@@ -73,6 +75,7 @@ public:
     MouseButton getMouseButton() const { return m_button; }
 
 protected:
+    MouseButtonEvent() = default;
     explicit MouseButtonEvent(MouseButton button);
 
     MouseButton m_button{MouseButton::UNKNOWN};
@@ -81,6 +84,7 @@ protected:
 class GE_API MouseButtonPressedEvent: public MouseButtonEvent
 {
 public:
+    MouseButtonPressedEvent() = default;
     explicit MouseButtonPressedEvent(MouseButton button);
 
     std::string asString() const override;
@@ -91,6 +95,7 @@ public:
 class GE_API MouseButtonReleasedEvent: public MouseButtonEvent
 {
 public:
+    MouseButtonReleasedEvent() = default;
     explicit MouseButtonReleasedEvent(MouseButton button);
 
     std::string asString() const override;

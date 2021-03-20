@@ -45,6 +45,7 @@ public:
     KeyModFlags getMod() const { return m_mod; }
 
 protected:
+    KeyEvent() = default;
     KeyEvent(KeyCode code, KeyModFlags mod);
 
     KeyCode m_code{KeyCode::UNKNOWN};
@@ -54,6 +55,7 @@ protected:
 class GE_API KeyPressedEvent: public KeyEvent
 {
 public:
+    KeyPressedEvent() = default;
     KeyPressedEvent(KeyCode code, KeyModFlags mod, uint32_t repeat_count);
 
     std::string asString() const override;
@@ -68,6 +70,7 @@ private:
 class GE_API KeyReleasedEvent: public KeyEvent
 {
 public:
+    KeyReleasedEvent() = default;
     KeyReleasedEvent(KeyCode code, KeyModFlags mod);
 
     std::string asString() const override;
@@ -78,6 +81,7 @@ public:
 class GE_API KeyTypedEvent: public Event
 {
 public:
+    KeyTypedEvent() = default;
     explicit KeyTypedEvent(const char* text);
 
     std::string asString() const override;
