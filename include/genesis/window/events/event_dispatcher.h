@@ -42,18 +42,24 @@ namespace GE {
 class GE_API EventDispatcher
 {
 public:
+    template<typename EventType>
+    using Callback = std::function<bool(const EventType&)>;
+
     explicit EventDispatcher(Event* event)
         : m_event{event}
     {}
 
-    template<typename EventType, typename Callback>
-    void dispatch(Callback callback)
+    template<typename EventType>
+    bool dispatch(Callback<EventType> callback)
     {
         if (m_event->getDescriptor() == EventType::getStaticDescriptor() &&
             !m_event->handled()) {
             auto* callback_event = static_cast<EventType*>(m_event);
             m_event->setHandled(callback(*callback_event));
+            return true;
         }
+
+        return false;
     }
 
 private:
