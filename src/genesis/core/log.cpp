@@ -99,7 +99,7 @@ void Logger::setLevel(Level level)
     m_level = level;
 }
 
-bool Log::initialize()
+bool Log::initialize(const settings_t& settings)
 {
     auto& core_logger = get()->m_core_logger;
     auto& client_logger = get()->m_client_logger;
@@ -110,11 +110,11 @@ bool Log::initialize()
         return false;
     }
 
-    core_logger.setLevel(Logger::Level::TRACE);
-    client_logger.setLevel(Logger::Level::TRACE);
+    core_logger.setLevel(settings.core_log_level);
+    client_logger.setLevel(settings.client_log_level);
 
     GE_CORE_INFO("Log System initialization succeed: core level: {}, client level: {}",
-                 Logger::Level::TRACE, Logger::Level::TRACE);
+                 settings.core_log_level, settings.client_log_level);
     return true;
 }
 

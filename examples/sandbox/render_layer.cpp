@@ -30,59 +30,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_WINDOW_SDL_WINDOW_H_
-#define GENESIS_WINDOW_SDL_WINDOW_H_
+#include "render_layer.h"
 
-#include <genesis/window/window.h>
+namespace GE::Examples {
 
-#include <list>
+void RenderLayer::onEvent([[maybe_unused]] Event *event) {}
 
-struct SDL_Window;
-union SDL_Event;
+void RenderLayer::onUpdate([[maybe_unused]] Timestamp ts) {}
 
-namespace GE {
-class RenderContext;
-} // namespace GE
-
-namespace GE::SDL {
-
-class Window: public GE::Window
-{
-public:
-    explicit Window(settings_t settings);
-    ~Window();
-
-    static bool initialize();
-    static void shutdown();
-
-    void pollEvents() override;
-    void onUpdate() override;
-
-    void attachEventListener(EventListener* listener) override;
-    void detachEventListener(EventListener* listener) override;
-
-    const Vec2& getSize() const override { return m_settings.size; }
-    void setVSync(bool enabled) override;
-    const settings_t& getSettings() const override { return m_settings; }
-
-    void* getNativeWindow() override { return nullptr; }
-    void* getNativeContext() override { return nullptr; }
-
-private:
-    void emitEvent(Event* event);
-
-    void onMouseEvent(const SDL_Event& sdl_event);
-    void onKeyboardEvent(const SDL_Event& sdl_event);
-    void onWindowEvent(const SDL_Event& sdl_event);
-
-    settings_t m_settings;
-    SDL_Window* m_window{nullptr};
-    GE::Scoped<RenderContext> m_context;
-
-    std::list<EventListener*> m_event_listeners;
-};
-
-} // namespace GE::SDL
-
-#endif // GENESIS_WINDOW_SDL_WINDOW_H_
+} // namespace GE::Examples

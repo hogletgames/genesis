@@ -33,6 +33,7 @@
 #ifndef GENESIS_GENESIS_H_
 #define GENESIS_GENESIS_H_
 
+#include <genesis/app.h>
 #include <genesis/core.h>
 #include <genesis/math.h>
 #include <genesis/renderer.h>

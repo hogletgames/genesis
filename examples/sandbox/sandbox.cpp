@@ -30,36 +30,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "render_layer.h"
+
 #include <genesis/genesis.h>
-
-#include <thread>
-
-using namespace std::chrono_literals;
 
 namespace {
 
+constexpr GE::Logger::Level LOG_LEVEL{GE::Logger::Level::TRACE};
 constexpr GE::Renderer::API RENDER_API{GE::Renderer::API::VULKAN};
 
 } // namespace
 
 int main()
 {
-    GE::Log::initialize();
-    GE::Window::initialize();
-    GE::Input::initialize();
-    GE::Renderer::initialize(RENDER_API);
+    GE::Log::settings_t log_settings{};
+    log_settings.core_log_level = LOG_LEVEL;
+    log_settings.client_log_level = LOG_LEVEL;
 
     GE::Window::settings_t window_settings{};
     window_settings.render_api = RENDER_API;
 
-    auto window = GE::Window::create(window_settings);
-    std::this_thread::sleep_for(10s);
-    window.reset();
+    GE::Renderer::settings_t renderer_settings{};
+    renderer_settings.api = RENDER_API;
 
-    GE::Renderer::shutdown();
-    GE::Input::shutdown();
-    GE::Window::shutdown();
-    GE::Log::shutdown();
+    GE::Application::settings_t app_settings{};
+    app_settings.log = log_settings;
+    app_settings.window = window_settings;
+    app_settings.renderer = renderer_settings;
+
+    if (!GE::Application::initialize(app_settings)) {
+        GE_ERR("Failed to initialize Engine");
+        return EXIT_FAILURE;
+    }
+
+    GE::Application::attachLayer(GE::makeShared<GE::Examples::RenderLayer>());
+    GE::Application::run();
+    GE::Application::shutdown();
 
     return EXIT_SUCCESS;
 }

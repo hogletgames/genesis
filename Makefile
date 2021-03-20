@@ -44,7 +44,7 @@ clang-tidy: generate_makefiles
 # Docker
 .PHONY: docker_initialize
 docker_initialize:
-	docker build -t $(DOCKER_IMAGE_NAME) $(PWD)
+	DOCKER_BUILDKIT=1 docker build -t $(DOCKER_IMAGE_NAME) $(PWD)
 
 .PHONY: docker_cleenup
 docker_cleanup:

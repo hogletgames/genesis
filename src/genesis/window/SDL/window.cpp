@@ -148,6 +148,11 @@ void Window::shutdown()
     SDL_Quit();
 }
 
+void Window::onUpdate()
+{
+    // TODO: there should be swapBuffers()
+}
+
 void Window::attachEventListener(EventListener* listener)
 {
     m_event_listeners.push_back(listener);

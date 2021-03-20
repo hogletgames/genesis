@@ -27,6 +27,7 @@ Checks:             '*,
                     -modernize-avoid-bind,
                     -modernize-use-nodiscard,
                     -modernize-use-trailing-return-type,
+                    -readability-convert-member-functions-to-static,
                     -readability-uppercase-literal-suffix'
 WarningsAsErrors:   '*'
 HeaderFilterRegex:  '.*'

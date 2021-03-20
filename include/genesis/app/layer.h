@@ -30,59 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_WINDOW_SDL_WINDOW_H_
-#define GENESIS_WINDOW_SDL_WINDOW_H_
+#ifndef GENESIS_APP_LAYER_H_
+#define GENESIS_APP_LAYER_H_
 
-#include <genesis/window/window.h>
-
-#include <list>
-
-struct SDL_Window;
-union SDL_Event;
+#include <genesis/core/interface.h>
+#include <genesis/core/timestamp.h>
 
 namespace GE {
-class RenderContext;
-} // namespace GE
 
-namespace GE::SDL {
+class Event;
 
-class Window: public GE::Window
+class GE_API Layer: public Interface
 {
 public:
-    explicit Window(settings_t settings);
-    ~Window();
+    virtual void onAttached() = 0;
+    virtual void onDetached() = 0;
 
-    static bool initialize();
-    static void shutdown();
-
-    void pollEvents() override;
-    void onUpdate() override;
-
-    void attachEventListener(EventListener* listener) override;
-    void detachEventListener(EventListener* listener) override;
-
-    const Vec2& getSize() const override { return m_settings.size; }
-    void setVSync(bool enabled) override;
-    const settings_t& getSettings() const override { return m_settings; }
-
-    void* getNativeWindow() override { return nullptr; }
-    void* getNativeContext() override { return nullptr; }
-
-private:
-    void emitEvent(Event* event);
-
-    void onMouseEvent(const SDL_Event& sdl_event);
-    void onKeyboardEvent(const SDL_Event& sdl_event);
-    void onWindowEvent(const SDL_Event& sdl_event);
-
-    settings_t m_settings;
-    SDL_Window* m_window{nullptr};
-    GE::Scoped<RenderContext> m_context;
-
-    std::list<EventListener*> m_event_listeners;
+    virtual void onUpdate(Timestamp ts) = 0;
+    virtual void onEvent(Event* event) = 0;
+    virtual void onRender() = 0;
 };
 
-} // namespace GE::SDL
+} // namespace GE
 
-#endif // GENESIS_WINDOW_SDL_WINDOW_H_
+#endif // GENESIS_APP_LAYER_H_

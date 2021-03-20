@@ -30,50 +30,85 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_RENDERER_H_
-#define GENESIS_RENDERER_RENDERER_H_
+#ifndef GENESIS_APP_APPLICATION_H_
+#define GENESIS_APP_APPLICATION_H_
 
-#include <genesis/core/enum.h>
-#include <genesis/core/export.h>
+#include <genesis/app/layer.h>
+#include <genesis/core/log.h>
+#include <genesis/core/memory.h>
+#include <genesis/renderer/renderer.h>
+#include <genesis/window/event_listener.h>
+#include <genesis/window/window.h>
 
-#include <string>
+#include <deque>
 
 namespace GE {
 
-class GE_API Renderer
+class WindowClosedEvent;
+class WindowMaximizedEvent;
+class WindowMinimizedEvent;
+class WindowRestoredEvent;
+
+class GE_API Application: public EventListener
 {
 public:
-    enum class API
-    {
-        NONE = 0,
-        VULKAN
-    };
-
     struct settings_t {
-        API api{API_DEFAULT};
-
-        static constexpr API API_DEFAULT{API::VULKAN};
+        Log::settings_t log{};
+        Window::settings_t window{};
+        Renderer::settings_t renderer{};
     };
 
     static bool initialize(const settings_t& settings);
     static void shutdown();
 
-    static API getAPI() { return get()->m_api; }
+    static void run();
+    static void close();
+
+    static void attachLayer(Shared<Layer> layer);
+    static void detachLayer(const Shared<Layer>& layer);
+
+    static const Window& getWindow() { return *get()->m_window; }
 
 private:
-    Renderer() = default;
-
-    static Renderer* get()
+    enum class WindowState : uint8_t
     {
-        static Renderer instance;
+        NONE = 0,
+        MAXIMIZED,
+        MINIMIZED
+    };
+
+    Application() = default;
+
+    static Application* get()
+    {
+        static Application instance;
         return &instance;
     }
 
-    API m_api{API::NONE};
-};
+    static bool initializeApp(const settings_t& settings);
+    static void shutdownApp();
 
-Renderer::API toRendererAPI(const std::string& api_str);
+    void mainLoop();
+
+    void onEvent(Event* event) override;
+    bool onWindowClosed(const WindowClosedEvent& event);
+    bool onWindowMaximized(const WindowMaximizedEvent& event);
+    bool onWindowMinimized(const WindowMinimizedEvent& event);
+    bool onWindowRestored(const WindowRestoredEvent& event);
+
+    void sendEventToLayers(Event* event);
+    void updateLayers(Timestamp ts);
+    void renderLayers();
+    void clearLayers();
+
+    Scoped<Window> m_window;
+    std::deque<Shared<Layer>> m_layers;
+    WindowState m_window_state{WindowState::NONE};
+
+    bool m_running{true};
+    Timestamp m_prev_frame_ts;
+};
 
 } // namespace GE
 
-#endif // GENESIS_RENDERER_RENDERER_H_
+#endif // GENESIS_APP_APPLICATION_H_
