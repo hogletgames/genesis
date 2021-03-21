@@ -41,6 +41,7 @@ namespace GE {
 class GE_API WindowResizedEvent: public Event
 {
 public:
+    WindowResizedEvent() = default;
     explicit WindowResizedEvent(const Vec2& size);
 
     std::string asString() const override;

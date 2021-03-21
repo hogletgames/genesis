@@ -4,7 +4,7 @@ CLANG_FORMAT_BIN=clang-format
 EXIT_CODE=0
 FIX=false
 
-PATHS_TO_SRC="examples include src"
+PATHS_TO_SRC="examples include src tests"
 SRC_FILES=$(find ${PATHS_TO_SRC} -name "*.h" -o -name "*.cpp")
 
 while [ -n "${1}" ]; do

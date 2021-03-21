@@ -1,5 +1,7 @@
 ## genesis
 
+[![CI](https://github.com/hogletgames/genesis/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/hogletgames/genesis/actions/workflows/ci.yml)
+
 ### Acknowledgements
 
 - [SDL](https://www.libsdl.org) ([zlib](https://www.libsdl.org/license.php))
@@ -17,6 +19,7 @@
 - [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) ([MIT](https://github.com/tinyobjloader/tinyobjloader/blob/v2.0.0rc8/LICENSE))
 - [magic_enum](https://github.com/Neargye/magic_enum) ([MIT](https://github.com/Neargye/magic_enum/blob/v0.7.2/LICENSE))
 - [fmt](https://github.com/fmtlib/fmt) ([MIT](https://github.com/fmtlib/fmt/blob/7.1.3/LICENSE.rst))
+- [googletest](https://github.com/google/googletest) ([BSD-3](https://github.com/google/googletest/blob/release-1.10.0/LICENSE))
 
 ### To build manually
 
@@ -49,6 +52,13 @@ make clang-tidy                     # Run clang-tidy check
 bash tools/clang_format.sh --fix    # Fix format
 ```
 
+### Hot to run tests
+
+```bash
+make BUILD_TESTS=ON -j$(nproc)  # Build project with tests
+make test                       # Run tests
+```
+
 ### genesis build options
 
 | Make | CMake | Default value| Description |
@@ -57,6 +67,7 @@ bash tools/clang_format.sh --fix    # Fix format
 | `BUILD_STATIC` | `GE_STATIC` | `OFF` | Build static library |
 | `DISABLE_ASSERTS` | `GE_DISABLE_ASSERTS` | `OFF` | Exclude asserts from final binary |
 | `BUILD_EXAMPLES` | `GE_BUILD_EXAMPLES` | `OFF` | Build examples |
+| `BUILD_TESTS` | `GE_BUILD_TESTS` | `OFF` | Build tests |
 | `CLANG_FORMAT_BIN` | - | `clang-format` | Path to `clang-format` binary |
 | `RUN_CLANG_TIDY_BIN` | - | `run-clang-tidy` | Path to `run-clang-tidy` tool |
 | `DOCKER_CMD` | - | `make -j$(nproc)` | Command which will be executed by `make docker_run` |
