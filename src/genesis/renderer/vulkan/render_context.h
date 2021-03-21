@@ -46,6 +46,8 @@ namespace SDL {
 class PlatformWindow;
 } // namespace SDL
 
+class Device;
+
 class RenderContext: public GE::RenderContext
 {
 public:
@@ -59,12 +61,15 @@ public:
 
     const Scoped<SDL::PlatformWindow>& platformWindow() const { return m_window; }
     VkSurfaceKHR surface() const { return m_surface; }
+    Shared<Device> device() const { return m_device; }
 
 private:
     void destroyVulkanHandles();
 
     Scoped<SDL::PlatformWindow> m_window;
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
+
+    Shared<Vulkan::Device> m_device;
 };
 
 } // namespace GE::Vulkan

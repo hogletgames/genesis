@@ -31,6 +31,7 @@
  */
 
 #include "render_context.h"
+#include "device.h"
 #include "instance.h"
 #include "sdl_platform_window.h"
 #include "vulkan_exception.h"
@@ -51,6 +52,8 @@ bool RenderContext::initialize(void* window)
         m_window = makeScoped<SDL::PlatformWindow>(reinterpret_cast<SDL_Window*>(window));
         Instance::registerContext(this);
         m_surface = m_window->createSurface(Instance::instance());
+
+        m_device = makeScoped<Device>(this);
     } catch (const Vulkan::Exception& e) {
         GE_CORE_ERR("Failed to initialize Vulkan Render Context: {}", e.what());
         shutdown();
@@ -63,6 +66,8 @@ bool RenderContext::initialize(void* window)
 void RenderContext::shutdown()
 {
     GE_CORE_INFO("Shutdown Vulkan Context");
+
+    m_device.reset();
 
     destroyVulkanHandles();
     Instance::dropContext(this);
