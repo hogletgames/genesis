@@ -50,6 +50,9 @@ public:
     bool initialize(void* window) override;
     void shutdown() override;
 
+    VkInstance instance() const { return m_instance; }
+    VkSurfaceKHR surface() const { return m_surface; }
+
 protected:
     virtual std::vector<const char*> getWindowExtensions(void* window) const = 0;
     virtual const char* getAppName(void* window) const = 0;
