@@ -1,9 +1,11 @@
 # Vulkan Renderer sources
 list(APPEND GE_RENDERER_VULKAN_SRC
+    device.cpp
     instance.cpp
     render_context.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
+    device.h
     instance.h
     render_context.h
     utils.h
