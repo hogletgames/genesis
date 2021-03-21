@@ -3,13 +3,15 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     device.cpp
     image.cpp
     instance.cpp
-    render_context.cpp)
+    render_context.cpp
+    swap_chain.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
     device.h
     image.h
     instance.h
     render_context.h
+    swap_chain.h
     utils.h
     vulkan_exception.h)
 
@@ -19,7 +21,9 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS sdl_platform_window.h)
 
 # Vulkan Renderer library
 add_library(genesis-renderer-vulkan ${GE_RENDERER_VULKAN_SRC} ${GE_RENDERER_VULKAN_HEADERS})
-target_link_libraries(genesis-renderer-vulkan PUBLIC genesis::core)
+target_link_libraries(genesis-renderer-vulkan PUBLIC
+    genesis::core
+    genesis::math)
 target_link_libraries(genesis-renderer-vulkan PRIVATE vulkan)
 target_include_directories(genesis-renderer-vulkan SYSTEM PUBLIC ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include)
 

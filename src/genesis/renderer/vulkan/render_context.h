@@ -47,6 +47,7 @@ class PlatformWindow;
 } // namespace SDL
 
 class Device;
+class SwapChain;
 
 class RenderContext: public GE::RenderContext
 {
@@ -62,6 +63,7 @@ public:
     const Scoped<SDL::PlatformWindow>& platformWindow() const { return m_window; }
     VkSurfaceKHR surface() const { return m_surface; }
     Shared<Device> device() const { return m_device; }
+    Shared<Vulkan::SwapChain> swapChain() const { return m_swap_chain; }
 
 private:
     void destroyVulkanHandles();
@@ -70,6 +72,7 @@ private:
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
 
     Shared<Vulkan::Device> m_device;
+    Shared<Vulkan::SwapChain> m_swap_chain;
 };
 
 } // namespace GE::Vulkan
