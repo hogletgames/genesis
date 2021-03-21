@@ -12,6 +12,7 @@ endif()
 
 include(cmake/SanitizeHelpers.cmake)
 include(cmake/Utils.cmake)
+configure_file(cmake/CTestCustom.cmake ${CMAKE_BINARY_DIR} @ONLY)
 
 if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "Build type is empty, configuring as 'Release'")
