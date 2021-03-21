@@ -47,6 +47,7 @@ class PlatformWindow;
 } // namespace SDL
 
 class Device;
+class SwapChain;
 
 class RenderContext: public GE::RenderContext
 {
@@ -70,6 +71,7 @@ private:
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
 
     Shared<Vulkan::Device> m_device;
+    Shared<Vulkan::SwapChain> m_swap_chain;
 };
 
 } // namespace GE::Vulkan
