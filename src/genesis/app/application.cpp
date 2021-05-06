@@ -42,13 +42,13 @@ namespace GE {
 bool Application::initialize(const settings_t& settings)
 {
     return Log::initialize(settings.log) && Window::initialize() && Input::initialize() &&
-           Renderer::initialize(settings.renderer) && initializeApp(settings);
+           initializeApp(settings);
 }
 
 void Application::shutdown()
 {
     shutdownApp();
-    Renderer::shutdown();
+    Renderer::setContext(nullptr);
     Input::shutdown();
     Window::shutdown();
     Log::shutdown();
@@ -92,6 +92,7 @@ bool Application::initializeApp(const settings_t& settings)
         return false;
     }
 
+    Renderer::setContext(window->renderContext());
     window->attachEventListener(get());
     return true;
 }

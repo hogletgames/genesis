@@ -49,7 +49,7 @@ void Window::shutdown()
 
 Scoped<Window> Window::create(const settings_t& settings)
 {
-    return makeScoped<PlatformWindow>(settings);
+    return tryMakeScoped<PlatformWindow>(settings);
 }
 
 } // namespace GE

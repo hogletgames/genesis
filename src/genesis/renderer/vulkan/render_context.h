@@ -50,6 +50,8 @@ public:
     bool initialize(void* window) override;
     void shutdown() override;
 
+    Renderer::API API() const override { return Renderer::API::VULKAN; }
+
     VkInstance instance() const { return m_instance; }
     VkSurfaceKHR surface() const { return m_surface; }
 

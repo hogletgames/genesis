@@ -65,6 +65,7 @@ public:
     const Vec2& getSize() const override { return m_settings.size; }
     void setVSync(bool enabled) override;
     const settings_t& getSettings() const override { return m_settings; }
+    Shared<RenderContext> renderContext() const override { return m_context; }
 
     void* getNativeWindow() override { return nullptr; }
     void* getNativeContext() override { return nullptr; }
@@ -78,7 +79,7 @@ private:
 
     settings_t m_settings;
     SDL_Window* m_window{nullptr};
-    GE::Scoped<RenderContext> m_context;
+    Shared<RenderContext> m_context;
 
     std::list<EventListener*> m_event_listeners;
 };
