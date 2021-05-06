@@ -75,7 +75,7 @@ public:
     virtual const settings_t& getSettings() const = 0;
 
     virtual void* getNativeWindow() = 0;
-    virtual void* getNativeContext() = 0;
+    virtual Shared<RenderContext> getRenderContext() = 0;
 };
 
 } // namespace GE

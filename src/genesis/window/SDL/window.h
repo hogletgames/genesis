@@ -66,8 +66,8 @@ public:
     void setVSync(bool enabled) override;
     const settings_t& getSettings() const override { return m_settings; }
 
-    void* getNativeWindow() override { return nullptr; }
-    void* getNativeContext() override { return nullptr; }
+    void* getNativeWindow() override { return m_window; }
+    Shared<RenderContext> getRenderContext() override { return m_context; }
 
 private:
     void emitEvent(Event* event);
@@ -78,7 +78,7 @@ private:
 
     settings_t m_settings;
     SDL_Window* m_window{nullptr};
-    GE::Scoped<RenderContext> m_context;
+    Shared<RenderContext> m_context;
 
     std::list<EventListener*> m_event_listeners;
 };
