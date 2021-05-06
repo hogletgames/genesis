@@ -52,6 +52,11 @@ Shared<RenderContext> Renderer::context()
     return get()->m_context;
 }
 
+const Scoped<RendererFactory>& Renderer::factory()
+{
+    return get()->m_context->factory();
+}
+
 Renderer::API toRendererAPI(const std::string& api_str)
 {
     auto api = toEnum<Renderer::API>(api_str);

@@ -65,6 +65,11 @@ public:
     Shared<Device> device() const { return m_device; }
     Shared<Vulkan::SwapChain> swapChain() const { return m_swap_chain; }
 
+    const Scoped<GE::RendererFactory>& factory() const override
+    {
+        return m_renderer_factory;
+    }
+
 private:
     void destroyVulkanHandles();
 
@@ -73,6 +78,8 @@ private:
 
     Shared<Vulkan::Device> m_device;
     Shared<Vulkan::SwapChain> m_swap_chain;
+
+    Scoped<GE::RendererFactory> m_renderer_factory;
 };
 
 } // namespace GE::Vulkan
