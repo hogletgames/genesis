@@ -33,6 +33,7 @@
 #include "render_context.h"
 #include "device.h"
 #include "instance.h"
+#include "renderer_factory.h"
 #include "sdl_platform_window.h"
 #include "swap_chain.h"
 #include "utils.h"
@@ -55,6 +56,8 @@ bool RenderContext::initialize(void* window)
 
         m_device = makeScoped<Device>(this);
         m_swap_chain = makeScoped<SwapChain>(m_device, m_surface);
+
+        m_renderer_factory = makeScoped<Vulkan::RendererFactoryImpl>(m_device);
     } catch (const Vulkan::Exception& e) {
         GE_CORE_ERR("Failed to initialize Vulkan Render Context: {}", e.what());
         shutdown();
@@ -67,6 +70,8 @@ bool RenderContext::initialize(void* window)
 void RenderContext::shutdown()
 {
     GE_CORE_INFO("Shutdown Vulkan Context");
+
+    m_renderer_factory.reset();
 
     m_swap_chain.reset();
     m_device.reset();

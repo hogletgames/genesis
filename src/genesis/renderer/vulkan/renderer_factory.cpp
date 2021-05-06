@@ -30,29 +30,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_RENDER_CONTEXT_H_
-#define GENESIS_RENDERER_RENDER_CONTEXT_H_
+#include "renderer_factory.h"
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
-#include <genesis/renderer/renderer.h>
+namespace GE::Vulkan {
 
-namespace GE {
+RendererFactoryImpl::RendererFactoryImpl(Shared<Device> device)
+    : m_device{std::move(device)}
+{}
 
-class RendererFactoryImpl;
-
-class GE_API RenderContext: public Interface
-{
-public:
-    virtual bool initialize(void* window) = 0;
-    virtual void shutdown() = 0;
-
-    virtual Renderer::API getAPI() const = 0;
-    virtual const Scoped<GE::RendererFactoryImpl>& getFactory() const = 0;
-
-    static Scoped<RenderContext> create(Renderer::API api);
-};
-
-} // namespace GE
-
-#endif // GENESIS_RENDERER_RENDER_CONTEXT_H_
+} // namespace GE::Vulkan

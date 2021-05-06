@@ -35,6 +35,7 @@
 #define GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
 
 #include <genesis/renderer/render_context.h>
+#include <genesis/renderer/renderer_factory.h>
 
 #include <vulkan/vulkan.h>
 
@@ -60,6 +61,11 @@ public:
 
     Renderer::API getAPI() const override { return Renderer::API::VULKAN; };
 
+    const Scoped<GE::RendererFactoryImpl>& getFactory() const override
+    {
+        return m_renderer_factory;
+    }
+
     const Scoped<SDL::PlatformWindow>& getPlatformWindow() const { return m_window; }
     VkSurfaceKHR getSurface() const { return m_surface; }
     Shared<Device> getDevice() const { return m_device; }
@@ -72,6 +78,8 @@ private:
 
     Shared<Vulkan::Device> m_device;
     Shared<Vulkan::SwapChain> m_swap_chain;
+
+    Scoped<GE::RendererFactoryImpl> m_renderer_factory;
 };
 
 } // namespace GE::Vulkan

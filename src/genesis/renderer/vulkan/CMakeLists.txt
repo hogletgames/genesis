@@ -3,12 +3,14 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     device.cpp
     instance.cpp
     render_context.cpp
+    renderer_factory.cpp
     swap_chain.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
     device.h
     instance.h
     render_context.h
+    renderer_factory.h
     swap_chain.h
     utils.h
     vulkan_exception.h)

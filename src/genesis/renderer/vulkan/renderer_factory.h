@@ -30,29 +30,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_RENDER_CONTEXT_H_
-#define GENESIS_RENDERER_RENDER_CONTEXT_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#define GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
-#include <genesis/renderer/renderer.h>
+#include <genesis/renderer/renderer_factory.h>
 
-namespace GE {
+namespace GE::Vulkan {
 
-class RendererFactoryImpl;
+class Device;
 
-class GE_API RenderContext: public Interface
+class RendererFactoryImpl: public GE::RendererFactoryImpl
 {
 public:
-    virtual bool initialize(void* window) = 0;
-    virtual void shutdown() = 0;
+    explicit RendererFactoryImpl(Shared<Device> device);
 
-    virtual Renderer::API getAPI() const = 0;
-    virtual const Scoped<GE::RendererFactoryImpl>& getFactory() const = 0;
-
-    static Scoped<RenderContext> create(Renderer::API api);
+private:
+    Shared<Device> m_device;
 };
 
-} // namespace GE
+} // namespace GE::Vulkan
 
-#endif // GENESIS_RENDERER_RENDER_CONTEXT_H_
+#endif // GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_

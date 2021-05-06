@@ -35,5 +35,6 @@
 
 #include <genesis/renderer/render_context.h>
 #include <genesis/renderer/renderer.h>
+#include <genesis/renderer/renderer_factory.h>
 
 #endif // GENESIS_RENDERER_H_

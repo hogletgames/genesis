@@ -30,29 +30,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_RENDER_CONTEXT_H_
-#define GENESIS_RENDERER_RENDER_CONTEXT_H_
+#include "renderer_factory.h"
+#include "vulkan/render_context.h"
+#include "vulkan/renderer_factory.h"
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
-#include <genesis/renderer/renderer.h>
+#include "genesis/core/log.h"
 
 namespace GE {
 
-class RendererFactoryImpl;
-
-class GE_API RenderContext: public Interface
+void RendererFactory::setContext(Shared<RenderContext> context)
 {
-public:
-    virtual bool initialize(void* window) = 0;
-    virtual void shutdown() = 0;
+    get()->m_context = std::move(context);
+}
 
-    virtual Renderer::API getAPI() const = 0;
-    virtual const Scoped<GE::RendererFactoryImpl>& getFactory() const = 0;
-
-    static Scoped<RenderContext> create(Renderer::API api);
-};
+const Scoped<RendererFactoryImpl>& RendererFactory::factory()
+{
+    return get()->m_context->getFactory();
+}
 
 } // namespace GE
-
-#endif // GENESIS_RENDERER_RENDER_CONTEXT_H_

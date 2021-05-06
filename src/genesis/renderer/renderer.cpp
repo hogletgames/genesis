@@ -32,6 +32,7 @@
 
 #include "renderer.h"
 #include "render_context.h"
+#include "renderer_factory.h"
 
 #include "genesis/core/enum.h"
 
@@ -45,6 +46,7 @@ Renderer::API Renderer::getAPI()
 void Renderer::setContext(Shared<RenderContext> context)
 {
     get()->m_context = std::move(context);
+    RendererFactory::setContext(get()->m_context);
 }
 
 Renderer::API toRendererAPI(const std::string& api_str)

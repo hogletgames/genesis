@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_RENDER_CONTEXT_H_
-#define GENESIS_RENDERER_RENDER_CONTEXT_H_
+#ifndef GENESIS_RENDERER_RENDERER_FACTORY_H_
+#define GENESIS_RENDERER_RENDERER_FACTORY_H_
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
@@ -39,20 +39,30 @@
 
 namespace GE {
 
-class RendererFactoryImpl;
+class RenderContext;
 
-class GE_API RenderContext: public Interface
+class GE_API RendererFactoryImpl: public Interface
+{};
+
+class GE_API RendererFactory
 {
 public:
-    virtual bool initialize(void* window) = 0;
-    virtual void shutdown() = 0;
+    static void setContext(Shared<RenderContext> context);
 
-    virtual Renderer::API getAPI() const = 0;
-    virtual const Scoped<GE::RendererFactoryImpl>& getFactory() const = 0;
+private:
+    RendererFactory() = default;
 
-    static Scoped<RenderContext> create(Renderer::API api);
+    static RendererFactory* get()
+    {
+        static RendererFactory instance;
+        return &instance;
+    }
+
+    static const Scoped<RendererFactoryImpl>& factory();
+
+    Shared<RenderContext> m_context;
 };
 
 } // namespace GE
 
-#endif // GENESIS_RENDERER_RENDER_CONTEXT_H_
+#endif // GENESIS_RENDERER_RENDERER_FACTORY_H_

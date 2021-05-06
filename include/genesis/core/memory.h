@@ -79,6 +79,12 @@ Shared<T> tryMakeShared(Args&&... args)
     }
 }
 
+template<class T, class U>
+constexpr Shared<T> staticPtrCast(const Shared<U>& ptr)
+{
+    return std::static_pointer_cast<T>(ptr);
+}
+
 } // namespace GE
 
 #endif // GENESIS_CORE_MEMORY_H_
