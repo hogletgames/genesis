@@ -33,6 +33,7 @@
 #include "render_context.h"
 #include "device.h"
 #include "instance.h"
+#include "pipeline.h"
 #include "renderer_factory.h"
 #include "sdl_platform_window.h"
 #include "swap_chain.h"
@@ -56,6 +57,8 @@ bool RenderContext::initialize(void* window)
 
         m_device = makeScoped<Device>(this);
         m_swap_chain = makeScoped<SwapChain>(m_device, m_surface);
+        m_pipeline_layout = createPipelineLayout();
+        m_pipeline = makeScoped<Pipeline>(m_device, createPipelineConfig());
 
         m_renderer_factory = makeScoped<Vulkan::RendererFactoryImpl>(m_device);
     } catch (const Vulkan::Exception& e) {
@@ -73,6 +76,8 @@ void RenderContext::shutdown()
 
     m_renderer_factory.reset();
 
+    m_pipeline.reset();
+    destroyPipelineLayout();
     m_swap_chain.reset();
     m_device.reset();
 
@@ -85,6 +90,42 @@ void RenderContext::destroyVulkanHandles()
 {
     vkDestroySurfaceKHR(Instance::getInstance(), m_surface, nullptr);
     m_surface = VK_NULL_HANDLE;
+}
+
+VkPipelineLayout RenderContext::createPipelineLayout()
+{
+    VkPipelineLayout pipeline_layout{VK_NULL_HANDLE};
+    VkPipelineLayoutCreateInfo pipeline_layout_info{};
+    pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipeline_layout_info.pSetLayouts = nullptr;
+    pipeline_layout_info.setLayoutCount = 0;
+    pipeline_layout_info.pPushConstantRanges = nullptr;
+    pipeline_layout_info.pushConstantRangeCount = 0;
+
+    if (vkCreatePipelineLayout(m_device->getDevice(), &pipeline_layout_info, nullptr,
+                               &pipeline_layout) != VK_SUCCESS) {
+        throw Vulkan::Exception{"Failed to create Pipeline Layout"};
+    }
+
+    return pipeline_layout;
+}
+
+pipeline_config_t RenderContext::createPipelineConfig()
+{
+    auto config = Pipeline::makeDefaultConfig(m_window->getSize());
+    config.vert_shader_path = "examples/sandbox/assets/shaders/shader.vert";
+    config.frag_shader_path = "examples/sandbox/assets/shaders/shader.frag";
+    config.viewport.width = m_swap_chain->getExtent().width;
+    config.viewport.height = m_swap_chain->getExtent().height;
+    config.pipeline_layout = m_pipeline_layout;
+    config.render_pass = m_swap_chain->getRenderPass();
+    return config;
+}
+
+void RenderContext::destroyPipelineLayout()
+{
+    vkDestroyPipelineLayout(m_device->getDevice(), m_pipeline_layout, nullptr);
+    m_pipeline_layout = VK_NULL_HANDLE;
 }
 
 } // namespace GE::Vulkan

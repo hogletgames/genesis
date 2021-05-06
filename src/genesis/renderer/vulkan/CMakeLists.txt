@@ -2,6 +2,7 @@
 list(APPEND GE_RENDERER_VULKAN_SRC
     device.cpp
     instance.cpp
+    pipeline.cpp
     render_context.cpp
     renderer_factory.cpp
     swap_chain.cpp)
@@ -9,6 +10,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
 list(APPEND GE_RENDERER_VULKAN_HEADERS
     device.h
     instance.h
+    pipeline.h
     render_context.h
     renderer_factory.h
     swap_chain.h
@@ -23,13 +25,16 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS sdl_platform_window.h)
 add_library(genesis-renderer-vulkan ${GE_RENDERER_VULKAN_SRC} ${GE_RENDERER_VULKAN_HEADERS})
 target_link_libraries(genesis-renderer-vulkan PUBLIC
     genesis::core
-    genesis::math)
-target_link_libraries(genesis-renderer-vulkan PRIVATE vulkan)
-target_include_directories(genesis-renderer-vulkan SYSTEM PUBLIC ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include)
+    genesis::math
+    shaderc
+    vulkan)
+target_include_directories(genesis-renderer-vulkan SYSTEM PRIVATE
+    ${GE_THIRD_PARTY_DIR}/Vulkan/shaderc/libshaderc/include
+    ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include)
 
-if(NOT CMAKE_EXPORT_COMPILE_COMMANDS AND NOT GE_DISABLE_DEBUG)
+if (NOT CMAKE_EXPORT_COMPILE_COMMANDS AND NOT GE_DISABLE_DEBUG)
     add_dependencies(genesis-renderer-vulkan VkLayer_khronos_validation-json)
-endif(${GE_THIRD_PARTY_DIR}/SDL2/include)
+endif ()
 
 # Add SDL2 library/include directory
 target_link_libraries(genesis-renderer-vulkan PRIVATE SDL2-static)

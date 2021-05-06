@@ -31,66 +31,62 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
-#define GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
+#ifndef GENESIS_RENDERER_VULKAN_PIPELINE_H_
+#define GENESIS_RENDERER_VULKAN_PIPELINE_H_
 
-#include <genesis/renderer/render_context.h>
-#include <genesis/renderer/renderer_factory.h>
+#include <genesis/core/memory.h>
+#include <genesis/math/types.h>
 
+#include <shaderc/shaderc.hpp>
 #include <vulkan/vulkan.h>
-
-#include <vector>
 
 namespace GE::Vulkan {
 
-namespace SDL {
-class PlatformWindow;
-} // namespace SDL
-
 class Device;
-class Pipeline;
-class SwapChain;
 
-struct pipeline_config_t;
+struct pipeline_config_t {
+    std::string vert_shader_path;
+    std::string frag_shader_path;
+    VkViewport viewport{};
+    VkRect2D scissor{};
+    VkPipelineInputAssemblyStateCreateInfo input_assembly_state;
+    VkPipelineRasterizationStateCreateInfo rasterization_state;
+    VkPipelineMultisampleStateCreateInfo multisample_state;
+    VkPipelineColorBlendAttachmentState color_blend_attachment;
+    VkPipelineColorBlendStateCreateInfo color_blend_state;
+    VkPipelineDepthStencilStateCreateInfo depth_stencil_state;
+    VkPipelineLayout pipeline_layout{VK_NULL_HANDLE};
+    VkRenderPass render_pass{VK_NULL_HANDLE};
+    uint32_t subpass{0};
+};
 
-class RenderContext: public GE::RenderContext
+class Pipeline
 {
 public:
-    RenderContext();
-    ~RenderContext();
+    explicit Pipeline(Shared<Device> device, const pipeline_config_t& config);
+    ~Pipeline();
 
-    bool initialize(void* window) override;
-    void shutdown() override;
+    void bind(VkCommandBuffer command_buffer);
 
-    Renderer::API getAPI() const override { return Renderer::API::VULKAN; };
-
-    const Scoped<GE::RendererFactoryImpl>& getFactory() const override
-    {
-        return m_renderer_factory;
-    }
-
-    const Scoped<SDL::PlatformWindow>& getPlatformWindow() const { return m_window; }
-    VkSurfaceKHR getSurface() const { return m_surface; }
-    Shared<Device> getDevice() const { return m_device; }
+    static pipeline_config_t makeDefaultConfig(const Vec2& viewport);
 
 private:
-    void destroyVulkanHandles();
+    void createPipeline(const pipeline_config_t& config);
 
-    VkPipelineLayout createPipelineLayout();
-    void destroyPipelineLayout();
-    pipeline_config_t createPipelineConfig();
+    void destroyShaderModules();
+    void destroyVkHandles();
 
-    Scoped<SDL::PlatformWindow> m_window;
-    VkSurfaceKHR m_surface{VK_NULL_HANDLE};
-    VkPipelineLayout m_pipeline_layout{VK_NULL_HANDLE};
+    std::vector<uint32_t> compileShader(const std::string& filename,
+                                        shaderc_shader_kind shader_kind);
+    VkShaderModule createShaderModule(const std::vector<uint32_t>& shader_code);
 
-    Shared<Vulkan::Device> m_device;
-    Shared<Vulkan::SwapChain> m_swap_chain;
-    Shared<Vulkan::Pipeline> m_pipeline;
+    Shared<Device> m_device;
+    VkPipeline m_pipeline{VK_NULL_HANDLE};
 
-    Scoped<GE::RendererFactoryImpl> m_renderer_factory;
+    VkShaderModule m_vert_shader_module{VK_NULL_HANDLE};
+    VkShaderModule m_frag_shader_module{VK_NULL_HANDLE};
 };
 
 } // namespace GE::Vulkan
 
-#endif // GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
+#endif // GENESIS_RENDERER_VULKAN_PIPELINE_H_
