@@ -62,13 +62,12 @@ public:
     void attachEventListener(EventListener* listener) override;
     void detachEventListener(EventListener* listener) override;
 
-    const Vec2& getSize() const override { return m_settings.size; }
+    const Vec2& windowSize() const override { return m_settings.size; }
     void setVSync(bool enabled) override;
-    const settings_t& getSettings() const override { return m_settings; }
-    Shared<RenderContext> renderContext() const override { return m_context; }
+    const settings_t& settings() const override { return m_settings; }
 
-    void* getNativeWindow() override { return nullptr; }
-    void* getNativeContext() override { return nullptr; }
+    void* nativeWindow() override { return m_window; }
+    Shared<RenderContext> renderContext() const override { return m_context; }
 
 private:
     void emitEvent(Event* event);

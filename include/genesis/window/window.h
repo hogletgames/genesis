@@ -70,13 +70,12 @@ public:
     virtual void attachEventListener(EventListener* listener) = 0;
     virtual void detachEventListener(EventListener* listener) = 0;
 
-    virtual const Vec2& getSize() const = 0;
+    virtual const Vec2& windowSize() const = 0;
     virtual void setVSync(bool enabled) = 0;
-    virtual const settings_t& getSettings() const = 0;
-    virtual Shared<RenderContext> renderContext() const = 0;
+    virtual const settings_t& settings() const = 0;
 
-    virtual void* getNativeWindow() = 0;
-    virtual void* getNativeContext() = 0;
+    virtual void* nativeWindow() = 0;
+    virtual Shared<RenderContext> renderContext() const = 0;
 };
 
 } // namespace GE

@@ -66,7 +66,7 @@ public:
     static void attachLayer(Shared<Layer> layer);
     static void detachLayer(const Shared<Layer>& layer);
 
-    static const Window& getWindow() { return *get()->m_window; }
+    static Shared<Window> window() { return get()->m_window; }
 
 private:
     enum class WindowState : uint8_t
@@ -100,7 +100,7 @@ private:
     void renderLayers();
     void clearLayers();
 
-    Scoped<Window> m_window;
+    Shared<Window> m_window;
     std::deque<Shared<Layer>> m_layers;
     WindowState m_window_state{WindowState::NONE};
 
