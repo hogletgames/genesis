@@ -8,6 +8,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     image.cpp
     input_stage_descriptions.cpp
     instance.cpp
+    pipeline.cpp
     render_context.cpp
     renderer_factory.cpp
     shader.cpp
@@ -24,6 +25,7 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     image.h
     input_stage_descriptions.h
     instance.h
+    pipeline.h
     render_context.h
     renderer_factory.h
     shader.h
