@@ -30,28 +30,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer_factory.h"
 #include "framebuffer.h"
-#include "vulkan/render_context.h"
-#include "vulkan/renderer_factory.h"
+#include "device.h"
 
-#include "genesis/core/log.h"
+#include <stdexcept>
 
-namespace GE {
+namespace GE::Vulkan {
 
-void RendererFactory::setContext(Shared<RenderContext> context)
+Framebuffer::Framebuffer(GE::Shared<Device> device)
+    : m_device{std::move(device)}
 {
-    get()->m_context = std::move(context);
+    VkFramebufferCreateInfo framebuffer_info{};
+    framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    // framebuffer_info.renderPass = m_render_pass;
+    // framebuffer_info.pAttachments = attachments.data();
+    // framebuffer_info.attachmentCount = attachments.size();
+    // framebuffer_info.width = m_extent.width;
+    // framebuffer_info.height = m_extent.height;
+    framebuffer_info.layers = 1;
+
+    if (vkCreateFramebuffer(m_device->getDevice(), &framebuffer_info, nullptr,
+                            &m_framebuffer) != VK_SUCCESS) {
+        throw std::runtime_error{"Failed to create VkFramebuffer"};
+    }
 }
 
-Scoped<Framebuffer> RendererFactory::createFramebuffer()
+Framebuffer::~Framebuffer()
 {
-    return factory()->createFramebuffer();
+    if (m_framebuffer != VK_NULL_HANDLE) {
+        vkDestroyFramebuffer(m_device->getDevice(), m_framebuffer, nullptr);
+    }
 }
 
-const Scoped<RendererFactoryImpl>& RendererFactory::factory()
-{
-    return get()->m_context->getFactory();
-}
-
-} // namespace GE
+} // namespace GE::Vulkan

@@ -30,28 +30,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer_factory.h"
-#include "framebuffer.h"
-#include "vulkan/render_context.h"
-#include "vulkan/renderer_factory.h"
+#ifndef GENESIS_RENDERER_FRAMEBUFFER_H_
+#define GENESIS_RENDERER_FRAMEBUFFER_H_
 
-#include "genesis/core/log.h"
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
 
 namespace GE {
 
-void RendererFactory::setContext(Shared<RenderContext> context)
+class GE_API Framebuffer: public Interface
 {
-    get()->m_context = std::move(context);
-}
-
-Scoped<Framebuffer> RendererFactory::createFramebuffer()
-{
-    return factory()->createFramebuffer();
-}
-
-const Scoped<RendererFactoryImpl>& RendererFactory::factory()
-{
-    return get()->m_context->getFactory();
-}
+public:
+    static Scoped<Framebuffer> create();
+};
 
 } // namespace GE
+
+#endif // GENESIS_RENDERER_FRAMEBUFFER_H_

@@ -30,28 +30,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer_factory.h"
-#include "framebuffer.h"
-#include "vulkan/render_context.h"
-#include "vulkan/renderer_factory.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_RENDERER_VULKAN_FRAMEBUFFER_H_
+#define GENESIS_RENDERER_VULKAN_FRAMEBUFFER_H_
 
-#include "genesis/core/log.h"
+#include <genesis/core/memory.h>
+#include <genesis/renderer/framebuffer.h>
 
-namespace GE {
+#include <vulkan/vulkan.h>
 
-void RendererFactory::setContext(Shared<RenderContext> context)
+namespace GE::Vulkan {
+
+class Device;
+
+class GE_API Framebuffer: public GE::Framebuffer
 {
-    get()->m_context = std::move(context);
-}
+public:
+    explicit Framebuffer(Shared<Device> device);
+    ~Framebuffer();
 
-Scoped<Framebuffer> RendererFactory::createFramebuffer()
-{
-    return factory()->createFramebuffer();
-}
+private:
+    Shared<Vulkan::Device> m_device;
+    VkFramebuffer m_framebuffer{VK_NULL_HANDLE};
+};
 
-const Scoped<RendererFactoryImpl>& RendererFactory::factory()
-{
-    return get()->m_context->getFactory();
-}
+} // namespace GE::Vulkan
 
-} // namespace GE
+#endif // GENESIS_RENDERER_VULKAN_FRAMEBUFFER_H_

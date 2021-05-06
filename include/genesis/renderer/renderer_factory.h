@@ -39,15 +39,21 @@
 
 namespace GE {
 
+class Framebuffer;
 class RenderContext;
 
 class GE_API RendererFactoryImpl: public Interface
-{};
+{
+public:
+    virtual Scoped<Framebuffer> createFramebuffer() const = 0;
+};
 
 class GE_API RendererFactory
 {
 public:
     static void setContext(Shared<RenderContext> context);
+
+    static Scoped<Framebuffer> createFramebuffer();
 
 private:
     RendererFactory() = default;

@@ -1,6 +1,7 @@
 # Vulkan Renderer sources
 list(APPEND GE_RENDERER_VULKAN_SRC
     device.cpp
+    framebuffer.cpp
     instance.cpp
     pipeline.cpp
     render_context.cpp
@@ -9,6 +10,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
     device.h
+    framebuffer.h
     instance.h
     pipeline.h
     render_context.h

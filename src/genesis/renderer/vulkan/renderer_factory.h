@@ -45,6 +45,8 @@ class RendererFactoryImpl: public GE::RendererFactoryImpl
 public:
     explicit RendererFactoryImpl(Shared<Device> device);
 
+    Scoped<GE::Framebuffer> createFramebuffer() const override;
+
 private:
     Shared<Device> m_device;
 };

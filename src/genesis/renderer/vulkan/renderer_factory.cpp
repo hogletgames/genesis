@@ -31,11 +31,17 @@
  */
 
 #include "renderer_factory.h"
+#include "framebuffer.h"
 
 namespace GE::Vulkan {
 
 RendererFactoryImpl::RendererFactoryImpl(Shared<Device> device)
     : m_device{std::move(device)}
 {}
+
+Scoped<GE::Framebuffer> RendererFactoryImpl::createFramebuffer() const
+{
+    return tryMakeScoped<Vulkan::Framebuffer>(m_device);
+}
 
 } // namespace GE::Vulkan

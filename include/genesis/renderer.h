@@ -33,6 +33,7 @@
 #ifndef GENESIS_RENDERER_H_
 #define GENESIS_RENDERER_H_
 
+#include <genesis/renderer/framebuffer.h>
 #include <genesis/renderer/render_context.h>
 #include <genesis/renderer/renderer.h>
 #include <genesis/renderer/renderer_factory.h>
