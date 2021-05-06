@@ -31,7 +31,7 @@
  */
 #include "window.h"
 
-#include "genesis/core/asserts.h"
+#include "genesis/core/format.h"
 #include "genesis/core/log.h"
 #include "genesis/core/utils.h"
 #include "genesis/renderer/render_context.h"
@@ -103,15 +103,22 @@ Window::Window(settings_t settings)
     : m_settings{std::move(settings)}
 {
     auto flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN |
-                 renderAPIToWindowFlag(settings.render_api);
+                 renderAPIToWindowFlag(settings.renderer.api);
 
     m_window = SDL_CreateWindow(m_settings.title.c_str(), SDL_WINDOWPOS_CENTERED,
                                 SDL_WINDOWPOS_CENTERED, m_settings.size.x,
                                 m_settings.size.y, flags);
-    GE_CORE_ASSERT(m_window, "Failed to create SDL Window: {}", SDL_GetError());
 
-    m_context = RenderContext::create(settings.render_api);
-    GE_CORE_ASSERT(m_context->initialize(m_window), "Failed to init render context");
+    if (m_window == nullptr) {
+        auto error = GE_FMTSTR("Failed to create SDL Window: {}", SDL_GetError());
+        throw std::runtime_error{error};
+    }
+
+    m_context = RenderContext::create(settings.renderer.api);
+
+    if (!m_context->initialize(m_window)) {
+        throw std::runtime_error{"Failed to initialize Render Context"};
+    }
 
     GE_CORE_INFO("Window '{}' has been created", m_settings.title);
 }

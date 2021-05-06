@@ -31,32 +31,20 @@
  */
 
 #include "renderer.h"
+#include "render_context.h"
 
-#include "genesis/core/format.h"
-#include "genesis/core/log.h"
-#include "genesis/core/utils.h"
+#include "genesis/core/enum.h"
 
 namespace GE {
 
-bool Renderer::initialize(const settings_t& settings)
+Renderer::API Renderer::getAPI()
 {
-    GE_CORE_INFO("Initializing Renderer...");
-
-    switch (settings.api) {
-        case Renderer::API::VULKAN: break;
-        case Renderer::API::NONE:
-        default: GE_CORE_ERR("Unknown Render API: {}", settings.api); return false;
-    }
-
-    GE_CORE_INFO("Configuring '{}' as Renderer API", settings.api);
-
-    get()->m_api = settings.api;
-    return true;
+    return get()->m_context->getAPI();
 }
 
-void Renderer::shutdown()
+void Renderer::setContext(Shared<RenderContext> context)
 {
-    GE_CORE_INFO("Shutdown Renderer");
+    get()->m_context = std::move(context);
 }
 
 Renderer::API toRendererAPI(const std::string& api_str)

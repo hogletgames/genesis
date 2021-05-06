@@ -35,10 +35,13 @@
 
 #include <genesis/core/enum.h>
 #include <genesis/core/export.h>
+#include <genesis/core/memory.h>
 
 #include <string>
 
 namespace GE {
+
+class RenderContext;
 
 class GE_API Renderer
 {
@@ -55,10 +58,8 @@ public:
         static constexpr API API_DEFAULT{API::VULKAN};
     };
 
-    static bool initialize(const settings_t& settings);
-    static void shutdown();
-
-    static API getAPI() { return get()->m_api; }
+    static void setContext(Shared<RenderContext> context);
+    static API getAPI();
 
 private:
     Renderer() = default;
@@ -69,7 +70,7 @@ private:
         return &instance;
     }
 
-    API m_api{API::NONE};
+    Shared<RenderContext> m_context;
 };
 
 Renderer::API toRendererAPI(const std::string& api_str);

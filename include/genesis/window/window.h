@@ -52,12 +52,11 @@ public:
         std::string title{TITLE_DEFAULT};
         Vec2 size{SIZE_DEFAULT};
         bool vsync{VSYNC_DEFAULT};
-        Renderer::API render_api{RENDERER_API_DEFAULT};
+        Renderer::settings_t renderer{};
 
         static constexpr auto TITLE_DEFAULT = "Genesis";
         static constexpr Vec2 SIZE_DEFAULT{1280.0f, 720.0f};
         static constexpr bool VSYNC_DEFAULT{true};
-        static constexpr Renderer::API RENDERER_API_DEFAULT{Renderer::API::VULKAN};
     };
 
     static bool initialize();

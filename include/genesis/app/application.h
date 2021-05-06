@@ -55,7 +55,6 @@ public:
     struct settings_t {
         Log::settings_t log{};
         Window::settings_t window{};
-        Renderer::settings_t renderer{};
     };
 
     static bool initialize(const settings_t& settings);
