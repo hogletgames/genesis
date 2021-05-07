@@ -33,6 +33,8 @@
 #ifndef GENESIS_CORE_MEMORY_H_
 #define GENESIS_CORE_MEMORY_H_
 
+#include <genesis/core/exception.h>
+
 #include <memory>
 
 namespace GE {
@@ -53,6 +55,26 @@ template<typename T, typename... Args>
 constexpr Shared<T> makeShared(Args&&... args)
 {
     return std::make_shared<T>(std::forward<Args>(args)...);
+}
+
+template<typename T, typename... Args>
+Scoped<T> tryMakeScoped(Args&&... args)
+{
+    try {
+        return makeScoped<T>(std::forward<Args>(args)...);
+    } catch (const Exception& e) {
+        return nullptr;
+    }
+}
+
+template<typename T, typename... Args>
+Shared<T> tryMakeShared(Args&&... args)
+{
+    try {
+        return makeScoped<T>(std::forward<Args>(args)...);
+    } catch (const Exception& e) {
+        return nullptr;
+    }
 }
 
 } // namespace GE
