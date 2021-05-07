@@ -30,7 +30,7 @@ target_link_libraries(genesis-renderer-vulkan PUBLIC
     genesis::math
     shaderc
     vulkan)
-target_include_directories(genesis-renderer-vulkan SYSTEM PRIVATE
+target_include_directories(genesis-renderer-vulkan SYSTEM PUBLIC
     ${GE_THIRD_PARTY_DIR}/Vulkan/shaderc/libshaderc/include
     ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include)
 
