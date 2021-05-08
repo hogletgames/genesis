@@ -31,9 +31,7 @@
  */
 
 #include "render_context.h"
-
-#include "vulkan/sdl_render_context.h"
-using VulkanPlatformContext = GE::Vulkan::SDL::RenderContext;
+#include "vulkan/render_context.h"
 
 #include "genesis/core/log.h"
 #include "genesis/core/memory.h"
@@ -43,7 +41,7 @@ namespace GE {
 Scoped<RenderContext> RenderContext::create(Renderer::API api)
 {
     switch (api) {
-        case Renderer::API::VULKAN: return makeScoped<VulkanPlatformContext>();
+        case Renderer::API::VULKAN: return makeScoped<Vulkan::RenderContext>();
         case Renderer::API::NONE:
         default: break;
     }

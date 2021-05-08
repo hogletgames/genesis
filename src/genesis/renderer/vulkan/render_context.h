@@ -40,13 +40,18 @@
 
 #include <vector>
 
-struct SDL_Window;
-
 namespace GE::Vulkan {
+
+namespace SDL {
+class PlatformWindow;
+} // namespace SDL
 
 class RenderContext: public GE::RenderContext
 {
 public:
+    RenderContext();
+    ~RenderContext();
+
     bool initialize(void* window) override;
     void shutdown() override;
 
@@ -55,18 +60,16 @@ public:
     VkInstance instance() const { return m_instance; }
     VkSurfaceKHR surface() const { return m_surface; }
 
-protected:
-    virtual std::vector<const char*> getWindowExtensions(void* window) const = 0;
-    virtual const char* getAppName(void* window) const = 0;
-    virtual bool createSurface(void* window) = 0;
+private:
+    void createInstance();
+    void createDebugUtilsMessenger();
+
+    void destroyVulkanHandles();
+
+    Scoped<SDL::PlatformWindow> m_window;
 
     VkInstance m_instance{VK_NULL_HANDLE};
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
-
-private:
-    bool createInstance(void* window);
-    bool setupDebugUtils();
-
     VkDebugUtilsMessengerEXT m_debug_utils{VK_NULL_HANDLE};
 };
 

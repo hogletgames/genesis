@@ -31,9 +31,11 @@
  */
 
 #include "render_context.h"
+#include "sdl_platform_window.h"
 #include "utils.h"
+#include "vulkan_exception.h"
 
-#include "genesis/core/asserts.h"
+#include "genesis/core/log.h"
 #include "genesis/core/version.h"
 
 namespace {
@@ -92,24 +94,44 @@ getDebugMsgrCreateInfo(VkDebugUtilsMessageSeverityFlagsEXT severity)
 
 namespace GE::Vulkan {
 
+RenderContext::RenderContext() = default;
+
+RenderContext::~RenderContext()
+{
+    destroyVulkanHandles();
+}
+
 bool RenderContext::initialize(void* window)
 {
     GE_CORE_INFO("Initializing Vulkan Context...");
-    return createInstance(window) && setupDebugUtils() && createSurface(window);
+
+    try {
+        m_window = makeScoped<SDL::PlatformWindow>(reinterpret_cast<SDL_Window*>(window));
+        createInstance();
+#ifndef GE_DISABLE_DEBUG
+        createDebugUtilsMessenger();
+#endif // GE_DISABLE_DEBUG
+        m_surface = m_window->createSurface(m_instance);
+    } catch (const Vulkan::Exception& e) {
+        GE_CORE_ERR("Failed to initialize Vulkan Render Context: {}", e.what());
+        shutdown();
+        return false;
+    }
+
+    return true;
 }
 
 void RenderContext::shutdown()
 {
     GE_CORE_INFO("Shutdown Vulkan Context");
-#ifndef GE_DISABLE_DEBUG
-    destroyDebugUtilsMessengerEXT(m_instance, m_debug_utils, nullptr);
-#endif // GE_DISABLE_DEBUG
-    vkDestroyInstance(m_instance, nullptr);
+
+    destroyVulkanHandles();
+    m_window.reset();
 }
 
-bool RenderContext::createInstance(void* window)
+void RenderContext::createInstance()
 {
-    auto window_extensions = getWindowExtensions(window);
+    auto window_extensions = m_window->vulkanExtensions();
 
 #ifndef GE_DISABLE_DEBUG
     window_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -117,7 +139,7 @@ bool RenderContext::createInstance(void* window)
 
     VkApplicationInfo app_info{};
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    app_info.pApplicationName = getAppName(window);
+    app_info.pApplicationName = m_window->title();
     app_info.apiVersion = VK_MAKE_VERSION(1, 0, 0);
     app_info.pEngineName = ENGINE_NAME;
     app_info.engineVersion = VK_MAKE_VERSION(VER_MAJOR, VER_MINOR, VER_PATCH);
@@ -138,18 +160,31 @@ bool RenderContext::createInstance(void* window)
     instance_info.pNext = &debug_info;
 #endif // GE_DISABLE_DEBUG
 
-    return vkCreateInstance(&instance_info, nullptr, &m_instance) == VK_SUCCESS;
+    if (vkCreateInstance(&instance_info, nullptr, &m_instance) != VK_SUCCESS) {
+        throw Vulkan::Exception{"Failed to create Vulkan Instance"};
+    }
 }
 
-bool RenderContext::setupDebugUtils()
+void RenderContext::createDebugUtilsMessenger()
 {
-#ifdef GE_DISABLE_DEBUG
-    return true;
-#endif // GE_DISABLE_DEBUG
-
     auto debug_info = getDebugMsgrCreateInfo(VULKAN_SEVERITY);
-    return createDebugUtilsMessengerEXT(m_instance, &debug_info, nullptr,
-                                        &m_debug_utils) == VK_SUCCESS;
+
+    if (createDebugUtilsMessengerEXT(m_instance, &debug_info, nullptr, &m_debug_utils) !=
+        VK_SUCCESS) {
+        throw Vulkan::Exception{"Failed to create Vulkan Debug Messenger"};
+    }
+}
+
+void RenderContext::destroyVulkanHandles()
+{
+    vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
+    m_surface = VK_NULL_HANDLE;
+
+    destroyDebugUtilsMessengerEXT(m_instance, m_debug_utils, nullptr);
+    m_debug_utils = VK_NULL_HANDLE;
+
+    vkDestroyInstance(m_instance, nullptr);
+    m_instance = VK_NULL_HANDLE;
 }
 
 } // namespace GE::Vulkan
