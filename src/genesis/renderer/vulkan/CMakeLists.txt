@@ -1,7 +1,6 @@
 # Vulkan Renderer sources
 list(APPEND GE_RENDERER_VULKAN_SRC
-    render_context.cpp
-    sdl_render_context.cpp)
+    render_context.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
     render_context.h
@@ -9,8 +8,8 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     vulkan_exception.h)
 
 # Append SDL2 sources
-list(APPEND GE_RENDERER_VULKAN_SRC sdl_render_context.cpp)
-list(APPEND GE_RENDERER_VULKAN_HEADERS sdl_render_context.h)
+list(APPEND GE_RENDERER_VULKAN_SRC sdl_platform_window.cpp)
+list(APPEND GE_RENDERER_VULKAN_HEADERS sdl_platform_window.h)
 
 # Vulkan Renderer library
 add_library(genesis-renderer-vulkan ${GE_RENDERER_VULKAN_SRC} ${GE_RENDERER_VULKAN_HEADERS})
