@@ -6,6 +6,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
 list(APPEND GE_RENDERER_VULKAN_HEADERS
     render_context.h
     utils.h
+    vulkan_exception.h
 )
 
 # Append SDL2 sources
