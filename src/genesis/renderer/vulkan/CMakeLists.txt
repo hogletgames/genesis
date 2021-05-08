@@ -1,13 +1,11 @@
 # Vulkan Renderer sources
 list(APPEND GE_RENDERER_VULKAN_SRC
-    render_context.cpp
-)
+    render_context.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
     render_context.h
     utils.h
-    vulkan_exception.h
-)
+    vulkan_exception.h)
 
 # Append SDL2 sources
 list(APPEND GE_RENDERER_VULKAN_SRC sdl_render_context.cpp)
