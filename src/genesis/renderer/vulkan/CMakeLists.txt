@@ -1,8 +1,10 @@
 # Vulkan Renderer sources
 list(APPEND GE_RENDERER_VULKAN_SRC
+    instance.cpp
     render_context.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
+    instance.h
     render_context.h
     utils.h
     vulkan_exception.h)

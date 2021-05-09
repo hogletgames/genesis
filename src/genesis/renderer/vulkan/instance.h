@@ -31,14 +31,12 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
-#define GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
+#ifndef GENESIS_RENDERER_VULKAN_INSTANCE_H_
+#define GENESIS_RENDERER_VULKAN_INSTANCE_H_
 
-#include <genesis/renderer/render_context.h>
+#include <genesis/core/memory.h>
 
 #include <vulkan/vulkan.h>
-
-#include <vector>
 
 namespace GE::Vulkan {
 
@@ -46,34 +44,35 @@ namespace SDL {
 class PlatformWindow;
 } // namespace SDL
 
-class RenderContext: public GE::RenderContext
+class RenderContext;
+
+class Instance
 {
 public:
-    RenderContext();
-    ~RenderContext();
+    static void registerContext(RenderContext* context);
+    static void dropContext(RenderContext* context);
 
-    bool initialize(void* window) override;
-    void shutdown() override;
-
-    Renderer::API API() const override { return Renderer::API::VULKAN; }
-
-    const Scoped<SDL::PlatformWindow>& platformWindow() const { return m_window; }
-    VkInstance instance() const { return m_instance; }
-    VkSurfaceKHR surface() const { return m_surface; }
+    static VkInstance instance() { return get()->m_instance; }
 
 private:
-    void createInstance();
+    Instance() = default;
+
+    static Instance* get()
+    {
+        static Instance instance;
+        return &instance;
+    }
+
+    void createInstance(const Scoped<SDL::PlatformWindow>& window);
     void createDebugUtilsMessenger();
 
     void destroyVulkanHandles();
 
-    Scoped<SDL::PlatformWindow> m_window;
-
     VkInstance m_instance{VK_NULL_HANDLE};
-    VkSurfaceKHR m_surface{VK_NULL_HANDLE};
     VkDebugUtilsMessengerEXT m_debug_utils{VK_NULL_HANDLE};
+    uint32_t m_context_counter{0};
 };
 
 } // namespace GE::Vulkan
 
-#endif // GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_
+#endif // GENESIS_RENDERER_VULKAN_INSTANCE_H_
