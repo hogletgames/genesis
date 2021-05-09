@@ -58,20 +58,13 @@ public:
     Renderer::API API() const override { return Renderer::API::VULKAN; }
 
     const Scoped<SDL::PlatformWindow>& platformWindow() const { return m_window; }
-    VkInstance instance() const { return m_instance; }
     VkSurfaceKHR surface() const { return m_surface; }
 
 private:
-    void createInstance();
-    void createDebugUtilsMessenger();
-
     void destroyVulkanHandles();
 
     Scoped<SDL::PlatformWindow> m_window;
-
-    VkInstance m_instance{VK_NULL_HANDLE};
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
-    VkDebugUtilsMessengerEXT m_debug_utils{VK_NULL_HANDLE};
 };
 
 } // namespace GE::Vulkan

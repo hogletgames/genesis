@@ -119,6 +119,7 @@ void Instance::dropContext([[maybe_unused]] RenderContext* context)
 
 void Instance::createInstance(const Scoped<SDL::PlatformWindow>& window)
 {
+    GE_CORE_INFO("Creating Vulkan Instance...");
     auto window_extensions = window->vulkanExtensions();
 
 #ifndef GE_DISABLE_DEBUG
@@ -155,6 +156,7 @@ void Instance::createInstance(const Scoped<SDL::PlatformWindow>& window)
 
 void Instance::createDebugUtilsMessenger()
 {
+    GE_CORE_INFO("Creating Vulkan Debug Messenger...");
     auto debug_info = getDebugMsgrCreateInfo(VULKAN_SEVERITY);
 
     if (createDebugUtilsMessengerEXT(m_instance, &debug_info, nullptr, &m_debug_utils) !=
@@ -165,6 +167,7 @@ void Instance::createDebugUtilsMessenger()
 
 void Instance::destroyVulkanHandles()
 {
+    GE_CORE_INFO("Destroying Vulkan Instance...");
     destroyDebugUtilsMessengerEXT(m_instance, m_debug_utils, nullptr);
     m_debug_utils = VK_NULL_HANDLE;
 
