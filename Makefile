@@ -50,7 +50,7 @@ docker_initialize:
 
 .PHONY: docker_cleenup
 docker_cleanup:
-	docker rm $(DOCKER_IMAGE_NAME)
+	docker image rm -f $(DOCKER_IMAGE_NAME)
 
 .PHONY: docker_run
 docker_run:
