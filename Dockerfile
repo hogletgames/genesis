@@ -20,10 +20,11 @@ RUN apt-get install -y libx11-dev libsamplerate-dev libasound2-dev \
 RUN apt-get install -y libwayland-dev
 
 # Compilers
+ENV GCC_VERSION=11
 RUN apt-add-repository ppa:ubuntu-toolchain-r/test && \
-    apt-get update && apt-get install -y gcc-10 g++-10 && \
-    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 && \
-    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 100 && \
+    apt-get update && apt-get install -y gcc-${GCC_VERSION} g++-${GCC_VERSION} && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_VERSION} ${GCC_VERSION}0 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${GCC_VERSION} ${GCC_VERSION}0 && \
     update-alternatives --config gcc && \
     update-alternatives --config g++
 
