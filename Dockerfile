@@ -22,14 +22,15 @@ RUN apt-get install -y libwayland-dev
 # Compilers
 ENV GCC_VERSION=11
 RUN apt-add-repository ppa:ubuntu-toolchain-r/test && \
-    apt-get update && apt-get install -y gcc-${GCC_VERSION} g++-${GCC_VERSION} && \
-    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_VERSION} ${GCC_VERSION}0 && \
-    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${GCC_VERSION} ${GCC_VERSION}0 && \
-    update-alternatives --config gcc && \
-    update-alternatives --config g++
+    apt-get update && apt-get install -y gcc-${GCC_VERSION} g++-${GCC_VERSION}
 
-# Test tools
+# Clang tools
 ENV CLANG_VERSION=11
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
     apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${CLANG_VERSION} main" && \
     apt-get update && apt-get install -y clang-format-${CLANG_VERSION} clang-tidy-${CLANG_VERSION}
+
+# Update alternatives
+COPY tools/update_alternatives_gcc.sh tools/update_alternatives_clang.sh /tmp/
+RUN /tmp/update_alternatives_gcc.sh "${GCC_VERSION}" "${GCC_VERSION}0" && \
+    /tmp/update_alternatives_clang.sh "${CLANG_VERSION}" "${CLANG_VERSION}0"
