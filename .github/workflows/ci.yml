@@ -52,8 +52,8 @@ jobs:
           - build-type: TSAN
             disable-asserts: OFF
     env:
-      CC: gcc-10
-      CXX: g++-10
+      CC: gcc
+      CXX: g++
       BUILD_TYPE: ${{ matrix.build-type }}
       DISABLE_ASSERTS: ${{ matrix.disable-asserts }}
       BUILD_TESTS: ON
@@ -74,16 +74,13 @@ jobs:
     strategy:
       matrix:
         build-type: [Release, Debug]
-    env:
-      CLANG_FORMAT_BIN: clang-format-11
-      RUN_CLANG_TIDY_BIN: run-clang-tidy-11
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           submodules: recursive
           fetch-depth: 0
-      - name: clnag-format
+      - name: clang-format
         run: make clang-format
       - name: clang-tidy
         env:
