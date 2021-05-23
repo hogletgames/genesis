@@ -55,10 +55,10 @@ docker_cleanup:
 .PHONY: docker_run
 docker_run:
 	docker run --rm \
-		-t \
+		-ti \
 		-v $(PWD):$(PWD) \
 		-w $(PWD) \
-		-u $$(id -u):$(id -g) \
+		-u $$(id -u):$$(id -g) \
 		-e CMAKE_OPTIONS="$(CMAKE_OPTIONS)" \
 		-e CLANG_FORMAT_BIN="clang-format-11" \
 		-e RUN_CLANG_TIDY_BIN="run-clang-tidy-11" \
