@@ -30,3 +30,4 @@ add_subdirectory(magic_enum)
 
 # googletest
 add_subdirectory(googletest)
+target_compile_options(gtest PRIVATE -Wno-error=maybe-uninitialized)
