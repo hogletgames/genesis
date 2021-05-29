@@ -50,15 +50,15 @@ docker_initialize:
 
 .PHONY: docker_cleenup
 docker_cleanup:
-	docker rm $(DOCKER_IMAGE_NAME)
+	docker image rm -f $(DOCKER_IMAGE_NAME)
 
 .PHONY: docker_run
 docker_run:
 	docker run --rm \
-		-t \
+		-ti \
 		-v $(PWD):$(PWD) \
 		-w $(PWD) \
-		-u $$(id -u):$(id -g) \
+		-u $$(id -u):$$(id -g) \
 		-e CMAKE_OPTIONS="$(CMAKE_OPTIONS)" \
 		-e CLANG_FORMAT_BIN="clang-format-11" \
 		-e RUN_CLANG_TIDY_BIN="run-clang-tidy-11" \
