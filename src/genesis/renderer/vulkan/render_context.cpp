@@ -40,6 +40,8 @@
 #include "utils.h"
 #include "vulkan_exception.h"
 
+#include "genesis/core/format.h"
+
 namespace GE::Vulkan {
 
 RenderContext::RenderContext() = default;
@@ -59,6 +61,7 @@ bool RenderContext::initialize(void* window)
         m_swap_chain = makeScoped<SwapChain>(m_device, m_surface);
         m_pipeline_layout = createPipelineLayout();
         m_pipeline = makeScoped<Pipeline>(m_device, createPipelineConfig());
+        createCommandBuffers();
 
         m_renderer_factory = makeScoped<Vulkan::RendererFactoryImpl>(m_device);
     } catch (const Vulkan::Exception& e) {
@@ -74,8 +77,11 @@ void RenderContext::shutdown()
 {
     GE_CORE_INFO("Shutdown Vulkan Context");
 
+    vkDeviceWaitIdle(m_device->getDevice());
+
     m_renderer_factory.reset();
 
+    destroyCommandBuffers();
     m_pipeline.reset();
     destroyPipelineLayout();
     m_swap_chain.reset();
@@ -86,10 +92,92 @@ void RenderContext::shutdown()
     m_window.reset();
 }
 
+void RenderContext::drawFrame()
+{
+    auto [acquire_result, image_index] = m_swap_chain->acquireNextImage();
+
+    if (acquire_result != VK_SUCCESS && acquire_result != VK_SUBOPTIMAL_KHR) {
+        GE_CORE_ERR("Failed to acquire Swap Chain image");
+        return;
+    }
+
+    VkResult submit_result{VK_ERROR_UNKNOWN};
+
+    try {
+        submit_result = m_swap_chain->submitCommandBuffer(&m_command_buffers[image_index],
+                                                          image_index);
+    } catch (const Vulkan::Exception& e) {
+        GE_CORE_ERR("Failed to present Swap Chain image: {}", e.what());
+        return;
+    }
+
+    if (submit_result != VK_SUCCESS) {
+        GE_CORE_ERR("Failed to present Swap Chain image");
+    }
+}
+
 void RenderContext::destroyVulkanHandles()
 {
     vkDestroySurfaceKHR(Instance::getInstance(), m_surface, nullptr);
     m_surface = VK_NULL_HANDLE;
+}
+
+void RenderContext::createCommandBuffers()
+{
+    m_command_buffers.resize(m_swap_chain->getImageCount(), VK_NULL_HANDLE);
+
+    VkCommandBufferAllocateInfo alloc_info{};
+    alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    alloc_info.commandPool = m_device->getCommandPool();
+    alloc_info.commandBufferCount = m_command_buffers.size();
+
+    if (vkAllocateCommandBuffers(m_device->getDevice(), &alloc_info,
+                                 m_command_buffers.data()) != VK_SUCCESS) {
+        throw Vulkan::Exception{"Failed to allocate Command Buffers"};
+    }
+
+    for (size_t i{0}; i < m_command_buffers.size(); i++) {
+        VkCommandBufferBeginInfo begin_info{};
+        begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+        if (vkBeginCommandBuffer(m_command_buffers[i], &begin_info) != VK_SUCCESS) {
+            throw Vulkan::Exception{"Failed to begin recording to Command Buffer"};
+        }
+
+        VkRenderPassBeginInfo render_pass{};
+        render_pass.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        render_pass.renderPass = m_swap_chain->getRenderPass();
+        render_pass.framebuffer = m_swap_chain->getFramebuffer(i);
+        render_pass.renderArea.offset = {0, 0};
+        render_pass.renderArea.extent = m_swap_chain->getExtent();
+
+        constexpr std::array<float, 4> clear_color = {0.1f, 0.1f, 0.1f, 1.0f};
+        std::array<VkClearValue, 2> clear_values{};
+        std::copy(clear_color.begin(), clear_color.end(), clear_values[0].color.float32);
+        clear_values[1].depthStencil = {1.0f, 0};
+        render_pass.pClearValues = clear_values.data();
+        render_pass.clearValueCount = clear_values.size();
+
+        vkCmdBeginRenderPass(m_command_buffers[i], &render_pass,
+                             VK_SUBPASS_CONTENTS_INLINE);
+
+        m_pipeline->bind(m_command_buffers[i]);
+        vkCmdDraw(m_command_buffers[i], 3, 1, 0, 0);
+
+        vkCmdEndRenderPass(m_command_buffers[i]);
+
+        if (vkEndCommandBuffer(m_command_buffers[i]) != VK_SUCCESS) {
+            throw Vulkan::Exception{"Failed to record Command Buffer"};
+        }
+    }
+}
+
+void RenderContext::destroyCommandBuffers()
+{
+    vkFreeCommandBuffers(m_device->getDevice(), m_device->getCommandPool(),
+                         m_command_buffers.size(), m_command_buffers.data());
+    m_command_buffers = {};
 }
 
 VkPipelineLayout RenderContext::createPipelineLayout()

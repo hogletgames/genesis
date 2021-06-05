@@ -62,6 +62,8 @@ public:
     bool initialize(void* window) override;
     void shutdown() override;
 
+    void drawFrame() override;
+
     Renderer::API getAPI() const override { return Renderer::API::VULKAN; };
 
     const Scoped<GE::RendererFactoryImpl>& getFactory() const override
@@ -74,6 +76,9 @@ public:
     Shared<Device> getDevice() const { return m_device; }
 
 private:
+    void createCommandBuffers();
+    void destroyCommandBuffers();
+
     void destroyVulkanHandles();
 
     VkPipelineLayout createPipelineLayout();
@@ -87,6 +92,7 @@ private:
     Shared<Vulkan::Device> m_device;
     Shared<Vulkan::SwapChain> m_swap_chain;
     Shared<Vulkan::Pipeline> m_pipeline;
+    std::vector<VkCommandBuffer> m_command_buffers;
 
     Scoped<GE::RendererFactoryImpl> m_renderer_factory;
 };
