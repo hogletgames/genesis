@@ -41,6 +41,7 @@
 
 #include "genesis/core/asserts.h"
 #include "genesis/core/log.h"
+#include "genesis/renderer/render_command.h"
 #include "genesis/renderer/renderer.h"
 
 namespace GE::Vulkan {
@@ -60,6 +61,7 @@ bool RenderContext::initialize(void* window)
 
         m_device = makeScoped<Device>(this);
         m_swap_chain = makeScoped<SwapChain>(m_device, m_surface);
+        createCommandBuffers();
 
         m_renderer_factory = makeScoped<Vulkan::RendererFactory>(m_device);
     } catch (const Vulkan::Exception& e) {
@@ -75,8 +77,11 @@ void RenderContext::shutdown()
 {
     GE_CORE_INFO("Shutdown Vulkan Context");
 
+    vkDeviceWaitIdle(m_device->device());
+
     m_renderer_factory.reset();
 
+    destroyCommandBuffers();
     m_swap_chain.reset();
     m_device.reset();
 
@@ -85,10 +90,153 @@ void RenderContext::shutdown()
     m_window.reset();
 }
 
+void RenderContext::drawFrame()
+{
+    if (!m_swap_chain &&
+        !(m_swap_chain = tryMakeScoped<SwapChain>(m_device, m_surface))) {
+        return;
+    }
+
+    auto [acquire_result, image_index] = m_swap_chain->acquireNextImage();
+
+    if (acquire_result == VK_ERROR_OUT_OF_DATE_KHR) {
+        vkDeviceWaitIdle(m_device->device());
+        m_swap_chain.reset();
+        return;
+    }
+
+    if (acquire_result != VK_SUCCESS && acquire_result != VK_SUBOPTIMAL_KHR) {
+        GE_CORE_ERR("Failed to acquire Swap Chain image");
+        return;
+    }
+
+    if (!prepareRenderCommand(image_index)) {
+        GE_CORE_ERR("Failed to prepare Render Command");
+        return;
+    }
+
+    if (m_swap_chain->submitCommandBuffer(&m_command_buffers[image_index], image_index) !=
+        VK_SUCCESS) {
+        GE_CORE_ERR("Failed to present Swap Chain image");
+        return;
+    }
+}
+
 void RenderContext::destroyVulkanHandles()
 {
     vkDestroySurfaceKHR(Instance::instance(), m_surface, nullptr);
     m_surface = VK_NULL_HANDLE;
+}
+
+void RenderContext::createCommandBuffers()
+{
+    m_command_buffers.resize(m_swap_chain->getImageCount(), VK_NULL_HANDLE);
+
+    VkCommandBufferAllocateInfo alloc_info{};
+    alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    alloc_info.commandPool = m_device->commandPool();
+    alloc_info.commandBufferCount = m_command_buffers.size();
+
+    if (vkAllocateCommandBuffers(m_device->device(), &alloc_info,
+                                 m_command_buffers.data()) != VK_SUCCESS) {
+        throw Vulkan::Exception{"Failed to allocate Command Buffers"};
+    }
+}
+
+void RenderContext::destroyCommandBuffers()
+{
+    vkFreeCommandBuffers(m_device->device(), m_device->commandPool(),
+                         m_command_buffers.size(), m_command_buffers.data());
+    m_command_buffers = {};
+}
+
+bool RenderContext::prepareRenderCommand(uint32_t image_idx)
+{
+    if (!beginRenderCommand(image_idx)) {
+        return false;
+    }
+
+    RenderCommand::submit(m_command_buffers[image_idx]);
+    return endRenderCommand(image_idx);
+}
+
+bool RenderContext::beginRenderCommand(uint32_t image_idx)
+{
+    VkCommandBuffer cmd = m_command_buffers[image_idx];
+
+    vkResetCommandBuffer(cmd, 0);
+
+    VkCommandBufferBeginInfo begin_info{};
+    begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    begin_info.flags = 0;
+    begin_info.pInheritanceInfo = nullptr;
+
+    if (vkBeginCommandBuffer(cmd, &begin_info) != VK_SUCCESS) {
+        GE_CORE_ERR("Failed to begin Command Buffer");
+        return false;
+    }
+
+    setRenderPass(cmd, currentFBO(image_idx));
+    setViewportAndScissor(cmd);
+    return true;
+}
+
+void RenderContext::setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo)
+{
+    std::array<VkClearValue, 2> clear_values{};
+    std::array<float, 4> clear_color = {0.0f, 0.0f, 0.0f, 1.0f};
+    std::copy(clear_color.begin(), clear_color.end(), clear_values[0].color.float32);
+    clear_values[1].depthStencil = {1.0f, 0};
+
+    VkRenderPassBeginInfo render_pass_info{};
+    render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    render_pass_info.renderPass = m_swap_chain->getRenderPass();
+    render_pass_info.framebuffer = fbo;
+    render_pass_info.renderArea.offset = {0, 0};
+    render_pass_info.renderArea.extent = m_swap_chain->getExtent();
+    render_pass_info.pClearValues = clear_values.data();
+    render_pass_info.clearValueCount = clear_values.size();
+
+    vkCmdBeginRenderPass(cmd, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void RenderContext::setViewportAndScissor(VkCommandBuffer cmd)
+{
+    VkViewport viewport{};
+    viewport.width = static_cast<float>(m_swap_chain->getExtent().width);
+    viewport.height = static_cast<float>(m_swap_chain->getExtent().height);
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+
+    VkRect2D scissor{};
+    scissor.extent = m_swap_chain->getExtent();
+
+    vkCmdSetViewport(cmd, 0, 1, &viewport);
+    vkCmdSetScissor(cmd, 0, 1, &scissor);
+}
+
+bool RenderContext::endRenderCommand(uint32_t image_idx)
+{
+    VkCommandBuffer cmd = m_command_buffers[image_idx];
+    vkCmdEndRenderPass(cmd);
+
+    if (vkEndCommandBuffer(cmd) != VK_SUCCESS) {
+        GE_CORE_ERR("Failed to record Command Buffer");
+        return false;
+    }
+
+    return true;
+}
+
+VkFramebuffer RenderContext::currentFBO(uint32_t image_idx)
+{
+    return m_swap_chain->getFramebuffer(image_idx);
+}
+
+VkRenderPass RenderContext::renderPass()
+{
+    return m_swap_chain->getRenderPass();
 }
 
 Shared<Vulkan::RenderContext> currentContext()

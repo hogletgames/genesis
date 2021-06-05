@@ -58,19 +58,32 @@ public:
     bool initialize(void* window) override;
     void shutdown() override;
 
-    Renderer::API API() const override { return Renderer::API::VULKAN; }
+    void drawFrame() override;
 
-    const Scoped<SDL::PlatformWindow>& platformWindow() const { return m_window; }
-    VkSurfaceKHR surface() const { return m_surface; }
-    Shared<Device> device() const { return m_device; }
-    Shared<Vulkan::SwapChain> swapChain() const { return m_swap_chain; }
+    Renderer::API API() const override { return Renderer::API::VULKAN; }
 
     const Scoped<GE::RendererFactory>& factory() const override
     {
         return m_renderer_factory;
     }
 
+    const Scoped<SDL::PlatformWindow>& platformWindow() const { return m_window; }
+    VkSurfaceKHR surface() const { return m_surface; }
+    Shared<Device> device() const { return m_device; }
+    Shared<Vulkan::SwapChain> swapChain() const { return m_swap_chain; }
+
 private:
+    void createCommandBuffers();
+    void destroyCommandBuffers();
+
+    bool prepareRenderCommand(uint32_t image_idx);
+    bool beginRenderCommand(uint32_t image_idx);
+    void setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo);
+    void setViewportAndScissor(VkCommandBuffer cmd);
+    bool endRenderCommand(uint32_t image_idx);
+    VkFramebuffer currentFBO(uint32_t image_idx);
+    VkRenderPass renderPass();
+
     void destroyVulkanHandles();
 
     Scoped<SDL::PlatformWindow> m_window;
@@ -78,6 +91,7 @@ private:
 
     Shared<Vulkan::Device> m_device;
     Shared<Vulkan::SwapChain> m_swap_chain;
+    std::vector<VkCommandBuffer> m_command_buffers;
 
     Scoped<GE::RendererFactory> m_renderer_factory;
 };

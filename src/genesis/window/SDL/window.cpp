@@ -158,7 +158,7 @@ void Window::shutdown()
 
 void Window::onUpdate()
 {
-    // TODO: there should be swapBuffers()
+    m_context->drawFrame();
 }
 
 void Window::attachEventListener(EventListener* listener)

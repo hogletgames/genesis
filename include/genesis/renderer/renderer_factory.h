@@ -41,6 +41,7 @@ namespace GE {
 
 class IndexBuffer;
 class VertexBuffer;
+class ShaderProgram;
 
 class GE_API RendererFactory: public Interface
 {
