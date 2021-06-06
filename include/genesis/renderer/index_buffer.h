@@ -30,32 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
-#define GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#ifndef GENESIS_RENDERER_INDEX_BUFFER_H_
+#define GENESIS_RENDERER_INDEX_BUFFER_H_
 
+#include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
-#include <genesis/renderer/renderer_factory.h>
 
-namespace GE::Vulkan {
+namespace GE {
 
-class Device;
+class GPUCommandQueue;
 
-class RendererFactory: public GE::RendererFactory
+class GE_API IndexBuffer: public NonCopyable
 {
 public:
-    explicit RendererFactory(Shared<Device> device);
+    virtual void bind(GPUCommandQueue* cmd_queue) const = 0;
 
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
-                                                uint32_t size) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
+    virtual uint32_t count() const = 0;
 
-private:
-    Shared<Device> m_device;
+    static Scoped<IndexBuffer> create(const uint32_t* indices, uint32_t count);
 };
 
-} // namespace GE::Vulkan
+} // namespace GE
 
-#endif // GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#endif // GENESIS_RENDERER_INDEX_BUFFER_H_

@@ -30,32 +30,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
-#define GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#include "buffers/index_buffer.h"
+#include "buffers/staging_buffer.h"
+#include "command_buffer.h"
 
-#include <genesis/core/memory.h>
-#include <genesis/renderer/renderer_factory.h>
+#include "genesis/renderer/gpu_command_queue.h"
 
 namespace GE::Vulkan {
 
-class Device;
-
-class RendererFactory: public GE::RendererFactory
+IndexBuffer::IndexBuffer(Shared<Device> device, const uint32_t* indices, uint32_t count)
+    : BufferBase{std::move(device)}
+    , m_count{count}
 {
-public:
-    explicit RendererFactory(Shared<Device> device);
+    const uint32_t size = count * sizeof(count);
+    VkBufferUsageFlags usage =
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+    VkMemoryPropertyFlagBits properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    createBuffer(size, usage, properties);
 
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
-                                                uint32_t size) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
+    StagingBuffer staging_buffer{m_device, indices, size};
+    staging_buffer.copyTo(this);
+}
 
-private:
-    Shared<Device> m_device;
-};
+void IndexBuffer::bind(GPUCommandQueue* cmd_queue) const
+{
+    cmd_queue->enqueue([this](void* cmd) {
+        vkCmdBindIndexBuffer(cmdBuffer(cmd), m_buffer, 0, VK_INDEX_TYPE_UINT32);
+    });
+}
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_

@@ -37,11 +37,14 @@
 
 namespace GE {
 
+class IndexBuffer;
 class VertexBuffer;
 
 class GE_API RendererFactory: public Interface
 {
 public:
+    virtual Scoped<IndexBuffer> createIndexBuffer(const uint32_t* indices,
+                                                  uint32_t count) const = 0;
     virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices,
                                                     uint32_t size) const = 0;
     virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;

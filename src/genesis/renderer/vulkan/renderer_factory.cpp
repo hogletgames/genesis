@@ -31,6 +31,7 @@
  */
 
 #include "renderer_factory.h"
+#include "buffers/index_buffer.h"
 #include "buffers/vertex_buffer.h"
 
 namespace GE::Vulkan {
@@ -39,8 +40,15 @@ RendererFactory::RendererFactory(Shared<Device> device)
     : m_device{std::move(device)}
 {}
 
+Scoped<GE::IndexBuffer> RendererFactory::createIndexBuffer(const uint32_t *indices,
+                                                           uint32_t count) const
+{
+    return tryMakeScoped<Vulkan::IndexBuffer>(m_device, indices, count);
+}
+
 Scoped<GE::VertexBuffer> RendererFactory::createVertexBuffer(const void *vertices,
                                                              uint32_t size) const
+
 {
     return tryMakeScoped<Vulkan::VertexBuffer>(m_device, vertices, size);
 }

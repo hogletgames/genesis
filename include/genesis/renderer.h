@@ -34,6 +34,7 @@
 #define GENESIS_RENDERER_H_
 
 #include <genesis/renderer/gpu_command_queue.h>
+#include <genesis/renderer/index_buffer.h>
 #include <genesis/renderer/render_context.h>
 #include <genesis/renderer/renderer.h>
 #include <genesis/renderer/renderer_factory.h>

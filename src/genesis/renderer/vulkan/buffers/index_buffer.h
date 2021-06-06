@@ -31,31 +31,31 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
-#define GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#ifndef GENESIS_RENDERER_VULKAN_BUFFERS_INDEX_BUFFER_H_
+#define GENESIS_RENDERER_VULKAN_BUFFERS_INDEX_BUFFER_H_
 
-#include <genesis/core/memory.h>
-#include <genesis/renderer/renderer_factory.h>
+#include "buffers/buffer_base.h"
+
+#include <genesis/renderer/index_buffer.h>
 
 namespace GE::Vulkan {
 
 class Device;
 
-class RendererFactory: public GE::RendererFactory
+class IndexBuffer: public GE::IndexBuffer, public BufferBase
 {
 public:
-    explicit RendererFactory(Shared<Device> device);
+    IndexBuffer(Shared<Device> device, const uint32_t* indices, uint32_t count);
 
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
-                                                uint32_t size) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
+    void bind(GPUCommandQueue* cmd_queue) const override;
+
+    uint32_t count() const override { return m_count; }
 
 private:
     Shared<Device> m_device;
+    uint32_t m_count{0};
 };
 
 } // namespace GE::Vulkan
 
-#endif // GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#endif // GENESIS_RENDERER_VULKAN_BUFFERS_INDEX_BUFFER_H_
