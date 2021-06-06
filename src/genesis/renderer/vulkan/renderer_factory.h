@@ -47,7 +47,9 @@ public:
 
     Scoped<GE::Framebuffer> createFramebuffer() const override;
 
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void *vertices,
+    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
+                                              uint32_t count) const override;
+    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
                                                 uint32_t size) const override;
     Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
 

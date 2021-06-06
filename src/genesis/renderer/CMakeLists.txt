@@ -2,6 +2,7 @@ set(GE_RENDERER_INCLUDE_DIR ${GE_INCLUDE_DIR}/renderer)
 
 list(APPEND GE_RENDERER_SRC
     framebuffer.cpp
+    index_buffer.cpp
     render_context.cpp
     renderer.cpp
     renderer_factory.cpp
@@ -9,6 +10,7 @@ list(APPEND GE_RENDERER_SRC
 
 list(APPEND GE_RENDERER_HEADERS
     ${GE_RENDERER_INCLUDE_DIR}/framebuffer.h
+    ${GE_RENDERER_INCLUDE_DIR}/index_buffer.h
     ${GE_RENDERER_INCLUDE_DIR}/render_context.h
     ${GE_RENDERER_INCLUDE_DIR}/renderer.h
     ${GE_RENDERER_INCLUDE_DIR}/renderer_factory.h

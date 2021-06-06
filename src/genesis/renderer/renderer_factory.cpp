@@ -32,6 +32,7 @@
 
 #include "renderer_factory.h"
 #include "framebuffer.h"
+#include "index_buffer.h"
 #include "vertex_buffer.h"
 #include "vulkan/render_context.h"
 #include "vulkan/renderer_factory.h"
@@ -48,6 +49,12 @@ void RendererFactory::setContext(Shared<RenderContext> context)
 Scoped<Framebuffer> RendererFactory::createFramebuffer()
 {
     return factory()->createFramebuffer();
+}
+
+Scoped<GE::IndexBuffer> RendererFactory::createIndexBuffer(const uint32_t* indices,
+                                                           uint32_t count)
+{
+    return factory()->createIndexBuffer(indices, count);
 }
 
 Scoped<VertexBuffer> RendererFactory::createVertexBuffer(const void* vertices,

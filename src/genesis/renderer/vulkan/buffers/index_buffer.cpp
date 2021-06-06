@@ -30,37 +30,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer_factory.h"
 #include "buffers/index_buffer.h"
-#include "buffers/vertex_buffer.h"
-#include "framebuffer.h"
+#include "buffers/staging_buffer.h"
 
 namespace GE::Vulkan {
 
-RendererFactoryImpl::RendererFactoryImpl(Shared<Device> device)
-    : m_device{std::move(device)}
-{}
-
-Scoped<GE::Framebuffer> RendererFactoryImpl::createFramebuffer() const
+IndexBuffer::IndexBuffer(Shared<Device> device, const uint32_t* indices, uint32_t count)
+    : BufferBase{std::move(device)}
+    , m_count{count}
 {
-    return tryMakeScoped<Vulkan::Framebuffer>(m_device);
+    uint32_t size = sizeof(uint32_t) * count;
+    VkBufferUsageFlags usage =
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+    VkMemoryPropertyFlagBits properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    createBuffer(size, usage, properties);
+
+    StagingBuffer staging_buffer{m_device, indices, size};
+    staging_buffer.copyTo(this);
 }
 
-Scoped<GE::IndexBuffer> RendererFactoryImpl::createIndexBuffer(const uint32_t *indices,
-                                                               uint32_t count) const
-{
-    return tryMakeScoped<Vulkan::IndexBuffer>(m_device, indices, count);
-}
-
-Scoped<GE::VertexBuffer> RendererFactoryImpl::createVertexBuffer(const void *vertices,
-                                                                 uint32_t size) const
-{
-    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, vertices, size);
-}
-
-Scoped<GE::VertexBuffer> RendererFactoryImpl::createVertexBuffer(uint32_t size) const
-{
-    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size);
-}
+void IndexBuffer::bind() const {}
 
 } // namespace GE::Vulkan
