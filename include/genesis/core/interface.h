@@ -43,6 +43,17 @@ public:
     virtual ~Interface() = default;
 };
 
+class GE_API NonCopyable
+{
+public:
+    NonCopyable() = default;
+    NonCopyable(const NonCopyable& other) = delete;
+    NonCopyable(NonCopyable&& other) noexcept = default;
+    NonCopyable& operator=(const NonCopyable& other) = delete;
+    NonCopyable& operator=(NonCopyable&& other) noexcept = default;
+    virtual ~NonCopyable() = default;
+};
+
 } // namespace GE
 
 #endif // GENESIS_CORE_INTERFACE_H_
