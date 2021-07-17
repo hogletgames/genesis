@@ -30,35 +30,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
-#define GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#ifndef GENESIS_RENDERER_VERTEX_ARRAY_H_
+#define GENESIS_RENDERER_VERTEX_ARRAY_H_
 
-#include <genesis/renderer/renderer_factory.h>
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
 
-namespace GE::Vulkan {
+namespace GE {
 
-class Device;
+class IndexBuffer;
+class VertexBuffer;
 
-class RendererFactoryImpl: public GE::RendererFactoryImpl
+class GE_API VertexArray: public NonCopyable
 {
-public:
-    explicit RendererFactoryImpl(Shared<Device> device);
+    using Vertices = std::vector<Shared<VertexBuffer>>;
 
-    Scoped<GE::Framebuffer> createFramebuffer() const override;
+    virtual void bind() const = 0;
+    virtual void unbind() const = 0;
 
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
-                                                uint32_t size) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
-    Scoped<GE::VertexArray> createVertexArray(Shared<GE::VertexBuffer> vbo,
-                                              Shared<GE::IndexBuffer> ibo) const override;
+    virtual const Vertices& getVertexBuffers() const = 0;
+    virtual Shared<IndexBuffer> getIndexBuffer() const = 0;
 
-private:
-    Shared<Device> m_device;
+    static Scoped<VertexArray> create(Shared<VertexBuffer> vbo, Shared<IndexBuffer> ibo);
 };
 
-} // namespace GE::Vulkan
+} // namespace GE
 
-#endif // GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#endif // GENESIS_RENDERER_VERTEX_ARRAY_H_

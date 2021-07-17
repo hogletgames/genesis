@@ -35,6 +35,8 @@
 #include "buffers/vertex_buffer.h"
 #include "framebuffer.h"
 
+#include "genesis/renderer/vertex_array.h"
+
 namespace GE::Vulkan {
 
 RendererFactoryImpl::RendererFactoryImpl(Shared<Device> device)
@@ -61,6 +63,13 @@ Scoped<GE::VertexBuffer> RendererFactoryImpl::createVertexBuffer(const void *ver
 Scoped<GE::VertexBuffer> RendererFactoryImpl::createVertexBuffer(uint32_t size) const
 {
     return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size);
+}
+
+Scoped<GE::VertexArray>
+RendererFactoryImpl::createVertexArray([[maybe_unused]] Shared<GE::VertexBuffer> vbo,
+                                       [[maybe_unused]] Shared<GE::IndexBuffer> ibo) const
+{
+    return nullptr;
 }
 
 } // namespace GE::Vulkan

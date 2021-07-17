@@ -6,6 +6,7 @@ list(APPEND GE_RENDERER_SRC
     render_context.cpp
     renderer.cpp
     renderer_factory.cpp
+    vertex_array.cpp
     vertex_buffer.cpp)
 
 list(APPEND GE_RENDERER_HEADERS
@@ -14,6 +15,7 @@ list(APPEND GE_RENDERER_HEADERS
     ${GE_RENDERER_INCLUDE_DIR}/render_context.h
     ${GE_RENDERER_INCLUDE_DIR}/renderer.h
     ${GE_RENDERER_INCLUDE_DIR}/renderer_factory.h
+    ${GE_RENDERER_INCLUDE_DIR}/vertex_array.h
     ${GE_RENDERER_INCLUDE_DIR}/vertex_buffer.h)
 
 add_library(genesis-renderer STATIC ${GE_RENDERER_SRC} ${GE_RENDERER_HEADERS})

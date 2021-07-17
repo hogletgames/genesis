@@ -33,9 +33,9 @@
 #include "renderer_factory.h"
 #include "framebuffer.h"
 #include "index_buffer.h"
+#include "vertex_array.h"
 #include "vertex_buffer.h"
 #include "vulkan/render_context.h"
-#include "vulkan/renderer_factory.h"
 
 #include "genesis/core/log.h"
 
@@ -68,8 +68,15 @@ Scoped<VertexBuffer> RendererFactory::createVertexBuffer(uint32_t size)
     return factory()->createVertexBuffer(size);
 }
 
+Scoped<VertexArray> RendererFactory::createVertexArray(Shared<VertexBuffer> vbo,
+                                                       Shared<IndexBuffer> ibo)
+{
+    return factory()->createVertexArray(std::move(vbo), std::move(ibo));
+}
+
 const Scoped<RendererFactoryImpl>& RendererFactory::factory()
 {
     return get()->m_context->getFactory();
 }
+
 } // namespace GE

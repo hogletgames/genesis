@@ -30,35 +30,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
-#define GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#include "vertex_array.h"
+#include "renderer_factory.h"
 
-#include <genesis/renderer/renderer_factory.h>
+namespace GE {
 
-namespace GE::Vulkan {
-
-class Device;
-
-class RendererFactoryImpl: public GE::RendererFactoryImpl
+Scoped<VertexArray> VertexArray::create(Shared<VertexBuffer> vbo, Shared<IndexBuffer> ibo)
 {
-public:
-    explicit RendererFactoryImpl(Shared<Device> device);
+    return RendererFactory::createVertexArray(std::move(vbo), std::move(ibo));
+}
 
-    Scoped<GE::Framebuffer> createFramebuffer() const override;
-
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
-                                                uint32_t size) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
-    Scoped<GE::VertexArray> createVertexArray(Shared<GE::VertexBuffer> vbo,
-                                              Shared<GE::IndexBuffer> ibo) const override;
-
-private:
-    Shared<Device> m_device;
-};
-
-} // namespace GE::Vulkan
-
-#endif // GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+} // namespace GE
