@@ -14,7 +14,9 @@ add_subdirectory(spdlog)
 add_subdirectory(glm)
 
 # Vulkan
-add_subdirectory(Vulkan)
+if (NOT DEFINED ENV{VULKAN_SDK})
+    add_subdirectory(Vulkan)
+endif()
 
 # stb
 add_library(stb-image INTERFACE)

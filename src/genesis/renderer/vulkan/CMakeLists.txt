@@ -1,3 +1,7 @@
+if (DEFINED ENV{VULKAN_SDK})
+    find_package(Vulkan REQUIRED)
+endif()
+
 # Vulkan Renderer sources
 list(APPEND GE_RENDERER_VULKAN_SRC
     render_context.cpp
@@ -15,10 +19,10 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS sdl_render_context.h)
 # Vulkan Renderer library
 add_library(genesis-renderer-vulkan ${GE_RENDERER_VULKAN_SRC} ${GE_RENDERER_VULKAN_HEADERS})
 target_link_libraries(genesis-renderer-vulkan PUBLIC genesis::core)
-target_link_libraries(genesis-renderer-vulkan PRIVATE vulkan)
+target_link_libraries(genesis-renderer-vulkan PRIVATE Vulkan::Vulkan)
 target_include_directories(genesis-renderer-vulkan SYSTEM PUBLIC ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include)
 
-if(NOT CMAKE_EXPORT_COMPILE_COMMANDS AND NOT GE_DISABLE_DEBUG)
+if(NOT DEFINED ENV{VULKAN_SDK} AND NOT CMAKE_EXPORT_COMPILE_COMMANDS AND NOT GE_DISABLE_DEBUG)
     add_dependencies(genesis-renderer-vulkan VkLayer_khronos_validation-json)
 endif()
 
