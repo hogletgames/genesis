@@ -46,6 +46,10 @@ class RendererFactory: public GE::RendererFactory
 public:
     explicit RendererFactory(Shared<Device> device);
 
+    Scoped<GE::VertexBuffer> createVertexBuffer(const void *vertices,
+                                                uint32_t size) const override;
+    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
+
 private:
     Shared<Device> m_device;
 };

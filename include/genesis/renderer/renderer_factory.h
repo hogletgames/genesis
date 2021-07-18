@@ -37,8 +37,15 @@
 
 namespace GE {
 
+class VertexBuffer;
+
 class GE_API RendererFactory: public Interface
-{};
+{
+public:
+    virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices,
+                                                    uint32_t size) const = 0;
+    virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;
+};
 
 } // namespace GE
 

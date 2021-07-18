@@ -30,24 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer_factory.h"
-#include "buffers/vertex_buffer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_RENDERER_VULKAN_BUFFERS_VERTEX_BUFFER_H_
+#define GENESIS_RENDERER_VULKAN_BUFFERS_VERTEX_BUFFER_H_
+
+#include "buffers/buffer_base.h"
+
+#include <genesis/renderer/vertex_buffer.h>
+
+#include <vulkan/vulkan.h>
 
 namespace GE::Vulkan {
 
-RendererFactory::RendererFactory(Shared<Device> device)
-    : m_device{std::move(device)}
-{}
+class Device;
 
-Scoped<GE::VertexBuffer> RendererFactory::createVertexBuffer(const void *vertices,
-                                                             uint32_t size) const
+class VertexBuffer: public GE::VertexBuffer, public BufferBase
 {
-    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, vertices, size);
-}
+public:
+    VertexBuffer(Shared<Device> device, const void* vertices, uint32_t size);
+    VertexBuffer(Shared<Device> device, uint32_t size);
 
-Scoped<GE::VertexBuffer> RendererFactory::createVertexBuffer(uint32_t size) const
-{
-    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size);
-}
+    void bind(GPUCommandQueue* queue) const override;
+    void draw(GPUCommandQueue* queue, uint32_t vertex_count) const override;
+
+    void setVertices(const void* vertices, uint32_t size) override;
+
+private:
+    VkDeviceSize m_size{0};
+};
 
 } // namespace GE::Vulkan
+
+#endif // GENESIS_RENDERER_VULKAN_BUFFERS_VERTEX_BUFFER_H_

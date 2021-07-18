@@ -30,24 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer_factory.h"
-#include "buffers/vertex_buffer.h"
+#include "vertex_buffer.h"
+#include "renderer.h"
 
-namespace GE::Vulkan {
+namespace GE {
 
-RendererFactory::RendererFactory(Shared<Device> device)
-    : m_device{std::move(device)}
-{}
-
-Scoped<GE::VertexBuffer> RendererFactory::createVertexBuffer(const void *vertices,
-                                                             uint32_t size) const
+Scoped<VertexBuffer> VertexBuffer::create(const void *vertices, uint32_t count)
 {
-    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, vertices, size);
+    return Renderer::factory()->createVertexBuffer(vertices, count);
 }
 
-Scoped<GE::VertexBuffer> RendererFactory::createVertexBuffer(uint32_t size) const
+Scoped<VertexBuffer> VertexBuffer::create(uint32_t size)
 {
-    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size);
+    return Renderer::factory()->createVertexBuffer(size);
 }
 
-} // namespace GE::Vulkan
+} // namespace GE

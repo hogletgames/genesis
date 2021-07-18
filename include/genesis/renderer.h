@@ -37,5 +37,6 @@
 #include <genesis/renderer/render_context.h>
 #include <genesis/renderer/renderer.h>
 #include <genesis/renderer/renderer_factory.h>
+#include <genesis/renderer/vertex_buffer.h>
 
 #endif // GENESIS_RENDERER_H_

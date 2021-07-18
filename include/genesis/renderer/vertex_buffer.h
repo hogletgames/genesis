@@ -30,24 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer_factory.h"
-#include "buffers/vertex_buffer.h"
+#ifndef GENESIS_RENDERER_VERTEX_BUFFER_H_
+#define GENESIS_RENDERER_VERTEX_BUFFER_H_
 
-namespace GE::Vulkan {
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
 
-RendererFactory::RendererFactory(Shared<Device> device)
-    : m_device{std::move(device)}
-{}
+namespace GE {
 
-Scoped<GE::VertexBuffer> RendererFactory::createVertexBuffer(const void *vertices,
-                                                             uint32_t size) const
+class GPUCommandQueue;
+
+class GE_API VertexBuffer: public NonCopyable
 {
-    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, vertices, size);
-}
+public:
+    virtual void bind(GPUCommandQueue* queue) const = 0;
+    virtual void draw(GPUCommandQueue* queue, uint32_t vertex_count) const = 0;
 
-Scoped<GE::VertexBuffer> RendererFactory::createVertexBuffer(uint32_t size) const
-{
-    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size);
-}
+    virtual void setVertices(const void* vertices, uint32_t size) = 0;
 
-} // namespace GE::Vulkan
+    static Scoped<VertexBuffer> create(const void* vertices, uint32_t count);
+    static Scoped<VertexBuffer> create(uint32_t size);
+};
+
+} // namespace GE
+
+#endif // GENESIS_RENDERER_VERTEX_BUFFER_H_
