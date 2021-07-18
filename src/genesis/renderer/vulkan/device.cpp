@@ -263,6 +263,25 @@ queue_family_indices_t Device::findQueueFamilies(VkPhysicalDevice physical_devic
     return indices;
 }
 
+uint32_t Device::findMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties)
+{
+    VkPhysicalDeviceMemoryProperties mem_properties{};
+    vkGetPhysicalDeviceMemoryProperties(m_physical_device, &mem_properties);
+
+    for (uint32_t i{0}; i < mem_properties.memoryTypeCount; i++) {
+        uint32_t mem_type = 1 << i;
+        bool is_type_suitable = (type_filter & mem_type) != 0;
+        bool is_properties_suitable =
+            (mem_properties.memoryTypes[i].propertyFlags & properties) != 0;
+
+        if (is_type_suitable && is_properties_suitable) {
+            return i;
+        }
+    }
+
+    throw Vulkan::Exception{"Failed to find suitable memory type"};
+}
+
 bool Device::checkPhysicalDeviceExtSupport(VkPhysicalDevice physical_device)
 {
     auto device_extensions = getPhysicalDeviceExt(physical_device);

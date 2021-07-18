@@ -1,5 +1,7 @@
 # Vulkan Renderer sources
 list(APPEND GE_RENDERER_VULKAN_SRC
+    buffers/buffer_base.cpp
+    buffers/staging_buffer.cpp
     device.cpp
     image.cpp
     instance.cpp
@@ -9,6 +11,8 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     swap_chain.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
+    buffers/buffer_base.h
+    buffers/staging_buffer.h
     command_buffer.h
     device.h
     image.h
@@ -28,9 +32,11 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS sdl_platform_window.h)
 add_library(genesis-renderer-vulkan ${GE_RENDERER_VULKAN_SRC} ${GE_RENDERER_VULKAN_HEADERS})
 target_link_libraries(genesis-renderer-vulkan PUBLIC
     genesis::core
-    genesis::math)
-target_link_libraries(genesis-renderer-vulkan PRIVATE vulkan)
-target_include_directories(genesis-renderer-vulkan SYSTEM PUBLIC ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include)
+    genesis::math
+    vulkan)
+target_include_directories(genesis-renderer-vulkan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(genesis-renderer-vulkan SYSTEM PUBLIC
+    ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include)
 
 if(NOT CMAKE_EXPORT_COMPILE_COMMANDS AND NOT GE_DISABLE_DEBUG)
     add_dependencies(genesis-renderer-vulkan VkLayer_khronos_validation-json)
