@@ -5,6 +5,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     instance.cpp
     render_context.cpp
     renderer_factory.cpp
+    single_command.cpp
     swap_chain.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
@@ -13,6 +14,7 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     instance.h
     render_context.h
     renderer_factory.h
+    single_command.h
     swap_chain.h
     utils.h
     vulkan_exception.h)
