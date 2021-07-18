@@ -4,13 +4,15 @@ list(APPEND GE_RENDERER_SRC
     framebuffer.cpp
     render_context.cpp
     renderer.cpp
-    renderer_factory.cpp)
+    renderer_factory.cpp
+    vertex_buffer.cpp)
 
 list(APPEND GE_RENDERER_HEADERS
     ${GE_RENDERER_INCLUDE_DIR}/framebuffer.h
     ${GE_RENDERER_INCLUDE_DIR}/render_context.h
     ${GE_RENDERER_INCLUDE_DIR}/renderer.h
-    ${GE_RENDERER_INCLUDE_DIR}/renderer_factory.h)
+    ${GE_RENDERER_INCLUDE_DIR}/renderer_factory.h
+    ${GE_RENDERER_INCLUDE_DIR}/vertex_buffer.h)
 
 add_library(genesis-renderer STATIC ${GE_RENDERER_SRC} ${GE_RENDERER_HEADERS})
 target_link_libraries(genesis-renderer PUBLIC genesis::core)

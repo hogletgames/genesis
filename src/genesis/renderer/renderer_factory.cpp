@@ -32,6 +32,7 @@
 
 #include "renderer_factory.h"
 #include "framebuffer.h"
+#include "vertex_buffer.h"
 #include "vulkan/render_context.h"
 #include "vulkan/renderer_factory.h"
 
@@ -49,9 +50,19 @@ Scoped<Framebuffer> RendererFactory::createFramebuffer()
     return factory()->createFramebuffer();
 }
 
+Scoped<VertexBuffer> RendererFactory::createVertexBuffer(const void* vertices,
+                                                         uint32_t size)
+{
+    return factory()->createVertexBuffer(vertices, size);
+}
+
+Scoped<VertexBuffer> RendererFactory::createVertexBuffer(uint32_t size)
+{
+    return factory()->createVertexBuffer(size);
+}
+
 const Scoped<RendererFactoryImpl>& RendererFactory::factory()
 {
     return get()->m_context->getFactory();
 }
-
 } // namespace GE

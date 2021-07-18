@@ -41,11 +41,16 @@ namespace GE {
 
 class Framebuffer;
 class RenderContext;
+class VertexBuffer;
 
 class GE_API RendererFactoryImpl: public Interface
 {
 public:
     virtual Scoped<Framebuffer> createFramebuffer() const = 0;
+
+    virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices,
+                                                    uint32_t size) const = 0;
+    virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;
 };
 
 class GE_API RendererFactory
@@ -54,6 +59,9 @@ public:
     static void setContext(Shared<RenderContext> context);
 
     static Scoped<Framebuffer> createFramebuffer();
+
+    static Scoped<VertexBuffer> createVertexBuffer(const void* vertices, uint32_t size);
+    static Scoped<VertexBuffer> createVertexBuffer(uint32_t size);
 
 private:
     RendererFactory() = default;

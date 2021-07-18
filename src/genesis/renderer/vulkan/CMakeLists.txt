@@ -2,6 +2,7 @@
 list(APPEND GE_RENDERER_VULKAN_SRC
     buffers/buffer_base.cpp
     buffers/staging_buffer.cpp
+    buffers/vertex_buffer.cpp
     device.cpp
     framebuffer.cpp
     image.cpp
@@ -15,6 +16,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
 list(APPEND GE_RENDERER_VULKAN_HEADERS
     buffers/buffer_base.h
     buffers/staging_buffer.h
+    buffers/vertex_buffer.h
     device.h
     framebuffer.h
     image.h

@@ -31,30 +31,37 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
-#define GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#ifndef GENESIS_RENDERER_VULKAN_BUFFERS_VERTEX_BUFFER_H_
+#define GENESIS_RENDERER_VULKAN_BUFFERS_VERTEX_BUFFER_H_
 
-#include <genesis/renderer/renderer_factory.h>
+#include "buffers/buffer_base.h"
+
+#include <genesis/renderer/vertex_buffer.h>
+
+#include <vulkan/vulkan.h>
 
 namespace GE::Vulkan {
 
 class Device;
 
-class RendererFactoryImpl: public GE::RendererFactoryImpl
+class VertexBuffer: public GE::VertexBuffer, public BufferBase
 {
 public:
-    explicit RendererFactoryImpl(Shared<Device> device);
+    VertexBuffer(Shared<Device> device, const void* vertices, uint32_t size);
+    VertexBuffer(Shared<Device> device, uint32_t size);
 
-    Scoped<GE::Framebuffer> createFramebuffer() const override;
+    void bind() const override;
 
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void *vertices,
-                                                uint32_t size) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
+    void setLayout(const VertexBufferLayout& layout) override;
+    const VertexBufferLayout& getLayout() const override;
+
+    void setVertices(const void* vertices, uint32_t size) override;
 
 private:
-    Shared<Device> m_device;
+    VkDeviceSize m_size{0};
+    VertexBufferLayout m_layout;
 };
 
 } // namespace GE::Vulkan
 
-#endif // GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#endif // GENESIS_RENDERER_VULKAN_BUFFERS_VERTEX_BUFFER_H_

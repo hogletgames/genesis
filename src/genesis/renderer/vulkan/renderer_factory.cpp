@@ -31,6 +31,7 @@
  */
 
 #include "renderer_factory.h"
+#include "buffers/vertex_buffer.h"
 #include "framebuffer.h"
 
 namespace GE::Vulkan {
@@ -42,6 +43,17 @@ RendererFactoryImpl::RendererFactoryImpl(Shared<Device> device)
 Scoped<GE::Framebuffer> RendererFactoryImpl::createFramebuffer() const
 {
     return tryMakeScoped<Vulkan::Framebuffer>(m_device);
+}
+
+Scoped<GE::VertexBuffer> RendererFactoryImpl::createVertexBuffer(const void *vertices,
+                                                                 uint32_t size) const
+{
+    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, vertices, size);
+}
+
+Scoped<GE::VertexBuffer> RendererFactoryImpl::createVertexBuffer(uint32_t size) const
+{
+    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size);
 }
 
 } // namespace GE::Vulkan

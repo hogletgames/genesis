@@ -30,31 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
-#define GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#include "buffers/vertex_buffer.h"
+#include "buffers/staging_buffer.h"
+#include "device.h"
+#include "vulkan_exception.h"
 
-#include <genesis/renderer/renderer_factory.h>
+#include "genesis/core/asserts.h"
 
 namespace GE::Vulkan {
 
-class Device;
-
-class RendererFactoryImpl: public GE::RendererFactoryImpl
+VertexBuffer::VertexBuffer(Shared<Device> device, const void *vertices, uint32_t size)
+    : BufferBase{std::move(device)}
 {
-public:
-    explicit RendererFactoryImpl(Shared<Device> device);
+    VkBufferUsageFlags usage =
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+    VkMemoryPropertyFlagBits properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    createBuffer(size, usage, properties);
 
-    Scoped<GE::Framebuffer> createFramebuffer() const override;
+    if (vertices != nullptr) {
+        setVertices(vertices, size);
+    }
+}
 
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void *vertices,
-                                                uint32_t size) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
+VertexBuffer::VertexBuffer(Shared<Device> device, uint32_t size)
+    : VertexBuffer{std::move(device), nullptr, size}
+{}
 
-private:
-    Shared<Device> m_device;
-};
+void VertexBuffer::bind() const {}
+
+void VertexBuffer::setLayout([[maybe_unused]] const VertexBufferLayout &layout) {}
+
+const VertexBufferLayout &VertexBuffer::getLayout() const
+{
+    return m_layout;
+}
+
+void VertexBuffer::setVertices(const void *vertices, uint32_t size)
+{
+    GE_ASSERT(m_size >= size, "Vertex Buffer overflow");
+    StagingBuffer staging_buffer{m_device, vertices, size};
+    staging_buffer.copyTo(this);
+}
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
