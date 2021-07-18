@@ -79,6 +79,7 @@ public:
 
     VkFormat getSupportedFormat(const std::vector<VkFormat>& candidates,
                                 VkImageTiling tiling, VkFormatFeatureFlags features);
+    uint32_t findMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
 
     const queue_family_indices_t& getQueueIndices() const { return m_queue_indices; }
 

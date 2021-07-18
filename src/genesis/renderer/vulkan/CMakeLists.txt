@@ -1,5 +1,7 @@
 # Vulkan Renderer sources
 list(APPEND GE_RENDERER_VULKAN_SRC
+    buffers/buffer_base.cpp
+    buffers/staging_buffer.cpp
     device.cpp
     framebuffer.cpp
     image.cpp
@@ -11,6 +13,8 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     swap_chain.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
+    buffers/buffer_base.h
+    buffers/staging_buffer.h
     device.h
     framebuffer.h
     image.h
@@ -34,6 +38,8 @@ target_link_libraries(genesis-renderer-vulkan PUBLIC
     genesis::math
     shaderc
     vulkan)
+target_include_directories(genesis-renderer-vulkan PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(genesis-renderer-vulkan SYSTEM PUBLIC
     ${GE_THIRD_PARTY_DIR}/Vulkan/shaderc/libshaderc/include
     ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include)
