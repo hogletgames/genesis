@@ -9,6 +9,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     instance.cpp
     render_context.cpp
     renderer_factory.cpp
+    shader.cpp
     single_command.cpp
     swap_chain.cpp)
 
@@ -23,6 +24,7 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     instance.h
     render_context.h
     renderer_factory.h
+    shader.h
     single_command.h
     swap_chain.h
     utils.h
@@ -37,6 +39,7 @@ add_library(genesis-renderer-vulkan ${GE_RENDERER_VULKAN_SRC} ${GE_RENDERER_VULK
 target_link_libraries(genesis-renderer-vulkan PUBLIC
     genesis::core
     genesis::math
+    genesis::renderer
     vulkan)
 target_include_directories(genesis-renderer-vulkan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(genesis-renderer-vulkan SYSTEM PUBLIC

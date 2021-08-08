@@ -31,12 +31,13 @@
  */
 
 #include "shader.h"
+#include "renderer.h"
 
 namespace GE {
 
-Scoped<Shader> Shader::create([[maybe_unused]] Type type)
+Scoped<Shader> Shader::create(Shader::Type type)
 {
-    return nullptr;
+    return Renderer::factory()->createShader(type);
 }
 
 } // namespace GE

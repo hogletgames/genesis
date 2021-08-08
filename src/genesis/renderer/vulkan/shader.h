@@ -31,33 +31,46 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
-#define GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#ifndef GENESIS_RENDERER_VULKAN_SHADER_H_
+#define GENESIS_RENDERER_VULKAN_SHADER_H_
 
-#include <genesis/core/memory.h>
-#include <genesis/renderer/renderer_factory.h>
+#include <genesis/renderer/shader.h>
+
+#include <vulkan/vulkan.h>
 
 namespace GE::Vulkan {
 
 class Device;
 
-class RendererFactory: public GE::RendererFactory
+class Shader: public GE::Shader
 {
 public:
-    explicit RendererFactory(Shared<Device> device);
+    Shader(Shared<Device> device, Type type);
+    ~Shader();
 
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
-                                                uint32_t size) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
+    bool compileFromFile(const std::string &filepath) override;
+    bool compileFromSource(const std::string &source_code) override;
 
-    Scoped<GE::Shader> createShader(Shader::Type type) override;
+    Type type() const override { return m_type; }
+    void *nativeHandle() const override { return m_shader_module; }
+    ShaderInputLayout inputLayout() const override { return m_input_layout; }
 
 private:
+    bool compileFromFileOrSource(const std::string &filepath,
+                                 const std::string &source_code);
+    bool createShaderModule(const std::vector<uint32_t> &shader_code);
+
     Shared<Device> m_device;
+    Type m_type{Type::NONE};
+    VkShaderModule m_shader_module{VK_NULL_HANDLE};
+    ShaderInputLayout m_input_layout;
 };
+
+inline VkShaderModule vulkanShaderHandle(void *shader_handle)
+{
+    return reinterpret_cast<VkShaderModule>(shader_handle);
+}
 
 } // namespace GE::Vulkan
 
-#endif // GENESIS_RENDERER_VULKAN_RENDERER_FACTORY_H_
+#endif // GENESIS_RENDERER_VULKAN_SHADER_H_

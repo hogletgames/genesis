@@ -34,6 +34,8 @@
 #define GENESIS_RENDERER_RENDERER_FACTORY_H_
 
 #include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
+#include <genesis/renderer/shader.h>
 
 namespace GE {
 
@@ -48,6 +50,8 @@ public:
     virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices,
                                                     uint32_t size) const = 0;
     virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;
+
+    virtual Scoped<Shader> createShader(Shader::Type type) = 0;
 };
 
 } // namespace GE
