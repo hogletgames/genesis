@@ -34,6 +34,7 @@
 #include "buffers/index_buffer.h"
 #include "buffers/vertex_buffer.h"
 #include "shader.h"
+#include "shader_program.h"
 
 namespace GE::Vulkan {
 
@@ -62,6 +63,13 @@ Scoped<GE::VertexBuffer> RendererFactory::createVertexBuffer(uint32_t size) cons
 Scoped<GE::Shader> RendererFactory::createShader(Shader::Type type)
 {
     return tryMakeScoped<Vulkan::Shader>(m_device, type);
+}
+
+Scoped<GE::ShaderProgram> RendererFactory::createShaderProgram(Shared<GE::Shader> vert,
+                                                               Shared<GE::Shader> frag)
+{
+    return tryMakeScoped<Vulkan::ShaderProgram>(m_device, std::move(vert),
+                                                std::move(frag));
 }
 
 } // namespace GE::Vulkan

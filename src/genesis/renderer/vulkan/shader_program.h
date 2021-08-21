@@ -30,32 +30,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_RENDERER_FACTORY_H_
-#define GENESIS_RENDERER_RENDERER_FACTORY_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_RENDERER_VULKAN_SHADER_PROGRAM_H_
+#define GENESIS_RENDERER_VULKAN_SHADER_PROGRAM_H_
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
-#include <genesis/renderer/shader.h>
+#include <genesis/renderer/shader_program.h>
 
-namespace GE {
+#include <genesis/renderer/gpu_command_queue.h>
+#include <vulkan/vulkan.h>
 
-class IndexBuffer;
-class VertexBuffer;
+namespace GE::Vulkan {
 
-class GE_API RendererFactory: public Interface
+class Device;
+class Pipeline;
+
+class ShaderProgram: public GE::ShaderProgram
 {
 public:
-    virtual Scoped<IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                                  uint32_t count) const = 0;
-    virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices,
-                                                    uint32_t size) const = 0;
-    virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;
+    ShaderProgram(Shared<Device> device, Shared<GE::Shader> vert,
+                  Shared<GE::Shader> frag);
+    ~ShaderProgram();
 
-    virtual Scoped<Shader> createShader(Shader::Type type) = 0;
-    virtual Scoped<ShaderProgram> createShaderProgram(Shared<Shader> vert,
-                                                      Shared<Shader> frag) = 0;
+    void bind(GPUCommandQueue *queue) const override;
+
+private:
+    Scoped<Pipeline> createPipeline(Shared<Shader> vert, Shared<Shader> frag);
+    VkPipelineLayout createPipelineLayout();
+    void destroyVulkanHandles();
+
+    Shared<Device> m_device;
+    VkPipelineLayout m_pipeline_layout{VK_NULL_HANDLE};
+    Scoped<Pipeline> m_pipeline;
 };
 
-} // namespace GE
+} // namespace GE::Vulkan
 
-#endif // GENESIS_RENDERER_RENDERER_FACTORY_H_
+#endif // GENESIS_RENDERER_VULKAN_SHADER_PROGRAM_H_

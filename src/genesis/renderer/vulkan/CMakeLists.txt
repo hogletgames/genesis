@@ -12,6 +12,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     render_context.cpp
     renderer_factory.cpp
     shader.cpp
+    shader_program.cpp
     single_command.cpp
     swap_chain.cpp)
 
@@ -29,6 +30,7 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     render_context.h
     renderer_factory.h
     shader.h
+    shader_program.h
     single_command.h
     swap_chain.h
     utils.h

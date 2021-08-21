@@ -30,32 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_RENDERER_FACTORY_H_
-#define GENESIS_RENDERER_RENDERER_FACTORY_H_
+#ifndef GENESIS_RENDERER_SHADER_PROGRAM_H_
+#define GENESIS_RENDERER_SHADER_PROGRAM_H_
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
-#include <genesis/renderer/shader.h>
 
 namespace GE {
 
-class IndexBuffer;
-class VertexBuffer;
+class GPUCommandQueue;
+class Shader;
 
-class GE_API RendererFactory: public Interface
+class GE_API ShaderProgram: public NonCopyable
 {
 public:
-    virtual Scoped<IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                                  uint32_t count) const = 0;
-    virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices,
-                                                    uint32_t size) const = 0;
-    virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;
+    virtual void bind(GPUCommandQueue* queue = nullptr) const = 0;
 
-    virtual Scoped<Shader> createShader(Shader::Type type) = 0;
-    virtual Scoped<ShaderProgram> createShaderProgram(Shared<Shader> vert,
-                                                      Shared<Shader> frag) = 0;
+    static Scoped<ShaderProgram> create(Shared<Shader> vert, Shared<Shader> frag);
+
+protected:
+    ShaderProgram() = default;
 };
 
 } // namespace GE
 
-#endif // GENESIS_RENDERER_RENDERER_FACTORY_H_
+#endif // GENESIS_RENDERER_SHADER_PROGRAM_H_

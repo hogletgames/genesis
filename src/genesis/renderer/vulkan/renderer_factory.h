@@ -53,6 +53,8 @@ public:
     Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
 
     Scoped<GE::Shader> createShader(Shader::Type type) override;
+    Scoped<GE::ShaderProgram> createShaderProgram(Shared<GE::Shader> vert,
+                                                  Shared<GE::Shader> frag) override;
 
 private:
     Shared<Device> m_device;

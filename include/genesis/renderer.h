@@ -41,6 +41,7 @@
 #include <genesis/renderer/shader.h>
 #include <genesis/renderer/shader_input_layout.h>
 #include <genesis/renderer/shader_precompiler.h>
+#include <genesis/renderer/shader_program.h>
 #include <genesis/renderer/vertex_buffer.h>
 
 #endif // GENESIS_RENDERER_H_

@@ -8,6 +8,7 @@ list(APPEND GE_RENDERER_SRC
     shader.cpp
     shader_input_layout.cpp
     shader_precompiler.cpp
+    shader_program.cpp
     shader_reflection.cpp
     vertex_buffer.cpp)
 
@@ -20,6 +21,7 @@ list(APPEND GE_RENDERER_HEADERS
     ${GE_RENDERER_INCLUDE_DIR}/shader.h
     ${GE_RENDERER_INCLUDE_DIR}/shader_input_layout.h
     ${GE_RENDERER_INCLUDE_DIR}/shader_precompiler.h
+    ${GE_RENDERER_INCLUDE_DIR}/shader_program.h
     ${GE_RENDERER_INCLUDE_DIR}/shader_reflection.h
     ${GE_RENDERER_INCLUDE_DIR}/vertex_buffer.h)
 
