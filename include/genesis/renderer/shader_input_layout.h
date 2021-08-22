@@ -30,15 +30,62 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_H_
-#define GENESIS_RENDERER_H_
+#ifndef GENESIS_RENDERER_SHADER_INPUT_LAYOUT_H_
+#define GENESIS_RENDERER_SHADER_INPUT_LAYOUT_H_
 
-#include <genesis/renderer/gpu_command_queue.h>
-#include <genesis/renderer/index_buffer.h>
-#include <genesis/renderer/render_context.h>
-#include <genesis/renderer/renderer.h>
-#include <genesis/renderer/renderer_factory.h>
-#include <genesis/renderer/shader_input_layout.h>
-#include <genesis/renderer/vertex_buffer.h>
+#include <genesis/core/interface.h>
 
-#endif // GENESIS_RENDERER_H_
+#include <string>
+#include <vector>
+
+namespace GE {
+
+struct shader_attribute_t {
+    enum class BaseType : uint8_t
+    {
+        NONE = 0,
+        INT,
+        UINT,
+        FLOAT,
+        DOUBLE
+    };
+
+    BaseType base_type{BaseType::NONE};
+    std::string name;
+    uint32_t location{};
+    uint32_t size{0};
+    uint32_t vec_size{0};
+    uint32_t vec_column{0};
+    uint32_t offset{0};
+
+    uint32_t fullSize() const { return size * vec_size * vec_column; }
+};
+
+inline bool operator==(const GE::shader_attribute_t& lhs,
+                       const GE::shader_attribute_t& rhs)
+{
+    return lhs.base_type == rhs.base_type && lhs.name == rhs.name &&
+           lhs.size == rhs.size && lhs.offset == rhs.offset &&
+           lhs.location == rhs.location;
+}
+
+class GE_API ShaderInputLayout
+{
+public:
+    ShaderInputLayout() = default;
+    explicit ShaderInputLayout(std::vector<shader_attribute_t> attributes);
+
+    void append(const shader_attribute_t& attribute);
+    void clear();
+
+    const std::vector<shader_attribute_t>& attributes() const { return m_attributes; }
+    uint32_t stride() const { return m_stride; }
+
+private:
+    std::vector<shader_attribute_t> m_attributes;
+    uint32_t m_stride{0};
+};
+
+} // namespace GE
+
+#endif // GENESIS_RENDERER_SHADER_INPUT_LAYOUT_H_

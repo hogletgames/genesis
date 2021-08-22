@@ -30,15 +30,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_H_
-#define GENESIS_RENDERER_H_
+#include "shader_input_layout.h"
 
-#include <genesis/renderer/gpu_command_queue.h>
-#include <genesis/renderer/index_buffer.h>
-#include <genesis/renderer/render_context.h>
-#include <genesis/renderer/renderer.h>
-#include <genesis/renderer/renderer_factory.h>
-#include <genesis/renderer/shader_input_layout.h>
-#include <genesis/renderer/vertex_buffer.h>
+#include <numeric>
 
-#endif // GENESIS_RENDERER_H_
+namespace {
+
+uint32_t calculateStride(const std::vector<GE::shader_attribute_t>& attributes)
+{
+    return std::accumulate(
+        attributes.begin(), attributes.end(), 0u,
+        [](uint32_t sum, const auto& attribute) { return sum + attribute.fullSize(); });
+}
+
+} // namespace
+
+namespace GE {
+
+ShaderInputLayout::ShaderInputLayout(std::vector<shader_attribute_t> attributes)
+    : m_attributes{std::move(attributes)}
+    , m_stride{calculateStride(m_attributes)}
+{}
+
+void ShaderInputLayout::append(const shader_attribute_t& attribute)
+{
+    m_attributes.push_back(attribute);
+    m_stride += attribute.fullSize();
+}
+
+void ShaderInputLayout::clear()
+{
+    m_attributes.clear();
+    m_stride = 0;
+}
+
+} // namespace GE
