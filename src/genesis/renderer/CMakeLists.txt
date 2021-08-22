@@ -8,6 +8,7 @@ list(APPEND GE_RENDERER_SRC
     shader.cpp
     shader_input_layout.cpp
     shader_precompiler.cpp
+    shader_reflection.cpp
     vertex_buffer.cpp)
 
 list(APPEND GE_RENDERER_HEADERS
@@ -19,6 +20,7 @@ list(APPEND GE_RENDERER_HEADERS
     ${GE_RENDERER_INCLUDE_DIR}/shader.h
     ${GE_RENDERER_INCLUDE_DIR}/shader_input_layout.h
     ${GE_RENDERER_INCLUDE_DIR}/shader_precompiler.h
+    ${GE_RENDERER_INCLUDE_DIR}/shader_reflection.h
     ${GE_RENDERER_INCLUDE_DIR}/vertex_buffer.h)
 
 add_library(genesis-renderer STATIC ${GE_RENDERER_SRC} ${GE_RENDERER_HEADERS})
@@ -27,10 +29,12 @@ target_link_libraries(genesis-renderer
         genesis::core
     PRIVATE
         genesis::renderer::vulkan
-        shaderc)
+        shaderc
+        spirv-cross-cpp)
 target_include_directories(genesis-renderer PRIVATE ${GE_RENDERER_INCLUDE_DIR})
 target_include_directories(genesis-renderer SYSTEM PRIVATE
-    ${GE_THIRD_PARTY_DIR}/Vulkan/shaderc/libshaderc/include)
+    ${GE_THIRD_PARTY_DIR}/Vulkan/shaderc/libshaderc/include
+    ${GE_THIRD_PARTY_DIR}/Vulkan/SPIRV-Cross)
 ge_default_target_config(genesis-renderer)
 add_library(genesis::renderer ALIAS genesis-renderer)
 
