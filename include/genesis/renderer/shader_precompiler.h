@@ -30,17 +30,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_H_
-#define GENESIS_RENDERER_H_
+#ifndef GENESIS_RENDERER_SHADER_PRECOMPILER_H_
+#define GENESIS_RENDERER_SHADER_PRECOMPILER_H_
 
-#include <genesis/renderer/gpu_command_queue.h>
-#include <genesis/renderer/index_buffer.h>
-#include <genesis/renderer/render_context.h>
-#include <genesis/renderer/renderer.h>
-#include <genesis/renderer/renderer_factory.h>
 #include <genesis/renderer/shader.h>
-#include <genesis/renderer/shader_input_layout.h>
-#include <genesis/renderer/shader_precompiler.h>
-#include <genesis/renderer/vertex_buffer.h>
 
-#endif // GENESIS_RENDERER_H_
+#include <vector>
+
+namespace GE {
+
+class GE_API ShaderPrecompiler
+{
+public:
+    static ShaderCache compileFromFile(Shader::Type shader_type,
+                                       const std::string &filepath);
+    static ShaderCache compileFromSource(Shader::Type shader_type,
+                                         const std::string &source_code);
+
+    static ShaderCache loadShaderCache(const std::string &filepath);
+    static bool saveShaderCache(const ShaderCache &shader_cache,
+                                const std::string &filepath);
+
+private:
+    static ShaderCache compileShader(Shader::Type type, const std::string &source_code,
+                                     const std::string &filepath);
+};
+
+} // namespace GE
+
+#endif // GENESIS_RENDERER_SHADER_PRECOMPILER_H_

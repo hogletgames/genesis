@@ -42,9 +42,9 @@ target_include_directories(genesis-renderer-vulkan PRIVATE ${CMAKE_CURRENT_SOURC
 target_include_directories(genesis-renderer-vulkan SYSTEM PUBLIC
     ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include)
 
-if(NOT CMAKE_EXPORT_COMPILE_COMMANDS AND NOT GE_DISABLE_DEBUG)
+if (NOT CMAKE_EXPORT_COMPILE_COMMANDS AND NOT GE_DISABLE_DEBUG)
     add_dependencies(genesis-renderer-vulkan VkLayer_khronos_validation-json)
-endif(${GE_THIRD_PARTY_DIR}/SDL2/include)
+endif ()
 
 # Add SDL2 library/include directory
 target_link_libraries(genesis-renderer-vulkan PRIVATE SDL2-static)

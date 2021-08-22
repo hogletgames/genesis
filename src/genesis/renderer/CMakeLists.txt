@@ -7,6 +7,7 @@ list(APPEND GE_RENDERER_SRC
     renderer.cpp
     shader.cpp
     shader_input_layout.cpp
+    shader_precompiler.cpp
     vertex_buffer.cpp)
 
 list(APPEND GE_RENDERER_HEADERS
@@ -17,13 +18,19 @@ list(APPEND GE_RENDERER_HEADERS
     ${GE_RENDERER_INCLUDE_DIR}/renderer_factory.h
     ${GE_RENDERER_INCLUDE_DIR}/shader.h
     ${GE_RENDERER_INCLUDE_DIR}/shader_input_layout.h
+    ${GE_RENDERER_INCLUDE_DIR}/shader_precompiler.h
     ${GE_RENDERER_INCLUDE_DIR}/vertex_buffer.h)
 
 add_library(genesis-renderer STATIC ${GE_RENDERER_SRC} ${GE_RENDERER_HEADERS})
-target_link_libraries(genesis-renderer PUBLIC
-    genesis::core
-    genesis::renderer::vulkan)
+target_link_libraries(genesis-renderer
+    PUBLIC
+        genesis::core
+    PRIVATE
+        genesis::renderer::vulkan
+        shaderc)
 target_include_directories(genesis-renderer PRIVATE ${GE_RENDERER_INCLUDE_DIR})
+target_include_directories(genesis-renderer SYSTEM PRIVATE
+    ${GE_THIRD_PARTY_DIR}/Vulkan/shaderc/libshaderc/include)
 ge_default_target_config(genesis-renderer)
 add_library(genesis::renderer ALIAS genesis-renderer)
 
