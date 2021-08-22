@@ -30,16 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_H_
-#define GENESIS_RENDERER_H_
+#include "shader.h"
 
-#include <genesis/renderer/gpu_command_queue.h>
-#include <genesis/renderer/index_buffer.h>
-#include <genesis/renderer/render_context.h>
-#include <genesis/renderer/renderer.h>
-#include <genesis/renderer/renderer_factory.h>
-#include <genesis/renderer/shader.h>
-#include <genesis/renderer/shader_input_layout.h>
-#include <genesis/renderer/vertex_buffer.h>
+namespace GE {
 
-#endif // GENESIS_RENDERER_H_
+Scoped<Shader> Shader::create([[maybe_unused]] Type type)
+{
+    return nullptr;
+}
+
+} // namespace GE

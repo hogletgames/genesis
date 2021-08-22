@@ -30,16 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_H_
-#define GENESIS_RENDERER_H_
+#ifndef GENESIS_RENDERER_SHADER_H_
+#define GENESIS_RENDERER_SHADER_H_
 
-#include <genesis/renderer/gpu_command_queue.h>
-#include <genesis/renderer/index_buffer.h>
-#include <genesis/renderer/render_context.h>
-#include <genesis/renderer/renderer.h>
-#include <genesis/renderer/renderer_factory.h>
-#include <genesis/renderer/shader.h>
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
 #include <genesis/renderer/shader_input_layout.h>
-#include <genesis/renderer/vertex_buffer.h>
 
-#endif // GENESIS_RENDERER_H_
+namespace GE {
+
+using ShaderCache = std::vector<uint32_t>;
+
+class GE_API Shader: public NonCopyable
+{
+public:
+    enum class Type : uint8_t
+    {
+        NONE = 0,
+        VERTEX,
+        FRAGMENT
+    };
+
+    virtual bool compileFromFile(const std::string& filepath) = 0;
+    virtual bool compileFromSource(const std::string& source_code) = 0;
+
+    virtual Type type() const = 0;
+    virtual void* nativeHandle() const = 0;
+    virtual ShaderInputLayout inputLayout() const = 0;
+
+    static Scoped<Shader> create(Type type);
+};
+
+} // namespace GE
+
+#endif // GENESIS_RENDERER_SHADER_H_
