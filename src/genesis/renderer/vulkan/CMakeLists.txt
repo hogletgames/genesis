@@ -6,6 +6,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     buffers/vertex_buffer.cpp
     device.cpp
     image.cpp
+    input_stage_descriptions.cpp
     instance.cpp
     render_context.cpp
     renderer_factory.cpp
@@ -21,6 +22,7 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     command_buffer.h
     device.h
     image.h
+    input_stage_descriptions.h
     instance.h
     render_context.h
     renderer_factory.h
