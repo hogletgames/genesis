@@ -30,12 +30,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_H_
-#define GENESIS_RENDERER_H_
+#include "gpu_command_queue.h"
 
-#include <genesis/renderer/gpu_command_queue.h>
-#include <genesis/renderer/render_context.h>
-#include <genesis/renderer/renderer.h>
-#include <genesis/renderer/renderer_factory.h>
+namespace GE {
 
-#endif // GENESIS_RENDERER_H_
+void GPUCommandQueue::enqueue(GPUCommandQueue::DelayedCommand cmd)
+{
+    m_cmd_queue.push_back(std::move(cmd));
+}
+
+void GPUCommandQueue::execCommands(GPUCommandBuffer cmd_buffer) const
+{
+    for (const auto& cmd : m_cmd_queue) {
+        cmd(cmd_buffer);
+    }
+}
+
+void GPUCommandQueue::clear()
+{
+    m_cmd_queue.clear();
+}
+
+} // namespace GE
