@@ -9,6 +9,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     swap_chain.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
+    command_buffer.h
     device.h
     image.h
     instance.h
