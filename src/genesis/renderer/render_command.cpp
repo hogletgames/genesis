@@ -30,19 +30,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_H_
-#define GENESIS_RENDERER_H_
+#include "render_command.h"
+#include "index_buffer.h"
+#include "shader_program.h"
+#include "vertex_buffer.h"
 
-#include <genesis/renderer/gpu_command_queue.h>
-#include <genesis/renderer/index_buffer.h>
-#include <genesis/renderer/render_command.h>
-#include <genesis/renderer/render_context.h>
-#include <genesis/renderer/renderer.h>
-#include <genesis/renderer/renderer_factory.h>
-#include <genesis/renderer/shader.h>
-#include <genesis/renderer/shader_input_layout.h>
-#include <genesis/renderer/shader_precompiler.h>
-#include <genesis/renderer/shader_program.h>
-#include <genesis/renderer/vertex_buffer.h>
+namespace GE {
 
-#endif // GENESIS_RENDERER_H_
+void RenderCommand::bind(ShaderProgram *shader_program)
+{
+    shader_program->bind(cmdQueue());
+}
+
+void RenderCommand::bind(VertexBuffer *buffer)
+{
+    buffer->bind(cmdQueue());
+}
+
+void RenderCommand::bind(IndexBuffer *buffer)
+{
+    buffer->bind(cmdQueue());
+}
+
+void RenderCommand::draw(VertexBuffer *buffer, uint32_t vertex_count)
+{
+    buffer->bind(cmdQueue());
+    buffer->draw(cmdQueue(), vertex_count);
+}
+
+void RenderCommand::submit(GPUCommandBuffer cmd)
+{
+    cmdQueue()->execCommands(cmd);
+    cmdQueue()->clear();
+}
+
+} // namespace GE
