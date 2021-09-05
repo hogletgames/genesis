@@ -41,4 +41,14 @@ std::string toString(const Vec2& vec)
     return GE_FMTSTR("({}, {})", vec.x, vec.y);
 }
 
+std::string toString(const Vec3& vec)
+{
+    return GE_FMTSTR("({}, {}, {})", vec.x, vec.y, vec.z);
+}
+
+std::string toString(const Vec4& vec)
+{
+    return GE_FMTSTR("({}, {}, {}, {})", vec.x, vec.y, vec.z, vec.w);
+}
+
 } // namespace GE
