@@ -30,41 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "triangle_layer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef EXAMPLES_SANDBOX_TRIANGLE_LAYER_H_
+#define EXAMPLES_SANDBOX_TRIANGLE_LAYER_H_
 
-#include <genesis/genesis.h>
+#include <genesis/app/layer.h>
+#include <genesis/core/memory.h>
 
-namespace {
+namespace GE {
+class ShaderProgram;
+class VertexBuffer;
+} // namespace GE
 
-constexpr GE::Logger::Level LOG_LEVEL{GE::Logger::Level::TRACE};
-constexpr GE::Renderer::API RENDER_API{GE::Renderer::API::VULKAN};
+namespace GE::Examples {
 
-} // namespace
-
-int main()
+class GE_API TriangleLayer: public Layer
 {
-    GE::Log::settings_t log_settings{};
-    log_settings.core_log_level = LOG_LEVEL;
-    log_settings.client_log_level = LOG_LEVEL;
+public:
+    void onAttached() override;
+    void onDetached() override;
 
-    GE::Renderer::settings_t renderer_settings{};
-    renderer_settings.api = RENDER_API;
+    void onUpdate(Timestamp ts) override;
+    void onEvent(Event *event) override;
+    void onRender() override;
 
-    GE::Window::settings_t window_settings{};
-    window_settings.renderer = renderer_settings;
+private:
+    Scoped<ShaderProgram> m_shader;
+    Scoped<VertexBuffer> m_vbo;
+};
 
-    GE::Application::settings_t app_settings{};
-    app_settings.log = log_settings;
-    app_settings.window = window_settings;
+} // namespace GE::Examples
 
-    if (!GE::Application::initialize(app_settings)) {
-        GE_ERR("Failed to initialize Engine");
-        return EXIT_FAILURE;
-    }
-
-    GE::Application::attachLayer(GE::makeShared<GE::Examples::TriangleLayer>());
-    GE::Application::run();
-    GE::Application::shutdown();
-
-    return EXIT_SUCCESS;
-}
+#endif // EXAMPLES_SANDBOX_TRIANGLE_LAYER_H_
