@@ -82,6 +82,8 @@ private:
     Scoped<GE::RendererFactory> m_renderer_factory;
 };
 
+Shared<Vulkan::RenderContext> currentContext();
+
 } // namespace GE::Vulkan
 
 #endif // GENESIS_RENDERER_VULKAN_RENDER_CONTEXT_H_

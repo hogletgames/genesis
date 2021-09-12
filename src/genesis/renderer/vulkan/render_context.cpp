@@ -39,7 +39,9 @@
 #include "utils.h"
 #include "vulkan_exception.h"
 
+#include "genesis/core/asserts.h"
 #include "genesis/core/log.h"
+#include "genesis/renderer/renderer.h"
 
 namespace GE::Vulkan {
 
@@ -87,6 +89,14 @@ void RenderContext::destroyVulkanHandles()
 {
     vkDestroySurfaceKHR(Instance::instance(), m_surface, nullptr);
     m_surface = VK_NULL_HANDLE;
+}
+
+Shared<Vulkan::RenderContext> currentContext()
+{
+    auto context = Renderer::context();
+    GE_CORE_ASSERT(context->API() == Renderer::API::VULKAN, "Incorrect Renderer API: {}",
+                   static_cast<int>(context->API()));
+    return staticPtrCast<Vulkan::RenderContext>(context);
 }
 
 } // namespace GE::Vulkan
