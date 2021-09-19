@@ -49,3 +49,6 @@
 [submodule "third-party/Vulkan/MoltenVK/MoltenVK"]
 	path = third-party/Vulkan/MoltenVK/MoltenVK
 	url = https://github.com/hogletgames/MoltenVK.git
+[submodule "third-party/imgui"]
+	path = third-party/imgui
+	url = https://github.com/hogletgames/imgui.git

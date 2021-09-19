@@ -31,3 +31,28 @@ add_subdirectory(magic_enum)
 # googletest
 add_subdirectory(googletest)
 target_compile_options(gtest PRIVATE $<${IS_GNU_COMPILER}:-Wno-error=maybe-uninitialized>)
+
+# imgui
+add_Library(imgui STATIC
+    imgui/imgui.cpp
+    imgui/imgui_draw.cpp
+    imgui/imgui_demo.cpp
+    imgui/imgui_tables.cpp
+    imgui/imgui_widgets.cpp)
+target_include_directories(imgui PUBLIC imgui)
+
+# imgui Vulkan SDL2
+add_library(imgui-vulkan STATIC
+    imgui/backends/imgui_impl_sdl.cpp
+    imgui/backends/imgui_impl_vulkan.cpp)
+target_link_libraries(imgui-vulkan PUBLIC
+    imgui
+    SDL2-static
+    vulkan)
+target_include_directories(imgui-vulkan PUBLIC imgui/backends)
+
+# ImGui SDL Vulcan example
+# NOTE: imgui patch below must be commented to be able to run this example
+# add_executable(imgui_sdl_vulkan_example imgui/examples/example_sdl_vulkan/main.cpp)
+# target_link_libraries(imgui_sdl_vulkan_example PRIVATE imgui-vulkan)
+# target_compile_definitions(imgui_sdl_vulkan_example PRIVATE _DEBUG)
