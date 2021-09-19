@@ -40,30 +40,63 @@
 
 #include <vector>
 
-struct SDL_Window;
-
 namespace GE::Vulkan {
+
+namespace SDL {
+class PlatformWindow;
+} // namespace SDL
+
+class Device;
+class SwapChain;
 
 class RenderContext: public GE::RenderContext
 {
 public:
+    RenderContext();
+    ~RenderContext();
+
     bool initialize(void* window) override;
     void shutdown() override;
 
-protected:
-    virtual std::vector<const char*> getWindowExtensions(void* window) const = 0;
-    virtual const char* getAppName(void* window) const = 0;
-    virtual bool createSurface(void* window) = 0;
+    void drawFrame() override;
 
-    VkInstance m_instance{VK_NULL_HANDLE};
-    VkSurfaceKHR m_surface{VK_NULL_HANDLE};
+    Renderer::API API() const override { return Renderer::API::VULKAN; }
+
+    const Scoped<GE::RendererFactory>& factory() const override
+    {
+        return m_renderer_factory;
+    }
+
+    const Scoped<SDL::PlatformWindow>& platformWindow() const { return m_window; }
+    VkSurfaceKHR surface() const { return m_surface; }
+    Shared<Device> device() const { return m_device; }
+    Shared<Vulkan::SwapChain> swapChain() const { return m_swap_chain; }
 
 private:
-    bool createInstance(void* window);
-    bool setupDebugUtils();
+    void createCommandBuffers();
+    void destroyCommandBuffers();
 
-    VkDebugUtilsMessengerEXT m_debug_utils{VK_NULL_HANDLE};
+    bool prepareRenderCommand(uint32_t image_idx);
+    bool beginRenderCommand(uint32_t image_idx);
+    void setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo);
+    void setViewportAndScissor(VkCommandBuffer cmd);
+    bool endRenderCommand(uint32_t image_idx);
+    VkFramebuffer currentFBO(uint32_t image_idx);
+    VkRenderPass renderPass();
+
+    void destroyVulkanHandles();
+
+    Scoped<SDL::PlatformWindow> m_window;
+    VkSurfaceKHR m_surface{VK_NULL_HANDLE};
+
+    Shared<Vulkan::Device> m_device;
+    Shared<Vulkan::SwapChain> m_swap_chain;
+    std::vector<VkCommandBuffer> m_command_buffers;
+
+    Scoped<GE::RendererFactory> m_renderer_factory;
 };
+
+Shared<Vulkan::RenderContext> currentContext();
 
 } // namespace GE::Vulkan
 

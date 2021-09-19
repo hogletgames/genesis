@@ -33,12 +33,13 @@
 #ifndef GENESIS_RENDERER_RENDERER_H_
 #define GENESIS_RENDERER_RENDERER_H_
 
-#include <genesis/core/enum.h>
 #include <genesis/core/export.h>
-
-#include <string>
+#include <genesis/core/memory.h>
+#include <genesis/renderer/renderer_factory.h>
 
 namespace GE {
+
+class RenderContext;
 
 class GE_API Renderer
 {
@@ -55,10 +56,10 @@ public:
         static constexpr API API_DEFAULT{API::VULKAN};
     };
 
-    static bool initialize(const settings_t& settings);
-    static void shutdown();
-
-    static API getAPI() { return get()->m_api; }
+    static API renderAPI();
+    static void setContext(Shared<RenderContext> context);
+    static Shared<RenderContext> context();
+    static const Scoped<RendererFactory>& factory();
 
 private:
     Renderer() = default;
@@ -69,7 +70,7 @@ private:
         return &instance;
     }
 
-    API m_api{API::NONE};
+    Shared<RenderContext> m_context;
 };
 
 Renderer::API toRendererAPI(const std::string& api_str);

@@ -43,3 +43,6 @@
 [submodule "third-party/googletest"]
 	path = third-party/googletest
 	url = https://github.com/hogletgames/googletest.git
+[submodule "third-party/Vulkan/SPIRV-Cross"]
+	path = third-party/Vulkan/SPIRV-Cross
+	url = https://github.com/hogletgames/SPIRV-Cross.git

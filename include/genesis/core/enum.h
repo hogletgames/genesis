@@ -46,6 +46,9 @@
 
 namespace GE {
 
+template<typename T>
+using EnableIfIsEnum = std::enable_if_t<std::is_enum_v<T>>;
+
 using magic_enum::bitwise_operators::operator~;
 using magic_enum::bitwise_operators::operator|;
 using magic_enum::bitwise_operators::operator&;
@@ -54,8 +57,7 @@ using magic_enum::bitwise_operators::operator|=;
 using magic_enum::bitwise_operators::operator&=;
 using magic_enum::bitwise_operators::operator^=;
 
-template<typename EnumType,
-         typename = std::enable_if<std::is_enum<EnumType>::value, bool>>
+template<typename EnumType, typename = EnableIfIsEnum<EnumType>>
 std::string toString(EnumType value)
 {
     return std::string{magic_enum::enum_name(value)};
@@ -67,8 +69,7 @@ std::optional<EnumType> toEnum(const std::string& string)
     return magic_enum::enum_cast<EnumType>(string);
 }
 
-template<typename OStream, typename EnumType,
-         typename = std::enable_if<std::is_enum<EnumType>::value, bool>>
+template<typename OStream, typename EnumType, typename = EnableIfIsEnum<EnumType>>
 OStream& operator<<(OStream& os, EnumType value)
 {
     return os << toString(value);

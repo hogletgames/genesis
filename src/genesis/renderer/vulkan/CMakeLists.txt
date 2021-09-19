@@ -1,26 +1,59 @@
 # Vulkan Renderer sources
 list(APPEND GE_RENDERER_VULKAN_SRC
+    buffers/buffer_base.cpp
+    buffers/index_buffer.cpp
+    buffers/staging_buffer.cpp
+    buffers/vertex_buffer.cpp
+    device.cpp
+    image.cpp
+    input_stage_descriptions.cpp
+    instance.cpp
+    pipeline.cpp
     render_context.cpp
-)
+    renderer_factory.cpp
+    shader.cpp
+    shader_program.cpp
+    single_command.cpp
+    swap_chain.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
+    buffers/buffer_base.h
+    buffers/index_buffer.h
+    buffers/staging_buffer.h
+    buffers/vertex_buffer.h
+    command_buffer.h
+    device.h
+    image.h
+    input_stage_descriptions.h
+    instance.h
+    pipeline.h
     render_context.h
+    renderer_factory.h
+    shader.h
+    shader_program.h
+    single_command.h
+    swap_chain.h
     utils.h
-)
+    vulkan_exception.h)
 
 # Append SDL2 sources
-list(APPEND GE_RENDERER_VULKAN_SRC sdl_render_context.cpp)
-list(APPEND GE_RENDERER_VULKAN_HEADERS sdl_render_context.h)
+list(APPEND GE_RENDERER_VULKAN_SRC sdl_platform_window.cpp)
+list(APPEND GE_RENDERER_VULKAN_HEADERS sdl_platform_window.h)
 
 # Vulkan Renderer library
 add_library(genesis-renderer-vulkan ${GE_RENDERER_VULKAN_SRC} ${GE_RENDERER_VULKAN_HEADERS})
-target_link_libraries(genesis-renderer-vulkan PUBLIC genesis::core)
-target_link_libraries(genesis-renderer-vulkan PRIVATE vulkan)
-target_include_directories(genesis-renderer-vulkan SYSTEM PUBLIC ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include)
+target_link_libraries(genesis-renderer-vulkan PUBLIC
+    genesis::core
+    genesis::math
+    genesis::renderer
+    vulkan)
+target_include_directories(genesis-renderer-vulkan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(genesis-renderer-vulkan SYSTEM PUBLIC
+    ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include)
 
-if(NOT CMAKE_EXPORT_COMPILE_COMMANDS AND NOT GE_DISABLE_DEBUG)
+if (NOT CMAKE_EXPORT_COMPILE_COMMANDS AND NOT GE_DISABLE_DEBUG)
     add_dependencies(genesis-renderer-vulkan VkLayer_khronos_validation-json)
-endif(${GE_THIRD_PARTY_DIR}/SDL2/include)
+endif ()
 
 # Add SDL2 library/include directory
 target_link_libraries(genesis-renderer-vulkan PRIVATE SDL2-static)

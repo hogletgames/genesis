@@ -33,7 +33,16 @@
 #ifndef GENESIS_RENDERER_H_
 #define GENESIS_RENDERER_H_
 
+#include <genesis/renderer/gpu_command_queue.h>
+#include <genesis/renderer/index_buffer.h>
+#include <genesis/renderer/render_command.h>
 #include <genesis/renderer/render_context.h>
 #include <genesis/renderer/renderer.h>
+#include <genesis/renderer/renderer_factory.h>
+#include <genesis/renderer/shader.h>
+#include <genesis/renderer/shader_input_layout.h>
+#include <genesis/renderer/shader_precompiler.h>
+#include <genesis/renderer/shader_program.h>
+#include <genesis/renderer/vertex_buffer.h>
 
 #endif // GENESIS_RENDERER_H_

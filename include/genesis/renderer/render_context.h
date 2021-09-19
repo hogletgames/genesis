@@ -45,6 +45,11 @@ public:
     virtual bool initialize(void* window) = 0;
     virtual void shutdown() = 0;
 
+    virtual void drawFrame() = 0;
+
+    virtual Renderer::API API() const = 0;
+    virtual const Scoped<RendererFactory>& factory() const = 0;
+
     static Scoped<RenderContext> create(Renderer::API api);
 };
 

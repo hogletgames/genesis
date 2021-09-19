@@ -30,28 +30,41 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_SDL_RENDER_CONTEXT_H_
-#define GENESIS_RENDERER_VULKAN_SDL_RENDER_CONTEXT_H_
+#include "buffers/staging_buffer.h"
+#include "device.h"
+#include "single_command.h"
 
-#include "render_context.h"
+#include <cstring>
 
-struct SDL_Window;
+namespace GE::Vulkan {
 
-namespace GE::Vulkan::SDL {
-
-class RenderContext: public GE::Vulkan::RenderContext
+StagingBuffer::StagingBuffer(Shared<Device> device, const void *data, uint32_t size)
+    : BufferBase{std::move(device)}
 {
-public:
-    using GE::Vulkan::RenderContext::RenderContext;
+    VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+    VkMemoryPropertyFlags properties =
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    createBuffer(size, usage, properties);
+    copyData(data, size);
+}
 
-private:
-    std::vector<const char*> getWindowExtensions(void* window) const override;
-    const char* getAppName(void* window) const override;
+void StagingBuffer::copyTo(BufferBase *dest)
+{
+    SingleCommand cmd{m_device};
+    VkBufferCopy copy_region{};
+    copy_region.srcOffset = 0;
+    copy_region.dstOffset = 0;
+    copy_region.size = m_size;
+    vkCmdCopyBuffer(cmd.getCmdBuffer(), m_buffer, dest->getBuffer(), 1, &copy_region);
+}
 
-    bool createSurface(void* window) override;
-};
+void StagingBuffer::copyData(const void *data, uint32_t size)
+{
+    void *mem_ptr{nullptr};
+    vkMapMemory(m_device->device(), m_memory, 0, size, 0, &mem_ptr);
+    std::memcpy(mem_ptr, data, size);
+    vkUnmapMemory(m_device->device(), m_memory);
+    m_size = size;
+}
 
-} // namespace GE::Vulkan::SDL
-
-#endif // GENESIS_RENDERER_VULKAN_SDL_RENDER_CONTEXT_H_
+} // namespace GE::Vulkan

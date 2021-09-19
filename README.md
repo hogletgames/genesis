@@ -11,6 +11,7 @@
   - [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-Headers/blob/sdk-1.2.162.0/LICENSE.txt))
   - [Vulkan-Loader](https://github.com/KhronosGroup/Vulkan-Loader) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-Loader/blob/sdk-1.2.162.0/LICENSE.txt))
   - [glslang](https://github.com/KhronosGroup/glslang) ([Multi-licensed](https://github.com/KhronosGroup/glslang/blob/11.1.0/LICENSE.txt))
+  - [SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross) ([Apache 2.0](https://github.com/KhronosGroup/SPIRV-Cross/blob/2021-01-15/LICENSE))
   - [SPIRV-Headers](https://github.com/KhronosGroup/SPIRV-Headers) ([MIT](https://github.com/KhronosGroup/SPIRV-Headers/blob/1.5.4.raytracing.fixed/LICENSE))
   - [SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools) ([Apache 2.0](https://github.com/KhronosGroup/SPIRV-Tools/blob/v2020.6/LICENSE))
   - [Vulkan-ValidationLayers](https://github.com/KhronosGroup/Vulkan-ValidationLayers) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/sdk-1.2.162.0/LICENSE.txt))

@@ -30,46 +30,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "sdl_render_context.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_RENDERER_VULKAN_SHADER_PROGRAM_H_
+#define GENESIS_RENDERER_VULKAN_SHADER_PROGRAM_H_
 
-// To suppress clang-tidy warnings about missed `memcpy()` in SDL2
-#include <cstring>
+#include <genesis/renderer/shader_program.h>
 
-#include <SDL_vulkan.h>
+#include <genesis/renderer/gpu_command_queue.h>
+#include <vulkan/vulkan.h>
 
-namespace {
+namespace GE::Vulkan {
 
-inline SDL_Window* toSDLWindow(void* window)
+class Device;
+class Pipeline;
+
+class ShaderProgram: public GE::ShaderProgram
 {
-    return reinterpret_cast<SDL_Window*>(window);
-}
+public:
+    ShaderProgram(Shared<Device> device, Shared<GE::Shader> vert,
+                  Shared<GE::Shader> frag);
+    ~ShaderProgram();
 
-} // namespace
+    void bind(GPUCommandQueue *queue) const override;
 
-namespace GE::Vulkan::SDL {
+private:
+    Scoped<Pipeline> createPipeline(Shared<Shader> vert, Shared<Shader> frag);
+    VkPipelineLayout createPipelineLayout();
+    void destroyVulkanHandles();
 
-std::vector<const char*> RenderContext::getWindowExtensions(void* window) const
-{
-    auto* sdl_window = toSDLWindow(window);
+    Shared<Device> m_device;
+    VkPipelineLayout m_pipeline_layout{VK_NULL_HANDLE};
+    Scoped<Pipeline> m_pipeline;
+};
 
-    uint32_t name_count{0};
-    SDL_Vulkan_GetInstanceExtensions(sdl_window, &name_count, nullptr);
+} // namespace GE::Vulkan
 
-    std::vector<const char*> names(name_count);
-    SDL_Vulkan_GetInstanceExtensions(sdl_window, &name_count, names.data());
-
-    return names;
-}
-
-const char* RenderContext::getAppName(void* window) const
-{
-    return SDL_GetWindowTitle(toSDLWindow(window));
-}
-
-bool RenderContext::createSurface(void* window)
-{
-    return SDL_Vulkan_CreateSurface(toSDLWindow(window), m_instance, &m_surface) ==
-           SDL_TRUE;
-}
-
-} // namespace GE::Vulkan::SDL
+#endif // GENESIS_RENDERER_VULKAN_SHADER_PROGRAM_H_

@@ -31,125 +31,220 @@
  */
 
 #include "render_context.h"
+#include "device.h"
+#include "instance.h"
+#include "renderer_factory.h"
+#include "sdl_platform_window.h"
+#include "swap_chain.h"
 #include "utils.h"
+#include "vulkan_exception.h"
 
 #include "genesis/core/asserts.h"
-#include "genesis/core/version.h"
-
-namespace {
-
-constexpr int VULKAN_SEVERITY{VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-                              VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                              VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT};
-
-VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT severity, VkDebugUtilsMessageTypeFlagsEXT type,
-    const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
-    [[maybe_unused]] void* user_data)
-{
-    const char* type_str = "Unknown";
-    const char* pattern = "[Vk {}]: {}";
-
-    if (type >= VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) {
-        type_str = "Performance";
-    } else if (type >= VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT) {
-        type_str = "Validation";
-    } else if (type >= VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT) {
-        type_str = "General";
-    }
-
-    if (severity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
-        GE_CORE_ERR(pattern, type_str, callback_data->pMessage);
-    } else if (severity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-        GE_CORE_WARN(pattern, type_str, callback_data->pMessage);
-    } else if (severity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) {
-        GE_CORE_INFO(pattern, type_str, callback_data->pMessage);
-    } else if (severity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
-        GE_CORE_DBG(pattern, type_str, callback_data->pMessage);
-    } else {
-        GE_CORE_ERR("[Vk {}/Unknown]: {}", type_str, callback_data->pMessage);
-    }
-
-    return VK_FALSE;
-}
-
-VkDebugUtilsMessengerCreateInfoEXT
-getDebugMsgrCreateInfo(VkDebugUtilsMessageSeverityFlagsEXT severity)
-{
-    VkDebugUtilsMessengerCreateInfoEXT create_info{};
-    create_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    create_info.messageSeverity = severity;
-    create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                              VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                              VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    create_info.pfnUserCallback = debugCallback;
-    create_info.pUserData = nullptr;
-
-    return create_info;
-}
-
-} // namespace
+#include "genesis/core/log.h"
+#include "genesis/renderer/render_command.h"
+#include "genesis/renderer/renderer.h"
 
 namespace GE::Vulkan {
+
+RenderContext::RenderContext() = default;
+
+RenderContext::~RenderContext() = default;
 
 bool RenderContext::initialize(void* window)
 {
     GE_CORE_INFO("Initializing Vulkan Context...");
-    return createInstance(window) && setupDebugUtils() && createSurface(window);
+
+    try {
+        m_window = makeScoped<SDL::PlatformWindow>(reinterpret_cast<SDL_Window*>(window));
+        Instance::registerContext(this);
+        m_surface = m_window->createSurface(Instance::instance());
+
+        m_device = makeScoped<Device>(this);
+        m_swap_chain = makeScoped<SwapChain>(m_device, m_surface);
+        createCommandBuffers();
+
+        m_renderer_factory = makeScoped<Vulkan::RendererFactory>(m_device);
+    } catch (const Vulkan::Exception& e) {
+        GE_CORE_ERR("Failed to initialize Vulkan Render Context: {}", e.what());
+        shutdown();
+        return false;
+    }
+
+    return true;
 }
 
 void RenderContext::shutdown()
 {
     GE_CORE_INFO("Shutdown Vulkan Context");
-#ifndef GE_DISABLE_DEBUG
-    destroyDebugUtilsMessengerEXT(m_instance, m_debug_utils, nullptr);
-#endif // GE_DISABLE_DEBUG
-    vkDestroyInstance(m_instance, nullptr);
+
+    vkDeviceWaitIdle(m_device->device());
+
+    m_renderer_factory.reset();
+
+    destroyCommandBuffers();
+    m_swap_chain.reset();
+    m_device.reset();
+
+    destroyVulkanHandles();
+    Instance::dropContext(this);
+    m_window.reset();
 }
 
-bool RenderContext::createInstance(void* window)
+void RenderContext::drawFrame()
 {
-    auto window_extensions = getWindowExtensions(window);
+    if (!m_swap_chain &&
+        !(m_swap_chain = tryMakeScoped<SwapChain>(m_device, m_surface))) {
+        return;
+    }
 
-#ifndef GE_DISABLE_DEBUG
-    window_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-#endif // GE_DISABLE_DEBUG
+    auto [acquire_result, image_index] = m_swap_chain->acquireNextImage();
 
-    VkApplicationInfo app_info{};
-    app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    app_info.pApplicationName = getAppName(window);
-    app_info.apiVersion = VK_MAKE_VERSION(1, 0, 0);
-    app_info.pEngineName = ENGINE_NAME;
-    app_info.engineVersion = VK_MAKE_VERSION(VER_MAJOR, VER_MINOR, VER_PATCH);
-    app_info.apiVersion = VK_API_VERSION_1_2;
+    if (acquire_result == VK_ERROR_OUT_OF_DATE_KHR) {
+        vkDeviceWaitIdle(m_device->device());
+        m_swap_chain.reset();
+        return;
+    }
 
-    VkInstanceCreateInfo instance_info{};
-    instance_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    instance_info.pApplicationInfo = &app_info;
-    instance_info.enabledExtensionCount = window_extensions.size();
-    instance_info.ppEnabledExtensionNames = window_extensions.data();
+    if (acquire_result != VK_SUCCESS && acquire_result != VK_SUBOPTIMAL_KHR) {
+        GE_CORE_ERR("Failed to acquire Swap Chain image");
+        return;
+    }
 
-#ifndef GE_DISABLE_DEBUG
-    auto debug_info = getDebugMsgrCreateInfo(VULKAN_SEVERITY);
-    std::array<const char*, 1> validation_layers = {"VK_LAYER_KHRONOS_validation"};
+    if (!prepareRenderCommand(image_index)) {
+        GE_CORE_ERR("Failed to prepare Render Command");
+        return;
+    }
 
-    instance_info.ppEnabledLayerNames = validation_layers.data();
-    instance_info.enabledLayerCount = validation_layers.size();
-    instance_info.pNext = &debug_info;
-#endif // GE_DISABLE_DEBUG
-
-    return vkCreateInstance(&instance_info, nullptr, &m_instance) == VK_SUCCESS;
+    if (m_swap_chain->submitCommandBuffer(&m_command_buffers[image_index], image_index) !=
+        VK_SUCCESS) {
+        GE_CORE_ERR("Failed to present Swap Chain image");
+        return;
+    }
 }
 
-bool RenderContext::setupDebugUtils()
+void RenderContext::destroyVulkanHandles()
 {
-#ifdef GE_DISABLE_DEBUG
+    vkDestroySurfaceKHR(Instance::instance(), m_surface, nullptr);
+    m_surface = VK_NULL_HANDLE;
+}
+
+void RenderContext::createCommandBuffers()
+{
+    m_command_buffers.resize(m_swap_chain->getImageCount(), VK_NULL_HANDLE);
+
+    VkCommandBufferAllocateInfo alloc_info{};
+    alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    alloc_info.commandPool = m_device->commandPool();
+    alloc_info.commandBufferCount = m_command_buffers.size();
+
+    if (vkAllocateCommandBuffers(m_device->device(), &alloc_info,
+                                 m_command_buffers.data()) != VK_SUCCESS) {
+        throw Vulkan::Exception{"Failed to allocate Command Buffers"};
+    }
+}
+
+void RenderContext::destroyCommandBuffers()
+{
+    vkFreeCommandBuffers(m_device->device(), m_device->commandPool(),
+                         m_command_buffers.size(), m_command_buffers.data());
+    m_command_buffers = {};
+}
+
+bool RenderContext::prepareRenderCommand(uint32_t image_idx)
+{
+    if (!beginRenderCommand(image_idx)) {
+        return false;
+    }
+
+    RenderCommand::submit(m_command_buffers[image_idx]);
+    return endRenderCommand(image_idx);
+}
+
+bool RenderContext::beginRenderCommand(uint32_t image_idx)
+{
+    VkCommandBuffer cmd = m_command_buffers[image_idx];
+
+    vkResetCommandBuffer(cmd, 0);
+
+    VkCommandBufferBeginInfo begin_info{};
+    begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    begin_info.flags = 0;
+    begin_info.pInheritanceInfo = nullptr;
+
+    if (vkBeginCommandBuffer(cmd, &begin_info) != VK_SUCCESS) {
+        GE_CORE_ERR("Failed to begin Command Buffer");
+        return false;
+    }
+
+    setRenderPass(cmd, currentFBO(image_idx));
+    setViewportAndScissor(cmd);
     return true;
-#endif // GE_DISABLE_DEBUG
+}
 
-    auto debug_info = getDebugMsgrCreateInfo(VULKAN_SEVERITY);
-    return createDebugUtilsMessengerEXT(m_instance, &debug_info, nullptr,
-                                        &m_debug_utils) == VK_SUCCESS;
+void RenderContext::setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo)
+{
+    std::array<VkClearValue, 2> clear_values{};
+    std::array<float, 4> clear_color = {0.0f, 0.0f, 0.0f, 1.0f};
+    std::copy(clear_color.begin(), clear_color.end(), clear_values[0].color.float32);
+    clear_values[1].depthStencil = {1.0f, 0};
+
+    VkRenderPassBeginInfo render_pass_info{};
+    render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    render_pass_info.renderPass = m_swap_chain->getRenderPass();
+    render_pass_info.framebuffer = fbo;
+    render_pass_info.renderArea.offset = {0, 0};
+    render_pass_info.renderArea.extent = m_swap_chain->getExtent();
+    render_pass_info.pClearValues = clear_values.data();
+    render_pass_info.clearValueCount = clear_values.size();
+
+    vkCmdBeginRenderPass(cmd, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void RenderContext::setViewportAndScissor(VkCommandBuffer cmd)
+{
+    VkViewport viewport{};
+    viewport.width = static_cast<float>(m_swap_chain->getExtent().width);
+    viewport.height = static_cast<float>(m_swap_chain->getExtent().height);
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+
+    VkRect2D scissor{};
+    scissor.extent = m_swap_chain->getExtent();
+
+    vkCmdSetViewport(cmd, 0, 1, &viewport);
+    vkCmdSetScissor(cmd, 0, 1, &scissor);
+}
+
+bool RenderContext::endRenderCommand(uint32_t image_idx)
+{
+    VkCommandBuffer cmd = m_command_buffers[image_idx];
+    vkCmdEndRenderPass(cmd);
+
+    if (vkEndCommandBuffer(cmd) != VK_SUCCESS) {
+        GE_CORE_ERR("Failed to record Command Buffer");
+        return false;
+    }
+
+    return true;
+}
+
+VkFramebuffer RenderContext::currentFBO(uint32_t image_idx)
+{
+    return m_swap_chain->getFramebuffer(image_idx);
+}
+
+VkRenderPass RenderContext::renderPass()
+{
+    return m_swap_chain->getRenderPass();
+}
+
+Shared<Vulkan::RenderContext> currentContext()
+{
+    auto context = Renderer::context();
+    GE_CORE_ASSERT(context->API() == Renderer::API::VULKAN, "Incorrect Renderer API: {}",
+                   static_cast<int>(context->API()));
+    return staticPtrCast<Vulkan::RenderContext>(context);
 }
 
 } // namespace GE::Vulkan

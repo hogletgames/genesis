@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "render_layer.h"
+#include "triangle_layer.h"
 
 #include <genesis/genesis.h>
 
@@ -47,23 +47,22 @@ int main()
     log_settings.core_log_level = LOG_LEVEL;
     log_settings.client_log_level = LOG_LEVEL;
 
-    GE::Window::settings_t window_settings{};
-    window_settings.render_api = RENDER_API;
-
     GE::Renderer::settings_t renderer_settings{};
     renderer_settings.api = RENDER_API;
+
+    GE::Window::settings_t window_settings{};
+    window_settings.renderer = renderer_settings;
 
     GE::Application::settings_t app_settings{};
     app_settings.log = log_settings;
     app_settings.window = window_settings;
-    app_settings.renderer = renderer_settings;
 
     if (!GE::Application::initialize(app_settings)) {
         GE_ERR("Failed to initialize Engine");
         return EXIT_FAILURE;
     }
 
-    GE::Application::attachLayer(GE::makeShared<GE::Examples::RenderLayer>());
+    GE::Application::attachLayer(GE::makeShared<GE::Examples::TriangleLayer>());
     GE::Application::run();
     GE::Application::shutdown();
 

@@ -62,12 +62,12 @@ public:
     void attachEventListener(EventListener* listener) override;
     void detachEventListener(EventListener* listener) override;
 
-    const Vec2& getSize() const override { return m_settings.size; }
+    const Vec2& windowSize() const override { return m_settings.size; }
     void setVSync(bool enabled) override;
-    const settings_t& getSettings() const override { return m_settings; }
+    const settings_t& settings() const override { return m_settings; }
 
-    void* getNativeWindow() override { return nullptr; }
-    void* getNativeContext() override { return nullptr; }
+    void* nativeWindow() override { return m_window; }
+    Shared<RenderContext> renderContext() const override { return m_context; }
 
 private:
     void emitEvent(Event* event);
@@ -78,7 +78,7 @@ private:
 
     settings_t m_settings;
     SDL_Window* m_window{nullptr};
-    GE::Scoped<RenderContext> m_context;
+    Shared<RenderContext> m_context;
 
     std::list<EventListener*> m_event_listeners;
 };
