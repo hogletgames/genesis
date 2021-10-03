@@ -31,41 +31,20 @@
  */
 
 #include "gui_layer.h"
-#include "triangle_layer.h"
 
-#include <genesis/genesis.h>
+#include "genesis/gui/renderer.h"
 
-namespace {
+#include <imgui.h>
 
-constexpr GE::Logger::Level LOG_LEVEL{GE::Logger::Level::TRACE};
-constexpr GE::Renderer::API RENDER_API{GE::Renderer::API::VULKAN};
+namespace GE::Examples {
 
-} // namespace
+void GUILayer::onUpdate([[maybe_unused]] Timestamp ts) {}
 
-int main()
+void GUILayer::onRender()
 {
-    GE::Log::settings_t log_settings{};
-    log_settings.core_log_level = LOG_LEVEL;
-    log_settings.client_log_level = LOG_LEVEL;
-
-    GE::Renderer::settings_t renderer_settings{};
-    renderer_settings.api = RENDER_API;
-
-    GE::Window::settings_t window_settings{};
-    window_settings.renderer = renderer_settings;
-
-    GE::Application::settings_t app_settings{};
-    app_settings.log = log_settings;
-    app_settings.window = window_settings;
-
-    if (!GE::Application::initialize(app_settings)) {
-        GE_ERR("Failed to initialize Engine");
-        return EXIT_FAILURE;
-    }
-
-    GE::Application::attachLayer(GE::makeShared<GE::Examples::GUILayer>());
-    GE::Application::run();
-    GE::Application::shutdown();
-
-    return EXIT_SUCCESS;
+    GUI::Renderer::begin();
+    ImGui::ShowDemoWindow();
+    GUI::Renderer::end();
 }
+
+} // namespace GE::Examples
