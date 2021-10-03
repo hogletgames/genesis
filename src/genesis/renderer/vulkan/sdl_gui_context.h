@@ -30,31 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_RENDER_CONTEXT_H_
-#define GENESIS_RENDERER_RENDER_CONTEXT_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_RENDERER_VULKAN_SDL_GUI_H_
+#define GENESIS_RENDERER_VULKAN_SDL_GUI_H_
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
 #include <genesis/gui/context.h>
-#include <genesis/renderer/renderer.h>
 
-namespace GE {
+#include <vulkan/vulkan.h>
 
-class GE_API RenderContext: public Interface
+struct SDL_Window;
+
+namespace GE::Vulkan {
+class RenderContext;
+} // namespace GE::Vulkan
+
+namespace GE::Vulkan::SDL {
+
+class GE_API GUIContext: public GUI::Context
 {
 public:
-    virtual bool initialize(void* window) = 0;
-    virtual void shutdown() = 0;
+    GUIContext(RenderContext* render_context, SDL_Window* window);
+    ~GUIContext();
 
-    virtual void drawFrame() = 0;
+    void begin() override;
+    void end() override;
 
-    virtual Renderer::API API() const = 0;
-    virtual const Scoped<RendererFactory>& factory() const = 0;
-    virtual Scoped<GUI::Context>& gui() = 0;
+    void draw(GPUCommandQueue* queue) override;
 
-    static Scoped<RenderContext> create(Renderer::API api);
+private:
+    void createDescriptorPool(VkDevice device);
+    void destroyVulkanHandles();
+
+    bool isDockingEnabled() const;
+    bool isViewportEnabled() const;
+
+    RenderContext* m_render_context{nullptr};
+    SDL_Window* m_window{nullptr};
+
+    VkDescriptorPool m_descriptor_pool{VK_NULL_HANDLE};
 };
 
-} // namespace GE
+} // namespace GE::Vulkan::SDL
 
-#endif // GENESIS_RENDERER_RENDER_CONTEXT_H_
+#endif // GENESIS_RENDERER_VULKAN_SDL_GUI_H_
