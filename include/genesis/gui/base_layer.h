@@ -30,19 +30,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_RENDERER_VULKAN_COMMAND_BUFFER_H_
-#define GENESIS_RENDERER_VULKAN_COMMAND_BUFFER_H_
+#ifndef GENESIS_GUI_BASE_LAYER_H_
+#define GENESIS_GUI_BASE_LAYER_H_
 
-#include <vulkan/vulkan.h>
+#include <genesis/app/layer.h>
 
-namespace GE::Vulkan {
+namespace GE {
+class GPUCommandQueue;
+} // namespace GE
 
-inline VkCommandBuffer cmdBuffer(void* cmd)
+namespace GE::GUI {
+
+class GE_API BaseLayer: public Layer
 {
-    return reinterpret_cast<VkCommandBuffer>(cmd);
-}
+public:
+    void onEvent(Event* event) override;
+};
 
-} // namespace GE::Vulkan
+} // namespace GE::GUI
 
-#endif // GENESIS_RENDERER_VULKAN_COMMAND_BUFFER_H_
+#endif // GENESIS_GUI_BASE_LAYER_H_

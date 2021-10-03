@@ -33,6 +33,7 @@
 #ifndef GENESIS_GUI_H_
 #define GENESIS_GUI_H_
 
+#include <genesis/gui/base_layer.h>
 #include <genesis/gui/context.h>
 #include <genesis/gui/renderer.h>
 
