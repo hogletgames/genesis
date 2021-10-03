@@ -52,8 +52,9 @@ public:
     std::vector<const char*> vulkanExtensions();
     VkSurfaceKHR createSurface(VkInstance instance);
 
-    const char* title();
-    Vec2 windowSize();
+    SDL_Window* window() const { return m_window; }
+    const char* title() const;
+    Vec2 windowSize() const;
 
 private:
     SDL_Window* m_window{nullptr};
