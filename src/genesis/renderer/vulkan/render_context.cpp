@@ -77,7 +77,7 @@ void RenderContext::shutdown()
 {
     GE_CORE_INFO("Shutdown Vulkan Context");
 
-    vkDeviceWaitIdle(m_device->device());
+    m_device->waitIdle();
 
     m_renderer_factory.reset();
 
@@ -100,7 +100,7 @@ void RenderContext::drawFrame()
     auto [acquire_result, image_index] = m_swap_chain->acquireNextImage();
 
     if (acquire_result == VK_ERROR_OUT_OF_DATE_KHR) {
-        vkDeviceWaitIdle(m_device->device());
+        m_device->waitIdle();
         m_swap_chain.reset();
         return;
     }

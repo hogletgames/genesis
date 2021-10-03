@@ -70,6 +70,8 @@ public:
     explicit Device(Vulkan::RenderContext* context);
     ~Device();
 
+    void waitIdle();
+
     VkPhysicalDevice physicalDevice() const { return m_physical_device; }
     VkDevice device() const { return m_device; }
     VkCommandPool commandPool() const { return m_command_pool; }

@@ -101,6 +101,11 @@ Device::~Device()
     destroyVkHandles();
 }
 
+void Device::waitIdle()
+{
+    vkDeviceWaitIdle(m_device);
+}
+
 VkFormat Device::getSupportedFormat(const std::vector<VkFormat> &candidates,
                                     VkImageTiling tiling, VkFormatFeatureFlags features)
 {
