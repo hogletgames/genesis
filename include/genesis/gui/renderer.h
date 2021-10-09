@@ -30,10 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GUI_H_
-#define GENESIS_GUI_H_
+#ifndef GENESIS_GUI_RENDERER_H_
+#define GENESIS_GUI_RENDERER_H_
 
+#include <genesis/core/memory.h>
 #include <genesis/gui/context.h>
-#include <genesis/gui/renderer.h>
 
-#endif // GENESIS_GUI_H_
+namespace GE::GUI {
+
+class GE_API Renderer
+{
+public:
+    static void begin() { ctx()->begin(); }
+    static void end() { ctx()->end(); }
+
+private:
+    Renderer() = default;
+
+    static Scoped<Context>& ctx();
+};
+
+} // namespace GE::GUI
+
+#endif // GENESIS_GUI_RENDERER_H_

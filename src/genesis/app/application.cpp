@@ -92,6 +92,7 @@ bool Application::initializeApp(const settings_t& settings)
     }
 
     Renderer::setContext(window->renderContext());
+
     window->attachEventListener(get());
     return true;
 }

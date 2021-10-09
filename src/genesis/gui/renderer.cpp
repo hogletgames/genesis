@@ -30,10 +30,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GUI_H_
-#define GENESIS_GUI_H_
+#include "renderer.h"
 
-#include <genesis/gui/context.h>
-#include <genesis/gui/renderer.h>
+#include "genesis/renderer/render_context.h"
+#include "genesis/renderer/renderer.h"
 
-#endif // GENESIS_GUI_H_
+namespace GE::GUI {
+
+Scoped<GUI::Context>& Renderer::ctx()
+{
+    return GE::Renderer::context()->gui();
+}
+
+} // namespace GE::GUI
