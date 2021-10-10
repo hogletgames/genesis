@@ -48,7 +48,6 @@ bool Application::initialize(const settings_t& settings)
 void Application::shutdown()
 {
     shutdownApp();
-    Renderer::setContext(nullptr);
     Input::shutdown();
     Window::shutdown();
     Log::shutdown();
@@ -103,6 +102,7 @@ void Application::shutdownApp()
     close();
     get()->clearLayers();
     get()->m_window.reset();
+    Renderer::setContext(nullptr);
     get()->m_window_state = WindowState::NONE;
 }
 
