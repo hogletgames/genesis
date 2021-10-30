@@ -13,6 +13,10 @@ add_subdirectory(SPIRV-Cross)
 add_subdirectory(Vulkan-ValidationLayers)
 add_subdirectory(shaderc)
 
+if (APPLE)
+    add_subdirectory(MoltenVK)
+endif ()
+
 # Compile options
 list(APPEND SPIRV_TOOLS_TARGETS SPIRV-Tools-static SPIRV-Tools-shared)
 
