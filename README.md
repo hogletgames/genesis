@@ -16,6 +16,7 @@
   - [SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools) ([Apache 2.0](https://github.com/KhronosGroup/SPIRV-Tools/blob/v2020.6/LICENSE))
   - [Vulkan-ValidationLayers](https://github.com/KhronosGroup/Vulkan-ValidationLayers) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/sdk-1.2.162.0/LICENSE.txt))
   - [shaderc](https://github.com/google/shaderc) ([Apache 2.0](https://github.com/google/shaderc/blob/v2020.4/LICENSE))
+  - [MoltenVK](https://github.com/KhronosGroup/MoltenVK) ([Apache 2.0](https://github.com/KhronosGroup/MoltenVK/blob/v1.1.5/LICENSE))
 - [stb](https://github.com/nothings/stb) ([MIT](https://github.com/nothings/stb/blob/b42009b3b9d4ca35bc703f5310eedc74f584be58/LICENSE))
 - [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) ([MIT](https://github.com/tinyobjloader/tinyobjloader/blob/v2.0.0rc8/LICENSE))
 - [magic_enum](https://github.com/Neargye/magic_enum) ([MIT](https://github.com/Neargye/magic_enum/blob/v0.7.2/LICENSE))
@@ -58,6 +59,30 @@ bash tools/clang_format.sh --fix    # Fix format
 ```bash
 make BUILD_TESTS=ON -j$(nproc)  # Build project with tests
 make test                       # Run tests
+```
+
+### To run examples
+
+You don't need to install additional libraries to build or run examples or
+applications. All you need to do is to set appropriate environment variables
+depending on OS type.
+
+At the moment `VK_LAYER_PATH` should only be configured for `Debug` or
+`RelWithDebInfo` build types, to configure `Vulkan-ValidationLayers`.
+
+#### Linux
+
+```bash
+export VK_LAYER_PATH=build/third-party/Vulkan/Vulkan-ValidationLayers/layers
+build/examples/sandbox/sandbox
+```
+
+#### MacOS
+
+```bash
+export VK_LAYER_PATH=build/third-party/Vulkan/Vulkan-ValidationLayers/layers
+export VK_ICD_FILENAMES=third-party/Vulkan/MoltenVK/MoltenVK/Package/Latest/MoltenVK/dylib/macOS/MoltenVK_icd.json
+build/examples/sandbox/sandbox
 ```
 
 ### genesis build options

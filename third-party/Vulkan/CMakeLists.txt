@@ -13,12 +13,21 @@ add_subdirectory(SPIRV-Cross)
 add_subdirectory(Vulkan-ValidationLayers)
 add_subdirectory(shaderc)
 
+if (APPLE)
+    add_subdirectory(MoltenVK)
+endif ()
+
 # Compile options
 list(APPEND SPIRV_TOOLS_TARGETS SPIRV-Tools-static SPIRV-Tools-shared)
 
 foreach(SPIRV_TOOLS_TARGET IN LISTS SPIRV_TOOLS_TARGETS)
     target_compile_options(${SPIRV_TOOLS_TARGET} PRIVATE
-        $<$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,8.0.0>:-Wno-error=stringop-truncation>)
+        $<$<AND:${IS_GNU_COMPILER},${IS_800_VERSION}>:-Wno-error=stringop-truncation>)
 endforeach()
 
 target_compile_options(shaderc_util PRIVATE $<$<CONFIG:USAN>:-fno-sanitize=vptr>)
+
+# Dependencies
+if (CMAKE_BUILD_TYPE IN_LIST DEBUG_BUILD_LIST)
+    add_dependencies(vulkan VkLayer_khronos_validation-json)
+endif ()

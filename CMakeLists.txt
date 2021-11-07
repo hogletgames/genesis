@@ -11,6 +11,8 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT CMAKE_BUILD_TYPE STREQUAL "RelW
     set(GE_DISABLE_DEBUG True)
 endif()
 
+# CMake helpers
+include(cmake/CompilerOptions.cmake)
 include(cmake/SanitizeHelpers.cmake)
 include(cmake/Utils.cmake)
 configure_file(cmake/CTestCustom.cmake ${CMAKE_BINARY_DIR} @ONLY)

@@ -40,6 +40,8 @@
 #include <genesis/renderer/gpu_command_queue.h>
 #include <vulkan/vulkan.h>
 
+#include <vector>
+
 namespace GE {
 class Shader;
 } // namespace GE
