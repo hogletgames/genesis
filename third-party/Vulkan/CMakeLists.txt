@@ -26,3 +26,8 @@ foreach(SPIRV_TOOLS_TARGET IN LISTS SPIRV_TOOLS_TARGETS)
 endforeach()
 
 target_compile_options(shaderc_util PRIVATE $<$<CONFIG:USAN>:-fno-sanitize=vptr>)
+
+# Dependencies
+if (CMAKE_BUILD_TYPE IN_LIST DEBUG_BUILD_LIST)
+    add_dependencies(vulkan VkLayer_khronos_validation-json)
+endif ()
