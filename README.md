@@ -61,6 +61,30 @@ make BUILD_TESTS=ON -j$(nproc)  # Build project with tests
 make test                       # Run tests
 ```
 
+### To run examples
+
+You don't need to install additional libraries to build or run examples or
+applications. All you need to do is to set appropriate environment variables
+depending on OS type.
+
+At the moment `VK_LAYER_PATH` should only be configured for `Debug` or
+`RelWithDebInfo` build types, to configure `Vulkan-ValidationLayers`.
+
+#### Linux
+
+```bash
+export VK_LAYER_PATH=build/third-party/Vulkan/Vulkan-ValidationLayers/layers
+build/examples/sandbox/sandbox
+```
+
+#### MacOS
+
+```bash
+export VK_LAYER_PATH=build/third-party/Vulkan/Vulkan-ValidationLayers/layers
+export VK_ICD_FILENAMES=third-party/Vulkan/MoltenVK/MoltenVK/Package/Latest/MoltenVK/dylib/macOS/MoltenVK_icd.json
+build/examples/sandbox/sandbox
+```
+
 ### genesis build options
 
 | Make | CMake | Default value| Description |
