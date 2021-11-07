@@ -34,6 +34,7 @@
 #define GENESIS_CORE_MEMORY_H_
 
 #include <genesis/core/exception.h>
+#include <genesis/core/log.h>
 
 #include <memory>
 
@@ -63,6 +64,7 @@ Scoped<T> tryMakeScoped(Args&&... args)
     try {
         return makeScoped<T>(std::forward<Args>(args)...);
     } catch (const Exception& e) {
+        GE_CORE_ERR("Exception: {}", e.what());
         return nullptr;
     }
 }
@@ -73,6 +75,7 @@ Shared<T> tryMakeShared(Args&&... args)
     try {
         return makeScoped<T>(std::forward<Args>(args)...);
     } catch (const Exception& e) {
+        GE_CORE_ERR("Exception: {}", e.what());
         return nullptr;
     }
 }
