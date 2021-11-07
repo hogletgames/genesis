@@ -39,6 +39,12 @@
 
 namespace GE {
 
+template<typename ToDuration, typename FromDuration>
+constexpr ToDuration durationCast(FromDuration duration)
+{
+    return std::chrono::duration_cast<ToDuration>(duration);
+}
+
 class GE_API Timestamp
 {
 public:
@@ -104,13 +110,6 @@ public:
     constexpr Nano duration() const { return m_duration; }
 
 private:
-    template<typename ToDuration, typename FromDuration>
-    // NOLINTNEXTLINE(clang-diagnostic-undefined-inline)
-    static constexpr ToDuration durationCast(FromDuration duration)
-    {
-        return std::chrono::duration_cast<ToDuration>(duration);
-    }
-
     Nano m_duration{};
 };
 
