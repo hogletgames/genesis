@@ -109,10 +109,11 @@ void Instance::registerContext(RenderContext* context)
 
 void Instance::dropContext([[maybe_unused]] RenderContext* context)
 {
-    GE_CORE_ASSERT(get()->m_context_counter > 0, "There is no context to drop");
-    get()->m_context_counter--;
-
     if (get()->m_context_counter == 0) {
+        return;
+    }
+
+    if (--get()->m_context_counter == 0) {
         get()->destroyVulkanHandles();
     }
 }

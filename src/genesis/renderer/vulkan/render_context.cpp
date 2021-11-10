@@ -78,12 +78,14 @@ void RenderContext::shutdown()
 {
     GE_CORE_INFO("Shutdown Vulkan Context");
 
-    m_device->waitIdle();
+    if (m_device) {
+        m_device->waitIdle();
+        destroyCommandBuffers();
+    }
 
     m_gui.reset();
     m_factory.reset();
 
-    destroyCommandBuffers();
     m_swap_chain.reset();
     m_device.reset();
 
@@ -127,8 +129,10 @@ void RenderContext::drawFrame()
 
 void RenderContext::destroyVulkanHandles()
 {
-    vkDestroySurfaceKHR(Instance::instance(), m_surface, nullptr);
-    m_surface = VK_NULL_HANDLE;
+    if (Instance::instance() != VK_NULL_HANDLE) {
+        vkDestroySurfaceKHR(Instance::instance(), m_surface, nullptr);
+        m_surface = VK_NULL_HANDLE;
+    }
 }
 
 void RenderContext::createCommandBuffers()
