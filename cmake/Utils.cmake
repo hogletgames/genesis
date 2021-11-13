@@ -1,5 +1,5 @@
-set(GE_THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third-party)
-set(GE_ROOT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+set(GE_THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/third-party)
+set(GE_ROOT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 list(APPEND DEBUG_BUILD_LIST Debug RelWithDebInfo)
 
 function(ge_add_compile_options TARGET)

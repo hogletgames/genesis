@@ -30,48 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_RENDER_COMMAND_H_
-#define GENESIS_RENDERER_RENDER_COMMAND_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_RENDERER_VULKAN_SDL_GUI_H_
+#define GENESIS_RENDERER_VULKAN_SDL_GUI_H_
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
 #include <genesis/gui/context.h>
-#include <genesis/math/types.h>
-#include <genesis/renderer/gpu_command_queue.h>
 
-namespace GE {
+#include <vulkan/vulkan.h>
 
-class IndexBuffer;
+struct SDL_Window;
+
+namespace GE::Vulkan {
 class RenderContext;
-class ShaderProgram;
-class VertexBuffer;
+} // namespace GE::Vulkan
 
-class GE_API RenderCommand
+namespace GE::Vulkan::SDL {
+
+class GE_API GUIContext: public GUI::Context
 {
 public:
-    static void bind(ShaderProgram* shader_program);
-    static void bind(VertexBuffer* buffer);
-    static void bind(IndexBuffer* buffer);
+    GUIContext(RenderContext* render_context, SDL_Window* window);
+    ~GUIContext();
 
-    static void draw(VertexBuffer* buffer, uint32_t vertex_count);
-    static void draw(GUI::Context* gui_layer);
+    void begin() override;
+    void end() override;
 
-    static void submit(GPUCommandBuffer cmd);
+    void draw(GPUCommandQueue* queue) override;
 
 private:
-    RenderCommand() = default;
+    void createDescriptorPool(VkDevice device);
+    void destroyVulkanHandles();
 
-    static RenderCommand* get()
-    {
-        static RenderCommand instance;
-        return &instance;
-    }
+    bool isDockingEnabled() const;
+    bool isViewportEnabled() const;
 
-    static GPUCommandQueue* cmdQueue() { return &get()->m_cmd_queue; }
+    RenderContext* m_render_context{nullptr};
+    SDL_Window* m_window{nullptr};
 
-    GPUCommandQueue m_cmd_queue;
+    VkDescriptorPool m_descriptor_pool{VK_NULL_HANDLE};
 };
 
-} // namespace GE
+} // namespace GE::Vulkan::SDL
 
-#endif // GENESIS_RENDERER_RENDER_COMMAND_H_
+#endif // GENESIS_RENDERER_VULKAN_SDL_GUI_H_

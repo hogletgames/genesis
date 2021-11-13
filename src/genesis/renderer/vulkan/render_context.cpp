@@ -34,9 +34,9 @@
 #include "device.h"
 #include "instance.h"
 #include "renderer_factory.h"
+#include "sdl_gui_context.h"
 #include "sdl_platform_window.h"
 #include "swap_chain.h"
-#include "utils.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/asserts.h"
@@ -63,7 +63,8 @@ bool RenderContext::initialize(void* window)
         m_swap_chain = makeScoped<SwapChain>(m_device, m_surface);
         createCommandBuffers();
 
-        m_renderer_factory = makeScoped<Vulkan::RendererFactory>(m_device);
+        m_factory = makeScoped<Vulkan::RendererFactory>(m_device);
+        m_gui = makeScoped<SDL::GUIContext>(this, m_window->window());
     } catch (const Vulkan::Exception& e) {
         GE_CORE_ERR("Failed to initialize Vulkan Render Context: {}", e.what());
         shutdown();
@@ -77,17 +78,21 @@ void RenderContext::shutdown()
 {
     GE_CORE_INFO("Shutdown Vulkan Context");
 
-    vkDeviceWaitIdle(m_device->device());
+    if (m_device) {
+        m_device->waitIdle();
+        destroyCommandBuffers();
+    }
 
-    m_renderer_factory.reset();
+    m_gui.reset();
+    m_factory.reset();
 
-    destroyCommandBuffers();
     m_swap_chain.reset();
     m_device.reset();
 
     destroyVulkanHandles();
     Instance::dropContext(this);
     m_window.reset();
+    m_gui.reset();
 }
 
 void RenderContext::drawFrame()
@@ -100,7 +105,7 @@ void RenderContext::drawFrame()
     auto [acquire_result, image_index] = m_swap_chain->acquireNextImage();
 
     if (acquire_result == VK_ERROR_OUT_OF_DATE_KHR) {
-        vkDeviceWaitIdle(m_device->device());
+        m_device->waitIdle();
         m_swap_chain.reset();
         return;
     }
@@ -124,8 +129,10 @@ void RenderContext::drawFrame()
 
 void RenderContext::destroyVulkanHandles()
 {
-    vkDestroySurfaceKHR(Instance::instance(), m_surface, nullptr);
-    m_surface = VK_NULL_HANDLE;
+    if (Instance::instance() != VK_NULL_HANDLE) {
+        vkDestroySurfaceKHR(Instance::instance(), m_surface, nullptr);
+        m_surface = VK_NULL_HANDLE;
+    }
 }
 
 void RenderContext::createCommandBuffers()

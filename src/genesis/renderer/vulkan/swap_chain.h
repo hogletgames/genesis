@@ -58,6 +58,7 @@ public:
     VkRenderPass getRenderPass() const { return m_render_pass; }
     const VkExtent2D& getExtent() const { return m_extent; }
     uint32_t getImageCount() const { return m_swap_chain_images.size(); }
+    uint32_t minImageCount() const { return m_min_image_count; }
     VkFramebuffer getFramebuffer(size_t i) const { return m_framebuffers[i]; }
 
 private:
@@ -82,6 +83,7 @@ private:
     std::vector<VkImage> m_swap_chain_images;
     std::vector<VkImageView> m_swap_chain_image_views;
     std::vector<VkFramebuffer> m_framebuffers;
+    uint32_t m_min_image_count{0};
     uint32_t m_current_frame{0};
 
     Scoped<Image> m_color_image;

@@ -30,48 +30,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_RENDERER_RENDER_COMMAND_H_
-#define GENESIS_RENDERER_RENDER_COMMAND_H_
+#ifndef GENESIS_GUI_H_
+#define GENESIS_GUI_H_
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
+#include <genesis/gui/base_layer.h>
 #include <genesis/gui/context.h>
-#include <genesis/math/types.h>
-#include <genesis/renderer/gpu_command_queue.h>
+#include <genesis/gui/renderer.h>
 
-namespace GE {
-
-class IndexBuffer;
-class RenderContext;
-class ShaderProgram;
-class VertexBuffer;
-
-class GE_API RenderCommand
-{
-public:
-    static void bind(ShaderProgram* shader_program);
-    static void bind(VertexBuffer* buffer);
-    static void bind(IndexBuffer* buffer);
-
-    static void draw(VertexBuffer* buffer, uint32_t vertex_count);
-    static void draw(GUI::Context* gui_layer);
-
-    static void submit(GPUCommandBuffer cmd);
-
-private:
-    RenderCommand() = default;
-
-    static RenderCommand* get()
-    {
-        static RenderCommand instance;
-        return &instance;
-    }
-
-    static GPUCommandQueue* cmdQueue() { return &get()->m_cmd_queue; }
-
-    GPUCommandQueue m_cmd_queue;
-};
-
-} // namespace GE
-
-#endif // GENESIS_RENDERER_RENDER_COMMAND_H_
+#endif // GENESIS_GUI_H_

@@ -22,6 +22,7 @@
 - [magic_enum](https://github.com/Neargye/magic_enum) ([MIT](https://github.com/Neargye/magic_enum/blob/v0.7.2/LICENSE))
 - [fmt](https://github.com/fmtlib/fmt) ([MIT](https://github.com/fmtlib/fmt/blob/7.1.3/LICENSE.rst))
 - [googletest](https://github.com/google/googletest) ([BSD-3](https://github.com/google/googletest/blob/release-1.10.0/LICENSE))
+- [imgui](https://github.com/ocornut/imgui) ([MIT](https://github.com/ocornut/imgui/blob/v1.84.2/LICENSE.txt))
 
 ### To build manually
 

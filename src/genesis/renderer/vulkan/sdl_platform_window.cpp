@@ -69,12 +69,12 @@ VkSurfaceKHR PlatformWindow::createSurface(VkInstance instance)
     return surface;
 }
 
-const char *PlatformWindow::title()
+const char *PlatformWindow::title() const
 {
     return SDL_GetWindowTitle(m_window);
 }
 
-Vec2 PlatformWindow::windowSize()
+Vec2 PlatformWindow::windowSize() const
 {
     int width{0};
     int height{0};

@@ -35,6 +35,7 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
+#include <genesis/gui/context.h>
 #include <genesis/renderer/renderer.h>
 
 namespace GE {
@@ -49,6 +50,7 @@ public:
 
     virtual Renderer::API API() const = 0;
     virtual const Scoped<RendererFactory>& factory() const = 0;
+    virtual Scoped<GUI::Context>& gui() = 0;
 
     static Scoped<RenderContext> create(Renderer::API api);
 };

@@ -62,13 +62,6 @@ spdlogLevel toSpdlogLvl(GE::Logger::Level level)
 
 namespace GE {
 
-Logger::~Logger()
-{
-    if (m_logger) {
-        shutdown();
-    }
-}
-
 bool Logger::initialize(std::string name)
 {
     try {

@@ -35,6 +35,8 @@
 #include "shader_program.h"
 #include "vertex_buffer.h"
 
+#include "genesis/gui/context.h"
+
 namespace GE {
 
 void RenderCommand::bind(ShaderProgram *shader_program)
@@ -56,6 +58,11 @@ void RenderCommand::draw(VertexBuffer *buffer, uint32_t vertex_count)
 {
     buffer->bind(cmdQueue());
     buffer->draw(cmdQueue(), vertex_count);
+}
+
+void RenderCommand::draw(GUI::Context *gui_layer)
+{
+    gui_layer->draw(cmdQueue());
 }
 
 void RenderCommand::submit(GPUCommandBuffer cmd)

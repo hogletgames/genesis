@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "gui_layer.h"
 #include "triangle_layer.h"
 
 #include <genesis/genesis.h>
@@ -58,11 +59,10 @@ int main()
     app_settings.window = window_settings;
 
     if (!GE::Application::initialize(app_settings)) {
-        GE_ERR("Failed to initialize Engine");
         return EXIT_FAILURE;
     }
 
-    GE::Application::attachLayer(GE::makeShared<GE::Examples::TriangleLayer>());
+    GE::Application::attachLayer(GE::makeShared<GE::Examples::GUILayer>());
     GE::Application::run();
     GE::Application::shutdown();
 

@@ -43,6 +43,7 @@
 namespace GE::Vulkan {
 
 namespace SDL {
+class GUIContext;
 class PlatformWindow;
 } // namespace SDL
 
@@ -61,11 +62,8 @@ public:
     void drawFrame() override;
 
     Renderer::API API() const override { return Renderer::API::VULKAN; }
-
-    const Scoped<GE::RendererFactory>& factory() const override
-    {
-        return m_renderer_factory;
-    }
+    const Scoped<GE::RendererFactory>& factory() const override { return m_factory; }
+    Scoped<GUI::Context>& gui() override { return m_gui; }
 
     const Scoped<SDL::PlatformWindow>& platformWindow() const { return m_window; }
     VkSurfaceKHR surface() const { return m_surface; }
@@ -93,7 +91,8 @@ private:
     Shared<Vulkan::SwapChain> m_swap_chain;
     std::vector<VkCommandBuffer> m_command_buffers;
 
-    Scoped<GE::RendererFactory> m_renderer_factory;
+    Scoped<GE::RendererFactory> m_factory;
+    Scoped<GUI::Context> m_gui;
 };
 
 Shared<Vulkan::RenderContext> currentContext();

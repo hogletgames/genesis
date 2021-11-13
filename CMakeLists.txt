@@ -12,6 +12,7 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT CMAKE_BUILD_TYPE STREQUAL "RelW
 endif()
 
 # CMake helpers
+include(cmake/ApplyPatch.cmake)
 include(cmake/CompilerOptions.cmake)
 include(cmake/SanitizeHelpers.cmake)
 include(cmake/Utils.cmake)

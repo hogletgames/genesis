@@ -1,0 +1,26 @@
+From c7a62ec411b81f949ac39ee9cd11e0c371014ba7 Mon Sep 17 00:00:00 2001
+From: Dmitry Shilnenkov <dmitry.shilnenkov@gmail.com>
+Date: Sun, 3 Oct 2021 17:51:57 +0300
+Subject: [PATCH] Backends: Vulkan: Create separate pipeline for each viewport
+
+---
+ backends/imgui_impl_vulkan.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/backends/imgui_impl_vulkan.cpp b/backends/imgui_impl_vulkan.cpp
+index 3e790ead..d385157d 100644
+--- a/backends/imgui_impl_vulkan.cpp
++++ b/backends/imgui_impl_vulkan.cpp
+@@ -1399,7 +1399,8 @@ void ImGui_ImplVulkanH_CreateWindowSwapChain(VkPhysicalDevice physical_device, V
+ 
+         // We do not create a pipeline by default as this is also used by examples' main.cpp,
+         // but secondary viewport in multi-viewport mode may want to create one with:
+-        //ImGui_ImplVulkan_CreatePipeline(device, allocator, VK_NULL_HANDLE, wd->RenderPass, VK_SAMPLE_COUNT_1_BIT, &wd->Pipeline, bd->Subpass);
++        ImGui_ImplVulkan_Data* bd = ImGui_ImplVulkan_GetBackendData();
++        ImGui_ImplVulkan_CreatePipeline(device, allocator, VK_NULL_HANDLE, wd->RenderPass, VK_SAMPLE_COUNT_1_BIT, &wd->Pipeline, bd->Subpass);
+     }
+ 
+     // Create The Image Views
+-- 
+2.33.0
+

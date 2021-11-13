@@ -5,6 +5,7 @@ add_definitions(-DGE_EXPORTS)
 list(APPEND GE_HEADERS
     ${GE_INCLUDE_DIR}/app.h
     ${GE_INCLUDE_DIR}/core.h
+    ${GE_INCLUDE_DIR}/gui.h
     ${GE_INCLUDE_DIR}/genesis.h
     ${GE_INCLUDE_DIR}/math.h
     ${GE_INCLUDE_DIR}/renderer.h
@@ -15,6 +16,7 @@ add_library(genesis ${GE_LIB_TYPE} ${GE_HEADERS})
 target_link_libraries(genesis PUBLIC
     genesis::app
     genesis::core
+    genesis::gui
     genesis::math
     genesis::renderer
     genesis::window
@@ -24,6 +26,7 @@ add_library(genesis::genesis ALIAS genesis)
 
 add_subdirectory(app)
 add_subdirectory(core)
+add_subdirectory(gui)
 add_subdirectory(math)
 add_subdirectory(renderer)
 add_subdirectory(window)

@@ -63,7 +63,7 @@ Pipeline::Pipeline(Shared<Device> device, const pipeline_config_t& config)
 
 Pipeline::~Pipeline()
 {
-    vkDeviceWaitIdle(currentContext()->device()->device());
+    m_device->waitIdle();
     destroyVkHandles();
 }
 

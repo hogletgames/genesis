@@ -34,6 +34,8 @@
 #ifndef GENESIS_RENDERER_VULKAN_COMMAND_BUFFER_H_
 #define GENESIS_RENDERER_VULKAN_COMMAND_BUFFER_H_
 
+#include <vulkan/vulkan.h>
+
 namespace GE::Vulkan {
 
 inline VkCommandBuffer cmdBuffer(void* cmd)

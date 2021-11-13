@@ -169,12 +169,12 @@ void SwapChain::createSwapChain(VkSurfaceKHR surface)
     auto surface_format = chooseSurfaceFormat(swap_chain_details.formats);
     auto present_mode = choosePresentMode(swap_chain_details.present_mode);
     m_extent = chooseSwapExtent(swap_chain_details.capabilities);
-    uint32_t image_count = imageCountFromCaps(swap_chain_details.capabilities);
+    m_min_image_count = imageCountFromCaps(swap_chain_details.capabilities);
 
     VkSwapchainCreateInfoKHR create_info{};
     create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     create_info.surface = surface;
-    create_info.minImageCount = image_count;
+    create_info.minImageCount = m_min_image_count;
     create_info.imageFormat = surface_format.format;
     create_info.imageColorSpace = surface_format.colorSpace;
     create_info.imageExtent = m_extent;
@@ -203,6 +203,7 @@ void SwapChain::createSwapChain(VkSurfaceKHR surface)
         throw Vulkan::Exception{"Failed to create Swap Chain"};
     }
 
+    uint32_t image_count{0};
     vkGetSwapchainImagesKHR(device, m_swap_chain, &image_count, nullptr);
     m_swap_chain_images.resize(image_count);
     vkGetSwapchainImagesKHR(device, m_swap_chain, &image_count,
