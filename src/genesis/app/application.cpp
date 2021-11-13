@@ -41,8 +41,15 @@ namespace GE {
 
 bool Application::initialize(const settings_t& settings)
 {
-    return Log::initialize(settings.log) && Window::initialize() && Input::initialize() &&
-           initializeApp(settings);
+    if (!Log::initialize(settings.log) || !Window::initialize() || !Input::initialize() ||
+        !initializeApp(settings)) {
+        GE_CORE_ERR("Failed to initialize Application");
+        shutdown();
+        return false;
+    }
+
+    GE_CORE_INFO("Application has been initialized");
+    return true;
 }
 
 void Application::shutdown()

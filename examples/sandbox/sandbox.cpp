@@ -59,7 +59,6 @@ int main()
     app_settings.window = window_settings;
 
     if (!GE::Application::initialize(app_settings)) {
-        GE_ERR("Failed to initialize Engine");
         return EXIT_FAILURE;
     }
 
