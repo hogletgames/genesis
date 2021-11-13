@@ -71,8 +71,6 @@ public:
         TRACE,
     };
 
-    ~Logger();
-
     bool initialize(std::string name);
     void shutdown();
 
