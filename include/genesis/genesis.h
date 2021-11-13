@@ -36,6 +36,7 @@
 #include <genesis/app.h>
 #include <genesis/core.h>
 #include <genesis/graphics.h>
+#include <genesis/gui.h>
 #include <genesis/math.h>
 #include <genesis/window.h>
 
