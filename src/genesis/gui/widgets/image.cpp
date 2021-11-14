@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2021, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "image.h"
+#include "private/types.h"
 
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <imgui.h>
+
+namespace GE::GUI {
+
+void Image::call(NativeID image_id, const Vec2& size, const Vec2& uv0, const Vec2& uv1,
+                 const Vec4& tint_col, const Vec4& border_col)
+{
+    auto* texture_id = reinterpret_cast<ImTextureID>(image_id);
+    ImGui::Image(texture_id, toImVec2(size), toImVec2(uv0), toImVec2(uv1), toImVec4(tint_col),
+                 toImVec4(border_col));
+}
+
+} // namespace GE::GUI
