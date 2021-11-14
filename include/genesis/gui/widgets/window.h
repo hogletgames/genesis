@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2021, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,5 +33,21 @@
 #pragma once
 
 #include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <genesis/math/types.h>
+
+#include <string_view>
+
+namespace GE::GUI {
+
+class GE_API Window: public WidgetNode
+{
+public:
+    using Flags = int;
+
+    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+
+    Vec2 size() const;
+    float aspectRatio() const;
+};
+
+} // namespace GE::GUI
