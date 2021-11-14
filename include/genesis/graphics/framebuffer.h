@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,38 +30,67 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_GRAPHICS_FACTORY_H_
-#define GENESIS_GRAPHICS_GRAPHICS_FACTORY_H_
+#ifndef GENESIS_GRAPHICS_FRAMEBUFFER_H_
+#define GENESIS_GRAPHICS_FRAMEBUFFER_H_
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
-#include <genesis/graphics/framebuffer.h>
-#include <genesis/graphics/shader.h>
+#include <genesis/graphics/renderer.h>
+#include <genesis/graphics/texture.h>
+#include <genesis/math/types.h>
+
+#include <vector>
 
 namespace GE {
-class IndexBuffer;
-class VertexBuffer;
+
 class Texture;
 
-struct texture_config_t;
+struct fb_attachment_t {
+    enum class Type : uint8_t
+    {
+        UNKNOWN = 0,
+        COLOR,
+        DEPTH,
+        DEPTH_STENCIL
+    };
 
-class GE_API GraphicsFactory: public Interface
+    Type type{Type::UNKNOWN};
+    TextureType texture_type{TextureType::UNKNOWN};
+    TextureFormat texture_format{TextureFormat::UNKNOWN};
+};
+
+class GE_API Framebuffer: public NonCopyable
 {
 public:
-    virtual Scoped<Framebuffer>
-    createFramebuffer(const Framebuffer::config_t& config) const = 0;
+    struct config_t {
+        Vec2 size{1920.0f, 1080.0f};
+        uint32_t layers{1};
+        uint32_t msaa_samples{1};
+        Vec4 clear_color{1.0f, 1.0f, 1.0f, 1.0f};
+        float clear_depth{1.0f};
+        std::vector<fb_attachment_t> attachments = {
+            {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D,
+             TextureFormat::SRGBA8},
+            {fb_attachment_t::Type::DEPTH, TextureType::TEXTURE_2D, TextureFormat::D32F},
+        };
+    };
 
-    virtual Scoped<IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                                  uint32_t count) const = 0;
-    virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices,
-                                                    uint32_t size) const = 0;
-    virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;
+    virtual void resize(const Vec2& size) = 0;
 
-    virtual Scoped<Shader> createShader(Shader::Type type) = 0;
+    virtual Renderer* renderer() = 0;
+    virtual const Vec2& size() const = 0;
+    virtual uint32_t MSSASamples() const = 0;
+    virtual const Vec4& clearColor() const = 0;
+    virtual float clearDepth() const = 0;
 
-    virtual Scoped<Texture> createTexture(const texture_config_t& config) = 0;
+    virtual const Texture& colorTexture() const = 0;
+    virtual const Texture& depthTexture() const = 0;
+    virtual uint32_t colorAttachmentCount() const = 0;
+    virtual bool hasDepthAttachment() const = 0;
+
+    static Scoped<Framebuffer> create(const config_t& config);
 };
 
 } // namespace GE
 
-#endif // GENESIS_GRAPHICS_GRAPHICS_FACTORY_H_
+#endif // GENESIS_GRAPHICS_FRAMEBUFFER_H_

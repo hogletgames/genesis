@@ -1,6 +1,7 @@
 set(GE_RENDERER_INCLUDE_DIR ${GE_INCLUDE_DIR}/graphics)
 
 list(APPEND GE_RENDERER_SRC
+    framebuffer.cpp
     gpu_command_queue.cpp
     graphics.cpp
     index_buffer.cpp
@@ -14,6 +15,7 @@ list(APPEND GE_RENDERER_SRC
     vertex_buffer.cpp)
 
 list(APPEND GE_RENDERER_HEADERS
+    ${GE_RENDERER_INCLUDE_DIR}/framebuffer.h
     ${GE_RENDERER_INCLUDE_DIR}/gpu_command_queue.h
     ${GE_RENDERER_INCLUDE_DIR}/graphics.h
     ${GE_RENDERER_INCLUDE_DIR}/graphics_context.h

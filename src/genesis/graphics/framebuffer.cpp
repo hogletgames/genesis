@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2021, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,39 +30,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_
-#define GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_
+#include "framebuffer.h"
+#include "graphics.h"
 
-#include <genesis/core/memory.h>
-#include <genesis/graphics/graphics_factory.h>
+namespace GE {
 
-namespace GE::Vulkan {
-
-class Device;
-
-class GraphicsFactory: public GE::GraphicsFactory
+Scoped<Framebuffer> Framebuffer::create(const config_t& config)
 {
-public:
-    explicit GraphicsFactory(Shared<Device> device);
+    return Graphics::factory()->createFramebuffer(config);
+}
 
-    Scoped<GE::Framebuffer>
-    createFramebuffer(const Framebuffer::config_t& config) const override;
-
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
-                                                uint32_t size) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
-
-    Scoped<GE::Shader> createShader(Shader::Type type) override;
-
-    Scoped<GE::Texture> createTexture(const texture_config_t& config) override;
-
-private:
-    Shared<Device> m_device;
-};
-
-} // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_
+} // namespace GE

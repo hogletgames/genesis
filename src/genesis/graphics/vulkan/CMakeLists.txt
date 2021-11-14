@@ -9,6 +9,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     device.cpp
     graphics_context.cpp
     graphics_factory.cpp
+    framebuffer.cpp
     image.cpp
     pipeline_barrier.cpp
     input_stage_descriptions.cpp
@@ -31,6 +32,7 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     device.h
     graphics_context.h
     graphics_factory.h
+    framebuffer.h
     image.h
     pipeline_barrier.h
     input_stage_descriptions.h

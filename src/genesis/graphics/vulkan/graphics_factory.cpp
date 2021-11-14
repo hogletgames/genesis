@@ -33,6 +33,7 @@
 #include "graphics_factory.h"
 #include "buffers/index_buffer.h"
 #include "buffers/vertex_buffer.h"
+#include "framebuffer.h"
 #include "shader.h"
 #include "texture.h"
 
@@ -41,6 +42,12 @@ namespace GE::Vulkan {
 GraphicsFactory::GraphicsFactory(Shared<Device> device)
     : m_device{std::move(device)}
 {}
+
+Scoped<GE::Framebuffer>
+GraphicsFactory::createFramebuffer(const Framebuffer::config_t &config) const
+{
+    return tryMakeScoped<Vulkan::Framebuffer>(m_device, config);
+}
 
 Scoped<GE::IndexBuffer> GraphicsFactory::createIndexBuffer(const uint32_t *indices,
                                                            uint32_t count) const
