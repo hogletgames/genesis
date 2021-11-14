@@ -38,18 +38,6 @@
 
 namespace {
 
-template<typename T, typename U>
-std::unordered_map<U, T> swapKeyAndValue(const std::unordered_map<T, U>& map)
-{
-    std::unordered_map<U, T> swapped_map;
-
-    for (auto [key, value] : map) {
-        swapped_map.emplace(value, key);
-    }
-
-    return swapped_map;
-}
-
 std::unordered_map<SDL_KeyCode, GE::KeyCode> getFromKeyMap()
 {
     std::unordered_map<SDL_KeyCode, GE::KeyCode> key_to_sdl_key = {

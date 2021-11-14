@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,53 +30,65 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_UTILS_H_
-#define GENESIS_CORE_UTILS_H_
+#ifndef GENESIS_GRAPHICS_TEXTURE_H_
+#define GENESIS_GRAPHICS_TEXTURE_H_
 
-#include <unordered_map>
+#include <genesis/core/interface.h>
 
-// Breakpoint
-#if defined(GE_PLATFORM_UNIX)
-    #include <csignal>
-    #define GE_DBGBREAK() ::raise(SIGTRAP)
-#elif defined(GE_PLATFORM_WINDOWS)
-    #define GE_DBGBREAK() __debugbreak()
-#else
-    #error "Platform is not defined!"
-#endif
-
-// Set bit to position
-#define GE_BIT(bit) (1 << (bit))
-
-// Bind member function
-#define GE_EVENT_MEM_FN(mem_func) \
-    [this](auto&&... args) { return mem_func(std::forward<decltype(args)>(args)...); }
+#include <cstdint>
 
 namespace GE {
 
-template<typename FromType, typename ToType>
-inline ToType toType(const std::unordered_map<FromType, ToType>& container,
-                     const FromType& from_value, const ToType& def_ret)
+enum class TextureType : uint8_t
 {
-    if (auto it = container.find(from_value); it != container.end()) {
-        return it->second;
-    }
+    UNKNOWN = 0,
+    TEXTURE_2D
+};
 
-    return def_ret;
+enum class TextureFormat : uint8_t
+{
+    UNKNOWN = 0,
+    R8,
+    RGB8,
+    RGBA8,
+    SRGB8,
+    SRGBA8,
+    R32F,
+    RGBA32F,
+    D32F,
+    D24S8,
+    D32S8
+};
+
+inline constexpr bool isDepthFormat(TextureFormat format)
+{
+    switch (format) {
+        case TextureFormat::D32F:
+        case TextureFormat::D24S8:
+        case TextureFormat::D32S8: return true;
+        default: return false;
+    }
 }
 
-template<typename T, typename U>
-inline std::unordered_map<U, T> swapKeyAndValue(const std::unordered_map<T, U>& map)
+inline constexpr bool isColorFormat(TextureFormat format)
 {
-    std::unordered_map<U, T> swapped_map;
+    return !isDepthFormat(format);
+}
 
-    for (auto [key, value] : map) {
-        swapped_map.emplace(value, key);
+inline constexpr uint32_t toTextureBPP(TextureFormat format)
+{
+    switch (format) {
+        case TextureFormat::R8: return 1;
+        case TextureFormat::RGB8:
+        case TextureFormat::SRGB8: return 3;
+        case TextureFormat::RGBA8:
+        case TextureFormat::SRGBA8:
+        case TextureFormat::R32F: return 4;
+        case TextureFormat::RGBA32F: return 16;
+        default: return 0;
     }
-
-    return swapped_map;
 }
 
 } // namespace GE
 
-#endif // GENESIS_CORE_UTILS_H_
+#endif // GENESIS_GRAPHICS_TEXTURE_H_

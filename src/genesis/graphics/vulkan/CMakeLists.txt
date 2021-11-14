@@ -35,6 +35,8 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     single_command.h
     sdl_gui_context.h
     swap_chain.h
+    texture.cpp
+    texture.h
     utils.h
     vulkan_exception.h)
 

@@ -30,53 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_UTILS_H_
-#define GENESIS_CORE_UTILS_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_TEXTURE_H_
+#define GENESIS_GRAPHICS_VULKAN_TEXTURE_H_
 
-#include <unordered_map>
+#include <genesis/graphics/texture.h>
 
-// Breakpoint
-#if defined(GE_PLATFORM_UNIX)
-    #include <csignal>
-    #define GE_DBGBREAK() ::raise(SIGTRAP)
-#elif defined(GE_PLATFORM_WINDOWS)
-    #define GE_DBGBREAK() __debugbreak()
-#else
-    #error "Platform is not defined!"
-#endif
+#include <vulkan/vulkan.h>
 
-// Set bit to position
-#define GE_BIT(bit) (1 << (bit))
+namespace GE::Vulkan {
 
-// Bind member function
-#define GE_EVENT_MEM_FN(mem_func) \
-    [this](auto&&... args) { return mem_func(std::forward<decltype(args)>(args)...); }
+VkFormat toVkFormat(TextureFormat format);
+TextureFormat toTextureFormat(VkFormat format);
 
-namespace GE {
+} // namespace GE::Vulkan
 
-template<typename FromType, typename ToType>
-inline ToType toType(const std::unordered_map<FromType, ToType>& container,
-                     const FromType& from_value, const ToType& def_ret)
-{
-    if (auto it = container.find(from_value); it != container.end()) {
-        return it->second;
-    }
-
-    return def_ret;
-}
-
-template<typename T, typename U>
-inline std::unordered_map<U, T> swapKeyAndValue(const std::unordered_map<T, U>& map)
-{
-    std::unordered_map<U, T> swapped_map;
-
-    for (auto [key, value] : map) {
-        swapped_map.emplace(value, key);
-    }
-
-    return swapped_map;
-}
-
-} // namespace GE
-
-#endif // GENESIS_CORE_UTILS_H_
+#endif // GENESIS_GRAPHICS_VULKAN_TEXTURE_H_

@@ -30,53 +30,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_UTILS_H_
-#define GENESIS_CORE_UTILS_H_
+#include "texture.h"
 
-#include <unordered_map>
+#include "genesis/core/utils.h"
 
-// Breakpoint
-#if defined(GE_PLATFORM_UNIX)
-    #include <csignal>
-    #define GE_DBGBREAK() ::raise(SIGTRAP)
-#elif defined(GE_PLATFORM_WINDOWS)
-    #define GE_DBGBREAK() __debugbreak()
-#else
-    #error "Platform is not defined!"
-#endif
+namespace {
 
-// Set bit to position
-#define GE_BIT(bit) (1 << (bit))
-
-// Bind member function
-#define GE_EVENT_MEM_FN(mem_func) \
-    [this](auto&&... args) { return mem_func(std::forward<decltype(args)>(args)...); }
-
-namespace GE {
-
-template<typename FromType, typename ToType>
-inline ToType toType(const std::unordered_map<FromType, ToType>& container,
-                     const FromType& from_value, const ToType& def_ret)
+std::unordered_map<GE::TextureFormat, VkFormat> toVkFormatMap()
 {
-    if (auto it = container.find(from_value); it != container.end()) {
-        return it->second;
-    }
-
-    return def_ret;
+    return {
+        {GE::TextureFormat::RGB8, VK_FORMAT_R8G8B8_UNORM},
+        {GE::TextureFormat::RGBA8, VK_FORMAT_R8G8B8A8_UNORM},
+        {GE::TextureFormat::SRGB8, VK_FORMAT_R8G8B8_SRGB},
+        {GE::TextureFormat::SRGBA8, VK_FORMAT_R8G8B8A8_SRGB},
+        {GE::TextureFormat::R32F, VK_FORMAT_R32G32B32A32_SFLOAT},
+        {GE::TextureFormat::D32F, VK_FORMAT_D32_SFLOAT},
+        {GE::TextureFormat::D24S8, VK_FORMAT_D24_UNORM_S8_UINT},
+    };
 }
 
-template<typename T, typename U>
-inline std::unordered_map<U, T> swapKeyAndValue(const std::unordered_map<T, U>& map)
+} // namespace
+
+namespace GE::Vulkan {
+
+VkFormat toVkFormat(TextureFormat format)
 {
-    std::unordered_map<U, T> swapped_map;
-
-    for (auto [key, value] : map) {
-        swapped_map.emplace(value, key);
-    }
-
-    return swapped_map;
+    static const auto to_format = toVkFormatMap();
+    return toType(to_format, format, VK_FORMAT_UNDEFINED);
 }
 
-} // namespace GE
+TextureFormat toTextureFormat(VkFormat format)
+{
+    static const auto to_format = swapKeyAndValue(toVkFormatMap());
+    return toType(to_format, format, TextureFormat::UNKNOWN);
+}
 
-#endif // GENESIS_CORE_UTILS_H_
+} // namespace GE::Vulkan

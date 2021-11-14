@@ -25,6 +25,7 @@ list(APPEND GE_RENDERER_HEADERS
     ${GE_RENDERER_INCLUDE_DIR}/shader_precompiler.h
     ${GE_RENDERER_INCLUDE_DIR}/shader_program.h
     ${GE_RENDERER_INCLUDE_DIR}/shader_reflection.h
+    ${GE_RENDERER_INCLUDE_DIR}/texture.h
     ${GE_RENDERER_INCLUDE_DIR}/vertex_buffer.h)
 
 add_library(genesis-graphics STATIC ${GE_RENDERER_SRC} ${GE_RENDERER_HEADERS})

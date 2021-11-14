@@ -43,6 +43,7 @@
 #include <genesis/graphics/shader_input_layout.h>
 #include <genesis/graphics/shader_precompiler.h>
 #include <genesis/graphics/shader_program.h>
+#include <genesis/graphics/texture.h>
 #include <genesis/graphics/vertex_buffer.h>
 
 #endif // GENESIS_GRAPHICS_H_
