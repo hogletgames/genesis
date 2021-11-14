@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_H_
-#define GENESIS_CORE_H_
+#ifndef GENESIS_CORE_DEFER_H_
+#define GENESIS_CORE_DEFER_H_
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/defer.h>
-#include <genesis/core/enum.h>
 #include <genesis/core/export.h>
-#include <genesis/core/format.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/timestamp.h>
 #include <genesis/core/utils.h>
-#include <genesis/core/version.h>
 
-#endif // GENESIS_CORE_H_
+#include <functional>
+
+namespace GE {
+
+template<typename T, typename... Args>
+class GE_API Beginner
+{
+public:
+    explicit Beginner(Args&... args) { T::begin(std::forward<Args>(args)...); }
+    ~Beginner() { T::end(); }
+};
+
+class Defer
+{
+public:
+    using DeferredFunc = std::function<void()>;
+
+    explicit Defer(DeferredFunc func)
+        : deferred_func{std::move(func)}
+    {}
+
+    ~Defer() { deferred_func(); }
+
+private:
+    DeferredFunc deferred_func;
+};
+
+} // namespace GE
+
+#endif // GENESIS_CORE_DEFER_H_

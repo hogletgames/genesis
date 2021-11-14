@@ -4,6 +4,7 @@ list(APPEND GE_CORE_SRC log.cpp)
 
 list(APPEND GE_CORE_HEADERS
     ${GE_CORE_INCLUDE_DIR}/asserts.h
+    ${GE_CORE_INCLUDE_DIR}/defer.h
     ${GE_CORE_INCLUDE_DIR}/enum.h
     ${GE_CORE_INCLUDE_DIR}/exception.h
     ${GE_CORE_INCLUDE_DIR}/export.h

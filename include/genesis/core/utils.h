@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,13 @@
 // Bind member function
 #define GE_EVENT_MEM_FN(mem_func) \
     [this](auto&&... args) { return mem_func(std::forward<decltype(args)>(args)...); }
+
+// Concat names
+#define GE_CONCAT_IMPL(lhs, rhs) lhs##rhs
+#define GE_CONCAT(lhs, rhs)      GE_CONCAT_IMPL(lhs, rhs)
+
+// Unique name with a given prefix
+#define GE_UNIQ_NAME(prefix) GE_CONCAT(prefix##_, __COUNTER__)
 
 namespace GE {
 
