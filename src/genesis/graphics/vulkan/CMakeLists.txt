@@ -17,7 +17,8 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     sdl_gui_context.cpp
     shader.cpp
     single_command.cpp
-    swap_chain.cpp)
+    swap_chain.cpp
+    utils.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
     buffers/buffer_base.h
