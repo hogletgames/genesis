@@ -49,7 +49,7 @@ public:
     virtual void drawFrame() = 0;
 
     virtual Graphics::API API() const = 0;
-    virtual const Scoped<RendererFactory>& factory() const = 0;
+    virtual const Scoped<GraphicsFactory>& factory() const = 0;
     virtual Scoped<GUI::Context>& gui() = 0;
 
     static Scoped<GraphicsContext> create(Graphics::API api);

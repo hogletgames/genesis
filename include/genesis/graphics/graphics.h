@@ -35,7 +35,7 @@
 
 #include <genesis/core/export.h>
 #include <genesis/core/memory.h>
-#include <genesis/graphics/renderer_factory.h>
+#include <genesis/graphics/graphics_factory.h>
 
 namespace GE {
 
@@ -59,7 +59,7 @@ public:
     static API renderAPI();
     static void setContext(Shared<GraphicsContext> context);
     static Shared<GraphicsContext> context();
-    static const Scoped<RendererFactory>& factory();
+    static const Scoped<GraphicsFactory>& factory();
 
 private:
     Graphics() = default;

@@ -30,36 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_RENDERER_FACTORY_H_
-#define GENESIS_GRAPHICS_VULKAN_RENDERER_FACTORY_H_
-
-#include <genesis/core/memory.h>
-#include <genesis/graphics/renderer_factory.h>
+#include "graphics_factory.h"
+#include "buffers/index_buffer.h"
+#include "buffers/vertex_buffer.h"
+#include "shader.h"
+#include "shader_program.h"
 
 namespace GE::Vulkan {
 
-class Device;
+GraphicsFactory::GraphicsFactory(Shared<Device> device)
+    : m_device{std::move(device)}
+{}
 
-class RendererFactory: public GE::RendererFactory
+Scoped<GE::IndexBuffer> GraphicsFactory::createIndexBuffer(const uint32_t *indices,
+                                                           uint32_t count) const
 {
-public:
-    explicit RendererFactory(Shared<Device> device);
+    return tryMakeScoped<Vulkan::IndexBuffer>(m_device, indices, count);
+}
 
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
-                                                uint32_t size) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
+Scoped<GE::VertexBuffer> GraphicsFactory::createVertexBuffer(const void *vertices,
+                                                             uint32_t size) const
 
-    Scoped<GE::Shader> createShader(Shader::Type type) override;
-    Scoped<GE::ShaderProgram> createShaderProgram(Shared<GE::Shader> vert,
-                                                  Shared<GE::Shader> frag) override;
+{
+    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, vertices, size);
+}
 
-private:
-    Shared<Device> m_device;
-};
+Scoped<GE::VertexBuffer> GraphicsFactory::createVertexBuffer(uint32_t size) const
+{
+    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size);
+}
+
+Scoped<GE::Shader> GraphicsFactory::createShader(Shader::Type type)
+{
+    return tryMakeScoped<Vulkan::Shader>(m_device, type);
+}
+
+Scoped<GE::ShaderProgram> GraphicsFactory::createShaderProgram(Shared<GE::Shader> vert,
+                                                               Shared<GE::Shader> frag)
+{
+    return tryMakeScoped<Vulkan::ShaderProgram>(m_device, std::move(vert),
+                                                std::move(frag));
+}
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_RENDERER_FACTORY_H_

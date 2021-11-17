@@ -62,7 +62,7 @@ public:
     void drawFrame() override;
 
     Graphics::API API() const override { return Graphics::API::VULKAN; }
-    const Scoped<GE::RendererFactory>& factory() const override { return m_factory; }
+    const Scoped<GE::GraphicsFactory>& factory() const override { return m_factory; }
     Scoped<GUI::Context>& gui() override { return m_gui; }
 
     const Scoped<SDL::PlatformWindow>& platformWindow() const { return m_window; }
@@ -91,7 +91,7 @@ private:
     Shared<Vulkan::SwapChain> m_swap_chain;
     std::vector<VkCommandBuffer> m_command_buffers;
 
-    Scoped<GE::RendererFactory> m_factory;
+    Scoped<GE::GraphicsFactory> m_factory;
     Scoped<GUI::Context> m_gui;
 };
 

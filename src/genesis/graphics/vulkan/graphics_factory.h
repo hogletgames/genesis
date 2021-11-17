@@ -30,33 +30,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_RENDERER_FACTORY_H_
-#define GENESIS_GRAPHICS_RENDERER_FACTORY_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_
+#define GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_
 
-#include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
-#include <genesis/graphics/shader.h>
+#include <genesis/graphics/graphics_factory.h>
 
-namespace GE {
+namespace GE::Vulkan {
 
-class IndexBuffer;
-class VertexBuffer;
-class ShaderProgram;
+class Device;
 
-class GE_API RendererFactory: public Interface
+class GraphicsFactory: public GE::GraphicsFactory
 {
 public:
-    virtual Scoped<IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                                  uint32_t count) const = 0;
-    virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices,
-                                                    uint32_t size) const = 0;
-    virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;
+    explicit GraphicsFactory(Shared<Device> device);
 
-    virtual Scoped<Shader> createShader(Shader::Type type) = 0;
-    virtual Scoped<ShaderProgram> createShaderProgram(Shared<Shader> vert,
-                                                      Shared<Shader> frag) = 0;
+    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
+                                              uint32_t count) const override;
+    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
+                                                uint32_t size) const override;
+    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
+
+    Scoped<GE::Shader> createShader(Shader::Type type) override;
+    Scoped<GE::ShaderProgram> createShaderProgram(Shared<GE::Shader> vert,
+                                                  Shared<GE::Shader> frag) override;
+
+private:
+    Shared<Device> m_device;
 };
 
-} // namespace GE
+} // namespace GE::Vulkan
 
-#endif // GENESIS_GRAPHICS_RENDERER_FACTORY_H_
+#endif // GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_

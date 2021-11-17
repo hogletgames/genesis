@@ -32,8 +32,8 @@
 
 #include "graphics_context.h"
 #include "device.h"
+#include "graphics_factory.h"
 #include "instance.h"
-#include "renderer_factory.h"
 #include "sdl_gui_context.h"
 #include "sdl_platform_window.h"
 #include "swap_chain.h"
@@ -63,7 +63,7 @@ bool GraphicsContext::initialize(void* window)
         m_swap_chain = makeScoped<SwapChain>(m_device, m_surface);
         createCommandBuffers();
 
-        m_factory = makeScoped<Vulkan::RendererFactory>(m_device);
+        m_factory = makeScoped<Vulkan::GraphicsFactory>(m_device);
         m_gui = makeScoped<SDL::GUIContext>(this, m_window->window());
     } catch (const Vulkan::Exception& e) {
         GE_CORE_ERR("Failed to initialize Vulkan Render Context: {}", e.what());

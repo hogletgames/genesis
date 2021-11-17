@@ -36,9 +36,9 @@
 #include <genesis/graphics/gpu_command_queue.h>
 #include <genesis/graphics/graphics.h>
 #include <genesis/graphics/graphics_context.h>
+#include <genesis/graphics/graphics_factory.h>
 #include <genesis/graphics/index_buffer.h>
 #include <genesis/graphics/render_command.h>
-#include <genesis/graphics/renderer_factory.h>
 #include <genesis/graphics/shader.h>
 #include <genesis/graphics/shader_input_layout.h>
 #include <genesis/graphics/shader_precompiler.h>

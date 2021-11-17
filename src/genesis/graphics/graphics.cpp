@@ -52,7 +52,7 @@ Shared<GraphicsContext> Graphics::context()
     return get()->m_context;
 }
 
-const Scoped<RendererFactory>& Graphics::factory()
+const Scoped<GraphicsFactory>& Graphics::factory()
 {
     return get()->m_context->factory();
 }
