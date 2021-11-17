@@ -30,16 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_SDL_GUI_H_
+#define GENESIS_GRAPHICS_VULKAN_SDL_GUI_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/gui/context.h>
 
-namespace GE::GUI {
+#include <vulkan/vulkan.h>
 
-Scoped<GUI::Context>& Renderer::ctx()
+struct SDL_Window;
+
+namespace GE::Vulkan {
+class RenderContext;
+} // namespace GE::Vulkan
+
+namespace GE::Vulkan::SDL {
+
+class GE_API GUIContext: public GUI::Context
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    GUIContext(RenderContext* render_context, SDL_Window* window);
+    ~GUIContext();
 
-} // namespace GE::GUI
+    void begin() override;
+    void end() override;
+
+    void draw(GPUCommandQueue* queue) override;
+
+private:
+    void createDescriptorPool(VkDevice device);
+    void destroyVulkanHandles();
+
+    bool isDockingEnabled() const;
+    bool isViewportEnabled() const;
+
+    RenderContext* m_render_context{nullptr};
+    SDL_Window* m_window{nullptr};
+
+    VkDescriptorPool m_descriptor_pool{VK_NULL_HANDLE};
+};
+
+} // namespace GE::Vulkan::SDL
+
+#endif // GENESIS_GRAPHICS_VULKAN_SDL_GUI_H_

@@ -30,16 +30,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_GRAPHICS_RENDERER_H_
+#define GENESIS_GRAPHICS_RENDERER_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/core/export.h>
+#include <genesis/core/memory.h>
+#include <genesis/graphics/renderer_factory.h>
 
-namespace GE::GUI {
+namespace GE {
 
-Scoped<GUI::Context>& Renderer::ctx()
+class RenderContext;
+
+class GE_API Renderer
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    enum class API
+    {
+        NONE = 0,
+        VULKAN
+    };
 
-} // namespace GE::GUI
+    struct settings_t {
+        API api{API_DEFAULT};
+
+        static constexpr API API_DEFAULT{API::VULKAN};
+    };
+
+    static API renderAPI();
+    static void setContext(Shared<RenderContext> context);
+    static Shared<RenderContext> context();
+    static const Scoped<RendererFactory>& factory();
+
+private:
+    Renderer() = default;
+
+    static Renderer* get()
+    {
+        static Renderer instance;
+        return &instance;
+    }
+
+    Shared<RenderContext> m_context;
+};
+
+Renderer::API toRendererAPI(const std::string& api_str);
+
+} // namespace GE
+
+#endif // GENESIS_GRAPHICS_RENDERER_H_

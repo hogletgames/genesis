@@ -30,16 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_BUFFERS_VERTEX_BUFFER_H_
+#define GENESIS_GRAPHICS_VULKAN_BUFFERS_VERTEX_BUFFER_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include "buffers/buffer_base.h"
 
-namespace GE::GUI {
+#include <genesis/graphics/vertex_buffer.h>
 
-Scoped<GUI::Context>& Renderer::ctx()
+#include <vulkan/vulkan.h>
+
+namespace GE::Vulkan {
+
+class Device;
+
+class VertexBuffer: public GE::VertexBuffer, public BufferBase
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    VertexBuffer(Shared<Device> device, const void* vertices, uint32_t size);
+    VertexBuffer(Shared<Device> device, uint32_t size);
 
-} // namespace GE::GUI
+    void bind(GPUCommandQueue* queue) const override;
+    void draw(GPUCommandQueue* queue, uint32_t vertex_count) const override;
+
+    void setVertices(const void* vertices, uint32_t size) override;
+
+private:
+    VkDeviceSize m_size{0};
+};
+
+} // namespace GE::Vulkan
+
+#endif // GENESIS_GRAPHICS_VULKAN_BUFFERS_VERTEX_BUFFER_H_

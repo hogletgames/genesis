@@ -30,16 +30,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_BUFFERS_INDEX_BUFFER_H_
+#define GENESIS_GRAPHICS_VULKAN_BUFFERS_INDEX_BUFFER_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include "buffers/buffer_base.h"
 
-namespace GE::GUI {
+#include <genesis/graphics/index_buffer.h>
 
-Scoped<GUI::Context>& Renderer::ctx()
+namespace GE::Vulkan {
+
+class Device;
+
+class IndexBuffer: public GE::IndexBuffer, public BufferBase
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    IndexBuffer(Shared<Device> device, const uint32_t* indices, uint32_t count);
 
-} // namespace GE::GUI
+    void bind(GPUCommandQueue* cmd_queue) const override;
+
+    uint32_t count() const override { return m_count; }
+
+private:
+    Shared<Device> m_device;
+    uint32_t m_count{0};
+};
+
+} // namespace GE::Vulkan
+
+#endif // GENESIS_GRAPHICS_VULKAN_BUFFERS_INDEX_BUFFER_H_

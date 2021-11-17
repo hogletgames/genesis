@@ -30,16 +30,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_GRAPHICS_GPU_COMMAND_QUEUE_H_
+#define GENESIS_GRAPHICS_GPU_COMMAND_QUEUE_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/core/export.h>
 
-namespace GE::GUI {
+#include <deque>
+#include <functional>
 
-Scoped<GUI::Context>& Renderer::ctx()
+namespace GE {
+
+using GPUCommandBuffer = void*;
+
+class GE_API GPUCommandQueue
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    using DelayedCommand = std::function<void(GPUCommandBuffer)>;
 
-} // namespace GE::GUI
+    void enqueue(DelayedCommand cmd);
+    void execCommands(GPUCommandBuffer cmd_buffer) const;
+    void clear();
+
+private:
+    std::deque<DelayedCommand> m_cmd_queue;
+};
+
+} // namespace GE
+
+#endif // GENESIS_GRAPHICS_GPU_COMMAND_QUEUE_H_

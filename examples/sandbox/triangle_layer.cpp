@@ -33,11 +33,11 @@
 #include "triangle_layer.h"
 
 #include "genesis/core/asserts.h"
+#include "genesis/graphics/render_command.h"
+#include "genesis/graphics/shader.h"
+#include "genesis/graphics/shader_program.h"
+#include "genesis/graphics/vertex_buffer.h"
 #include "genesis/math/types.h"
-#include "genesis/renderer/render_command.h"
-#include "genesis/renderer/shader.h"
-#include "genesis/renderer/shader_program.h"
-#include "genesis/renderer/vertex_buffer.h"
 
 namespace {
 

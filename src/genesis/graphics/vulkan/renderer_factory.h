@@ -30,16 +30,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_RENDERER_FACTORY_H_
+#define GENESIS_GRAPHICS_VULKAN_RENDERER_FACTORY_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/core/memory.h>
+#include <genesis/graphics/renderer_factory.h>
 
-namespace GE::GUI {
+namespace GE::Vulkan {
 
-Scoped<GUI::Context>& Renderer::ctx()
+class Device;
+
+class RendererFactory: public GE::RendererFactory
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    explicit RendererFactory(Shared<Device> device);
 
-} // namespace GE::GUI
+    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
+                                              uint32_t count) const override;
+    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
+                                                uint32_t size) const override;
+    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
+
+    Scoped<GE::Shader> createShader(Shader::Type type) override;
+    Scoped<GE::ShaderProgram> createShaderProgram(Shared<GE::Shader> vert,
+                                                  Shared<GE::Shader> frag) override;
+
+private:
+    Shared<Device> m_device;
+};
+
+} // namespace GE::Vulkan
+
+#endif // GENESIS_GRAPHICS_VULKAN_RENDERER_FACTORY_H_

@@ -36,7 +36,7 @@
 #include <genesis/app/layer.h>
 #include <genesis/core/log.h>
 #include <genesis/core/memory.h>
-#include <genesis/renderer/renderer.h>
+#include <genesis/graphics/renderer.h>
 #include <genesis/window/event_listener.h>
 #include <genesis/window/window.h>
 

@@ -30,16 +30,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_GRAPHICS_SHADER_REFLECTION_H_
+#define GENESIS_GRAPHICS_SHADER_REFLECTION_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/graphics/shader_input_layout.h>
 
-namespace GE::GUI {
+#include <vector>
 
-Scoped<GUI::Context>& Renderer::ctx()
+namespace GE {
+
+class GE_API ShaderReflection
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    static ShaderInputLayout getLayoutFromCache(std::vector<uint32_t> shader_cache);
+};
 
-} // namespace GE::GUI
+} // namespace GE
+
+#endif // GENESIS_GRAPHICS_SHADER_REFLECTION_H_

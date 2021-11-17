@@ -30,16 +30,54 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#include "buffers/vertex_buffer.h"
+#include "buffers/staging_buffer.h"
+#include "command_buffer.h"
+#include "device.h"
+#include "vulkan_exception.h"
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include "genesis/core/asserts.h"
+#include "genesis/graphics/gpu_command_queue.h"
 
-namespace GE::GUI {
+namespace GE::Vulkan {
 
-Scoped<GUI::Context>& Renderer::ctx()
+VertexBuffer::VertexBuffer(Shared<Device> device, const void *vertices, uint32_t size)
+    : BufferBase{std::move(device)}
+    , m_size(size)
 {
-    return GE::Renderer::context()->gui();
+    VkBufferUsageFlags usage =
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+    VkMemoryPropertyFlagBits properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    createBuffer(size, usage, properties);
+
+    if (vertices != nullptr) {
+        setVertices(vertices, size);
+    }
 }
 
-} // namespace GE::GUI
+VertexBuffer::VertexBuffer(Shared<Device> device, uint32_t size)
+    : VertexBuffer{std::move(device), nullptr, size}
+{}
+
+void VertexBuffer::bind(GPUCommandQueue *queue) const
+{
+    queue->enqueue([this](void *cmd) {
+        constexpr VkDeviceSize offsets{0};
+        vkCmdBindVertexBuffers(cmdBuffer(cmd), 0, 1, &m_buffer, &offsets);
+    });
+}
+
+void VertexBuffer::draw(GPUCommandQueue *queue, uint32_t vertex_count) const
+{
+    queue->enqueue(
+        [vertex_count](void *cmd) { vkCmdDraw(cmdBuffer(cmd), vertex_count, 1, 0, 0); });
+}
+
+void VertexBuffer::setVertices(const void *vertices, uint32_t size)
+{
+    GE_ASSERT(m_size >= size, "Vertex Buffer overflow");
+    StagingBuffer staging_buffer{m_device, vertices, size};
+    staging_buffer.copyTo(this);
+}
+
+} // namespace GE::Vulkan

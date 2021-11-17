@@ -30,16 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_COMMAND_BUFFER_H_
+#define GENESIS_GRAPHICS_VULKAN_COMMAND_BUFFER_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <vulkan/vulkan.h>
 
-namespace GE::GUI {
+namespace GE::Vulkan {
 
-Scoped<GUI::Context>& Renderer::ctx()
+inline VkCommandBuffer cmdBuffer(void* cmd)
 {
-    return GE::Renderer::context()->gui();
+    return reinterpret_cast<VkCommandBuffer>(cmd);
 }
 
-} // namespace GE::GUI
+} // namespace GE::Vulkan
+
+#endif // GENESIS_GRAPHICS_VULKAN_COMMAND_BUFFER_H_

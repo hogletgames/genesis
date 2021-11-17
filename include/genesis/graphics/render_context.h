@@ -30,16 +30,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_GRAPHICS_RENDER_CONTEXT_H_
+#define GENESIS_GRAPHICS_RENDER_CONTEXT_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
+#include <genesis/graphics/renderer.h>
+#include <genesis/gui/context.h>
 
-namespace GE::GUI {
+namespace GE {
 
-Scoped<GUI::Context>& Renderer::ctx()
+class GE_API RenderContext: public Interface
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    virtual bool initialize(void* window) = 0;
+    virtual void shutdown() = 0;
 
-} // namespace GE::GUI
+    virtual void drawFrame() = 0;
+
+    virtual Renderer::API API() const = 0;
+    virtual const Scoped<RendererFactory>& factory() const = 0;
+    virtual Scoped<GUI::Context>& gui() = 0;
+
+    static Scoped<RenderContext> create(Renderer::API api);
+};
+
+} // namespace GE
+
+#endif // GENESIS_GRAPHICS_RENDER_CONTEXT_H_

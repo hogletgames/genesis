@@ -30,16 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_GRAPHICS_SHADER_PROGRAM_H_
+#define GENESIS_GRAPHICS_SHADER_PROGRAM_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
 
-namespace GE::GUI {
+namespace GE {
 
-Scoped<GUI::Context>& Renderer::ctx()
+class GPUCommandQueue;
+class Shader;
+
+class GE_API ShaderProgram: public NonCopyable
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    virtual void bind(GPUCommandQueue* queue = nullptr) const = 0;
 
-} // namespace GE::GUI
+    static Scoped<ShaderProgram> create(Shared<Shader> vert, Shared<Shader> frag);
+
+protected:
+    ShaderProgram() = default;
+};
+
+} // namespace GE
+
+#endif // GENESIS_GRAPHICS_SHADER_PROGRAM_H_

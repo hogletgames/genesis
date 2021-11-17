@@ -30,16 +30,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_INPUT_STAGE_DESCRIPTIONS_H_
+#define GENESIS_GRAPHICS_VULKAN_INPUT_STAGE_DESCRIPTIONS_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/graphics/shader_input_layout.h>
 
-namespace GE::GUI {
+#include <vulkan/vulkan.h>
 
-Scoped<GUI::Context>& Renderer::ctx()
-{
-    return GE::Renderer::context()->gui();
-}
+namespace GE::Vulkan {
 
-} // namespace GE::GUI
+std::vector<VkVertexInputAttributeDescription>
+vertexInputAttributeDescriptions(const GE::ShaderInputLayout& input_layout);
+
+VkVertexInputBindingDescription
+vertexInputBindDescription(const GE::ShaderInputLayout& input_layout);
+
+} // namespace GE::Vulkan
+
+#endif // GENESIS_GRAPHICS_VULKAN_INPUT_STAGE_DESCRIPTIONS_H_

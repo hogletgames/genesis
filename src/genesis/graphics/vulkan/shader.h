@@ -30,16 +30,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_SHADER_H_
+#define GENESIS_GRAPHICS_VULKAN_SHADER_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/graphics/shader.h>
 
-namespace GE::GUI {
+#include <vulkan/vulkan.h>
 
-Scoped<GUI::Context>& Renderer::ctx()
+namespace GE::Vulkan {
+
+class Device;
+
+class Shader: public GE::Shader
 {
-    return GE::Renderer::context()->gui();
+public:
+    Shader(Shared<Device> device, Type type);
+    ~Shader();
+
+    bool compileFromFile(const std::string &filepath) override;
+    bool compileFromSource(const std::string &source_code) override;
+
+    Type type() const override { return m_type; }
+    void *nativeHandle() const override { return m_shader_module; }
+    ShaderInputLayout inputLayout() const override { return m_input_layout; }
+
+private:
+    bool compileFromFileOrSource(const std::string &filepath,
+                                 const std::string &source_code);
+    bool createShaderModule(const std::vector<uint32_t> &shader_code);
+
+    Shared<Device> m_device;
+    Type m_type{Type::NONE};
+    VkShaderModule m_shader_module{VK_NULL_HANDLE};
+    ShaderInputLayout m_input_layout;
+};
+
+inline VkShaderModule vulkanShaderHandle(void *shader_handle)
+{
+    return reinterpret_cast<VkShaderModule>(shader_handle);
 }
 
-} // namespace GE::GUI
+} // namespace GE::Vulkan
+
+#endif // GENESIS_GRAPHICS_VULKAN_SHADER_H_

@@ -30,16 +30,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_GRAPHICS_SHADER_PRECOMPILER_H_
+#define GENESIS_GRAPHICS_SHADER_PRECOMPILER_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/graphics/shader.h>
 
-namespace GE::GUI {
+#include <vector>
 
-Scoped<GUI::Context>& Renderer::ctx()
+namespace GE {
+
+class GE_API ShaderPrecompiler
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    static ShaderCache compileFromFile(Shader::Type shader_type,
+                                       const std::string &filepath);
+    static ShaderCache compileFromSource(Shader::Type shader_type,
+                                         const std::string &source_code);
 
-} // namespace GE::GUI
+    static ShaderCache loadShaderCache(const std::string &filepath);
+    static bool saveShaderCache(const ShaderCache &shader_cache,
+                                const std::string &filepath);
+
+private:
+    static ShaderCache compileShader(Shader::Type type, const std::string &source_code,
+                                     const std::string &filepath);
+};
+
+} // namespace GE
+
+#endif // GENESIS_GRAPHICS_SHADER_PRECOMPILER_H_

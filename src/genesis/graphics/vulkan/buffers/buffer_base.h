@@ -30,16 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_BUFFERS_BUFFER_BASE_H_
+#define GENESIS_GRAPHICS_VULKAN_BUFFERS_BUFFER_BASE_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
 
-namespace GE::GUI {
+#include <vulkan/vulkan.h>
 
-Scoped<GUI::Context>& Renderer::ctx()
+namespace GE::Vulkan {
+
+class Device;
+
+class BufferBase: public NonCopyable
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    explicit BufferBase(Shared<Device> device);
+    ~BufferBase();
 
-} // namespace GE::GUI
+    VkBuffer getBuffer() { return m_buffer; };
+
+protected:
+    void createBuffer(uint32_t size, VkBufferUsageFlags usage,
+                      VkMemoryPropertyFlags properties);
+    void destroyVkHandles();
+
+    Shared<Device> m_device;
+    VkBuffer m_buffer{VK_NULL_HANDLE};
+    VkDeviceMemory m_memory{VK_NULL_HANDLE};
+};
+
+} // namespace GE::Vulkan
+
+#endif // GENESIS_GRAPHICS_VULKAN_BUFFERS_BUFFER_BASE_H_

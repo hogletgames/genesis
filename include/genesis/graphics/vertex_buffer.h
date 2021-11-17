@@ -30,16 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_GRAPHICS_VERTEX_BUFFER_H_
+#define GENESIS_GRAPHICS_VERTEX_BUFFER_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
 
-namespace GE::GUI {
+namespace GE {
 
-Scoped<GUI::Context>& Renderer::ctx()
+class GPUCommandQueue;
+
+class GE_API VertexBuffer: public NonCopyable
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    virtual void bind(GPUCommandQueue* queue) const = 0;
+    virtual void draw(GPUCommandQueue* queue, uint32_t vertex_count) const = 0;
 
-} // namespace GE::GUI
+    virtual void setVertices(const void* vertices, uint32_t size) = 0;
+
+    static Scoped<VertexBuffer> create(const void* vertices, uint32_t count);
+    static Scoped<VertexBuffer> create(uint32_t size);
+};
+
+} // namespace GE
+
+#endif // GENESIS_GRAPHICS_VERTEX_BUFFER_H_

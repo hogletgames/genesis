@@ -30,16 +30,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_SHADER_PROGRAM_H_
+#define GENESIS_GRAPHICS_VULKAN_SHADER_PROGRAM_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/graphics/gpu_command_queue.h>
+#include <genesis/graphics/shader_program.h>
 
-namespace GE::GUI {
+#include <vulkan/vulkan.h>
 
-Scoped<GUI::Context>& Renderer::ctx()
+namespace GE::Vulkan {
+
+class Device;
+class Pipeline;
+
+class ShaderProgram: public GE::ShaderProgram
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    ShaderProgram(Shared<Device> device, Shared<GE::Shader> vert,
+                  Shared<GE::Shader> frag);
+    ~ShaderProgram();
 
-} // namespace GE::GUI
+    void bind(GPUCommandQueue *queue) const override;
+
+private:
+    Scoped<Pipeline> createPipeline(Shared<Shader> vert, Shared<Shader> frag);
+    VkPipelineLayout createPipelineLayout();
+    void destroyVulkanHandles();
+
+    Shared<Device> m_device;
+    VkPipelineLayout m_pipeline_layout{VK_NULL_HANDLE};
+    Scoped<Pipeline> m_pipeline;
+};
+
+} // namespace GE::Vulkan
+
+#endif // GENESIS_GRAPHICS_VULKAN_SHADER_PROGRAM_H_

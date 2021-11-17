@@ -30,16 +30,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPICS_VULKAN_PIPELINE_H_
+#define GENESIS_GRAPICS_VULKAN_PIPELINE_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/core/memory.h>
+#include <genesis/math/types.h>
 
-namespace GE::GUI {
+#include <genesis/graphics/gpu_command_queue.h>
+#include <vulkan/vulkan.h>
 
-Scoped<GUI::Context>& Renderer::ctx()
+#include <vector>
+
+namespace GE {
+class Shader;
+} // namespace GE
+
+namespace GE::Vulkan {
+
+class Device;
+
+struct pipeline_config_t {
+    VkPipelineViewportStateCreateInfo viewport_state;
+    VkPipelineInputAssemblyStateCreateInfo input_assembly_state;
+    VkPipelineRasterizationStateCreateInfo rasterization_state;
+    VkPipelineMultisampleStateCreateInfo multisample_state;
+    VkPipelineColorBlendAttachmentState color_blend_attachment;
+    VkPipelineColorBlendStateCreateInfo color_blend_state;
+    VkPipelineDepthStencilStateCreateInfo depth_stencil_state;
+    std::vector<VkDynamicState> dynamic_state_list;
+    VkPipelineDynamicStateCreateInfo dynamic_state;
+
+    Shared<GE::Shader> vert_shader;
+    Shared<GE::Shader> frag_shader;
+    VkPipelineLayout pipeline_layout{VK_NULL_HANDLE};
+    VkRenderPass render_pass{VK_NULL_HANDLE};
+    uint32_t subpass{0};
+};
+
+class Pipeline
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    Pipeline(Shared<Device> device, const pipeline_config_t& config);
+    ~Pipeline();
 
-} // namespace GE::GUI
+    void bind(GPUCommandQueue* queue);
+
+    static pipeline_config_t makeDefaultConfig();
+
+private:
+    void createPipeline(const pipeline_config_t& config);
+
+    void destroyVkHandles();
+
+    Shared<Device> m_device;
+    VkPipeline m_pipeline{VK_NULL_HANDLE};
+};
+
+} // namespace GE::Vulkan
+
+#endif // GENESIS_GRAPICS_VULKAN_PIPELINE_H_

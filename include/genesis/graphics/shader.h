@@ -30,16 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_GRAPHICS_SHADER_H_
+#define GENESIS_GRAPHICS_SHADER_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
+#include <genesis/graphics/shader_input_layout.h>
 
-namespace GE::GUI {
+namespace GE {
 
-Scoped<GUI::Context>& Renderer::ctx()
+using ShaderCache = std::vector<uint32_t>;
+
+class GE_API Shader: public NonCopyable
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    enum class Type : uint8_t
+    {
+        NONE = 0,
+        VERTEX,
+        FRAGMENT
+    };
 
-} // namespace GE::GUI
+    virtual bool compileFromFile(const std::string& filepath) = 0;
+    virtual bool compileFromSource(const std::string& source_code) = 0;
+
+    virtual Type type() const = 0;
+    virtual void* nativeHandle() const = 0;
+    virtual ShaderInputLayout inputLayout() const = 0;
+
+    static Scoped<Shader> create(Type type);
+};
+
+} // namespace GE
+
+#endif // GENESIS_GRAPHICS_SHADER_H_

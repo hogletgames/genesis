@@ -30,16 +30,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#ifndef GENESIS_GRAPHICS_RENDERER_FACTORY_H_
+#define GENESIS_GRAPHICS_RENDERER_FACTORY_H_
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
+#include <genesis/graphics/shader.h>
 
-namespace GE::GUI {
+namespace GE {
 
-Scoped<GUI::Context>& Renderer::ctx()
+class IndexBuffer;
+class VertexBuffer;
+class ShaderProgram;
+
+class GE_API RendererFactory: public Interface
 {
-    return GE::Renderer::context()->gui();
-}
+public:
+    virtual Scoped<IndexBuffer> createIndexBuffer(const uint32_t* indices,
+                                                  uint32_t count) const = 0;
+    virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices,
+                                                    uint32_t size) const = 0;
+    virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;
 
-} // namespace GE::GUI
+    virtual Scoped<Shader> createShader(Shader::Type type) = 0;
+    virtual Scoped<ShaderProgram> createShaderProgram(Shared<Shader> vert,
+                                                      Shared<Shader> frag) = 0;
+};
+
+} // namespace GE
+
+#endif // GENESIS_GRAPHICS_RENDERER_FACTORY_H_

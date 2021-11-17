@@ -30,16 +30,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#include "buffers/index_buffer.h"
+#include "buffers/staging_buffer.h"
+#include "command_buffer.h"
 
-#include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
+#include "genesis/graphics/gpu_command_queue.h"
 
-namespace GE::GUI {
+namespace GE::Vulkan {
 
-Scoped<GUI::Context>& Renderer::ctx()
+IndexBuffer::IndexBuffer(Shared<Device> device, const uint32_t* indices, uint32_t count)
+    : BufferBase{std::move(device)}
+    , m_count{count}
 {
-    return GE::Renderer::context()->gui();
+    const uint32_t size = count * sizeof(count);
+    VkBufferUsageFlags usage =
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+    VkMemoryPropertyFlagBits properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    createBuffer(size, usage, properties);
+
+    StagingBuffer staging_buffer{m_device, indices, size};
+    staging_buffer.copyTo(this);
 }
 
-} // namespace GE::GUI
+void IndexBuffer::bind(GPUCommandQueue* cmd_queue) const
+{
+    cmd_queue->enqueue([this](void* cmd) {
+        vkCmdBindIndexBuffer(cmdBuffer(cmd), m_buffer, 0, VK_INDEX_TYPE_UINT32);
+    });
+}
+
+} // namespace GE::Vulkan

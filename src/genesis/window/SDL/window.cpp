@@ -35,7 +35,7 @@
 #include "genesis/core/format.h"
 #include "genesis/core/log.h"
 #include "genesis/core/utils.h"
-#include "genesis/renderer/render_context.h"
+#include "genesis/graphics/render_context.h"
 #include "genesis/window/events/key_events.h"
 #include "genesis/window/events/mouse_events.h"
 #include "genesis/window/events/window_events.h"
