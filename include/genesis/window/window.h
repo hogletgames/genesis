@@ -35,7 +35,7 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
-#include <genesis/graphics/renderer.h>
+#include <genesis/graphics/graphics.h>
 #include <genesis/math/types.h>
 #include <genesis/window/event_listener.h>
 
@@ -52,7 +52,7 @@ public:
         std::string title{TITLE_DEFAULT};
         Vec2 size{SIZE_DEFAULT};
         bool vsync{VSYNC_DEFAULT};
-        Renderer::settings_t renderer{};
+        Graphics::settings_t renderer{};
 
         static constexpr auto TITLE_DEFAULT = "Genesis";
         static constexpr Vec2 SIZE_DEFAULT{1280.0f, 720.0f};

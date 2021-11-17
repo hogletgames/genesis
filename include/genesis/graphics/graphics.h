@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_RENDERER_H_
-#define GENESIS_GRAPHICS_RENDERER_H_
+#ifndef GENESIS_GRAPHICS_GRAPHICS_H_
+#define GENESIS_GRAPHICS_GRAPHICS_H_
 
 #include <genesis/core/export.h>
 #include <genesis/core/memory.h>
@@ -41,7 +41,7 @@ namespace GE {
 
 class RenderContext;
 
-class GE_API Renderer
+class GE_API Graphics
 {
 public:
     enum class API
@@ -62,19 +62,19 @@ public:
     static const Scoped<RendererFactory>& factory();
 
 private:
-    Renderer() = default;
+    Graphics() = default;
 
-    static Renderer* get()
+    static Graphics* get()
     {
-        static Renderer instance;
+        static Graphics instance;
         return &instance;
     }
 
     Shared<RenderContext> m_context;
 };
 
-Renderer::API toRendererAPI(const std::string& api_str);
+Graphics::API toRendererAPI(const std::string& api_str);
 
 } // namespace GE
 
-#endif // GENESIS_GRAPHICS_RENDERER_H_
+#endif // GENESIS_GRAPHICS_GRAPHICS_H_

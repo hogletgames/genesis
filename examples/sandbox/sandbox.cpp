@@ -38,7 +38,7 @@
 namespace {
 
 constexpr GE::Logger::Level LOG_LEVEL{GE::Logger::Level::TRACE};
-constexpr GE::Renderer::API RENDER_API{GE::Renderer::API::VULKAN};
+constexpr GE::Graphics::API RENDER_API{GE::Graphics::API::VULKAN};
 
 } // namespace
 
@@ -48,7 +48,7 @@ int main()
     log_settings.core_log_level = LOG_LEVEL;
     log_settings.client_log_level = LOG_LEVEL;
 
-    GE::Renderer::settings_t renderer_settings{};
+    GE::Graphics::settings_t renderer_settings{};
     renderer_settings.api = RENDER_API;
 
     GE::Window::settings_t window_settings{};

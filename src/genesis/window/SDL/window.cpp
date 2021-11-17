@@ -81,9 +81,9 @@ void debugCallback([[maybe_unused]] void* userdata, int category,
 }
 #endif // GE_DISABLE_DEBUG
 
-int renderAPIToWindowFlag(GE::Renderer::API api)
+int renderAPIToWindowFlag(GE::Graphics::API api)
 {
-    using API = GE::Renderer::API;
+    using API = GE::Graphics::API;
 
     static constexpr int default_flag{0};
     static std::unordered_map<API, int> api_to_flag = {{API::VULKAN, SDL_WINDOW_VULKAN}};

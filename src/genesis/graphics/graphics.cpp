@@ -30,37 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#include "graphics.h"
 #include "render_context.h"
 
 #include "genesis/core/enum.h"
 
 namespace GE {
 
-Renderer::API Renderer::renderAPI()
+Graphics::API Graphics::renderAPI()
 {
     return get()->m_context->API();
 }
 
-void Renderer::setContext(Shared<RenderContext> context)
+void Graphics::setContext(Shared<RenderContext> context)
 {
     get()->m_context = std::move(context);
 }
 
-Shared<RenderContext> Renderer::context()
+Shared<RenderContext> Graphics::context()
 {
     return get()->m_context;
 }
 
-const Scoped<RendererFactory>& Renderer::factory()
+const Scoped<RendererFactory>& Graphics::factory()
 {
     return get()->m_context->factory();
 }
 
-Renderer::API toRendererAPI(const std::string& api_str)
+Graphics::API toRendererAPI(const std::string& api_str)
 {
-    auto api = toEnum<Renderer::API>(api_str);
-    return api.has_value() ? api.value() : Renderer::API::NONE;
+    auto api = toEnum<Graphics::API>(api_str);
+    return api.has_value() ? api.value() : Graphics::API::NONE;
 }
 
 } // namespace GE

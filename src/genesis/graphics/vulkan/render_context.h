@@ -61,7 +61,7 @@ public:
 
     void drawFrame() override;
 
-    Renderer::API API() const override { return Renderer::API::VULKAN; }
+    Graphics::API API() const override { return Graphics::API::VULKAN; }
     const Scoped<GE::RendererFactory>& factory() const override { return m_factory; }
     Scoped<GUI::Context>& gui() override { return m_gui; }
 

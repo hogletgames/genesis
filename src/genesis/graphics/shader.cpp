@@ -31,13 +31,13 @@
  */
 
 #include "shader.h"
-#include "renderer.h"
+#include "graphics.h"
 
 namespace GE {
 
 Scoped<Shader> Shader::create(Shader::Type type)
 {
-    return Renderer::factory()->createShader(type);
+    return Graphics::factory()->createShader(type);
 }
 
 } // namespace GE

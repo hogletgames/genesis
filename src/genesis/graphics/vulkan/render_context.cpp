@@ -41,8 +41,8 @@
 
 #include "genesis/core/asserts.h"
 #include "genesis/core/log.h"
+#include "genesis/graphics/graphics.h"
 #include "genesis/graphics/render_command.h"
-#include "genesis/graphics/renderer.h"
 
 namespace GE::Vulkan {
 
@@ -248,8 +248,8 @@ VkRenderPass RenderContext::renderPass()
 
 Shared<Vulkan::RenderContext> currentContext()
 {
-    auto context = Renderer::context();
-    GE_CORE_ASSERT(context->API() == Renderer::API::VULKAN, "Incorrect Renderer API: {}",
+    auto context = Graphics::context();
+    GE_CORE_ASSERT(context->API() == Graphics::API::VULKAN, "Incorrect Graphics API: {}",
                    static_cast<int>(context->API()));
     return staticPtrCast<Vulkan::RenderContext>(context);
 }

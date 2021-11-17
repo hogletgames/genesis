@@ -31,13 +31,13 @@
  */
 
 #include "shader_program.h"
-#include "renderer.h"
+#include "graphics.h"
 
 namespace GE {
 
 Scoped<ShaderProgram> ShaderProgram::create(Shared<Shader> vert, Shared<Shader> frag)
 {
-    return Renderer::factory()->createShaderProgram(std::move(vert), std::move(frag));
+    return Graphics::factory()->createShaderProgram(std::move(vert), std::move(frag));
 }
 
 } // namespace GE

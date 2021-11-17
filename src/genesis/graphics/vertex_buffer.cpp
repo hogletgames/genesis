@@ -31,18 +31,18 @@
  */
 
 #include "vertex_buffer.h"
-#include "renderer.h"
+#include "graphics.h"
 
 namespace GE {
 
 Scoped<VertexBuffer> VertexBuffer::create(const void *vertices, uint32_t count)
 {
-    return Renderer::factory()->createVertexBuffer(vertices, count);
+    return Graphics::factory()->createVertexBuffer(vertices, count);
 }
 
 Scoped<VertexBuffer> VertexBuffer::create(uint32_t size)
 {
-    return Renderer::factory()->createVertexBuffer(size);
+    return Graphics::factory()->createVertexBuffer(size);
 }
 
 } // namespace GE

@@ -31,13 +31,13 @@
  */
 
 #include "index_buffer.h"
-#include "renderer.h"
+#include "graphics.h"
 
 namespace GE {
 
 Scoped<IndexBuffer> IndexBuffer::create(const uint32_t *indices, uint32_t count)
 {
-    return Renderer::factory()->createIndexBuffer(indices, count);
+    return Graphics::factory()->createIndexBuffer(indices, count);
 }
 
 } // namespace GE

@@ -33,9 +33,9 @@
 #include "base_layer.h"
 
 #include "genesis/core/log.h"
+#include "genesis/graphics/graphics.h"
 #include "genesis/graphics/render_command.h"
 #include "genesis/graphics/render_context.h"
-#include "genesis/graphics/renderer.h"
 #include "genesis/window/events/event_dispatcher.h"
 #include "genesis/window/events/key_events.h"
 #include "genesis/window/events/mouse_events.h"

@@ -34,10 +34,10 @@
 #define GENESIS_GRAPHICS_H_
 
 #include <genesis/graphics/gpu_command_queue.h>
+#include <genesis/graphics/graphics.h>
 #include <genesis/graphics/index_buffer.h>
 #include <genesis/graphics/render_command.h>
 #include <genesis/graphics/render_context.h>
-#include <genesis/graphics/renderer.h>
 #include <genesis/graphics/renderer_factory.h>
 #include <genesis/graphics/shader.h>
 #include <genesis/graphics/shader_input_layout.h>

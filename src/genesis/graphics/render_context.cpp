@@ -38,11 +38,11 @@
 
 namespace GE {
 
-Scoped<RenderContext> RenderContext::create(Renderer::API api)
+Scoped<RenderContext> RenderContext::create(Graphics::API api)
 {
     switch (api) {
-        case Renderer::API::VULKAN: return makeScoped<Vulkan::RenderContext>();
-        case Renderer::API::NONE:
+        case Graphics::API::VULKAN: return makeScoped<Vulkan::RenderContext>();
+        case Graphics::API::NONE:
         default: break;
     }
 

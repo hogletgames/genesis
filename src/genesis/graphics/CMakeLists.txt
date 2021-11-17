@@ -2,10 +2,10 @@ set(GE_RENDERER_INCLUDE_DIR ${GE_INCLUDE_DIR}/graphics)
 
 list(APPEND GE_RENDERER_SRC
     gpu_command_queue.cpp
+    graphics.cpp
     index_buffer.cpp
     render_command.cpp
     render_context.cpp
-    renderer.cpp
     shader.cpp
     shader_input_layout.cpp
     shader_precompiler.cpp
@@ -15,10 +15,10 @@ list(APPEND GE_RENDERER_SRC
 
 list(APPEND GE_RENDERER_HEADERS
     ${GE_RENDERER_INCLUDE_DIR}/gpu_command_queue.h
+    ${GE_RENDERER_INCLUDE_DIR}/graphics.h
     ${GE_RENDERER_INCLUDE_DIR}/index_buffer.h
     ${GE_RENDERER_INCLUDE_DIR}/render_command.h
     ${GE_RENDERER_INCLUDE_DIR}/render_context.h
-    ${GE_RENDERER_INCLUDE_DIR}/renderer.h
     ${GE_RENDERER_INCLUDE_DIR}/renderer_factory.h
     ${GE_RENDERER_INCLUDE_DIR}/shader.h
     ${GE_RENDERER_INCLUDE_DIR}/shader_input_layout.h

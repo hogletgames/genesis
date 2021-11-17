@@ -98,7 +98,7 @@ bool Application::initializeApp(const settings_t& settings)
         return false;
     }
 
-    Renderer::setContext(window->renderContext());
+    Graphics::setContext(window->renderContext());
 
     window->attachEventListener(get());
     return true;
@@ -110,7 +110,7 @@ void Application::shutdownApp()
     close();
     get()->clearLayers();
     get()->m_window.reset();
-    Renderer::setContext(nullptr);
+    Graphics::setContext(nullptr);
     get()->m_window_state = WindowState::NONE;
 }
 

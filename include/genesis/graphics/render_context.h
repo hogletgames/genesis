@@ -35,7 +35,7 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
-#include <genesis/graphics/renderer.h>
+#include <genesis/graphics/graphics.h>
 #include <genesis/gui/context.h>
 
 namespace GE {
@@ -48,11 +48,11 @@ public:
 
     virtual void drawFrame() = 0;
 
-    virtual Renderer::API API() const = 0;
+    virtual Graphics::API API() const = 0;
     virtual const Scoped<RendererFactory>& factory() const = 0;
     virtual Scoped<GUI::Context>& gui() = 0;
 
-    static Scoped<RenderContext> create(Renderer::API api);
+    static Scoped<RenderContext> create(Graphics::API api);
 };
 
 } // namespace GE
