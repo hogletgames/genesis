@@ -33,8 +33,8 @@
 #include "sdl_gui_context.h"
 #include "command_buffer.h"
 #include "device.h"
+#include "graphics_context.h"
 #include "instance.h"
-#include "render_context.h"
 #include "single_command.h"
 #include "swap_chain.h"
 #include "vulkan_exception.h"
@@ -82,7 +82,7 @@ void mapKeys()
 
 namespace GE::Vulkan::SDL {
 
-GUIContext::GUIContext(RenderContext *render_context, SDL_Window *window)
+GUIContext::GUIContext(GraphicsContext *render_context, SDL_Window *window)
     : m_render_context{render_context}
     , m_window{window}
 {

@@ -32,8 +32,8 @@
 
 #include "shader_program.h"
 #include "device.h"
+#include "graphics_context.h"
 #include "pipeline.h"
-#include "render_context.h"
 #include "swap_chain.h"
 #include "vulkan_exception.h"
 

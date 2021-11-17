@@ -42,7 +42,6 @@
 namespace GE {
 
 class IndexBuffer;
-class RenderContext;
 class ShaderProgram;
 class VertexBuffer;
 

@@ -41,7 +41,7 @@
 struct SDL_Window;
 
 namespace GE::Vulkan {
-class RenderContext;
+class GraphicsContext;
 } // namespace GE::Vulkan
 
 namespace GE::Vulkan::SDL {
@@ -49,7 +49,7 @@ namespace GE::Vulkan::SDL {
 class GE_API GUIContext: public GUI::Context
 {
 public:
-    GUIContext(RenderContext* render_context, SDL_Window* window);
+    GUIContext(GraphicsContext* render_context, SDL_Window* window);
     ~GUIContext();
 
     void begin() override;
@@ -64,7 +64,7 @@ private:
     bool isDockingEnabled() const;
     bool isViewportEnabled() const;
 
-    RenderContext* m_render_context{nullptr};
+    GraphicsContext* m_render_context{nullptr};
     SDL_Window* m_window{nullptr};
 
     VkDescriptorPool m_descriptor_pool{VK_NULL_HANDLE};

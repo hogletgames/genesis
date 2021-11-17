@@ -5,11 +5,11 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     buffers/staging_buffer.cpp
     buffers/vertex_buffer.cpp
     device.cpp
+    graphics_context.cpp
     image.cpp
     input_stage_descriptions.cpp
     instance.cpp
     pipeline.cpp
-    render_context.cpp
     renderer_factory.cpp
     sdl_gui_context.cpp
     shader.cpp
@@ -24,11 +24,11 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     buffers/vertex_buffer.h
     command_buffer.h
     device.h
+    graphics_context.h
     image.h
     input_stage_descriptions.h
     instance.h
     pipeline.h
-    render_context.h
     renderer_factory.h
     shader.h
     shader_program.h

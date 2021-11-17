@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_RENDER_CONTEXT_H_
-#define GENESIS_GRAPHICS_RENDER_CONTEXT_H_
+#ifndef GENESIS_GRAPHICS_GRAPHICS_CONTEXT_H_
+#define GENESIS_GRAPHICS_GRAPHICS_CONTEXT_H_
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
@@ -40,7 +40,7 @@
 
 namespace GE {
 
-class GE_API RenderContext: public Interface
+class GE_API GraphicsContext: public Interface
 {
 public:
     virtual bool initialize(void* window) = 0;
@@ -52,9 +52,9 @@ public:
     virtual const Scoped<RendererFactory>& factory() const = 0;
     virtual Scoped<GUI::Context>& gui() = 0;
 
-    static Scoped<RenderContext> create(Graphics::API api);
+    static Scoped<GraphicsContext> create(Graphics::API api);
 };
 
 } // namespace GE
 
-#endif // GENESIS_GRAPHICS_RENDER_CONTEXT_H_
+#endif // GENESIS_GRAPHICS_GRAPHICS_CONTEXT_H_

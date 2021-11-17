@@ -35,7 +35,7 @@
 #include "genesis/core/format.h"
 #include "genesis/core/log.h"
 #include "genesis/core/utils.h"
-#include "genesis/graphics/render_context.h"
+#include "genesis/graphics/graphics_context.h"
 #include "genesis/window/events/key_events.h"
 #include "genesis/window/events/mouse_events.h"
 #include "genesis/window/events/window_events.h"
@@ -115,7 +115,7 @@ Window::Window(settings_t settings)
         throw Exception{error};
     }
 
-    m_context = RenderContext::create(settings.renderer.api);
+    m_context = GraphicsContext::create(settings.renderer.api);
 
     if (!m_context->initialize(m_window)) {
         throw Exception{"Failed to initialize Render Context"};

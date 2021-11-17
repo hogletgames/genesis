@@ -31,7 +31,7 @@
  */
 
 #include "graphics.h"
-#include "render_context.h"
+#include "graphics_context.h"
 
 #include "genesis/core/enum.h"
 
@@ -42,12 +42,12 @@ Graphics::API Graphics::renderAPI()
     return get()->m_context->API();
 }
 
-void Graphics::setContext(Shared<RenderContext> context)
+void Graphics::setContext(Shared<GraphicsContext> context)
 {
     get()->m_context = std::move(context);
 }
 
-Shared<RenderContext> Graphics::context()
+Shared<GraphicsContext> Graphics::context()
 {
     return get()->m_context;
 }

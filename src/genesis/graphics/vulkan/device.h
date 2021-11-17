@@ -44,7 +44,7 @@
 
 namespace GE::Vulkan {
 
-class RenderContext;
+class GraphicsContext;
 
 struct queue_family_indices_t {
     std::optional<uint32_t> graphics_family{};
@@ -67,7 +67,7 @@ struct swap_chain_support_details_t {
 class GE_API Device
 {
 public:
-    explicit Device(Vulkan::RenderContext* context);
+    explicit Device(Vulkan::GraphicsContext* context);
     ~Device();
 
     void waitIdle();
@@ -105,7 +105,7 @@ private:
     std::vector<VkExtensionProperties>
     getPhysicalDeviceExt(VkPhysicalDevice physical_device);
 
-    Vulkan::RenderContext* m_context{nullptr};
+    Vulkan::GraphicsContext* m_context{nullptr};
     VkPhysicalDevice m_physical_device{VK_NULL_HANDLE};
     VkDevice m_device{VK_NULL_HANDLE};
     VkCommandPool m_command_pool{VK_NULL_HANDLE};

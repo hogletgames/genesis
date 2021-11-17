@@ -42,7 +42,7 @@ struct SDL_Window;
 union SDL_Event;
 
 namespace GE {
-class RenderContext;
+class GraphicsContext;
 } // namespace GE
 
 namespace GE::SDL {
@@ -67,7 +67,7 @@ public:
     const settings_t& settings() const override { return m_settings; }
 
     void* nativeWindow() override { return m_window; }
-    Shared<RenderContext> renderContext() const override { return m_context; }
+    Shared<GraphicsContext> renderContext() const override { return m_context; }
 
 private:
     void emitEvent(Event* event);
@@ -78,7 +78,7 @@ private:
 
     settings_t m_settings;
     SDL_Window* m_window{nullptr};
-    Shared<RenderContext> m_context;
+    Shared<GraphicsContext> m_context;
 
     std::list<EventListener*> m_event_listeners;
 };

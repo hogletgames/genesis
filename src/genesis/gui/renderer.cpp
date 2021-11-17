@@ -33,7 +33,7 @@
 #include "renderer.h"
 
 #include "genesis/graphics/graphics.h"
-#include "genesis/graphics/render_context.h"
+#include "genesis/graphics/graphics_context.h"
 
 namespace GE::GUI {
 

@@ -33,8 +33,8 @@
 #include "pipeline.h"
 #include "command_buffer.h"
 #include "device.h"
+#include "graphics_context.h"
 #include "input_stage_descriptions.h"
-#include "render_context.h"
 #include "shader.h"
 #include "vulkan_exception.h"
 

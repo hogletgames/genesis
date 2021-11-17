@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "render_context.h"
+#include "graphics_context.h"
 #include "device.h"
 #include "instance.h"
 #include "renderer_factory.h"
@@ -46,11 +46,11 @@
 
 namespace GE::Vulkan {
 
-RenderContext::RenderContext() = default;
+GraphicsContext::GraphicsContext() = default;
 
-RenderContext::~RenderContext() = default;
+GraphicsContext::~GraphicsContext() = default;
 
-bool RenderContext::initialize(void* window)
+bool GraphicsContext::initialize(void* window)
 {
     GE_CORE_INFO("Initializing Vulkan Context...");
 
@@ -74,7 +74,7 @@ bool RenderContext::initialize(void* window)
     return true;
 }
 
-void RenderContext::shutdown()
+void GraphicsContext::shutdown()
 {
     GE_CORE_INFO("Shutdown Vulkan Context");
 
@@ -95,7 +95,7 @@ void RenderContext::shutdown()
     m_gui.reset();
 }
 
-void RenderContext::drawFrame()
+void GraphicsContext::drawFrame()
 {
     if (!m_swap_chain &&
         !(m_swap_chain = tryMakeScoped<SwapChain>(m_device, m_surface))) {
@@ -127,7 +127,7 @@ void RenderContext::drawFrame()
     }
 }
 
-void RenderContext::destroyVulkanHandles()
+void GraphicsContext::destroyVulkanHandles()
 {
     if (Instance::instance() != VK_NULL_HANDLE) {
         vkDestroySurfaceKHR(Instance::instance(), m_surface, nullptr);
@@ -135,7 +135,7 @@ void RenderContext::destroyVulkanHandles()
     }
 }
 
-void RenderContext::createCommandBuffers()
+void GraphicsContext::createCommandBuffers()
 {
     m_command_buffers.resize(m_swap_chain->getImageCount(), VK_NULL_HANDLE);
 
@@ -151,14 +151,14 @@ void RenderContext::createCommandBuffers()
     }
 }
 
-void RenderContext::destroyCommandBuffers()
+void GraphicsContext::destroyCommandBuffers()
 {
     vkFreeCommandBuffers(m_device->device(), m_device->commandPool(),
                          m_command_buffers.size(), m_command_buffers.data());
     m_command_buffers = {};
 }
 
-bool RenderContext::prepareRenderCommand(uint32_t image_idx)
+bool GraphicsContext::prepareRenderCommand(uint32_t image_idx)
 {
     if (!beginRenderCommand(image_idx)) {
         return false;
@@ -168,7 +168,7 @@ bool RenderContext::prepareRenderCommand(uint32_t image_idx)
     return endRenderCommand(image_idx);
 }
 
-bool RenderContext::beginRenderCommand(uint32_t image_idx)
+bool GraphicsContext::beginRenderCommand(uint32_t image_idx)
 {
     VkCommandBuffer cmd = m_command_buffers[image_idx];
 
@@ -189,7 +189,7 @@ bool RenderContext::beginRenderCommand(uint32_t image_idx)
     return true;
 }
 
-void RenderContext::setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo)
+void GraphicsContext::setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo)
 {
     std::array<VkClearValue, 2> clear_values{};
     std::array<float, 4> clear_color = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -208,7 +208,7 @@ void RenderContext::setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo)
     vkCmdBeginRenderPass(cmd, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void RenderContext::setViewportAndScissor(VkCommandBuffer cmd)
+void GraphicsContext::setViewportAndScissor(VkCommandBuffer cmd)
 {
     VkViewport viewport{};
     viewport.width = static_cast<float>(m_swap_chain->getExtent().width);
@@ -223,7 +223,7 @@ void RenderContext::setViewportAndScissor(VkCommandBuffer cmd)
     vkCmdSetScissor(cmd, 0, 1, &scissor);
 }
 
-bool RenderContext::endRenderCommand(uint32_t image_idx)
+bool GraphicsContext::endRenderCommand(uint32_t image_idx)
 {
     VkCommandBuffer cmd = m_command_buffers[image_idx];
     vkCmdEndRenderPass(cmd);
@@ -236,22 +236,22 @@ bool RenderContext::endRenderCommand(uint32_t image_idx)
     return true;
 }
 
-VkFramebuffer RenderContext::currentFBO(uint32_t image_idx)
+VkFramebuffer GraphicsContext::currentFBO(uint32_t image_idx)
 {
     return m_swap_chain->getFramebuffer(image_idx);
 }
 
-VkRenderPass RenderContext::renderPass()
+VkRenderPass GraphicsContext::renderPass()
 {
     return m_swap_chain->getRenderPass();
 }
 
-Shared<Vulkan::RenderContext> currentContext()
+Shared<Vulkan::GraphicsContext> currentContext()
 {
     auto context = Graphics::context();
     GE_CORE_ASSERT(context->API() == Graphics::API::VULKAN, "Incorrect Graphics API: {}",
                    static_cast<int>(context->API()));
-    return staticPtrCast<Vulkan::RenderContext>(context);
+    return staticPtrCast<Vulkan::GraphicsContext>(context);
 }
 
 } // namespace GE::Vulkan

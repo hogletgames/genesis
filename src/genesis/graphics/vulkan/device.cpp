@@ -31,8 +31,8 @@
  */
 
 #include "device.h"
+#include "graphics_context.h"
 #include "instance.h"
-#include "render_context.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/format.h"
@@ -81,7 +81,7 @@ bool isPresentSupported(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
 
 namespace GE::Vulkan {
 
-Device::Device(Vulkan::RenderContext *context)
+Device::Device(Vulkan::GraphicsContext *context)
     : m_context{context}
 {
     m_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};

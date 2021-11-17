@@ -43,7 +43,7 @@
 
 namespace GE {
 
-class RenderContext;
+class GraphicsContext;
 
 class GE_API Window: public Interface
 {
@@ -75,7 +75,7 @@ public:
     virtual const settings_t& settings() const = 0;
 
     virtual void* nativeWindow() = 0;
-    virtual Shared<RenderContext> renderContext() const = 0;
+    virtual Shared<GraphicsContext> renderContext() const = 0;
 };
 
 } // namespace GE

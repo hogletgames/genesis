@@ -31,10 +31,10 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_RENDER_CONTEXT_H_
-#define GENESIS_GRAPHICS_VULKAN_RENDER_CONTEXT_H_
+#ifndef GENESIS_GRAPHICS_VULKAN_GRAPHICS_CONTEXT_H_
+#define GENESIS_GRAPHICS_VULKAN_GRAPHICS_CONTEXT_H_
 
-#include <genesis/graphics/render_context.h>
+#include <genesis/graphics/graphics_context.h>
 
 #include <vulkan/vulkan.h>
 
@@ -50,11 +50,11 @@ class PlatformWindow;
 class Device;
 class SwapChain;
 
-class RenderContext: public GE::RenderContext
+class GraphicsContext: public GE::GraphicsContext
 {
 public:
-    RenderContext();
-    ~RenderContext();
+    GraphicsContext();
+    ~GraphicsContext();
 
     bool initialize(void* window) override;
     void shutdown() override;
@@ -95,8 +95,8 @@ private:
     Scoped<GUI::Context> m_gui;
 };
 
-Shared<Vulkan::RenderContext> currentContext();
+Shared<Vulkan::GraphicsContext> currentContext();
 
 } // namespace GE::Vulkan
 
-#endif // GENESIS_GRAPHICS_VULKAN_RENDER_CONTEXT_H_
+#endif // GENESIS_GRAPHICS_VULKAN_GRAPHICS_CONTEXT_H_

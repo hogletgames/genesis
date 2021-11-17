@@ -44,13 +44,13 @@ namespace SDL {
 class PlatformWindow;
 } // namespace SDL
 
-class RenderContext;
+class GraphicsContext;
 
 class Instance
 {
 public:
-    static void registerContext(RenderContext* context);
-    static void dropContext(RenderContext* context);
+    static void registerContext(GraphicsContext* context);
+    static void dropContext(GraphicsContext* context);
 
     static VkInstance instance() { return get()->m_instance; }
 

@@ -30,18 +30,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "render_context.h"
-#include "vulkan/render_context.h"
+#include "graphics_context.h"
+#include "vulkan/graphics_context.h"
 
 #include "genesis/core/log.h"
 #include "genesis/core/memory.h"
 
 namespace GE {
 
-Scoped<RenderContext> RenderContext::create(Graphics::API api)
+Scoped<GraphicsContext> GraphicsContext::create(Graphics::API api)
 {
     switch (api) {
-        case Graphics::API::VULKAN: return makeScoped<Vulkan::RenderContext>();
+        case Graphics::API::VULKAN: return makeScoped<Vulkan::GraphicsContext>();
         case Graphics::API::NONE:
         default: break;
     }

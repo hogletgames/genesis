@@ -39,7 +39,7 @@
 
 namespace GE {
 
-class RenderContext;
+class GraphicsContext;
 
 class GE_API Graphics
 {
@@ -57,8 +57,8 @@ public:
     };
 
     static API renderAPI();
-    static void setContext(Shared<RenderContext> context);
-    static Shared<RenderContext> context();
+    static void setContext(Shared<GraphicsContext> context);
+    static Shared<GraphicsContext> context();
     static const Scoped<RendererFactory>& factory();
 
 private:
@@ -70,7 +70,7 @@ private:
         return &instance;
     }
 
-    Shared<RenderContext> m_context;
+    Shared<GraphicsContext> m_context;
 };
 
 Graphics::API toRendererAPI(const std::string& api_str);

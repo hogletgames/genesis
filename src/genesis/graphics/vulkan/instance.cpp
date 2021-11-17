@@ -31,7 +31,7 @@
  */
 
 #include "instance.h"
-#include "render_context.h"
+#include "graphics_context.h"
 #include "sdl_platform_window.h"
 #include "utils.h"
 #include "vulkan_exception.h"
@@ -95,7 +95,7 @@ getDebugMsgrCreateInfo(VkDebugUtilsMessageSeverityFlagsEXT severity)
 
 namespace GE::Vulkan {
 
-void Instance::registerContext(RenderContext* context)
+void Instance::registerContext(GraphicsContext* context)
 {
     if (get()->m_context_counter == 0) {
         get()->createInstance(context->platformWindow());
@@ -107,7 +107,7 @@ void Instance::registerContext(RenderContext* context)
     get()->m_context_counter++;
 }
 
-void Instance::dropContext([[maybe_unused]] RenderContext* context)
+void Instance::dropContext([[maybe_unused]] GraphicsContext* context)
 {
     if (get()->m_context_counter == 0) {
         return;
