@@ -4,6 +4,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     buffers/index_buffer.cpp
     buffers/staging_buffer.cpp
     buffers/vertex_buffer.cpp
+    renderers/renderer_base.cpp
     device.cpp
     graphics_context.cpp
     graphics_factory.cpp
@@ -22,6 +23,7 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     buffers/index_buffer.h
     buffers/staging_buffer.h
     buffers/vertex_buffer.h
+    renderers/renderer_base.h
     command_buffer.h
     device.h
     graphics_context.h
@@ -58,7 +60,7 @@ target_include_directories(genesis-graphics-vulkan PRIVATE ${CMAKE_CURRENT_SOURC
 target_include_directories(genesis-graphics-vulkan SYSTEM
     PUBLIC
         ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include
-    PRIVAT
+    PRIVATE
         ${GE_THIRD_PARTY_DIR}/imgui
         ${GE_THIRD_PARTY_DIR}/imgui/backends)
 

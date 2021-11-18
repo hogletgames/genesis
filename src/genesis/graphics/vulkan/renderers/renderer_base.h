@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,21 +30,56 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_H_
-#define GENESIS_GRAPHICS_H_
+// NOLINTNEXTLINE(llvm-header-guard)
+#ifndef GENESIS_GRAPHICS_VULKAN_RENDERERS_RENDERER_BASE_H_
+#define GENESIS_GRAPHICS_VULKAN_RENDERERS_RENDERER_BASE_H_
 
-#include <genesis/graphics/gpu_command_queue.h>
-#include <genesis/graphics/graphics.h>
-#include <genesis/graphics/graphics_context.h>
-#include <genesis/graphics/graphics_factory.h>
-#include <genesis/graphics/index_buffer.h>
-#include <genesis/graphics/render_command.h>
+#include <genesis/core/memory.h>
 #include <genesis/graphics/renderer.h>
-#include <genesis/graphics/shader.h>
-#include <genesis/graphics/shader_input_layout.h>
-#include <genesis/graphics/shader_precompiler.h>
-#include <genesis/graphics/shader_program.h>
-#include <genesis/graphics/texture.h>
-#include <genesis/graphics/vertex_buffer.h>
 
-#endif // GENESIS_GRAPHICS_H_
+#include <vulkan/vulkan.h>
+
+#include <vector>
+
+namespace GE::Vulkan {
+
+class Device;
+
+class RendererBase: public GE::Renderer
+{
+public:
+    ~RendererBase();
+
+protected:
+    explicit RendererBase(Shared<Device> device);
+
+    VkRenderPass
+    createRenderPass(const std::vector<VkAttachmentDescription>& descriptions);
+    void createCommandPool();
+    void createCommandBuffers(uint32_t count);
+    void createPipelineCache();
+
+    bool beginRenderPass(ClearMode clear_mode);
+    void updateDynamicState();
+    bool endRenderPass();
+
+    virtual VkCommandBuffer cmdBuffer() const = 0;
+    virtual VkFramebuffer currentFramebuffer() const = 0;
+    virtual VkExtent2D extent() const = 0;
+    virtual VkViewport viewport() const = 0;
+
+    Shared<Device> m_device;
+
+    VkPipelineCache m_pipeline_cache{VK_NULL_HANDLE};
+    VkCommandPool m_command_pool{VK_NULL_HANDLE};
+    std::array<VkRenderPass, 4> m_render_passes{VK_NULL_HANDLE};
+    std::vector<VkCommandBuffer> m_cmd_buffers;
+    std::vector<VkClearValue> m_clear_values;
+
+private:
+    void destroyVkHandles();
+};
+
+} // namespace GE::Vulkan
+
+#endif // GENESIS_GRAPHICS_VULKAN_RENDERERS_RENDERER_BASE_H_

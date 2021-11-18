@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,21 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_H_
-#define GENESIS_GRAPHICS_H_
+#ifndef GENESIS_GRAPHICS_RENDERER_H_
+#define GENESIS_GRAPHICS_RENDERER_H_
 
-#include <genesis/graphics/gpu_command_queue.h>
-#include <genesis/graphics/graphics.h>
-#include <genesis/graphics/graphics_context.h>
-#include <genesis/graphics/graphics_factory.h>
-#include <genesis/graphics/index_buffer.h>
-#include <genesis/graphics/render_command.h>
-#include <genesis/graphics/renderer.h>
-#include <genesis/graphics/shader.h>
-#include <genesis/graphics/shader_input_layout.h>
-#include <genesis/graphics/shader_precompiler.h>
-#include <genesis/graphics/shader_program.h>
-#include <genesis/graphics/texture.h>
-#include <genesis/graphics/vertex_buffer.h>
+#include <genesis/core/interface.h>
 
-#endif // GENESIS_GRAPHICS_H_
+namespace GE {
+
+class Event;
+class RenderCommand;
+
+class GE_API Renderer: public Interface
+{
+public:
+    enum ClearMode : uint8_t
+    {
+        CLEAR_NONE = 0,
+        CLEAR_COLOR,
+        CLEAR_DEPTH,
+        CLEAR_ALL
+    };
+
+    virtual bool beginFrame(ClearMode clear_mode = CLEAR_ALL) = 0;
+    virtual void endFrame() = 0;
+    virtual void swapBuffers() = 0;
+
+    virtual void onEvent(Event* event) = 0;
+};
+
+} // namespace GE
+
+#endif // GENESIS_GRAPHICS_RENDERER_H_
