@@ -43,7 +43,7 @@ using spdlogLevel = spdlog::level::level_enum;
 
 constexpr auto CORE_LOGGER_NAME = "CORE";
 constexpr auto CLIENT_LOGGER_NAME = "APP";
-constexpr auto LOG_FTM_PATTERN = "[%H:%M:%S.%e] [%l] %n: %v%$";
+constexpr auto LOG_FTM_PATTERN = "[%H:%M:%S.%e] [%l] %n: %v%$ (%s:%#)";
 
 spdlogLevel toSpdlogLvl(GE::Logger::Level level)
 {
