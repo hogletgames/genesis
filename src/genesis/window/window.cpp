@@ -47,9 +47,9 @@ void Window::shutdown()
     PlatformWindow::shutdown();
 }
 
-Scoped<Window> Window::create(const settings_t& settings)
+Scoped<Window> Window::create(const settings_t& settings, Graphics::API api)
 {
-    return tryMakeScoped<PlatformWindow>(settings);
+    return tryMakeScoped<PlatformWindow>(settings, api);
 }
 
 } // namespace GE

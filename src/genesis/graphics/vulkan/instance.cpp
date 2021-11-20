@@ -31,19 +31,30 @@
  */
 
 #include "instance.h"
-#include "graphics_context.h"
-#include "sdl_platform_window.h"
 #include "utils.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/asserts.h"
 #include "genesis/core/version.h"
 
+#include <SDL_vulkan.h>
+
 namespace {
 
 constexpr int VULKAN_SEVERITY{VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT};
+
+std::vector<const char*> getWindowExtensions(SDL_Window* window)
+{
+    uint32_t ext_count{0};
+    SDL_Vulkan_GetInstanceExtensions(window, &ext_count, nullptr);
+
+    std::vector<const char*> ext(ext_count);
+    SDL_Vulkan_GetInstanceExtensions(window, &ext_count, ext.data());
+
+    return ext;
+}
 
 VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT severity, VkDebugUtilsMessageTypeFlagsEXT type,
@@ -95,33 +106,24 @@ getDebugMsgrCreateInfo(VkDebugUtilsMessageSeverityFlagsEXT severity)
 
 namespace GE::Vulkan {
 
-void Instance::registerContext(GraphicsContext* context)
+void Instance::initialize(void* native_window, const std::string& app_name)
 {
-    if (get()->m_context_counter == 0) {
-        get()->createInstance(context->platformWindow());
+    get()->createInstance(native_window, app_name);
 #ifndef GE_DISABLE_DEBUG
-        get()->createDebugUtilsMessenger();
+    get()->createDebugUtilsMessenger();
 #endif // GE_DISABLE_DEBUG
-    }
-
-    get()->m_context_counter++;
 }
 
-void Instance::dropContext([[maybe_unused]] GraphicsContext* context)
+void Instance::shutdown()
 {
-    if (get()->m_context_counter == 0) {
-        return;
-    }
-
-    if (--get()->m_context_counter == 0) {
-        get()->destroyVulkanHandles();
-    }
+    get()->destroyVulkanHandles();
 }
 
-void Instance::createInstance(const Scoped<SDL::PlatformWindow>& window)
+void Instance::createInstance(void* native_window, const std::string& app_name)
 {
     GE_CORE_INFO("Creating Vulkan Instance...");
-    auto window_extensions = window->vulkanExtensions();
+    auto* window = reinterpret_cast<SDL_Window*>(native_window);
+    auto window_extensions = getWindowExtensions(window);
 
 #ifndef GE_DISABLE_DEBUG
     window_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -129,7 +131,7 @@ void Instance::createInstance(const Scoped<SDL::PlatformWindow>& window)
 
     VkApplicationInfo app_info{};
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    app_info.pApplicationName = window->title();
+    app_info.pApplicationName = app_name.c_str();
     app_info.apiVersion = VK_MAKE_VERSION(1, 0, 0);
     app_info.pEngineName = ENGINE_NAME;
     app_info.engineVersion = VK_MAKE_VERSION(VER_MAJOR, VER_MINOR, VER_PATCH);

@@ -35,7 +35,8 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
-#include <genesis/graphics/graphics.h>
+#include <genesis/graphics/graphics_factory.h>
+#include <genesis/graphics/renderer.h>
 #include <genesis/gui/context.h>
 
 namespace GE {
@@ -43,16 +44,12 @@ namespace GE {
 class GE_API GraphicsContext: public Interface
 {
 public:
-    virtual bool initialize(void* window) = 0;
+    virtual bool initialize(void* window, const std::string& app_name) = 0;
     virtual void shutdown() = 0;
 
-    virtual void drawFrame() = 0;
-
-    virtual Graphics::API API() const = 0;
-    virtual const Scoped<GraphicsFactory>& factory() const = 0;
-    virtual Scoped<GUI::Context>& gui() = 0;
-
-    static Scoped<GraphicsContext> create(Graphics::API api);
+    virtual GraphicsFactory* factory() = 0;
+    virtual Renderer* windowRenderer() = 0;
+    virtual GUI::Context* gui() = 0;
 };
 
 } // namespace GE

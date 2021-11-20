@@ -34,40 +34,65 @@
 #include "device.h"
 #include "graphics_factory.h"
 #include "instance.h"
+#include "renderers/window_renderer.h"
 #include "sdl_gui_context.h"
-#include "sdl_platform_window.h"
-#include "swap_chain.h"
 #include "vulkan_exception.h"
 
-#include "genesis/core/asserts.h"
 #include "genesis/core/log.h"
-#include "genesis/graphics/graphics.h"
-#include "genesis/graphics/render_command.h"
+
+#include <SDL_vulkan.h>
+
+namespace {
+
+VkSurfaceKHR createSurface(void* window)
+{
+    VkSurfaceKHR surface{VK_NULL_HANDLE};
+    auto* sdl_window = reinterpret_cast<SDL_Window*>(window);
+
+    if (SDL_Vulkan_CreateSurface(sdl_window, GE::Vulkan::Instance::instance(),
+                                 &surface) == SDL_FALSE) {
+        throw GE::Vulkan::Exception{"Failed to create Vulkan SDL Surface"};
+    }
+
+    return surface;
+}
+
+inline GE::Vec2 getWindowSize(void* window)
+{
+    auto* sdl_window = reinterpret_cast<SDL_Window*>(window);
+    int width{0};
+    int height{0};
+    SDL_GetWindowSize(sdl_window, &width, &height);
+    return {width, height};
+}
+
+} // namespace
 
 namespace GE::Vulkan {
 
 GraphicsContext::GraphicsContext() = default;
 
-GraphicsContext::~GraphicsContext() = default;
+GraphicsContext::~GraphicsContext()
+{
+    clearResources();
+}
 
-bool GraphicsContext::initialize(void* window)
+bool GraphicsContext::initialize(void* window, const std::string& app_name)
 {
     GE_CORE_INFO("Initializing Vulkan Context...");
+    Instance::initialize(window, app_name);
+
+    m_surface = createSurface(window);
+    Vec2 window_size = getWindowSize(window);
 
     try {
-        m_window = makeScoped<SDL::PlatformWindow>(reinterpret_cast<SDL_Window*>(window));
-        Instance::registerContext(this);
-        m_surface = m_window->createSurface(Instance::instance());
-
-        m_device = makeScoped<Device>(this);
-        m_swap_chain = makeScoped<SwapChain>(m_device, SwapChain::options_t{m_surface});
-        createCommandBuffers();
-
+        m_device = makeScoped<Device>(m_surface);
+        m_window_renderer = makeScoped<WindowRenderer>(m_device, m_surface, window_size);
         m_factory = makeScoped<Vulkan::GraphicsFactory>(m_device);
-        m_gui = makeScoped<SDL::GUIContext>(this, m_window->window());
+        m_gui = makeScoped<SDL::GUIContext>(window, m_device, m_window_renderer.get());
     } catch (const Vulkan::Exception& e) {
-        GE_CORE_ERR("Failed to initialize Vulkan Render Context: {}", e.what());
-        shutdown();
+        GE_CORE_ERR("Failed to initialize context: {}", e.what());
+        clearResources();
         return false;
     }
 
@@ -76,176 +101,38 @@ bool GraphicsContext::initialize(void* window)
 
 void GraphicsContext::shutdown()
 {
+    clearResources();
+}
+
+Renderer* GraphicsContext::windowRenderer()
+{
+    return m_window_renderer.get();
+}
+
+void GraphicsContext::clearResources()
+{
+    if (m_device == nullptr) {
+        Instance::shutdown();
+        return;
+    }
+
     GE_CORE_INFO("Shutdown Vulkan Context");
 
-    if (m_device) {
-        m_device->waitIdle();
-        destroyCommandBuffers();
-    }
+    m_device->waitIdle();
 
     m_gui.reset();
     m_factory.reset();
-
-    m_swap_chain.reset();
+    m_window_renderer.reset();
     m_device.reset();
-
     destroyVulkanHandles();
-    Instance::dropContext(this);
-    m_window.reset();
-    m_gui.reset();
-}
 
-void GraphicsContext::drawFrame()
-{
-    auto acquire_result = m_swap_chain->acquireNextImage();
-
-    if (acquire_result == VK_ERROR_OUT_OF_DATE_KHR) {
-        m_swap_chain->recreate(m_window->windowSize());
-        return;
-    }
-
-    if (acquire_result != VK_SUCCESS && acquire_result != VK_SUBOPTIMAL_KHR) {
-        GE_CORE_ERR("Failed to acquire Swap Chain image");
-        return;
-    }
-
-    uint32_t image_index = m_swap_chain->currentImage();
-
-    if (!prepareRenderCommand(image_index)) {
-        GE_CORE_ERR("Failed to prepare Render Command");
-        return;
-    }
-
-    if (m_swap_chain->submitCommandBuffer(&m_command_buffers[image_index]) !=
-        VK_SUCCESS) {
-        return;
-    }
-
-    if (m_swap_chain->presentImage() != VK_SUCCESS) {
-        GE_CORE_ERR("Failed to present Swap Chain image");
-    }
+    Instance::shutdown();
 }
 
 void GraphicsContext::destroyVulkanHandles()
 {
-    if (Instance::instance() != VK_NULL_HANDLE) {
-        vkDestroySurfaceKHR(Instance::instance(), m_surface, nullptr);
-        m_surface = VK_NULL_HANDLE;
-    }
-}
-
-void GraphicsContext::createCommandBuffers()
-{
-    m_command_buffers.resize(m_swap_chain->imageCount(), VK_NULL_HANDLE);
-
-    VkCommandBufferAllocateInfo alloc_info{};
-    alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    alloc_info.commandPool = m_device->commandPool();
-    alloc_info.commandBufferCount = m_command_buffers.size();
-
-    if (vkAllocateCommandBuffers(m_device->device(), &alloc_info,
-                                 m_command_buffers.data()) != VK_SUCCESS) {
-        throw Vulkan::Exception{"Failed to allocate Command Buffers"};
-    }
-}
-
-void GraphicsContext::destroyCommandBuffers()
-{
-    vkFreeCommandBuffers(m_device->device(), m_device->commandPool(),
-                         m_command_buffers.size(), m_command_buffers.data());
-    m_command_buffers = {};
-}
-
-bool GraphicsContext::prepareRenderCommand(uint32_t image_idx)
-{
-    if (!beginRenderCommand(image_idx)) {
-        return false;
-    }
-
-    RenderCommand::submit(m_command_buffers[image_idx]);
-    return endRenderCommand(image_idx);
-}
-
-bool GraphicsContext::beginRenderCommand(uint32_t image_idx)
-{
-    VkCommandBuffer cmd = m_command_buffers[image_idx];
-
-    vkResetCommandBuffer(cmd, 0);
-
-    VkCommandBufferBeginInfo begin_info{};
-    begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    begin_info.flags = 0;
-    begin_info.pInheritanceInfo = nullptr;
-
-    if (vkBeginCommandBuffer(cmd, &begin_info) != VK_SUCCESS) {
-        GE_CORE_ERR("Failed to begin Command Buffer");
-        return false;
-    }
-
-    setRenderPass(cmd, m_swap_chain->currentFramebuffer());
-    setViewportAndScissor(cmd);
-    return true;
-}
-
-void GraphicsContext::setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo)
-{
-    std::array<VkClearValue, 2> clear_values{};
-    std::array<float, 4> clear_color = {0.0f, 0.0f, 0.0f, 1.0f};
-    std::copy(clear_color.begin(), clear_color.end(), clear_values[0].color.float32);
-    clear_values[1].depthStencil = {1.0f, 0};
-
-    VkRenderPassBeginInfo render_pass_info{};
-    render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    render_pass_info.renderPass = m_swap_chain->getRenderPass();
-    render_pass_info.framebuffer = fbo;
-    render_pass_info.renderArea.offset = {0, 0};
-    render_pass_info.renderArea.extent = m_swap_chain->extent();
-    render_pass_info.pClearValues = clear_values.data();
-    render_pass_info.clearValueCount = clear_values.size();
-
-    vkCmdBeginRenderPass(cmd, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-}
-
-void GraphicsContext::setViewportAndScissor(VkCommandBuffer cmd)
-{
-    VkViewport viewport{};
-    viewport.width = static_cast<float>(m_swap_chain->extent().width);
-    viewport.height = static_cast<float>(m_swap_chain->extent().height);
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-
-    VkRect2D scissor{};
-    scissor.extent = m_swap_chain->extent();
-
-    vkCmdSetViewport(cmd, 0, 1, &viewport);
-    vkCmdSetScissor(cmd, 0, 1, &scissor);
-}
-
-bool GraphicsContext::endRenderCommand(uint32_t image_idx)
-{
-    VkCommandBuffer cmd = m_command_buffers[image_idx];
-    vkCmdEndRenderPass(cmd);
-
-    if (vkEndCommandBuffer(cmd) != VK_SUCCESS) {
-        GE_CORE_ERR("Failed to record Command Buffer");
-        return false;
-    }
-
-    return true;
-}
-
-VkRenderPass GraphicsContext::renderPass()
-{
-    return m_swap_chain->getRenderPass();
-}
-
-Shared<Vulkan::GraphicsContext> currentContext()
-{
-    auto context = Graphics::context();
-    GE_CORE_ASSERT(context->API() == Graphics::API::VULKAN, "Incorrect Graphics API: {}",
-                   static_cast<int>(context->API()));
-    return staticPtrCast<Vulkan::GraphicsContext>(context);
+    vkDestroySurfaceKHR(Instance::instance(), m_surface, nullptr);
+    m_surface = VK_NULL_HANDLE;
 }
 
 } // namespace GE::Vulkan

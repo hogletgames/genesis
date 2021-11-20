@@ -33,6 +33,7 @@
 #include "application.h"
 
 #include "genesis/core/utils.h"
+#include "genesis/graphics/graphics_context.h"
 #include "genesis/window/events/event_dispatcher.h"
 #include "genesis/window/events/window_events.h"
 #include "genesis/window/input.h"
@@ -42,7 +43,8 @@ namespace GE {
 bool Application::initialize(const settings_t& settings)
 {
     if (!Log::initialize(settings.log) || !Window::initialize() || !Input::initialize() ||
-        !initializeApp(settings)) {
+        !initializeApp(settings) ||
+        !Graphics::initialize(settings.graphics, get()->m_window->nativeWindow())) {
         GE_CORE_ERR("Failed to initialize Application");
         shutdown();
         return false;
@@ -54,6 +56,7 @@ bool Application::initialize(const settings_t& settings)
 
 void Application::shutdown()
 {
+    Graphics::shutdown();
     shutdownApp();
     Input::shutdown();
     Window::shutdown();
@@ -93,12 +96,11 @@ bool Application::initializeApp(const settings_t& settings)
 
     auto& window = get()->m_window;
 
-    if (window = Window::create(settings.window); window == nullptr) {
+    if (window = Window::create(settings.window, settings.graphics.api);
+        window == nullptr) {
         GE_CORE_ERR("Failed to create Window");
         return false;
     }
-
-    Graphics::setContext(window->renderContext());
 
     window->attachEventListener(get());
     return true;
@@ -110,7 +112,6 @@ void Application::shutdownApp()
     close();
     get()->clearLayers();
     get()->m_window.reset();
-    Graphics::setContext(nullptr);
     get()->m_window_state = WindowState::NONE;
 }
 
@@ -130,7 +131,7 @@ void Application::mainLoop()
             renderLayers();
         }
 
-        m_window->onUpdate();
+        Graphics::windowRenderer()->swapBuffers();
     }
 }
 
@@ -142,6 +143,7 @@ void Application::onEvent(Event* event)
     dispatcher.dispatch<WindowMinimizedEvent>(GE_EVENT_MEM_FN(onWindowMinimized));
     dispatcher.dispatch<WindowRestoredEvent>(GE_EVENT_MEM_FN(onWindowRestored));
 
+    Graphics::windowRenderer()->onEvent(event);
     sendEventToLayers(event);
 }
 
@@ -189,9 +191,13 @@ void Application::updateLayers(Timestamp ts)
 
 void Application::renderLayers()
 {
+    Graphics::windowRenderer()->beginFrame();
+
     for (auto& layer : m_layers) {
         layer->onRender();
     }
+
+    Graphics::windowRenderer()->endFrame();
 }
 
 void Application::clearLayers()

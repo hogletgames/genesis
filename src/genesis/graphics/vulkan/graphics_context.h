@@ -44,11 +44,10 @@ namespace GE::Vulkan {
 
 namespace SDL {
 class GUIContext;
-class PlatformWindow;
 } // namespace SDL
 
 class Device;
-class SwapChain;
+class WindowRenderer;
 
 class GraphicsContext: public GE::GraphicsContext
 {
@@ -56,45 +55,24 @@ public:
     GraphicsContext();
     ~GraphicsContext();
 
-    bool initialize(void* window) override;
+    bool initialize(void* window, const std::string& app_name) override;
     void shutdown() override;
 
-    void drawFrame() override;
-
-    Graphics::API API() const override { return Graphics::API::VULKAN; }
-    const Scoped<GE::GraphicsFactory>& factory() const override { return m_factory; }
-    Scoped<GUI::Context>& gui() override { return m_gui; }
-
-    const Scoped<SDL::PlatformWindow>& platformWindow() const { return m_window; }
-    VkSurfaceKHR surface() const { return m_surface; }
-    Shared<Device> device() const { return m_device; }
-    Shared<Vulkan::SwapChain> swapChain() const { return m_swap_chain; }
+    GE::GraphicsFactory* factory() override { return m_factory.get(); }
+    GE::Renderer* windowRenderer() override;
+    GE::GUI::Context* gui() override { return m_gui.get(); }
 
 private:
-    void createCommandBuffers();
-    void destroyCommandBuffers();
-
-    bool prepareRenderCommand(uint32_t image_idx);
-    bool beginRenderCommand(uint32_t image_idx);
-    void setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo);
-    void setViewportAndScissor(VkCommandBuffer cmd);
-    bool endRenderCommand(uint32_t image_idx);
-    VkRenderPass renderPass();
-
+    void clearResources();
     void destroyVulkanHandles();
 
-    Scoped<SDL::PlatformWindow> m_window;
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
-
     Shared<Vulkan::Device> m_device;
-    Shared<Vulkan::SwapChain> m_swap_chain;
-    std::vector<VkCommandBuffer> m_command_buffers;
 
     Scoped<GE::GraphicsFactory> m_factory;
-    Scoped<GUI::Context> m_gui;
+    Scoped<WindowRenderer> m_window_renderer;
+    Scoped<GE::GUI::Context> m_gui;
 };
-
-Shared<Vulkan::GraphicsContext> currentContext();
 
 } // namespace GE::Vulkan
 

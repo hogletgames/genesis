@@ -55,6 +55,7 @@ public:
     struct settings_t {
         Log::settings_t log{};
         Window::settings_t window{};
+        Graphics::settings_t graphics{};
     };
 
     static bool initialize(const settings_t& settings);
@@ -104,7 +105,7 @@ private:
     std::deque<Shared<Layer>> m_layers;
     WindowState m_window_state{WindowState::NONE};
 
-    bool m_running{true};
+    volatile bool m_running{true};
     Timestamp m_prev_frame_ts;
 };
 

@@ -44,13 +44,11 @@ namespace SDL {
 class PlatformWindow;
 } // namespace SDL
 
-class GraphicsContext;
-
 class Instance
 {
 public:
-    static void registerContext(GraphicsContext* context);
-    static void dropContext(GraphicsContext* context);
+    static void initialize(void* native_window, const std::string& app_name);
+    static void shutdown();
 
     static VkInstance instance() { return get()->m_instance; }
 
@@ -63,14 +61,13 @@ private:
         return &instance;
     }
 
-    void createInstance(const Scoped<SDL::PlatformWindow>& window);
+    void createInstance(void* native_window, const std::string& app_name);
     void createDebugUtilsMessenger();
 
     void destroyVulkanHandles();
 
     VkInstance m_instance{VK_NULL_HANDLE};
     VkDebugUtilsMessengerEXT m_debug_utils{VK_NULL_HANDLE};
-    uint32_t m_context_counter{0};
 };
 
 } // namespace GE::Vulkan

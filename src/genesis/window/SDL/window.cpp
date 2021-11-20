@@ -100,11 +100,11 @@ int renderAPIToWindowFlag(GE::Graphics::API api)
 
 namespace GE::SDL {
 
-Window::Window(settings_t settings)
+Window::Window(settings_t settings, Graphics::API api)
     : m_settings{std::move(settings)}
 {
     auto flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN |
-                 renderAPIToWindowFlag(settings.renderer.api);
+                 renderAPIToWindowFlag(api);
 
     m_window = SDL_CreateWindow(m_settings.title.c_str(), SDL_WINDOWPOS_CENTERED,
                                 SDL_WINDOWPOS_CENTERED, m_settings.size.x,
@@ -115,19 +115,12 @@ Window::Window(settings_t settings)
         throw Exception{error};
     }
 
-    m_context = GraphicsContext::create(settings.renderer.api);
-
-    if (!m_context->initialize(m_window)) {
-        throw Exception{"Failed to initialize Render Context"};
-    }
-
     GE_CORE_INFO("Window '{}' has been created", m_settings.title);
 }
 
 Window::~Window()
 {
     if (m_window != nullptr) {
-        m_context->shutdown();
         SDL_DestroyWindow(m_window);
         GE_CORE_INFO("Window '{}' has been destroyed", m_settings.title);
     }
@@ -154,11 +147,6 @@ void Window::shutdown()
 {
     GE_CORE_INFO("Shutdown SDL Window");
     SDL_Quit();
-}
-
-void Window::onUpdate()
-{
-    m_context->drawFrame();
 }
 
 void Window::attachEventListener(EventListener* listener)

@@ -33,8 +33,8 @@
 #include "sdl_gui_context.h"
 #include "command_buffer.h"
 #include "device.h"
-#include "graphics_context.h"
 #include "instance.h"
+#include "renderers/window_renderer.h"
 #include "single_command.h"
 #include "swap_chain.h"
 #include "vulkan_exception.h"
@@ -82,9 +82,9 @@ void mapKeys()
 
 namespace GE::Vulkan::SDL {
 
-GUIContext::GUIContext(GraphicsContext *render_context, SDL_Window *window)
-    : m_render_context{render_context}
-    , m_window{window}
+GUIContext::GUIContext(void *window, Shared<Device> device,
+                       WindowRenderer *window_renderer)
+    : m_device{std::move(device)}
 {
     GE_CORE_INFO("Initializing Vulkan SDL GUI");
 
@@ -105,21 +105,23 @@ GUIContext::GUIContext(GraphicsContext *render_context, SDL_Window *window)
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
-    if (!ImGui_ImplSDL2_InitForVulkan(m_window)) {
+    auto *sdl_window = reinterpret_cast<SDL_Window *>(window);
+
+    if (!ImGui_ImplSDL2_InitForVulkan(sdl_window)) {
         throw Vulkan::Exception{"Failed to initialize SDL2 for Vulkan"};
     }
 
-    auto device = m_render_context->device();
-    auto swap_chain = m_render_context->swapChain();
+    auto *swap_chain = window_renderer->swapChain();
+    VkRenderPass render_pass = window_renderer->renderPass(Renderer::CLEAR_ALL);
 
-    createDescriptorPool(device->device());
+    createDescriptorPool();
 
     ImGui_ImplVulkan_InitInfo init_info{};
     init_info.Instance = Instance::instance();
-    init_info.PhysicalDevice = device->physicalDevice();
-    init_info.Device = device->device();
-    init_info.QueueFamily = device->queueIndices().graphics_family.value();
-    init_info.Queue = device->graphicsQueue();
+    init_info.PhysicalDevice = m_device->physicalDevice();
+    init_info.Device = m_device->device();
+    init_info.QueueFamily = m_device->queueIndices().graphics_family.value();
+    init_info.Queue = m_device->graphicsQueue();
     init_info.PipelineCache = nullptr;
     init_info.DescriptorPool = m_descriptor_pool;
     init_info.Allocator = nullptr;
@@ -127,13 +129,13 @@ GUIContext::GUIContext(GraphicsContext *render_context, SDL_Window *window)
     init_info.ImageCount = swap_chain->imageCount();
     init_info.CheckVkResultFn = nullptr;
 
-    if (!ImGui_ImplVulkan_Init(&init_info, swap_chain->getRenderPass())) {
+    if (!ImGui_ImplVulkan_Init(&init_info, render_pass)) {
         throw Vulkan::Exception{"Failed to initialize GUI Vulkan backend"};
     }
 
     // Load fonts
     {
-        SingleCommand cmd(device);
+        SingleCommand cmd(m_device);
         ImGui_ImplVulkan_CreateFontsTexture(cmd.getCmdBuffer());
     }
 
@@ -182,7 +184,7 @@ void GUIContext::draw(GPUCommandQueue *queue)
     });
 }
 
-void GUIContext::createDescriptorPool(VkDevice device)
+void GUIContext::createDescriptorPool()
 {
     constexpr size_t descriptor_count{1000};
 
@@ -207,17 +209,15 @@ void GUIContext::createDescriptorPool(VkDevice device)
     pool_info.poolSizeCount = pool_sizes.size();
     pool_info.pPoolSizes = pool_sizes.data();
 
-    if (vkCreateDescriptorPool(device, &pool_info, nullptr, &m_descriptor_pool) !=
-        VK_SUCCESS) {
+    if (vkCreateDescriptorPool(m_device->device(), &pool_info, nullptr,
+                               &m_descriptor_pool) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Descriptor Pool"};
     }
 }
 
 void GUIContext::destroyVulkanHandles()
 {
-    VkDevice device = currentContext()->device()->device();
-
-    vkDestroyDescriptorPool(device, m_descriptor_pool, nullptr);
+    vkDestroyDescriptorPool(m_device->device(), m_descriptor_pool, nullptr);
     m_descriptor_pool = VK_NULL_HANDLE;
 }
 

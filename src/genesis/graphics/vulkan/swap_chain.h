@@ -64,7 +64,6 @@ public:
     VkResult submitCommandBuffer(VkCommandBuffer* command_buffer);
     VkResult presentImage();
 
-    VkRenderPass getRenderPass() const { return m_render_pass; }
     const VkExtent2D& extent() const { return m_extent; }
     VkSwapchainKHR swapChain() const { return m_swap_chain; }
     VkFramebuffer currentFramebuffer() const { return m_framebuffers[m_current_image]; }
@@ -86,7 +85,6 @@ private:
                                       const Vec2& window_size);
     void createSwapChain(VkSwapchainKHR old_swap_chain, const Vec2& window_size);
     void createImageViews();
-    void createRenderPass();
     void createColorResources();
     void createDepthResources();
     void createSyncObjects();

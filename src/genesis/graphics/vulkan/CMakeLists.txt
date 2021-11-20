@@ -44,10 +44,6 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     utils.h
     vulkan_exception.h)
 
-# Append SDL2 sources
-list(APPEND GE_RENDERER_VULKAN_SRC sdl_platform_window.cpp)
-list(APPEND GE_RENDERER_VULKAN_HEADERS sdl_platform_window.h)
-
 # Vulkan Graphics library
 add_library(genesis-graphics-vulkan ${GE_RENDERER_VULKAN_SRC} ${GE_RENDERER_VULKAN_HEADERS})
 target_link_libraries(genesis-graphics-vulkan

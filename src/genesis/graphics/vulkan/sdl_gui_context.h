@@ -34,14 +34,13 @@
 #ifndef GENESIS_GRAPHICS_VULKAN_SDL_GUI_H_
 #define GENESIS_GRAPHICS_VULKAN_SDL_GUI_H_
 
+#include <genesis/core/memory.h>
 #include <genesis/gui/context.h>
-
 #include <vulkan/vulkan.h>
 
-struct SDL_Window;
-
 namespace GE::Vulkan {
-class GraphicsContext;
+class Device;
+class WindowRenderer;
 } // namespace GE::Vulkan
 
 namespace GE::Vulkan::SDL {
@@ -49,7 +48,7 @@ namespace GE::Vulkan::SDL {
 class GE_API GUIContext: public GUI::Context
 {
 public:
-    GUIContext(GraphicsContext* render_context, SDL_Window* window);
+    GUIContext(void* window, Shared<Device> device, WindowRenderer* window_renderer);
     ~GUIContext();
 
     void begin() override;
@@ -58,15 +57,13 @@ public:
     void draw(GPUCommandQueue* queue) override;
 
 private:
-    void createDescriptorPool(VkDevice device);
+    void createDescriptorPool();
     void destroyVulkanHandles();
 
     bool isDockingEnabled() const;
     bool isViewportEnabled() const;
 
-    GraphicsContext* m_render_context{nullptr};
-    SDL_Window* m_window{nullptr};
-
+    Shared<Device> m_device;
     VkDescriptorPool m_descriptor_pool{VK_NULL_HANDLE};
 };
 

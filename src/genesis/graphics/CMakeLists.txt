@@ -3,7 +3,6 @@ set(GE_RENDERER_INCLUDE_DIR ${GE_INCLUDE_DIR}/graphics)
 list(APPEND GE_RENDERER_SRC
     gpu_command_queue.cpp
     graphics.cpp
-    graphics_context.cpp
     index_buffer.cpp
     render_command.cpp
     shader.cpp

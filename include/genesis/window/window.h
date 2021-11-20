@@ -52,7 +52,6 @@ public:
         std::string title{TITLE_DEFAULT};
         Vec2 size{SIZE_DEFAULT};
         bool vsync{VSYNC_DEFAULT};
-        Graphics::settings_t renderer{};
 
         static constexpr auto TITLE_DEFAULT = "Genesis";
         static constexpr Vec2 SIZE_DEFAULT{1280.0f, 720.0f};
@@ -63,9 +62,6 @@ public:
     static void shutdown();
 
     virtual void pollEvents() = 0;
-    virtual void onUpdate() = 0;
-
-    static Scoped<Window> create(const settings_t& settings);
 
     virtual void attachEventListener(EventListener* listener) = 0;
     virtual void detachEventListener(EventListener* listener) = 0;
@@ -75,7 +71,8 @@ public:
     virtual const settings_t& settings() const = 0;
 
     virtual void* nativeWindow() = 0;
-    virtual Shared<GraphicsContext> renderContext() const = 0;
+
+    static Scoped<Window> create(const settings_t& settings, Graphics::API api);
 };
 
 } // namespace GE

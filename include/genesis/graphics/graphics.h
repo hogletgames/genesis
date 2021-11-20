@@ -35,16 +35,14 @@
 
 #include <genesis/core/export.h>
 #include <genesis/core/memory.h>
-#include <genesis/graphics/graphics_factory.h>
+#include <genesis/graphics/graphics_context.h>
 
 namespace GE {
-
-class GraphicsContext;
 
 class GE_API Graphics
 {
 public:
-    enum class API
+    enum class API : uint8_t
     {
         NONE = 0,
         VULKAN
@@ -52,14 +50,20 @@ public:
 
     struct settings_t {
         API api{API_DEFAULT};
+        std::string app_name;
 
         static constexpr API API_DEFAULT{API::VULKAN};
     };
 
-    static API renderAPI();
-    static void setContext(Shared<GraphicsContext> context);
-    static Shared<GraphicsContext> context();
-    static const Scoped<GraphicsFactory>& factory();
+    static bool initialize(const settings_t& settings, void* window);
+    static void shutdown();
+
+    static GraphicsContext* context() { return get()->m_context.get(); }
+    static GraphicsFactory* factory() { return get()->m_context->factory(); }
+    static Renderer* windowRenderer() { return get()->m_context->windowRenderer(); }
+    static GUI::Context* gui() { return get()->m_context->gui(); }
+
+    static API api() { return get()->m_api; }
 
 private:
     Graphics() = default;
@@ -70,7 +74,8 @@ private:
         return &instance;
     }
 
-    Shared<GraphicsContext> m_context;
+    API m_api{API::NONE};
+    Scoped<GraphicsContext> m_context;
 };
 
 Graphics::API toRendererAPI(const std::string& api_str);

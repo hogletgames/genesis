@@ -32,29 +32,37 @@
 
 #include "graphics.h"
 #include "graphics_context.h"
+#include "vulkan/graphics_context.h"
 
 #include "genesis/core/enum.h"
 
 namespace GE {
 
-Graphics::API Graphics::renderAPI()
+bool Graphics::initialize(const Graphics::settings_t& settings, void* window)
 {
-    return get()->m_context->API();
+    GE_CORE_INFO("Initializing Graphics, API: {}", toString(settings.api));
+    auto& context = get()->m_context;
+
+    switch (settings.api) {
+        case Graphics::API::VULKAN: context = tryMakeScoped<Vulkan::GraphicsContext>();
+        case Graphics::API::NONE:
+        default: break;
+    }
+
+    if (!context || !context->initialize(window, settings.app_name)) {
+        GE_CORE_ERR("Failed to create Graphics Context");
+        return false;
+    }
+
+    get()->m_api = settings.api;
+    return true;
 }
 
-void Graphics::setContext(Shared<GraphicsContext> context)
+void Graphics::shutdown()
 {
-    get()->m_context = std::move(context);
-}
-
-Shared<GraphicsContext> Graphics::context()
-{
-    return get()->m_context;
-}
-
-const Scoped<GraphicsFactory>& Graphics::factory()
-{
-    return get()->m_context->factory();
+    get()->m_context->shutdown();
+    get()->m_context.reset();
+    get()->m_api = API::NONE;
 }
 
 Graphics::API toRendererAPI(const std::string& api_str)

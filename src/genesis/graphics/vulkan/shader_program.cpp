@@ -38,7 +38,6 @@
 #include "vulkan_exception.h"
 
 #include "genesis/core/format.h"
-#include "genesis/core/log.h"
 
 namespace GE::Vulkan {
 
@@ -67,14 +66,14 @@ Scoped<Pipeline> ShaderProgram::createPipeline(Shared<Shader> vert, Shared<Shade
         throw Vulkan::Exception{error};
     }
 
-    const auto& context = currentContext();
-    const auto& swap_chain = context->swapChain();
+    // TODO: render pass from Renderer
+    VkRenderPass render_pass{VK_NULL_HANDLE};
 
     auto pipeline_config = Pipeline::makeDefaultConfig();
     pipeline_config.vert_shader = std::move(vert);
     pipeline_config.frag_shader = std::move(frag);
     pipeline_config.pipeline_layout = m_pipeline_layout;
-    pipeline_config.render_pass = swap_chain->getRenderPass();
+    pipeline_config.render_pass = render_pass;
 
     return makeScoped<Pipeline>(m_device, pipeline_config);
 }

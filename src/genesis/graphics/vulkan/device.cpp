@@ -31,7 +31,6 @@
  */
 
 #include "device.h"
-#include "graphics_context.h"
 #include "instance.h"
 #include "vulkan_exception.h"
 
@@ -81,8 +80,8 @@ bool isPresentSupported(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
 
 namespace GE::Vulkan {
 
-Device::Device(Vulkan::GraphicsContext *context)
-    : m_context{context}
+Device::Device(VkSurfaceKHR surface)
+    : m_surface{surface}
 {
     m_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
@@ -211,6 +210,10 @@ void Device::createCommandPool()
 
 void Device::destroyVkHandles()
 {
+    if (m_device == VK_NULL_HANDLE) {
+        return;
+    }
+
     vkDestroyCommandPool(m_device, m_command_pool, nullptr);
     m_command_pool = VK_NULL_HANDLE;
 
@@ -256,7 +259,7 @@ queue_family_indices_t Device::findQueueFamilies(VkPhysicalDevice physical_devic
             indices.graphics_family = i;
         }
 
-        if (isPresentSupported(physical_device, m_context->surface(), i)) {
+        if (isPresentSupported(physical_device, m_surface, i)) {
             indices.present_family = i;
         }
 
@@ -303,30 +306,28 @@ bool Device::checkPhysicalDeviceExtSupport(VkPhysicalDevice physical_device)
 swap_chain_support_details_t
 Device::querySwapChainSupport(VkPhysicalDevice physical_device) const
 {
-    VkSurfaceKHR surface = m_context->surface();
-
     // Capabilities
     swap_chain_support_details_t details{};
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical_device, surface,
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical_device, m_surface,
                                               &details.capabilities);
 
     // Format
     uint32_t format_count{0};
-    vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, surface, &format_count,
+    vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, m_surface, &format_count,
                                          nullptr);
 
     details.formats.resize(format_count);
-    vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, surface, &format_count,
+    vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, m_surface, &format_count,
                                          details.formats.data());
 
     // Present mode
     uint32_t present_mode_count{0};
-    vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, surface,
+    vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, m_surface,
                                               &present_mode_count, nullptr);
 
     details.present_mode.resize(present_mode_count);
     vkGetPhysicalDeviceSurfacePresentModesKHR(
-        physical_device, surface, &present_mode_count, details.present_mode.data());
+        physical_device, m_surface, &present_mode_count, details.present_mode.data());
 
     return details;
 }
