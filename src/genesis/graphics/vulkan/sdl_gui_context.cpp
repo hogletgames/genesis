@@ -124,7 +124,7 @@ GUIContext::GUIContext(GraphicsContext *render_context, SDL_Window *window)
     init_info.DescriptorPool = m_descriptor_pool;
     init_info.Allocator = nullptr;
     init_info.MinImageCount = swap_chain->minImageCount();
-    init_info.ImageCount = swap_chain->getImageCount();
+    init_info.ImageCount = swap_chain->imageCount();
     init_info.CheckVkResultFn = nullptr;
 
     if (!ImGui_ImplVulkan_Init(&init_info, swap_chain->getRenderPass())) {

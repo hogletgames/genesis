@@ -60,7 +60,7 @@ bool GraphicsContext::initialize(void* window)
         m_surface = m_window->createSurface(Instance::instance());
 
         m_device = makeScoped<Device>(this);
-        m_swap_chain = makeScoped<SwapChain>(m_device, m_surface);
+        m_swap_chain = makeScoped<SwapChain>(m_device, SwapChain::options_t{m_surface});
         createCommandBuffers();
 
         m_factory = makeScoped<Vulkan::GraphicsFactory>(m_device);
@@ -97,16 +97,10 @@ void GraphicsContext::shutdown()
 
 void GraphicsContext::drawFrame()
 {
-    if (!m_swap_chain &&
-        !(m_swap_chain = tryMakeScoped<SwapChain>(m_device, m_surface))) {
-        return;
-    }
-
-    auto [acquire_result, image_index] = m_swap_chain->acquireNextImage();
+    auto acquire_result = m_swap_chain->acquireNextImage();
 
     if (acquire_result == VK_ERROR_OUT_OF_DATE_KHR) {
-        m_device->waitIdle();
-        m_swap_chain.reset();
+        m_swap_chain->recreate(m_window->windowSize());
         return;
     }
 
@@ -115,15 +109,20 @@ void GraphicsContext::drawFrame()
         return;
     }
 
+    uint32_t image_index = m_swap_chain->currentImage();
+
     if (!prepareRenderCommand(image_index)) {
         GE_CORE_ERR("Failed to prepare Render Command");
         return;
     }
 
-    if (m_swap_chain->submitCommandBuffer(&m_command_buffers[image_index], image_index) !=
+    if (m_swap_chain->submitCommandBuffer(&m_command_buffers[image_index]) !=
         VK_SUCCESS) {
-        GE_CORE_ERR("Failed to present Swap Chain image");
         return;
+    }
+
+    if (m_swap_chain->presentImage() != VK_SUCCESS) {
+        GE_CORE_ERR("Failed to present Swap Chain image");
     }
 }
 
@@ -137,7 +136,7 @@ void GraphicsContext::destroyVulkanHandles()
 
 void GraphicsContext::createCommandBuffers()
 {
-    m_command_buffers.resize(m_swap_chain->getImageCount(), VK_NULL_HANDLE);
+    m_command_buffers.resize(m_swap_chain->imageCount(), VK_NULL_HANDLE);
 
     VkCommandBufferAllocateInfo alloc_info{};
     alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -184,7 +183,7 @@ bool GraphicsContext::beginRenderCommand(uint32_t image_idx)
         return false;
     }
 
-    setRenderPass(cmd, currentFBO(image_idx));
+    setRenderPass(cmd, m_swap_chain->currentFramebuffer());
     setViewportAndScissor(cmd);
     return true;
 }
@@ -201,7 +200,7 @@ void GraphicsContext::setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo)
     render_pass_info.renderPass = m_swap_chain->getRenderPass();
     render_pass_info.framebuffer = fbo;
     render_pass_info.renderArea.offset = {0, 0};
-    render_pass_info.renderArea.extent = m_swap_chain->getExtent();
+    render_pass_info.renderArea.extent = m_swap_chain->extent();
     render_pass_info.pClearValues = clear_values.data();
     render_pass_info.clearValueCount = clear_values.size();
 
@@ -211,13 +210,13 @@ void GraphicsContext::setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo)
 void GraphicsContext::setViewportAndScissor(VkCommandBuffer cmd)
 {
     VkViewport viewport{};
-    viewport.width = static_cast<float>(m_swap_chain->getExtent().width);
-    viewport.height = static_cast<float>(m_swap_chain->getExtent().height);
+    viewport.width = static_cast<float>(m_swap_chain->extent().width);
+    viewport.height = static_cast<float>(m_swap_chain->extent().height);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
-    scissor.extent = m_swap_chain->getExtent();
+    scissor.extent = m_swap_chain->extent();
 
     vkCmdSetViewport(cmd, 0, 1, &viewport);
     vkCmdSetScissor(cmd, 0, 1, &scissor);
@@ -234,11 +233,6 @@ bool GraphicsContext::endRenderCommand(uint32_t image_idx)
     }
 
     return true;
-}
-
-VkFramebuffer GraphicsContext::currentFBO(uint32_t image_idx)
-{
-    return m_swap_chain->getFramebuffer(image_idx);
 }
 
 VkRenderPass GraphicsContext::renderPass()

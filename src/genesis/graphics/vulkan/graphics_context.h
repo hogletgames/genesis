@@ -79,7 +79,6 @@ private:
     void setRenderPass(VkCommandBuffer cmd, VkFramebuffer fbo);
     void setViewportAndScissor(VkCommandBuffer cmd);
     bool endRenderCommand(uint32_t image_idx);
-    VkFramebuffer currentFBO(uint32_t image_idx);
     VkRenderPass renderPass();
 
     void destroyVulkanHandles();

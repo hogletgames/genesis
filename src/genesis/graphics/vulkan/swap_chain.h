@@ -49,42 +49,71 @@ class Image;
 class SwapChain
 {
 public:
-    SwapChain(Shared<Vulkan::Device> device, VkSurfaceKHR surface);
+    struct options_t {
+        VkSurfaceKHR surface{VK_NULL_HANDLE};
+        VkRenderPass render_pass{VK_NULL_HANDLE};
+        Vec2 window_size{0.0f, 0.0f};
+    };
+
+    SwapChain(Shared<Vulkan::Device> device, const options_t& options);
     ~SwapChain();
 
-    std::pair<VkResult, uint32_t> acquireNextImage();
-    VkResult submitCommandBuffer(VkCommandBuffer* command_buffer, uint32_t image_idx);
+    bool recreate(const Vec2& window_size);
+
+    VkResult acquireNextImage();
+    VkResult submitCommandBuffer(VkCommandBuffer* command_buffer);
+    VkResult presentImage();
 
     VkRenderPass getRenderPass() const { return m_render_pass; }
-    const VkExtent2D& getExtent() const { return m_extent; }
-    uint32_t getImageCount() const { return m_swap_chain_images.size(); }
+    const VkExtent2D& extent() const { return m_extent; }
+    VkSwapchainKHR swapChain() const { return m_swap_chain; }
+    VkFramebuffer currentFramebuffer() const { return m_framebuffers[m_current_image]; }
+
+    const VkFormat& colorFormat() const { return m_image_format; }
+    const VkFormat& depthFormat() const { return m_depth_format; }
+
+    uint32_t imageCount() const { return m_swap_chain_images.size(); }
     uint32_t minImageCount() const { return m_min_image_count; }
-    VkFramebuffer getFramebuffer(size_t i) const { return m_framebuffers[i]; }
+    uint32_t currentImage() const { return m_current_image; }
+
+    static VkSurfaceFormatKHR
+    chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats);
+
+    static VkFormat choseDepthFormat(Device* device);
 
 private:
-    void createSwapChain(VkSurfaceKHR surface);
+    void createSwapChainWithResources(VkSwapchainKHR old_swap_chain,
+                                      const Vec2& window_size);
+    void createSwapChain(VkSwapchainKHR old_swap_chain, const Vec2& window_size);
     void createImageViews();
     void createRenderPass();
     void createColorResources();
     void createDepthResources();
-    void createFramebuffers();
     void createSyncObjects();
+    void createFramebuffers();
 
+    void destroySwapChainResources();
+    void destroySyncObjectHandles();
+    void destroySwapChain(VkSwapchainKHR swap_chain);
     void destroyVkHandles();
 
     VkImageView createImageView(VkImage image, VkFormat format,
                                 VkImageAspectFlags aspect_flags, uint32_t mip_levels);
-    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
-    VkFormat getDepthFormat();
+    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
+                                const Vec2& window_size) const;
 
     Shared<Vulkan::Device> m_device;
+    VkSurfaceKHR m_surface{VK_NULL_HANDLE};
+    VkRenderPass m_render_pass{VK_NULL_HANDLE};
 
     VkSwapchainKHR m_swap_chain{VK_NULL_HANDLE};
     std::vector<VkImage> m_swap_chain_images;
     std::vector<VkImageView> m_swap_chain_image_views;
     std::vector<VkFramebuffer> m_framebuffers;
+
     uint32_t m_min_image_count{0};
     uint32_t m_current_frame{0};
+    uint32_t m_current_image{0};
 
     Scoped<Image> m_color_image;
     Scoped<Image> m_depth_image;
@@ -94,11 +123,9 @@ private:
     std::vector<VkFence> m_in_flight_fences;
     std::vector<VkFence> m_images_in_flight;
 
-    VkRenderPass m_render_pass{VK_NULL_HANDLE};
-
-    VkFormat m_image_format{};
+    VkFormat m_image_format{VK_FORMAT_UNDEFINED};
+    VkFormat m_depth_format{VK_FORMAT_UNDEFINED};
     VkExtent2D m_extent{};
-    Vec2 m_window_size{};
 };
 
 } // namespace GE::Vulkan

@@ -35,6 +35,7 @@
 #include "image.h"
 #include "vulkan_exception.h"
 
+#include "genesis/core/enum.h"
 #include "genesis/core/log.h"
 
 namespace {
@@ -53,18 +54,6 @@ uint32_t imageCountFromCaps(const VkSurfaceCapabilitiesKHR& capabilities)
     return image_count;
 }
 
-VkSurfaceFormatKHR chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats)
-{
-    for (const auto& format : formats) {
-        if (format.format == VK_FORMAT_B8G8R8A8_SRGB &&
-            format.colorSpace == VK_COLORSPACE_SRGB_NONLINEAR_KHR) {
-            return format;
-        }
-    }
-
-    return formats[0];
-}
-
 VkPresentModeKHR choosePresentMode(const std::vector<VkPresentModeKHR>& present_modes)
 {
     if (std::find(present_modes.begin(), present_modes.end(),
@@ -79,22 +68,13 @@ VkPresentModeKHR choosePresentMode(const std::vector<VkPresentModeKHR>& present_
 
 namespace GE::Vulkan {
 
-SwapChain::SwapChain(Shared<Vulkan::Device> device, VkSurfaceKHR surface)
+SwapChain::SwapChain(Shared<Vulkan::Device> device, const options_t& options)
     : m_device{std::move(device)}
+    , m_surface{options.surface}
+    , m_render_pass{options.render_pass}
 {
-    try {
-        createSwapChain(surface);
-        createImageViews();
-        createRenderPass();
-        // TODO: add multisampling support
-        // createColorResources();
-        createDepthResources();
-        createFramebuffers();
-        createSyncObjects();
-    } catch (const Vulkan::Exception& e) {
-        destroyVkHandles();
-        throw;
-    }
+    createSwapChainWithResources(VK_NULL_HANDLE, options.window_size);
+    createSyncObjects();
 }
 
 SwapChain::~SwapChain()
@@ -102,28 +82,41 @@ SwapChain::~SwapChain()
     destroyVkHandles();
 }
 
-std::pair<VkResult, uint32_t> SwapChain::acquireNextImage()
+bool SwapChain::recreate(const Vec2& window_size)
+{
+    m_device->waitIdle();
+
+    VkSwapchainKHR old_swap_chain{m_swap_chain};
+    destroySwapChainResources();
+
+    try {
+        createSwapChainWithResources(old_swap_chain, window_size);
+    } catch (const Vulkan::Exception& e) {
+        GE_CORE_ERR("Failed to recreate SwapChain: {}", e.what());
+        return false;
+    }
+
+    destroySwapChain(old_swap_chain);
+    return true;
+}
+
+VkResult SwapChain::acquireNextImage()
 {
     vkWaitForFences(m_device->device(), 1, &m_in_flight_fences[m_current_frame], VK_TRUE,
                     VULKAN_TIMEOUT_NONE);
-
-    uint32_t image_index{};
-    VkResult result = vkAcquireNextImageKHR(
-        m_device->device(), m_swap_chain, VULKAN_TIMEOUT_NONE,
-        m_image_available_semaphores[m_current_frame], VK_NULL_HANDLE, &image_index);
-
-    return {result, image_index};
+    return vkAcquireNextImageKHR(m_device->device(), m_swap_chain, VULKAN_TIMEOUT_NONE,
+                                 m_image_available_semaphores[m_current_frame],
+                                 VK_NULL_HANDLE, &m_current_image);
 }
 
-VkResult SwapChain::submitCommandBuffer(VkCommandBuffer* command_buffer,
-                                        uint32_t image_idx)
+VkResult SwapChain::submitCommandBuffer(VkCommandBuffer* command_buffer)
 {
-    if (m_images_in_flight[image_idx] != VK_NULL_HANDLE) {
-        vkWaitForFences(m_device->device(), 1, &m_images_in_flight[image_idx], VK_TRUE,
-                        VULKAN_TIMEOUT_NONE);
+    if (m_images_in_flight[m_current_image] != VK_NULL_HANDLE) {
+        vkWaitForFences(m_device->device(), 1, &m_images_in_flight[m_current_image],
+                        VK_TRUE, VULKAN_TIMEOUT_NONE);
     }
 
-    m_images_in_flight[image_idx] = m_in_flight_fences[m_current_frame];
+    m_images_in_flight[m_current_image] = m_in_flight_fences[m_current_frame];
 
     VkPipelineStageFlags wait_stages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
@@ -142,38 +135,79 @@ VkResult SwapChain::submitCommandBuffer(VkCommandBuffer* command_buffer,
     if (auto submit_result = vkQueueSubmit(m_device->graphicsQueue(), 1, &submit_info,
                                            m_in_flight_fences[m_current_frame]);
         submit_result != VK_SUCCESS) {
-        GE_CORE_ERR("Failed to submit Draw Command Buffer");
+        GE_CORE_ERR("Failed to submit Draw Command Buffer: {}", toString(submit_result));
         return submit_result;
     }
 
+    return VK_SUCCESS;
+}
+
+VkResult SwapChain::presentImage()
+{
     VkPresentInfoKHR present_info{};
     present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     present_info.waitSemaphoreCount = 1;
     present_info.pWaitSemaphores = &m_render_finished_semaphores[m_current_frame];
     present_info.swapchainCount = 1;
     present_info.pSwapchains = &m_swap_chain;
-    present_info.pImageIndices = &image_idx;
+    present_info.pImageIndices = &m_current_image;
     present_info.pResults = nullptr;
 
     auto present_result = vkQueuePresentKHR(m_device->presentQueue(), &present_info);
     m_current_frame = (m_current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
-
     return present_result;
 }
 
-void SwapChain::createSwapChain(VkSurfaceKHR surface)
+VkSurfaceFormatKHR
+SwapChain::chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats)
+{
+    for (const auto& format : formats) {
+        if (format.format == VK_FORMAT_B8G8R8A8_SRGB &&
+            format.colorSpace == VK_COLORSPACE_SRGB_NONLINEAR_KHR) {
+            return format;
+        }
+    }
+
+    return formats[0];
+}
+
+VkFormat SwapChain::choseDepthFormat(Device* device)
+{
+    static const std::vector<VkFormat> candidates = {
+        VK_FORMAT_D32_SFLOAT,
+        VK_FORMAT_D32_SFLOAT_S8_UINT,
+        VK_FORMAT_D24_UNORM_S8_UINT,
+    };
+
+    return device->getSupportedFormat(candidates, VK_IMAGE_TILING_OPTIMAL,
+                                      VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+}
+
+void SwapChain::createSwapChainWithResources(VkSwapchainKHR old_swap_chain,
+                                             const Vec2& window_size)
+{
+    createSwapChain(old_swap_chain, window_size);
+    createImageViews();
+    createRenderPass();
+    // TODO: add multisampling support
+    // createColorResources();
+    createDepthResources();
+    createFramebuffers();
+}
+
+void SwapChain::createSwapChain(VkSwapchainKHR old_swap_chain, const Vec2& window_size)
 {
     VkDevice device = m_device->device();
 
     const auto& swap_chain_details = m_device->swapChainDetails();
     auto surface_format = chooseSurfaceFormat(swap_chain_details.formats);
     auto present_mode = choosePresentMode(swap_chain_details.present_mode);
-    m_extent = chooseSwapExtent(swap_chain_details.capabilities);
+    m_extent = chooseSwapExtent(swap_chain_details.capabilities, window_size);
     m_min_image_count = imageCountFromCaps(swap_chain_details.capabilities);
 
     VkSwapchainCreateInfoKHR create_info{};
     create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    create_info.surface = surface;
+    create_info.surface = m_surface;
     create_info.minImageCount = m_min_image_count;
     create_info.imageFormat = surface_format.format;
     create_info.imageColorSpace = surface_format.colorSpace;
@@ -184,7 +218,7 @@ void SwapChain::createSwapChain(VkSurfaceKHR surface)
     create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     create_info.presentMode = present_mode;
     create_info.clipped = VK_TRUE;
-    create_info.oldSwapchain = VK_NULL_HANDLE;
+    create_info.oldSwapchain = old_swap_chain;
 
     const auto& indices = m_device->queueIndices();
     std::array<uint32_t, 2> queue_family_indices = {indices.graphics_family.value(),
@@ -210,6 +244,7 @@ void SwapChain::createSwapChain(VkSurfaceKHR surface)
                             m_swap_chain_images.data());
 
     m_image_format = surface_format.format;
+    m_depth_format = choseDepthFormat(m_device.get());
 }
 
 void SwapChain::createImageViews()
@@ -239,7 +274,7 @@ void SwapChain::createRenderPass()
     color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkAttachmentDescription depth_attachment{};
-    depth_attachment.format = getDepthFormat();
+    depth_attachment.format = choseDepthFormat(m_device.get());
     depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
     depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -308,7 +343,7 @@ void SwapChain::createDepthResources()
     config.extent.width = m_extent.width;
     config.extent.height = m_extent.height;
     config.mip_levels = 1;
-    config.format = getDepthFormat();
+    config.format = choseDepthFormat(m_device.get());
     config.tiling = VK_IMAGE_TILING_OPTIMAL;
     config.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     config.memory_properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
@@ -375,19 +410,8 @@ void SwapChain::createSyncObjects()
     }
 }
 
-void SwapChain::destroyVkHandles()
+void SwapChain::destroySwapChainResources()
 {
-    for (size_t i{0}; i < m_image_available_semaphores.size(); i++) {
-        vkDestroyFence(m_device->device(), m_in_flight_fences[i], nullptr);
-        m_in_flight_fences[i] = VK_NULL_HANDLE;
-
-        vkDestroySemaphore(m_device->device(), m_render_finished_semaphores[i], nullptr);
-        m_render_finished_semaphores[i] = VK_NULL_HANDLE;
-
-        vkDestroySemaphore(m_device->device(), m_image_available_semaphores[i], nullptr);
-        m_image_available_semaphores[i] = VK_NULL_HANDLE;
-    }
-
     for (size_t i{0}; i < m_swap_chain_images.size(); i++) {
         vkDestroyImageView(m_device->device(), m_swap_chain_image_views[i], nullptr);
         m_swap_chain_image_views[i] = VK_NULL_HANDLE;
@@ -401,9 +425,33 @@ void SwapChain::destroyVkHandles()
 
     vkDestroyRenderPass(m_device->device(), m_render_pass, nullptr);
     m_render_pass = VK_NULL_HANDLE;
+}
 
-    vkDestroySwapchainKHR(m_device->device(), m_swap_chain, nullptr);
-    m_swap_chain = VK_NULL_HANDLE;
+void SwapChain::destroySyncObjectHandles()
+{
+    for (size_t i{0}; i < m_image_available_semaphores.size(); i++) {
+        vkDestroyFence(m_device->device(), m_in_flight_fences[i], nullptr);
+        m_in_flight_fences[i] = VK_NULL_HANDLE;
+
+        vkDestroySemaphore(m_device->device(), m_render_finished_semaphores[i], nullptr);
+        m_render_finished_semaphores[i] = VK_NULL_HANDLE;
+
+        vkDestroySemaphore(m_device->device(), m_image_available_semaphores[i], nullptr);
+        m_image_available_semaphores[i] = VK_NULL_HANDLE;
+    }
+}
+
+void SwapChain::destroySwapChain(VkSwapchainKHR swap_chain)
+{
+    vkDestroySwapchainKHR(m_device->device(), swap_chain, nullptr);
+}
+
+void SwapChain::destroyVkHandles()
+{
+    destroySwapChainResources();
+    destroySwapChain(m_swap_chain);
+    destroySyncObjectHandles();
+    m_device.reset();
 }
 
 VkImageView SwapChain::createImageView(VkImage image, VkFormat format,
@@ -431,33 +479,22 @@ VkImageView SwapChain::createImageView(VkImage image, VkFormat format,
     return image_view;
 }
 
-VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
+VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
+                                       const Vec2& window_size) const
 {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
         return capabilities.currentExtent;
     }
 
-    VkExtent2D extent{static_cast<uint32_t>(m_window_size.x),
-                      static_cast<uint32_t>(m_window_size.y)};
+    VkExtent2D extent{static_cast<uint32_t>(window_size.x),
+                      static_cast<uint32_t>(window_size.y)};
 
-    extent.width = std::max(capabilities.minImageExtent.width,
-                            std::min(capabilities.maxImageExtent.width, extent.width));
-    extent.height = std::max(capabilities.minImageExtent.height,
-                             std::min(capabilities.maxImageExtent.height, extent.height));
+    extent.width = std::clamp(extent.width, capabilities.minImageExtent.width,
+                              capabilities.maxImageExtent.width);
+    extent.height = std::clamp(extent.height, capabilities.minImageExtent.height,
+                               capabilities.maxImageExtent.height);
 
     return extent;
-}
-
-VkFormat SwapChain::getDepthFormat()
-{
-    static const std::vector<VkFormat> candidates = {
-        VK_FORMAT_D32_SFLOAT,
-        VK_FORMAT_D32_SFLOAT_S8_UINT,
-        VK_FORMAT_D24_UNORM_S8_UINT,
-    };
-
-    return m_device->getSupportedFormat(candidates, VK_IMAGE_TILING_OPTIMAL,
-                                        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
 } // namespace GE::Vulkan
