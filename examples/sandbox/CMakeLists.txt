@@ -12,5 +12,6 @@ list(APPEND SANDBOX_HEADERS
 ge_add_executable(sandbox
     SOURCES ${SANDBOX_SOURCES} ${SANDBOX_HEADERS}
     PRIVATE_DEPS
+        docopt_s
         genesis::genesis
         imgui)

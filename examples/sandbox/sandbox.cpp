@@ -35,17 +35,75 @@
 
 #include <genesis/genesis.h>
 
+#include <docopt.h>
+
+#include <iostream>
+
 namespace {
+
+struct args_t {
+    std::string layer;
+};
+
+constexpr auto USAGE = R"(Sandbox
+Examples:
+  - triangle
+  - gui
+
+Usage:
+    sandbox (-h|--help)
+    sandbox [-e <example>]
+
+Options:
+    -h, --help                  Show this help
+    -e, --example <example>     A name of an example [default: triangle])";
 
 constexpr GE::Logger::Level LOG_LEVEL{GE::Logger::Level::TRACE};
 constexpr GE::Graphics::API RENDER_API{GE::Graphics::API::VULKAN};
 constexpr auto APP_NAME = "Sandbox";
 constexpr uint8_t MSAA_SAMPLES{4};
 
+args_t parseArgs(int argc, char** argv)
+{
+    std::map<std::string, docopt::value> parsed_args;
+    args_t args{};
+
+    try {
+        parsed_args = docopt::docopt_parse(USAGE, {argv + 1, argv + argc}, true, false);
+        args.layer = parsed_args["--example"].asString();
+    } catch (const docopt::DocoptExitHelp& e) {
+        std::cout << USAGE << std::endl;
+        exit(EXIT_SUCCESS); // NOLINT(concurrency-mt-unsafe)
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to parse arguments: " << e.what() << std::endl;
+        exit(EXIT_FAILURE); // NOLINT(concurrency-mt-unsafe)
+    }
+
+    return args;
+}
+
+GE::Shared<GE::Layer> layerFactory(const std::string& layer)
+{
+    using LayerCreator = std::function<GE::Shared<GE::Layer>()>;
+
+    static const std::unordered_map<std::string, LayerCreator> TO_LAYER = {
+        {"triangle", GE::makeShared<GE::Examples::TriangleLayer>},
+        {"gui", GE::makeShared<GE::Examples::GUILayer>},
+    };
+
+    if (auto layer_creator = GE::getValue(TO_LAYER, layer); layer_creator) {
+        return layer_creator();
+    }
+
+    return nullptr;
+}
+
 } // namespace
 
-int main()
+int main(int argc, char** argv)
 {
+    auto args = parseArgs(argc, argv);
+
     GE::Log::settings_t log_settings{};
     log_settings.core_log_level = LOG_LEVEL;
     log_settings.client_log_level = LOG_LEVEL;
@@ -67,7 +125,13 @@ int main()
         return EXIT_FAILURE;
     }
 
-    GE::Application::attachLayer(GE::makeShared<GE::Examples::GUILayer>());
-    GE::Application::run();
-    return EXIT_SUCCESS;
+    if (auto layer = layerFactory(args.layer); layer != nullptr) {
+        GE::Application::attachLayer(layer);
+        GE::Application::run();
+        return EXIT_SUCCESS;
+    }
+
+    GE_ERR("Unknown layer: '{}'", args.layer);
+    GE::Application::shutdown();
+    return EXIT_FAILURE;
 }
