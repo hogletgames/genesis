@@ -51,26 +51,16 @@ class VertexBuffer;
 class GE_API RenderCommand
 {
 public:
-    static void bind(Pipeline* pipeline);
-    static void bind(VertexBuffer* buffer);
-    static void bind(IndexBuffer* buffer);
+    void bind(Pipeline* pipeline);
+    void bind(VertexBuffer* buffer);
+    void bind(IndexBuffer* buffer);
 
-    static void draw(VertexBuffer* buffer, uint32_t vertex_count);
-    static void draw(GUI::Context* gui_layer);
+    void draw(VertexBuffer* buffer, uint32_t vertex_count);
+    void draw(GUI::Context* gui_layer);
 
-    static void submit(GPUCommandBuffer cmd);
+    void submit(GPUCommandBuffer cmd);
 
 private:
-    RenderCommand() = default;
-
-    static RenderCommand* get()
-    {
-        static RenderCommand instance;
-        return &instance;
-    }
-
-    static GPUCommandQueue* cmdQueue() { return &get()->m_cmd_queue; }
-
     GPUCommandQueue m_cmd_queue;
 };
 

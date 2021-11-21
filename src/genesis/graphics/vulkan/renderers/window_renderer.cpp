@@ -99,7 +99,7 @@ bool WindowRenderer::beginFrame(ClearMode clear_mode)
 void WindowRenderer::endFrame()
 {
     VkCommandBuffer* cmd = &m_cmd_buffers[m_swap_chain->currentImage()];
-    RenderCommand::submit(*cmd);
+    m_render_command.submit(*cmd);
 
     if (!endRenderPass()) {
         return;

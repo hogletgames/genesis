@@ -41,34 +41,34 @@ namespace GE {
 
 void RenderCommand::bind(Pipeline *pipeline)
 {
-    pipeline->bind(cmdQueue());
+    pipeline->bind(&m_cmd_queue);
 }
 
 void RenderCommand::bind(VertexBuffer *buffer)
 {
-    buffer->bind(cmdQueue());
+    buffer->bind(&m_cmd_queue);
 }
 
 void RenderCommand::bind(IndexBuffer *buffer)
 {
-    buffer->bind(cmdQueue());
+    buffer->bind(&m_cmd_queue);
 }
 
 void RenderCommand::draw(VertexBuffer *buffer, uint32_t vertex_count)
 {
-    buffer->bind(cmdQueue());
-    buffer->draw(cmdQueue(), vertex_count);
+    buffer->bind(&m_cmd_queue);
+    buffer->draw(&m_cmd_queue, vertex_count);
 }
 
 void RenderCommand::draw(GUI::Context *gui_layer)
 {
-    gui_layer->draw(cmdQueue());
+    gui_layer->draw(&m_cmd_queue);
 }
 
 void RenderCommand::submit(GPUCommandBuffer cmd)
 {
-    cmdQueue()->execCommands(cmd);
-    cmdQueue()->clear();
+    m_cmd_queue.execCommands(cmd);
+    m_cmd_queue.clear();
 }
 
 } // namespace GE

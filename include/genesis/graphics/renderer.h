@@ -34,6 +34,7 @@
 #define GENESIS_GRAPHICS_RENDERER_H_
 
 #include <genesis/core/interface.h>
+#include <genesis/graphics/render_command.h>
 
 namespace GE {
 
@@ -58,6 +59,8 @@ public:
     virtual void swapBuffers() = 0;
 
     virtual void onEvent(Event* event) = 0;
+
+    virtual RenderCommand* command() = 0;
 
     virtual Scoped<Pipeline> createPipeline(const pipeline_config_t& config) = 0;
 };

@@ -50,6 +50,8 @@ class RendererBase: public GE::Renderer
 public:
     ~RendererBase();
 
+    RenderCommand* command() override { return &m_render_command; }
+
 protected:
     explicit RendererBase(Shared<Device> device);
 
@@ -75,6 +77,8 @@ protected:
     std::array<VkRenderPass, 4> m_render_passes{VK_NULL_HANDLE};
     std::vector<VkCommandBuffer> m_cmd_buffers;
     std::vector<VkClearValue> m_clear_values;
+
+    RenderCommand m_render_command;
 
 private:
     void destroyVkHandles();

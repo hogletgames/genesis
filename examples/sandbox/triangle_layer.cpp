@@ -115,8 +115,8 @@ void TriangleLayer::onEvent([[maybe_unused]] Event *event) {}
 
 void TriangleLayer::onRender()
 {
-    RenderCommand::bind(m_pipeline.get());
-    RenderCommand::draw(m_vbo.get(), 3);
+    Graphics::command()->bind(m_pipeline.get());
+    Graphics::command()->draw(m_vbo.get(), 3);
 }
 
 } // namespace GE::Examples

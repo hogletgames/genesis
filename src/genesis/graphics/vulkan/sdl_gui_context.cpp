@@ -40,8 +40,7 @@
 #include "vulkan_exception.h"
 
 #include "genesis/core/log.h"
-#include "genesis/graphics/gpu_command_queue.h"
-#include "genesis/graphics/render_command.h"
+#include "genesis/graphics/graphics.h"
 #include "genesis/window/key_codes.h"
 
 #include <imgui_impl_sdl.h>
@@ -169,7 +168,7 @@ void GUIContext::begin()
 void GUIContext::end()
 {
     ImGui::Render();
-    RenderCommand::draw(this);
+    Graphics::command()->draw(this);
 
     if (isViewportEnabled()) {
         ImGui::UpdatePlatformWindows();

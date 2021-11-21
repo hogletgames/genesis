@@ -61,6 +61,7 @@ public:
     static GraphicsContext* context() { return get()->m_context.get(); }
     static GraphicsFactory* factory() { return get()->m_context->factory(); }
     static Renderer* windowRenderer() { return get()->m_context->windowRenderer(); }
+    static RenderCommand* command() { return windowRenderer()->command(); }
     static GUI::Context* gui() { return get()->m_context->gui(); }
 
     static API api() { return get()->m_api; }
