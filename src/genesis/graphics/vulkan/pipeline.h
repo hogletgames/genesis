@@ -34,10 +34,9 @@
 #ifndef GENESIS_GRAPICS_VULKAN_PIPELINE_H_
 #define GENESIS_GRAPICS_VULKAN_PIPELINE_H_
 
-#include <genesis/core/memory.h>
+#include <genesis/graphics/pipeline.h>
 #include <genesis/math/types.h>
 
-#include <genesis/graphics/gpu_command_queue.h>
 #include <vulkan/vulkan.h>
 
 #include <vector>
@@ -51,6 +50,12 @@ namespace GE::Vulkan {
 class Device;
 
 struct pipeline_config_t {
+    GE::pipeline_config_t base{};
+    VkPipelineCache pipeline_cache{VK_NULL_HANDLE};
+    VkRenderPass render_pass{VK_NULL_HANDLE};
+    uint32_t subpass{0};
+    VkFrontFace front_face{VK_FRONT_FACE_COUNTER_CLOCKWISE};
+
     VkPipelineViewportStateCreateInfo viewport_state;
     VkPipelineInputAssemblyStateCreateInfo input_assembly_state;
     VkPipelineRasterizationStateCreateInfo rasterization_state;
@@ -60,31 +65,26 @@ struct pipeline_config_t {
     VkPipelineDepthStencilStateCreateInfo depth_stencil_state;
     std::vector<VkDynamicState> dynamic_state_list;
     VkPipelineDynamicStateCreateInfo dynamic_state;
-
-    Shared<GE::Shader> vert_shader;
-    Shared<GE::Shader> frag_shader;
-    VkPipelineLayout pipeline_layout{VK_NULL_HANDLE};
-    VkRenderPass render_pass{VK_NULL_HANDLE};
-    uint32_t subpass{0};
 };
 
-class Pipeline
+class Pipeline: public GE::Pipeline
 {
 public:
-    Pipeline(Shared<Device> device, const pipeline_config_t& config);
+    Pipeline(Shared<Device> device, const Vulkan::pipeline_config_t& config);
     ~Pipeline();
 
-    void bind(GPUCommandQueue* queue);
+    void bind(GPUCommandQueue* queue) override;
 
-    static pipeline_config_t makeDefaultConfig();
+    static Vulkan::pipeline_config_t makeDefaultConfig();
 
 private:
-    void createPipeline(const pipeline_config_t& config);
-
+    void createPipelineLayout();
+    void createPipeline(Vulkan::pipeline_config_t config);
     void destroyVkHandles();
 
     Shared<Device> m_device;
     VkPipeline m_pipeline{VK_NULL_HANDLE};
+    VkPipelineLayout m_pipeline_layout{VK_NULL_HANDLE};
 };
 
 } // namespace GE::Vulkan

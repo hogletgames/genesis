@@ -41,7 +41,6 @@ namespace GE {
 
 class IndexBuffer;
 class VertexBuffer;
-class ShaderProgram;
 
 class GE_API GraphicsFactory: public Interface
 {
@@ -53,8 +52,6 @@ public:
     virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;
 
     virtual Scoped<Shader> createShader(Shader::Type type) = 0;
-    virtual Scoped<ShaderProgram> createShaderProgram(Shared<Shader> vert,
-                                                      Shared<Shader> frag) = 0;
 };
 
 } // namespace GE

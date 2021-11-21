@@ -33,9 +33,10 @@
 #include "triangle_layer.h"
 
 #include "genesis/core/asserts.h"
+#include "genesis/graphics/graphics.h"
+#include "genesis/graphics/pipeline.h"
 #include "genesis/graphics/render_command.h"
 #include "genesis/graphics/shader.h"
-#include "genesis/graphics/shader_program.h"
 #include "genesis/graphics/vertex_buffer.h"
 #include "genesis/math/types.h"
 
@@ -86,14 +87,17 @@ void TriangleLayer::onAttached()
     GE_ASSERT(frag->compileFromSource(FRAGMENT_SHADER),
               "Failed to compile fragment shader");
 
-    m_shader = ShaderProgram::create(vert, frag);
-    GE_ASSERT(m_shader, "Failed to compile shader program");
+    pipeline_config_t pipeline_config{};
+    pipeline_config.vertex_shader = vert;
+    pipeline_config.fragment_shader = frag;
+    m_pipeline = Graphics::windowRenderer()->createPipeline(pipeline_config);
+    GE_ASSERT(m_pipeline, "Failed to create Pipeline");
 
     // VBO
     static const std::vector<vertex_t> triangle = {
-        {{0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
-        {{0.5f, 0.5f, 0.0f}, {0.0f, 0.1f, 0.0f}},
-        {{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, -0.5f, 0.0f}, {0.0f, 0.1f, 0.0f}},
+        {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
     };
 
     m_vbo = VertexBuffer::create(triangle.data(), triangle.size() * sizeof(vertex_t));
@@ -101,7 +105,7 @@ void TriangleLayer::onAttached()
 
 void TriangleLayer::onDetached()
 {
-    m_shader.reset();
+    m_pipeline.reset();
     m_vbo.reset();
 }
 
@@ -111,7 +115,7 @@ void TriangleLayer::onEvent([[maybe_unused]] Event *event) {}
 
 void TriangleLayer::onRender()
 {
-    RenderCommand::bind(m_shader.get());
+    RenderCommand::bind(m_pipeline.get());
     RenderCommand::draw(m_vbo.get(), 3);
 }
 

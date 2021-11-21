@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_SHADER_PROGRAM_H_
-#define GENESIS_GRAPHICS_SHADER_PROGRAM_H_
+#ifndef GENESIS_GRAPHICS_PIPELINE_H_
+#define GENESIS_GRAPHICS_PIPELINE_H_
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
@@ -41,17 +41,17 @@ namespace GE {
 class GPUCommandQueue;
 class Shader;
 
-class GE_API ShaderProgram: public NonCopyable
+struct pipeline_config_t {
+    Shared<Shader> vertex_shader;
+    Shared<Shader> fragment_shader;
+};
+
+class Pipeline: public Interface
 {
 public:
-    virtual void bind(GPUCommandQueue* queue = nullptr) const = 0;
-
-    static Scoped<ShaderProgram> create(Shared<Shader> vert, Shared<Shader> frag);
-
-protected:
-    ShaderProgram() = default;
+    virtual void bind(GPUCommandQueue* queue) = 0;
 };
 
 } // namespace GE
 
-#endif // GENESIS_GRAPHICS_SHADER_PROGRAM_H_
+#endif // GENESIS_GRAPHICS_PIPELINE_H_

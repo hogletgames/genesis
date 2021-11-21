@@ -15,7 +15,6 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     pipeline.cpp
     sdl_gui_context.cpp
     shader.cpp
-    shader_program.cpp
     single_command.cpp
     swap_chain.cpp)
 
@@ -35,7 +34,6 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     instance.h
     pipeline.h
     shader.h
-    shader_program.h
     single_command.h
     sdl_gui_context.h
     swap_chain.h

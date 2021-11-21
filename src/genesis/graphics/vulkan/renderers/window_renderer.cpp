@@ -32,6 +32,7 @@
 
 #include "window_renderer.h"
 #include "device.h"
+#include "pipeline.h"
 #include "swap_chain.h"
 #include "vulkan_exception.h"
 
@@ -118,6 +119,16 @@ void WindowRenderer::swapBuffers()
     } else if (present_result != VK_SUCCESS) {
         GE_CORE_ERR("Failed to present Swap Chain Image");
     }
+}
+
+Scoped<GE::Pipeline> WindowRenderer::createPipeline(const GE::pipeline_config_t& config)
+{
+    auto vulkan_config = Vulkan::Pipeline::makeDefaultConfig();
+    vulkan_config.base = config;
+    vulkan_config.pipeline_cache = m_pipeline_cache;
+    vulkan_config.render_pass = m_render_passes[CLEAR_ALL];
+    vulkan_config.front_face = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    return tryMakeScoped<Vulkan::Pipeline>(m_device, vulkan_config);
 }
 
 void WindowRenderer::onEvent(Event* event)

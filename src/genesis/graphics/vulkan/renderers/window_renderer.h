@@ -60,6 +60,8 @@ public:
     void endFrame() override;
     void swapBuffers() override;
 
+    Scoped<GE::Pipeline> createPipeline(const GE::pipeline_config_t& config) override;
+
     void onEvent(Event* event) override;
     bool onWindowResized(const WindowResizedEvent& event);
 

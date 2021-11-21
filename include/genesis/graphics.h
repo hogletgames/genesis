@@ -38,12 +38,12 @@
 #include <genesis/graphics/graphics_context.h>
 #include <genesis/graphics/graphics_factory.h>
 #include <genesis/graphics/index_buffer.h>
+#include <genesis/graphics/pipeline.h>
 #include <genesis/graphics/render_command.h>
 #include <genesis/graphics/renderer.h>
 #include <genesis/graphics/shader.h>
 #include <genesis/graphics/shader_input_layout.h>
 #include <genesis/graphics/shader_precompiler.h>
-#include <genesis/graphics/shader_program.h>
 #include <genesis/graphics/texture.h>
 #include <genesis/graphics/vertex_buffer.h>
 

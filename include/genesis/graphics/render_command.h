@@ -36,19 +36,22 @@
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
 #include <genesis/graphics/gpu_command_queue.h>
-#include <genesis/gui/context.h>
 #include <genesis/math/types.h>
 
 namespace GE {
 
+namespace GUI {
+class Context;
+} // namespace GUI
+
 class IndexBuffer;
-class ShaderProgram;
+class Pipeline;
 class VertexBuffer;
 
 class GE_API RenderCommand
 {
 public:
-    static void bind(ShaderProgram* shader_program);
+    static void bind(Pipeline* pipeline);
     static void bind(VertexBuffer* buffer);
     static void bind(IndexBuffer* buffer);
 

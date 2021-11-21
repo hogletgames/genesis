@@ -32,16 +32,16 @@
 
 #include "render_command.h"
 #include "index_buffer.h"
-#include "shader_program.h"
+#include "pipeline.h"
 #include "vertex_buffer.h"
 
 #include "genesis/gui/context.h"
 
 namespace GE {
 
-void RenderCommand::bind(ShaderProgram *shader_program)
+void RenderCommand::bind(Pipeline *pipeline)
 {
-    shader_program->bind(cmdQueue());
+    pipeline->bind(cmdQueue());
 }
 
 void RenderCommand::bind(VertexBuffer *buffer)

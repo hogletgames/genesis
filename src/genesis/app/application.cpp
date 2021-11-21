@@ -56,6 +56,7 @@ bool Application::initialize(const settings_t& settings)
 
 void Application::shutdown()
 {
+    get()->clearLayers();
     Graphics::shutdown();
     shutdownApp();
     Input::shutdown();
@@ -110,7 +111,6 @@ void Application::shutdownApp()
 {
     GE_CORE_INFO("Shutdown Application");
     close();
-    get()->clearLayers();
     get()->m_window.reset();
     get()->m_window_state = WindowState::NONE;
 }
@@ -129,9 +129,8 @@ void Application::mainLoop()
 
         if (m_window_state != WindowState::MINIMIZED) {
             renderLayers();
+            Graphics::windowRenderer()->swapBuffers();
         }
-
-        Graphics::windowRenderer()->swapBuffers();
     }
 }
 

@@ -38,7 +38,9 @@
 namespace GE {
 
 class Event;
+class Pipeline;
 class RenderCommand;
+struct pipeline_config_t;
 
 class GE_API Renderer: public Interface
 {
@@ -56,6 +58,8 @@ public:
     virtual void swapBuffers() = 0;
 
     virtual void onEvent(Event* event) = 0;
+
+    virtual Scoped<Pipeline> createPipeline(const pipeline_config_t& config) = 0;
 };
 
 } // namespace GE

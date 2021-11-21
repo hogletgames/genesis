@@ -33,7 +33,6 @@
 #include "pipeline.h"
 #include "command_buffer.h"
 #include "device.h"
-#include "graphics_context.h"
 #include "input_stage_descriptions.h"
 #include "shader.h"
 #include "vulkan_exception.h"
@@ -49,20 +48,15 @@ constexpr auto SHADER_ENTRYPOINT = "main";
 
 namespace GE::Vulkan {
 
-Pipeline::Pipeline(Shared<Device> device, const pipeline_config_t& config)
+Pipeline::Pipeline(Shared<Device> device, const Vulkan::pipeline_config_t& config)
     : m_device{std::move(device)}
 {
-    try {
-        createPipeline(config);
-    } catch (const Vulkan::Exception& e) {
-        destroyVkHandles();
-        throw;
-    }
+    createPipelineLayout();
+    createPipeline(config);
 }
 
 Pipeline::~Pipeline()
 {
-    m_device->waitIdle();
     destroyVkHandles();
 }
 
@@ -74,71 +68,9 @@ void Pipeline::bind(GPUCommandQueue* queue)
     });
 }
 
-void Pipeline::createPipeline(const pipeline_config_t& config)
+Vulkan::pipeline_config_t Pipeline::makeDefaultConfig()
 {
-    VkPipelineShaderStageCreateInfo vert_shader_stage_info{};
-    vert_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    vert_shader_stage_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vert_shader_stage_info.module =
-        vulkanShaderHandle(config.vert_shader->nativeHandle());
-    vert_shader_stage_info.pName = SHADER_ENTRYPOINT;
-
-    VkPipelineShaderStageCreateInfo frag_shader_stage_info{};
-    frag_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    frag_shader_stage_info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    frag_shader_stage_info.module =
-        vulkanShaderHandle(config.frag_shader->nativeHandle());
-    frag_shader_stage_info.pName = SHADER_ENTRYPOINT;
-
-    std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages = {
-        vert_shader_stage_info,
-        frag_shader_stage_info,
-    };
-
-    auto vert_layout = config.vert_shader->inputLayout();
-    auto binding_description = vertexInputBindDescription(vert_layout);
-    auto attribute_descriptions = vertexInputAttributeDescriptions(vert_layout);
-
-    VkPipelineVertexInputStateCreateInfo vertex_input_state{};
-    vertex_input_state.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertex_input_state.vertexBindingDescriptionCount = 1;
-    vertex_input_state.pVertexBindingDescriptions = &binding_description;
-    vertex_input_state.vertexAttributeDescriptionCount = attribute_descriptions.size();
-    vertex_input_state.pVertexAttributeDescriptions = attribute_descriptions.data();
-
-    VkGraphicsPipelineCreateInfo pipeline_info{};
-    pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipeline_info.pStages = shader_stages.data();
-    pipeline_info.stageCount = shader_stages.size();
-    pipeline_info.pVertexInputState = &vertex_input_state;
-    pipeline_info.pInputAssemblyState = &config.input_assembly_state;
-    pipeline_info.pViewportState = &config.viewport_state;
-    pipeline_info.pRasterizationState = &config.rasterization_state;
-    pipeline_info.pMultisampleState = &config.multisample_state;
-    pipeline_info.pDepthStencilState = &config.depth_stencil_state;
-    pipeline_info.pColorBlendState = &config.color_blend_state;
-    pipeline_info.pDynamicState = &config.dynamic_state;
-    pipeline_info.layout = config.pipeline_layout;
-    pipeline_info.renderPass = config.render_pass;
-    pipeline_info.subpass = config.subpass;
-    pipeline_info.basePipelineHandle = VK_NULL_HANDLE; // Optional
-    pipeline_info.basePipelineIndex = -1;              // Optional
-
-    if (vkCreateGraphicsPipelines(m_device->device(), VK_NULL_HANDLE, 1, &pipeline_info,
-                                  nullptr, &m_pipeline) != VK_SUCCESS) {
-        throw Vulkan::Exception{"Failed to create Graphics Pipeline"};
-    }
-}
-
-void Pipeline::destroyVkHandles()
-{
-    vkDestroyPipeline(m_device->device(), m_pipeline, nullptr);
-    m_pipeline = VK_NULL_HANDLE;
-}
-
-pipeline_config_t Pipeline::makeDefaultConfig()
-{
-    pipeline_config_t config{};
+    Vulkan::pipeline_config_t config{};
 
     config.input_assembly_state.sType =
         VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -215,6 +147,90 @@ pipeline_config_t Pipeline::makeDefaultConfig()
     config.dynamic_state.flags = 0;
 
     return config;
+}
+
+void Pipeline::createPipelineLayout()
+{
+    VkPipelineLayoutCreateInfo pipeline_layout_info{};
+    pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipeline_layout_info.pSetLayouts = nullptr;
+    pipeline_layout_info.setLayoutCount = 0;
+    pipeline_layout_info.pPushConstantRanges = nullptr;
+    pipeline_layout_info.pushConstantRangeCount = 0;
+
+    if (vkCreatePipelineLayout(m_device->device(), &pipeline_layout_info, nullptr,
+                               &m_pipeline_layout) != VK_SUCCESS) {
+        throw Vulkan::Exception{"Failed to create Pipeline Layout"};
+    }
+}
+
+void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
+{
+    VkPipelineShaderStageCreateInfo vert_shader_stage_info{};
+    vert_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vert_shader_stage_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vert_shader_stage_info.module =
+        vulkanShaderHandle(config.base.vertex_shader->nativeHandle());
+    vert_shader_stage_info.pName = SHADER_ENTRYPOINT;
+
+    VkPipelineShaderStageCreateInfo frag_shader_stage_info{};
+    frag_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    frag_shader_stage_info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    frag_shader_stage_info.module =
+        vulkanShaderHandle(config.base.fragment_shader->nativeHandle());
+    frag_shader_stage_info.pName = SHADER_ENTRYPOINT;
+
+    std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages = {
+        vert_shader_stage_info,
+        frag_shader_stage_info,
+    };
+
+    auto vert_layout = config.base.vertex_shader->inputLayout();
+    auto binding_description = vertexInputBindDescription(vert_layout);
+    auto attribute_descriptions = vertexInputAttributeDescriptions(vert_layout);
+
+    VkPipelineVertexInputStateCreateInfo vertex_input_state{};
+    vertex_input_state.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertex_input_state.vertexBindingDescriptionCount = 1;
+    vertex_input_state.pVertexBindingDescriptions = &binding_description;
+    vertex_input_state.vertexAttributeDescriptionCount = attribute_descriptions.size();
+    vertex_input_state.pVertexAttributeDescriptions = attribute_descriptions.data();
+
+    config.rasterization_state.frontFace = config.front_face;
+
+    VkGraphicsPipelineCreateInfo pipeline_info{};
+    pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipeline_info.pStages = shader_stages.data();
+    pipeline_info.stageCount = shader_stages.size();
+    pipeline_info.pVertexInputState = &vertex_input_state;
+    pipeline_info.pInputAssemblyState = &config.input_assembly_state;
+    pipeline_info.pViewportState = &config.viewport_state;
+    pipeline_info.pRasterizationState = &config.rasterization_state;
+    pipeline_info.pMultisampleState = &config.multisample_state;
+    pipeline_info.pDepthStencilState = &config.depth_stencil_state;
+    pipeline_info.pColorBlendState = &config.color_blend_state;
+    pipeline_info.pDynamicState = &config.dynamic_state;
+    pipeline_info.layout = m_pipeline_layout;
+    pipeline_info.renderPass = config.render_pass;
+    pipeline_info.subpass = config.subpass;
+    pipeline_info.basePipelineHandle = VK_NULL_HANDLE; // Optional
+    pipeline_info.basePipelineIndex = -1;              // Optional
+
+    if (vkCreateGraphicsPipelines(m_device->device(), config.pipeline_cache, 1,
+                                  &pipeline_info, nullptr, &m_pipeline) != VK_SUCCESS) {
+        throw Vulkan::Exception{"Failed to create Graphics Pipeline"};
+    }
+}
+
+void Pipeline::destroyVkHandles()
+{
+    m_device->waitIdle();
+
+    vkDestroyPipeline(m_device->device(), m_pipeline, nullptr);
+    m_pipeline = VK_NULL_HANDLE;
+
+    vkDestroyPipelineLayout(m_device->device(), m_pipeline_layout, nullptr);
+    m_pipeline_layout = VK_NULL_HANDLE;
 }
 
 } // namespace GE::Vulkan
