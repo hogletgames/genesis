@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,14 +39,9 @@ namespace GE::Vulkan {
 Image::Image(Shared<Device> device, const image_config_t& config)
     : m_device{std::move(device)}
 {
-    try {
-        createImage(config);
-        allocateMemory(config.memory_properties);
-        createImageView(config);
-    } catch (const Vulkan::Exception& e) {
-        destroyVulkanHandles();
-        throw;
-    }
+    createImage(config);
+    allocateMemory(config.memory_properties);
+    createImageView(config);
 }
 
 Image::~Image()
