@@ -102,6 +102,12 @@ if (NOT stb_POPULATED)
     target_compile_definitions(stb-image INTERFACE -DSTB_IMAGE_IMPLEMENTATION)
 endif ()
 
+# docopt.cpp
+FetchContent_Declare(docopt.cpp
+    GIT_REPOSITORY https://github.com/hogletgames/docopt.cpp.git
+    GIT_TAG v0.6.3)
+FetchContent_MakeAvailable(docopt.cpp)
+
 # Vulkan-Loader
 FetchContent_Declare(Vulkan-Loader
     GIT_REPOSITORY https://github.com/hogletgames/Vulkan-Loader.git
