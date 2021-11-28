@@ -4,6 +4,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     buffers/index_buffer.cpp
     buffers/staging_buffer.cpp
     buffers/vertex_buffer.cpp
+    renderers/framebuffer_renderer.cpp
     renderers/renderer_base.cpp
     renderers/window_renderer.cpp
     device.cpp
@@ -26,6 +27,7 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     buffers/index_buffer.h
     buffers/staging_buffer.h
     buffers/vertex_buffer.h
+    renderers/framebuffer_renderer.h
     renderers/renderer_base.h
     renderers/window_renderer.h
     command_buffer.h
