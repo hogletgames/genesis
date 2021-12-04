@@ -34,13 +34,18 @@
 #ifndef GENESIS_GRAPHICS_VULKAN_IMAGE_H_
 #define GENESIS_GRAPHICS_VULKAN_IMAGE_H_
 
+#include "pipeline_barrier.h"
+
 #include <genesis/core/memory.h>
 
 #include <vulkan/vulkan.h>
 
+#include <vector>
+
 namespace GE::Vulkan {
 
 class Device;
+class StagingBuffer;
 struct memory_barrier_config_t;
 
 struct image_config_t {
@@ -62,11 +67,15 @@ public:
     Image(Shared<Device> device, const image_config_t& config);
     ~Image();
 
+    void copyFrom(const StagingBuffer& buffer,
+                  const std::vector<VkBufferImageCopy>& regions);
+
     memory_barrier_config_t memoryBarrierConfig() const;
 
     VkImage image() const { return m_image; }
     VkImageView view() const { return m_image_view; }
 
+    const VkExtent3D& extent() const { return m_extent; }
     VkFormat format() const { return m_format; }
     uint32_t MIPLevels() const { return m_mip_levels; }
     uint32_t layers() const { return m_layers; }
@@ -80,12 +89,18 @@ private:
 
     uint32_t getMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
 
+    void transitionImageLayout();
+    void copyToImage(const StagingBuffer& buffer,
+                     const std::vector<VkBufferImageCopy>& regions);
+    void createMipmaps();
+
     Shared<Device> m_device;
 
     VkImage m_image{VK_NULL_HANDLE};
     VkDeviceMemory m_memory{VK_NULL_HANDLE};
     VkImageView m_image_view{VK_NULL_HANDLE};
 
+    VkExtent3D m_extent{};
     VkFormat m_format{VK_FORMAT_UNDEFINED};
     uint32_t m_mip_levels{};
     uint32_t m_layers{};
