@@ -43,8 +43,10 @@ namespace GE::Vulkan {
 class Device;
 
 struct image_config_t {
+    VkImageViewType view_type{VK_IMAGE_VIEW_TYPE_2D};
     VkExtent3D extent{0, 0, 1};
     uint32_t mip_levels{1};
+    uint32_t layers{1};
     VkSampleCountFlagBits samples{VK_SAMPLE_COUNT_1_BIT};
     VkFormat format{};
     VkImageTiling tiling{};

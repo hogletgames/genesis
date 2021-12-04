@@ -94,13 +94,13 @@ void Image::createImageView(const image_config_t& config)
     VkImageViewCreateInfo view_info{};
     view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     view_info.image = m_image;
-    view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    view_info.viewType = config.view_type;
     view_info.format = config.format;
     view_info.subresourceRange.aspectMask = config.aspect_mask;
     view_info.subresourceRange.baseMipLevel = 0;
     view_info.subresourceRange.levelCount = config.mip_levels;
     view_info.subresourceRange.baseArrayLayer = 0;
-    view_info.subresourceRange.layerCount = 1;
+    view_info.subresourceRange.layerCount = config.layers;
 
     if (vkCreateImageView(m_device->device(), &view_info, nullptr, &m_image_view) !=
         VK_SUCCESS) {
