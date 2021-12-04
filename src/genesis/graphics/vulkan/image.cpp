@@ -32,12 +32,16 @@
 
 #include "image.h"
 #include "device.h"
+#include "pipeline_barrier.h"
 #include "vulkan_exception.h"
 
 namespace GE::Vulkan {
 
 Image::Image(Shared<Device> device, const image_config_t& config)
     : m_device{std::move(device)}
+    , m_format{config.format}
+    , m_mip_levels{config.mip_levels}
+    , m_layers{config.layers}
 {
     createImage(config);
     allocateMemory(config.memory_properties);
@@ -47,6 +51,17 @@ Image::Image(Shared<Device> device, const image_config_t& config)
 Image::~Image()
 {
     destroyVulkanHandles();
+}
+
+memory_barrier_config_t Image::memoryBarrierConfig() const
+{
+    memory_barrier_config_t config{};
+    config.image = m_image;
+    config.image_format = m_format;
+    config.level_count = m_mip_levels;
+    config.layer_count = m_layers;
+
+    return config;
 }
 
 void Image::createImage(const image_config_t& config)

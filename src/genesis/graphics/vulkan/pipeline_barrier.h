@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,66 +31,44 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_IMAGE_H_
-#define GENESIS_GRAPHICS_VULKAN_IMAGE_H_
+#ifndef GENESIS_GRAPHICS_VULKAN_PIPELINE_BARRIER_H_
+#define GENESIS_GRAPHICS_VULKAN_PIPELINE_BARRIER_H_
 
-#include <genesis/core/memory.h>
-
+#include <vector>
 #include <vulkan/vulkan.h>
 
 namespace GE::Vulkan {
 
-class Device;
-struct memory_barrier_config_t;
+class Image;
 
-struct image_config_t {
-    VkImageViewType view_type{VK_IMAGE_VIEW_TYPE_2D};
-    VkExtent3D extent{0, 0, 1};
-    uint32_t mip_levels{1};
-    uint32_t layers{1};
-    VkSampleCountFlagBits samples{VK_SAMPLE_COUNT_1_BIT};
-    VkFormat format{};
-    VkImageTiling tiling{};
-    VkImageUsageFlags usage{};
-    VkMemoryPropertyFlags memory_properties{};
-    VkImageAspectFlags aspect_mask{};
+struct memory_barrier_config_t {
+    VkImage image{VK_NULL_HANDLE};
+    VkFormat image_format{VK_FORMAT_UNDEFINED};
+    uint32_t level_count{0};
+    uint32_t layer_count{0};
+
+    VkImageLayout old_layout{VK_IMAGE_LAYOUT_UNDEFINED};
+    VkImageLayout new_layout{VK_IMAGE_LAYOUT_UNDEFINED};
+    uint32_t base_mip_level{0};
+    uint32_t base_array_layer{0};
 };
 
-class Image
+class MemoryBarrier
 {
 public:
-    Image(Shared<Device> device, const image_config_t& config);
-    ~Image();
+    static VkImageMemoryBarrier
+    createImageMemoryBarrier(const memory_barrier_config_t& config);
+};
 
-    memory_barrier_config_t memoryBarrierConfig() const;
-
-    VkImage image() const { return m_image; }
-    VkImageView view() const { return m_image_view; }
-
-    VkFormat format() const { return m_format; }
-    uint32_t MIPLevels() const { return m_mip_levels; }
-    uint32_t layers() const { return m_layers; }
-
-private:
-    void createImage(const image_config_t& config);
-    void allocateMemory(VkMemoryPropertyFlags properties);
-    void createImageView(const image_config_t& config);
-
-    void destroyVulkanHandles();
-
-    uint32_t getMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
-
-    Shared<Device> m_device;
-
-    VkImage m_image{VK_NULL_HANDLE};
-    VkDeviceMemory m_memory{VK_NULL_HANDLE};
-    VkImageView m_image_view{VK_NULL_HANDLE};
-
-    VkFormat m_format{VK_FORMAT_UNDEFINED};
-    uint32_t m_mip_levels{};
-    uint32_t m_layers{};
+class PipelineBarrier
+{
+public:
+    static void submit(VkCommandBuffer cmd,
+                       const std::vector<VkImageMemoryBarrier>& barriers,
+                       VkPipelineStageFlagBits src_stage,
+                       VkPipelineStageFlagBits dst_stage);
 };
 
 } // namespace GE::Vulkan
 
-#endif // GENESIS_GRAPHICS_VULKAN_IMAGE_H_
+#endif // GENESIS_GRAPHICS_VULKAN_PIPELINE_BARRIER_H_

@@ -10,6 +10,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     graphics_context.cpp
     graphics_factory.cpp
     image.cpp
+    pipeline_barrier.cpp
     input_stage_descriptions.cpp
     instance.cpp
     pipeline.cpp
@@ -30,6 +31,7 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     graphics_context.h
     graphics_factory.h
     image.h
+    pipeline_barrier.h
     input_stage_descriptions.h
     instance.h
     pipeline.h
