@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,16 @@ class Device;
 class SingleCommand: public NonCopyable
 {
 public:
-    explicit SingleCommand(Shared<Device> device);
+    enum QueueFamily : uint8_t
+    {
+        QUEUE_UNKNOWN = 0,
+        QUEUE_GRAPHICS,
+        QUEUE_TRANSFER,
+        QUEUE_COMPUTE
+    };
+
+    explicit SingleCommand(Shared<Device> device,
+                           QueueFamily queue_family = QUEUE_GRAPHICS);
     ~SingleCommand();
 
     VkCommandBuffer getCmdBuffer() { return m_cmd_buffer; }
@@ -54,7 +63,10 @@ public:
 private:
     void destroyVkHandles();
 
+    VkQueue getQueue(QueueFamily family);
+
     Shared<Device> m_device;
+    QueueFamily m_queue_family{QUEUE_UNKNOWN};
     VkCommandBuffer m_cmd_buffer{VK_NULL_HANDLE};
 };
 
