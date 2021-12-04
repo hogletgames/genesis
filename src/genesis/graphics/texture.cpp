@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2021, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,41 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "buffers/staging_buffer.h"
-#include "device.h"
-#include "single_command.h"
+#include "texture.h"
+#include "graphics.h"
 
-#include <cstring>
+namespace GE {
 
-namespace GE::Vulkan {
-
-StagingBuffer::StagingBuffer(Shared<Device> device, const void *data, uint32_t size)
-    : BufferBase{std::move(device)}
+Scoped<Texture> Texture::create(const texture_config_t& config)
 {
-    VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-    VkMemoryPropertyFlags properties =
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    createBuffer(size, usage, properties);
-    copyData(data, size);
+    return Graphics::factory()->createTexture(config);
 }
 
-void StagingBuffer::copyTo(BufferBase *dest)
+uint32_t Texture::calculateMipLevels(uint32_t width, uint32_t height)
 {
-    SingleCommand cmd{m_device};
-    VkBufferCopy copy_region{};
-    copy_region.srcOffset = 0;
-    copy_region.dstOffset = 0;
-    copy_region.size = m_size;
-    vkCmdCopyBuffer(cmd.buffer(), m_buffer, dest->buffer(), 1, &copy_region);
+    return static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
 }
 
-void StagingBuffer::copyData(const void *data, uint32_t size)
-{
-    void *mem_ptr{nullptr};
-    vkMapMemory(m_device->device(), m_memory, 0, size, 0, &mem_ptr);
-    std::memcpy(mem_ptr, data, size);
-    vkUnmapMemory(m_device->device(), m_memory);
-    m_size = size;
-}
-
-} // namespace GE::Vulkan
+} // namespace GE

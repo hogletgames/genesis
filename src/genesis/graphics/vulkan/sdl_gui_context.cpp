@@ -137,7 +137,7 @@ GUIContext::GUIContext(void *window, Shared<Device> device,
     // Load fonts
     {
         SingleCommand cmd(m_device);
-        ImGui_ImplVulkan_CreateFontsTexture(cmd.getCmdBuffer());
+        ImGui_ImplVulkan_CreateFontsTexture(cmd.buffer());
     }
 
     ImGui_ImplVulkan_DestroyFontUploadObjects();

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,10 +31,20 @@
  */
 
 #include "texture.h"
+#include "buffers/staging_buffer.h"
+#include "device.h"
+#include "image.h"
+#include "pipeline_barrier.h"
+#include "sdl_gui_context.h"
+#include "single_command.h"
+#include "vulkan_exception.h"
 
+#include "genesis/core/asserts.h"
 #include "genesis/core/utils.h"
 
 namespace {
+
+constexpr uint32_t MAX_ANISOTROPY{16};
 
 std::unordered_map<GE::TextureFormat, VkFormat> toVkFormatMap()
 {
@@ -49,9 +59,264 @@ std::unordered_map<GE::TextureFormat, VkFormat> toVkFormatMap()
     };
 }
 
+VkImageViewType toImageViewType(GE::TextureType type)
+{
+    static const std::unordered_map<GE::TextureType, VkImageViewType> to_type = {
+        {GE::TextureType::TEXTURE_2D, VK_IMAGE_VIEW_TYPE_2D},
+    };
+
+    return GE::toType(to_type, type);
+}
+
+VkFilter toVkFilter(GE::TextureFilter filter)
+{
+    switch (filter) {
+        case GE::TextureFilter::NEAREST:
+        case GE::TextureFilter::NEAREST_MIPMAP_NEAREST:
+        case GE::TextureFilter::NEAREST_MIPMAP_LINEAR: return VK_FILTER_NEAREST;
+        case GE::TextureFilter::LINEAR:
+        case GE::TextureFilter::LINEAR_MIPMAP_NEAREST:
+        case GE::TextureFilter::LINEAR_MIPMAP_LINEAR:
+        default: return VK_FILTER_LINEAR;
+    }
+}
+
+VkSamplerMipmapMode toVkMipmapMode(GE::TextureFilter filter)
+{
+    switch (filter) {
+        case GE::TextureFilter::NEAREST:
+        case GE::TextureFilter::NEAREST_MIPMAP_NEAREST:
+        case GE::TextureFilter::LINEAR_MIPMAP_NEAREST:
+            return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        case GE::TextureFilter::NEAREST_MIPMAP_LINEAR:
+        case GE::TextureFilter::LINEAR:
+        case GE::TextureFilter::LINEAR_MIPMAP_LINEAR:
+        default: return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    }
+}
+
+VkSamplerAddressMode toVkSamplerAddressMode(GE::TextureWrap wrap)
+{
+    using Wrap = GE::TextureWrap;
+    static const std::unordered_map<GE::TextureWrap, VkSamplerAddressMode> to_addr_mode =
+        {{Wrap::CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE},
+         {Wrap::CLAMP_TO_BORDER, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER},
+         {Wrap::REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT},
+         {Wrap::MIRROR_REPEAT, VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT}};
+
+    return GE::toType(to_addr_mode, wrap, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+}
+
+VkSamplerAddressMode toVkSamplerAddressMode(GE::TextureFormat format,
+                                            GE::TextureWrap wrap)
+{
+    if (wrap != GE::TextureWrap::AUTO) {
+        return toVkSamplerAddressMode(wrap);
+    }
+
+    return GE::isColorFormat(format) ? VK_SAMPLER_ADDRESS_MODE_REPEAT
+                                     : VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+}
+
+VkExtent3D toVkExtent(const GE::texture_config_t& config)
+{
+    return {config.width, config.height, config.depth};
+}
+
+uint32_t toMipLevels(const GE::texture_config_t& config)
+{
+    if (config.mip_levels != 0) {
+        return config.mip_levels;
+    }
+
+    return GE::Texture::calculateMipLevels(config.width, config.height);
+}
+
+VkImageUsageFlags toVkUsage(const GE::texture_config_t& config)
+{
+    static constexpr VkImageUsageFlags default_usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                                                       VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+                                                       VK_IMAGE_USAGE_SAMPLED_BIT;
+
+    if (GE::isDepthFormat(config.format)) {
+        return default_usage | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+    }
+
+    VkImageUsageFlags usage = default_usage | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+    if (config.image_storage) {
+        usage |= VK_IMAGE_USAGE_STORAGE_BIT;
+    }
+
+    return usage;
+}
+
+VkImageAspectFlags toVkImageAspect(GE::TextureFormat format)
+{
+    if (GE::isDepthFormat(format)) {
+        return VK_IMAGE_ASPECT_DEPTH_BIT;
+    }
+
+    return VK_IMAGE_ASPECT_COLOR_BIT;
+}
+
+GE::TextureFilter toMinFiler(const GE::texture_config_t& config)
+{
+    if (config.min_filter != GE::TextureFilter::AUTO) {
+        return config.min_filter;
+    }
+
+    if (GE::isDepthFormat(config.format)) {
+        return GE::TextureFilter::NEAREST;
+    }
+
+    if (config.mip_levels == 1) {
+        return GE::TextureFilter::LINEAR;
+    }
+
+    return GE::TextureFilter::NEAREST_MIPMAP_LINEAR;
+}
+
+VkFilter toVkMagFilter(const GE::texture_config_t& config)
+{
+    if (config.mag_filter != GE::TextureFilter::AUTO) {
+        return toVkFilter(config.mag_filter);
+    }
+
+    return GE::isColorFormat(config.format) ? VK_FILTER_LINEAR : VK_FILTER_NEAREST;
+}
+
 } // namespace
 
 namespace GE::Vulkan {
+
+Texture::Texture(Shared<Device> device, const texture_config_t& config)
+    : m_device{std::move(device)}
+    , m_size{config.width, config.height}
+    , m_format{config.format}
+{
+    createImage(config);
+    createSampler(config);
+}
+
+Texture::~Texture()
+{
+    destroyVkHandles();
+}
+
+Texture::NativeID Texture::nativeID() const
+{
+    if (m_descriptor_set == VK_NULL_HANDLE) {
+        m_descriptor_set = SDL::createGuiTextureID(*this);
+    }
+
+    return m_descriptor_set;
+}
+
+void Texture::createImage(const texture_config_t& config)
+{
+    image_config_t image_config{};
+    image_config.view_type = toImageViewType(config.type);
+    image_config.extent = toVkExtent(config);
+    image_config.mip_levels = toMipLevels(config);
+    image_config.samples = VK_SAMPLE_COUNT_1_BIT;
+    image_config.format = toVkFormat(config.format);
+    image_config.tiling = VK_IMAGE_TILING_OPTIMAL;
+    image_config.usage = toVkUsage(config);
+    image_config.memory_properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image_config.aspect_mask = toVkImageAspect(config.format);
+
+    m_image = makeScoped<Image>(m_device, image_config);
+
+    if (config.image_storage) {
+        colorImageBarrier();
+    }
+}
+
+void Texture::createSampler(const texture_config_t& config)
+{
+    auto min_filter = toMinFiler(config);
+
+    VkSamplerCreateInfo create_info{};
+    create_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    create_info.flags = 0;
+    create_info.magFilter = toVkMagFilter(config);
+    create_info.minFilter = toVkFilter(min_filter);
+    create_info.mipmapMode = toVkMipmapMode(min_filter);
+    create_info.addressModeU = toVkSamplerAddressMode(config.format, config.wrap_u);
+    create_info.addressModeV = toVkSamplerAddressMode(config.format, config.wrap_v);
+    create_info.addressModeW = toVkSamplerAddressMode(config.format, config.wrap_w);
+    create_info.mipLodBias = 0.0f;
+    create_info.anisotropyEnable = {};
+    create_info.maxAnisotropy = MAX_ANISOTROPY;
+    create_info.compareEnable = VK_FALSE;
+    create_info.compareOp = VK_COMPARE_OP_NEVER;
+    create_info.minLod = 0.0f;
+    create_info.maxLod = static_cast<float>(config.mip_levels);
+    create_info.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK;
+    create_info.unnormalizedCoordinates = VK_FALSE;
+
+    if (vkCreateSampler(m_device->device(), &create_info, nullptr, &m_sampler) !=
+        VK_SUCCESS) {
+        throw Vulkan::Exception{"Failed to create Sampler"};
+    }
+}
+
+void Texture::destroyVkHandles()
+{
+    m_device->waitIdle();
+
+    vkDestroySampler(m_device->device(), m_sampler, nullptr);
+    m_sampler = VK_NULL_HANDLE;
+
+    m_image.reset();
+
+    SDL::destroyGuiTextureID(m_descriptor_set);
+    m_descriptor_set = VK_NULL_HANDLE;
+}
+
+void Texture::colorImageBarrier()
+{
+    auto barrier_config = m_image->memoryBarrierConfig();
+    barrier_config.old_layout = VK_IMAGE_LAYOUT_UNDEFINED;
+    barrier_config.new_layout = VK_IMAGE_LAYOUT_GENERAL;
+
+    auto barrier = MemoryBarrier::createImageMemoryBarrier(barrier_config);
+    SingleCommand cmd{m_device};
+
+    PipelineBarrier::submit(cmd.buffer(), {barrier}, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+                            VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
+}
+
+bool Texture2D::setData(const void* data, uint32_t size)
+{
+    VkBufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = m_image->layers();
+    region.imageOffset = {0, 0, 0};
+    region.imageExtent = m_image->extent();
+
+    StagingBuffer buffer{m_device, data, size};
+    m_image->copyFrom(buffer, {region});
+    return true;
+}
+
+uint32_t Texture2D::checkDepth(uint32_t depth)
+{
+    GE_CORE_ASSERT(depth == 1, "Expected depth=1, got={}", depth);
+    return depth;
+}
+
+uint32_t Texture2D::checkLayers(uint32_t layers)
+{
+    GE_CORE_ASSERT(layers == 1, "Expected layers=1, got={}", layers);
+    return layers;
+}
 
 VkFormat toVkFormat(TextureFormat format)
 {

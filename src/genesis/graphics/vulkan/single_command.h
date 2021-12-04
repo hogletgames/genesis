@@ -58,7 +58,7 @@ public:
                            QueueFamily queue_family = QUEUE_GRAPHICS);
     ~SingleCommand();
 
-    VkCommandBuffer getCmdBuffer() { return m_cmd_buffer; }
+    VkCommandBuffer buffer() { return m_cmd_buffer; }
 
 private:
     void destroyVkHandles();

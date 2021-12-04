@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,55 @@
 #include <vulkan/vulkan.h>
 
 namespace GE::Vulkan {
+
+class Device;
+class Image;
+
+class Texture: public GE::Texture
+{
+public:
+    Texture(Shared<Device> device, const texture_config_t& config);
+    ~Texture();
+
+    NativeID nativeID() const override;
+    const Vec2& size() const override { return m_size; }
+    TextureFormat format() const override { return m_format; }
+    const Scoped<Image>& image() const { return m_image; }
+    VkSampler sampler() const { return m_sampler; }
+
+protected:
+    virtual uint32_t checkDepth(uint32_t depth) = 0;
+    virtual uint32_t checkLayers(uint32_t layers) = 0;
+
+    Shared<Device> m_device;
+
+    Scoped<Image> m_image;
+    Vec2 m_size{0.0f, 0.0f};
+    TextureFormat m_format{TextureFormat::UNKNOWN};
+    VkSampler m_sampler{VK_NULL_HANDLE};
+
+    mutable VkDescriptorSet m_descriptor_set{VK_NULL_HANDLE};
+
+private:
+    void createImage(const texture_config_t& config);
+    void createSampler(const texture_config_t& config);
+
+    void destroyVkHandles();
+
+    void colorImageBarrier();
+};
+
+class Texture2D: public Vulkan::Texture
+{
+public:
+    using Vulkan::Texture::Texture;
+
+    bool setData(const void* data, uint32_t size) override;
+
+private:
+    uint32_t checkDepth(uint32_t depth) override;
+    uint32_t checkLayers(uint32_t layers) override;
+};
 
 VkFormat toVkFormat(TextureFormat format);
 TextureFormat toTextureFormat(VkFormat format);

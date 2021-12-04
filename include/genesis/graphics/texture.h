@@ -34,6 +34,8 @@
 #define GENESIS_GRAPHICS_TEXTURE_H_
 
 #include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
+#include <genesis/math/types.h>
 
 #include <cstdint>
 
@@ -58,6 +60,59 @@ enum class TextureFormat : uint8_t
     D32F,
     D24S8,
     D32S8
+};
+
+enum class TextureFilter : uint8_t
+{
+    AUTO = 0,
+    NEAREST,
+    NEAREST_MIPMAP_NEAREST,
+    NEAREST_MIPMAP_LINEAR,
+    LINEAR,
+    LINEAR_MIPMAP_NEAREST,
+    LINEAR_MIPMAP_LINEAR
+};
+
+enum class TextureWrap : uint32_t
+{
+    AUTO = 0,
+    CLAMP_TO_EDGE,
+    CLAMP_TO_BORDER,
+    REPEAT,
+    MIRROR_REPEAT
+};
+
+struct texture_config_t {
+    TextureType type{TextureType::UNKNOWN};
+    TextureFormat format{TextureFormat::SRGB8};
+    uint32_t width{1};
+    uint32_t height{1};
+    uint8_t depth{1};
+    uint8_t layers{1};
+    TextureFilter min_filter{TextureFilter::LINEAR_MIPMAP_LINEAR};
+    TextureFilter mag_filter{TextureFilter::LINEAR};
+    TextureWrap wrap_u{TextureWrap::REPEAT};
+    TextureWrap wrap_v{TextureWrap::REPEAT};
+    TextureWrap wrap_w{TextureWrap::REPEAT};
+    uint32_t mip_levels{MIP_LEVELS_AUTO};
+    bool image_storage{false};
+
+    static constexpr uint32_t MIP_LEVELS_AUTO{0};
+};
+
+class Texture: public Interface
+{
+public:
+    using NativeID = void*;
+
+    virtual bool setData(const void* data, uint32_t size) = 0;
+    virtual const Vec2& size() const = 0;
+    virtual TextureFormat format() const = 0;
+    virtual NativeID nativeID() const = 0;
+
+    static Scoped<Texture> create(const texture_config_t& config);
+
+    static uint32_t calculateMipLevels(uint32_t width, uint32_t height);
 };
 
 inline constexpr bool isDepthFormat(TextureFormat format)

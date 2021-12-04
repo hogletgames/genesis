@@ -9,6 +9,7 @@ list(APPEND GE_RENDERER_SRC
     shader_input_layout.cpp
     shader_precompiler.cpp
     shader_reflection.cpp
+    texture.cpp
     vertex_buffer.cpp)
 
 list(APPEND GE_RENDERER_HEADERS
