@@ -56,7 +56,7 @@ namespace GE {
 
 template<typename FromType, typename ToType>
 inline ToType toType(const std::unordered_map<FromType, ToType>& container,
-                     const FromType& from_value, const ToType& def_ret)
+                     const FromType& from_value, const ToType& def_ret = {})
 {
     if (auto it = container.find(from_value); it != container.end()) {
         return it->second;
