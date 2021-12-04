@@ -66,6 +66,16 @@ bool isGraphicQueue(VkQueueFamilyProperties queue_family)
     return (queue_family.queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0;
 }
 
+bool isTransferQueue(VkQueueFamilyProperties queue_family)
+{
+    return (queue_family.queueFlags & VK_QUEUE_TRANSFER_BIT) != 0;
+}
+
+bool isComputeQueue(VkQueueFamilyProperties queue_family)
+{
+    return (queue_family.queueFlags & VK_QUEUE_COMPUTE_BIT) != 0;
+}
+
 bool isPresentSupported(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
                         uint32_t queue_family_idx)
 {
@@ -151,7 +161,11 @@ void Device::createLogicalDevice()
 {
     std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
     std::unordered_set<uint32_t> unique_queue_families = {
-        m_queue_indices.graphics_family.value(), m_queue_indices.present_family.value()};
+        m_queue_indices.graphics_family.value(),
+        m_queue_indices.present_family.value(),
+        m_queue_indices.transfer_family.value(),
+        m_queue_indices.compute_queue.value(),
+    };
 
     float queue_priorities{1.0f};
 
@@ -186,6 +200,10 @@ void Device::createLogicalDevice()
                      &m_graphics_queue);
     vkGetDeviceQueue(m_device, m_queue_indices.present_family.value(), 0,
                      &m_present_queue);
+    vkGetDeviceQueue(m_device, m_queue_indices.transfer_family.value(), 0,
+                     &m_transfer_queue);
+    vkGetDeviceQueue(m_device, m_queue_indices.compute_queue.value(), 0,
+                     &m_compute_queue);
 }
 
 void Device::createCommandPool()
@@ -256,6 +274,14 @@ queue_family_indices_t Device::findQueueFamilies(VkPhysicalDevice physical_devic
 
         if (isPresentSupported(physical_device, m_surface, i)) {
             indices.present_family = i;
+        }
+
+        if (isTransferQueue(queue_families[i])) {
+            indices.transfer_family = i;
+        }
+
+        if (isComputeQueue(queue_families[i])) {
+            indices.compute_queue = i;
         }
 
         if (indices.isComplete()) {
