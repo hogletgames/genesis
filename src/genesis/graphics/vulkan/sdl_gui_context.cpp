@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,10 +33,12 @@
 #include "sdl_gui_context.h"
 #include "command_buffer.h"
 #include "device.h"
+#include "image.h"
 #include "instance.h"
 #include "renderers/window_renderer.h"
 #include "single_command.h"
 #include "swap_chain.h"
+#include "texture.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/log.h"
@@ -229,5 +231,19 @@ bool GUIContext::isViewportEnabled() const
 {
     return (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0;
 }
+
+VkDescriptorSet createGuiTextureID(const Vulkan::Texture &texture)
+{
+    static constexpr VkImageLayout image_layout{VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
+    return reinterpret_cast<VkDescriptorSet>(::ImGui_ImplVulkan_AddTexture(
+        texture.sampler(), texture.image()->view(), image_layout));
+}
+
+void destroyGuiTextureID(VkDescriptorSet texture_id)
+{
+    if (texture_id != VK_NULL_HANDLE) {
+        ::ImGui_ImplVulkan_DestroyTexture(reinterpret_cast<ImTextureID>(texture_id));
+    }
+};
 
 } // namespace GE::Vulkan::SDL
