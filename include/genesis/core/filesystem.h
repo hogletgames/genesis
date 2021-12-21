@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,32 +30,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_SHADER_PRECOMPILER_H_
-#define GENESIS_GRAPHICS_SHADER_PRECOMPILER_H_
+#ifndef GENESIS_CORE_FILESYSTEM_H_
+#define GENESIS_CORE_FILESYSTEM_H_
 
-#include <genesis/graphics/shader.h>
-
+#include <fstream>
 #include <vector>
 
 namespace GE {
 
-class GE_API ShaderPrecompiler
+template<typename T>
+std::vector<T> readFile(const std::string& filepath)
 {
-public:
-    static ShaderCache compileFromFile(Shader::Type shader_type,
-                                       const std::string &filepath);
-    static ShaderCache compileFromSource(Shader::Type shader_type,
-                                         const std::string &source_code);
+    if (auto file = std::ifstream{filepath, std::ios::binary}; file) {
+        file >> std::noskipws;
+        return {std::istream_iterator<T>{file}, std::istream_iterator<T>{}};
+    }
 
-    static ShaderCache loadShaderCache(const std::string &filepath);
-    static bool saveShaderCache(const ShaderCache &shader_cache,
-                                const std::string &filepath);
-
-private:
-    static ShaderCache compileShader(Shader::Type type, const std::string &source_code,
-                                     const std::string &filepath);
-};
+    return {};
+}
 
 } // namespace GE
 
-#endif // GENESIS_GRAPHICS_SHADER_PRECOMPILER_H_
+#endif // GENESIS_CORE_FILESYSTEM_H_
