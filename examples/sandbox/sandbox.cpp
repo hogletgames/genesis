@@ -67,7 +67,5 @@ int main()
 
     GE::Application::attachLayer(GE::makeShared<GE::Examples::GUILayer>());
     GE::Application::run();
-    GE::Application::shutdown();
-
     return EXIT_SUCCESS;
 }

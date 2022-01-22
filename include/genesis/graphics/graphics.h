@@ -68,6 +68,7 @@ public:
 
 private:
     Graphics() = default;
+    ~Graphics();
 
     static Graphics* get()
     {

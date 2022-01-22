@@ -60,9 +60,18 @@ bool Graphics::initialize(const Graphics::settings_t& settings, void* window)
 
 void Graphics::shutdown()
 {
+    if (context() == nullptr) {
+        return;
+    }
+
     get()->m_context->shutdown();
     get()->m_context.reset();
     get()->m_api = API::NONE;
+}
+
+Graphics::~Graphics()
+{
+    shutdown();
 }
 
 Graphics::API toRendererAPI(const std::string& api_str)

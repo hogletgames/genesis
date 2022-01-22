@@ -78,6 +78,7 @@ private:
     };
 
     Application() = default;
+    ~Application();
 
     static Application* get()
     {
