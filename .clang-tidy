@@ -34,7 +34,9 @@ HeaderFilterRegex:  '.*'
 FormatStyle:        'file'
 CheckOptions:
   - {key: cppcoreguidelines-avoid-magic-numbers.IgnoreAllFloatingPointValues, value: true }
+  - {key: cppcoreguidelines-avoid-magic-numbers.IgnorePowersOf2IntegerValues, value: true }
   - {key: readability-magic-numbers.IgnoreAllFloatingPointValues,             value: true }
+  - {key: readability-magic-numbers.IgnorePowersOf2IntegerValues,             value: true }
   - {key: modernize-use-override.IgnoreDestructors,                           value: true }
   - {key: hicpp-use-override.IgnoreDestructors,                               value: true }
 ...
