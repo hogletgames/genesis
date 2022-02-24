@@ -14,7 +14,7 @@ target_link_libraries(genesis-gui
     PUBLIC
         genesis::app
     PRIVATE
-        genesis::renderer
+        genesis::graphics
         imgui)
 target_include_directories(genesis-gui PRIVATE ${GE_GUI_INCLUDE_DIR})
 target_include_directories(genesis-gui SYSTEM PRIVATE ${GE_THIRD_PARTY_DIR}/imgui)

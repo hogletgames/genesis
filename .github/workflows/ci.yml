@@ -63,10 +63,10 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-      - name: Build project and run tests
-        run: |
-          make -j$(nproc)
-          make test
+      - name: Build project
+        run: make -j$(nproc)
+      - name: Run tests
+        run: make test
   linters:
     runs-on: ubuntu-18.04
     container: hogletgames/genesis-engine:ci

@@ -41,19 +41,19 @@
 
 #include <memory>
 
-#define GE_CORE_CRIT(...)  ::GE::Log::core()->crit(__VA_ARGS__)
-#define GE_CORE_ERR(...)   ::GE::Log::core()->error(__VA_ARGS__)
-#define GE_CORE_INFO(...)  ::GE::Log::core()->info(__VA_ARGS__)
-#define GE_CORE_WARN(...)  ::GE::Log::core()->warn(__VA_ARGS__)
-#define GE_CORE_DBG(...)   ::GE::Log::core()->debug(__VA_ARGS__)
-#define GE_CORE_TRACE(...) ::GE::Log::core()->trace(__VA_ARGS__)
+#define GE_CORE_CRIT(...)  ::GE::Log::core()->crit(__FILE__, __LINE__, __VA_ARGS__)
+#define GE_CORE_ERR(...)   ::GE::Log::core()->error(__FILE__, __LINE__, __VA_ARGS__)
+#define GE_CORE_INFO(...)  ::GE::Log::core()->info(__FILE__, __LINE__, __VA_ARGS__)
+#define GE_CORE_WARN(...)  ::GE::Log::core()->warn(__FILE__, __LINE__, __VA_ARGS__)
+#define GE_CORE_DBG(...)   ::GE::Log::core()->debug(__FILE__, __LINE__, __VA_ARGS__)
+#define GE_CORE_TRACE(...) ::GE::Log::core()->trace(__FILE__, __LINE__, __VA_ARGS__)
 
-#define GE_CRIT(...)  ::GE::Log::client()->crit(__VA_ARGS__)
-#define GE_ERR(...)   ::GE::Log::client()->error(__VA_ARGS__)
-#define GE_WARN(...)  ::GE::Log::client()->warn(__VA_ARGS__)
-#define GE_INFO(...)  ::GE::Log::client()->info(__VA_ARGS__)
-#define GE_DBG(...)   ::GE::Log::client()->debug(__VA_ARGS__)
-#define GE_TRACE(...) ::GE::Log::client()->trace(__VA_ARGS__)
+#define GE_CRIT(...)  ::GE::Log::client()->crit(__FILE__, __LINE__, __VA_ARGS__)
+#define GE_ERR(...)   ::GE::Log::client()->error(__FILE__, __LINE__, __VA_ARGS__)
+#define GE_WARN(...)  ::GE::Log::client()->warn(__FILE__, __LINE__, __VA_ARGS__)
+#define GE_INFO(...)  ::GE::Log::client()->info(__FILE__, __LINE__, __VA_ARGS__)
+#define GE_DBG(...)   ::GE::Log::client()->debug(__FILE__, __LINE__, __VA_ARGS__)
+#define GE_TRACE(...) ::GE::Log::client()->trace(__FILE__, __LINE__, __VA_ARGS__)
 
 namespace GE {
 
@@ -115,10 +115,10 @@ public:
 
 private:
     template<typename... Args>
-    void log(Args&&... args)
+    void log(spdlog::level::level_enum level, const char* file, int line, Args&&... args)
     {
         if (m_logger) {
-            m_logger->log(std::forward<Args>(args)...);
+            m_logger->log({file, line, nullptr}, level, std::forward<Args>(args)...);
         }
     }
 

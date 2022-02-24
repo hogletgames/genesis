@@ -32,14 +32,13 @@
 
 #include "renderer.h"
 
-#include "genesis/renderer/render_context.h"
-#include "genesis/renderer/renderer.h"
+#include "genesis/graphics/graphics.h"
 
 namespace GE::GUI {
 
-Scoped<GUI::Context>& Renderer::ctx()
+GUI::Context* Renderer::ctx()
 {
-    return GE::Renderer::context()->gui();
+    return GE::Graphics::context()->gui();
 }
 
 } // namespace GE::GUI

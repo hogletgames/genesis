@@ -34,6 +34,7 @@
 #ifndef GENESIS_WINDOW_SDL_WINDOW_H_
 #define GENESIS_WINDOW_SDL_WINDOW_H_
 
+#include <genesis/graphics/graphics.h>
 #include <genesis/window/window.h>
 
 #include <list>
@@ -42,7 +43,7 @@ struct SDL_Window;
 union SDL_Event;
 
 namespace GE {
-class RenderContext;
+class GraphicsContext;
 } // namespace GE
 
 namespace GE::SDL {
@@ -50,14 +51,13 @@ namespace GE::SDL {
 class Window: public GE::Window
 {
 public:
-    explicit Window(settings_t settings);
+    Window(settings_t settings, Graphics::API api);
     ~Window();
 
     static bool initialize();
     static void shutdown();
 
     void pollEvents() override;
-    void onUpdate() override;
 
     void attachEventListener(EventListener* listener) override;
     void detachEventListener(EventListener* listener) override;
@@ -67,7 +67,6 @@ public:
     const settings_t& settings() const override { return m_settings; }
 
     void* nativeWindow() override { return m_window; }
-    Shared<RenderContext> renderContext() const override { return m_context; }
 
 private:
     void emitEvent(Event* event);
@@ -78,7 +77,6 @@ private:
 
     settings_t m_settings;
     SDL_Window* m_window{nullptr};
-    Shared<RenderContext> m_context;
 
     std::list<EventListener*> m_event_listeners;
 };

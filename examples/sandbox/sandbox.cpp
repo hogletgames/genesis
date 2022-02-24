@@ -38,7 +38,8 @@
 namespace {
 
 constexpr GE::Logger::Level LOG_LEVEL{GE::Logger::Level::TRACE};
-constexpr GE::Renderer::API RENDER_API{GE::Renderer::API::VULKAN};
+constexpr GE::Graphics::API RENDER_API{GE::Graphics::API::VULKAN};
+constexpr auto APP_NAME = "Sandbox";
 
 } // namespace
 
@@ -48,15 +49,17 @@ int main()
     log_settings.core_log_level = LOG_LEVEL;
     log_settings.client_log_level = LOG_LEVEL;
 
-    GE::Renderer::settings_t renderer_settings{};
-    renderer_settings.api = RENDER_API;
+    GE::Graphics::settings_t graphics_settings{};
+    graphics_settings.api = RENDER_API;
+    graphics_settings.app_name = APP_NAME;
 
     GE::Window::settings_t window_settings{};
-    window_settings.renderer = renderer_settings;
+    window_settings.title = APP_NAME;
 
     GE::Application::settings_t app_settings{};
     app_settings.log = log_settings;
     app_settings.window = window_settings;
+    app_settings.graphics = graphics_settings;
 
     if (!GE::Application::initialize(app_settings)) {
         return EXIT_FAILURE;

@@ -38,7 +38,7 @@
 #include <genesis/core/memory.h>
 
 namespace GE {
-class ShaderProgram;
+class Pipeline;
 class VertexBuffer;
 } // namespace GE
 
@@ -55,7 +55,7 @@ public:
     void onRender() override;
 
 private:
-    Scoped<ShaderProgram> m_shader;
+    Scoped<Pipeline> m_pipeline;
     Scoped<VertexBuffer> m_vbo;
 };
 

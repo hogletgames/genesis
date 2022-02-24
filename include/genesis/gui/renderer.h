@@ -47,7 +47,7 @@ public:
 private:
     Renderer() = default;
 
-    static Scoped<Context>& ctx();
+    static Context* ctx();
 };
 
 } // namespace GE::GUI

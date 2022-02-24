@@ -65,6 +65,18 @@ inline ToType toType(const std::unordered_map<FromType, ToType>& container,
     return def_ret;
 }
 
+template<typename T, typename U>
+inline std::unordered_map<U, T> swapKeyAndValue(const std::unordered_map<T, U>& map)
+{
+    std::unordered_map<U, T> swapped_map;
+
+    for (auto [key, value] : map) {
+        swapped_map.emplace(value, key);
+    }
+
+    return swapped_map;
+}
+
 } // namespace GE
 
 #endif // GENESIS_CORE_UTILS_H_
