@@ -25,7 +25,7 @@ RUN apt-add-repository ppa:ubuntu-toolchain-r/test && \
     apt-get update && apt-get install -y gcc-${GCC_VERSION} g++-${GCC_VERSION}
 
 # Clang tools
-ENV CLANG_VERSION=11
+ENV CLANG_VERSION=13
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
     apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${CLANG_VERSION} main" && \
     apt-get update && apt-get install -y clang-format-${CLANG_VERSION} clang-tidy-${CLANG_VERSION}
