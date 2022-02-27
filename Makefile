@@ -39,7 +39,7 @@ clang-format:
 	bash tools/clang_format.sh --clang-format-bin $(CLANG_FORMAT_BIN)
 
 .PHONY: clang-tidy
-clang-tidy: CMAKE_OPTIONS += -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+clang-tidy: CMAKE_OPTIONS += -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DGE_BUILD_EXAMPLES=ON
 clang-tidy: generate_makefiles
 	$(RUN_CLANG_TIDY_BIN) -p $(BUILD_DIR)
 
@@ -60,8 +60,8 @@ docker_run:
 		-w $(PWD) \
 		-u $$(id -u):$$(id -g) \
 		-e CMAKE_OPTIONS="$(CMAKE_OPTIONS)" \
-		-e CLANG_FORMAT_BIN="clang-format-11" \
-		-e RUN_CLANG_TIDY_BIN="run-clang-tidy-11" \
+		-e CLANG_FORMAT_BIN="$(CLANG_FORMAT_BIN)" \
+		-e RUN_CLANG_TIDY_BIN="$(RUN_CLANG_TIDY_BIN)" \
 		$(DOCKER_IMAGE_NAME) \
 		bash -c "$(DOCKER_CMD)"
 

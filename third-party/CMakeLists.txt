@@ -56,6 +56,3 @@ target_include_directories(imgui-vulkan PUBLIC imgui/backends)
 # add_executable(imgui_sdl_vulkan_example imgui/examples/example_sdl_vulkan/main.cpp)
 # target_link_libraries(imgui_sdl_vulkan_example PRIVATE imgui-vulkan)
 # target_compile_definitions(imgui_sdl_vulkan_example PRIVATE _DEBUG)
-
-# patches
-ge_apply_patch(imgui)

@@ -103,12 +103,13 @@ namespace GE::SDL {
 Window::Window(settings_t settings, Graphics::API api)
     : m_settings{std::move(settings)}
 {
+    int width = static_cast<int>(m_settings.size.x);
+    int height = static_cast<int>(m_settings.size.y);
     auto flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN |
                  renderAPIToWindowFlag(api);
 
     m_window = SDL_CreateWindow(m_settings.title.c_str(), SDL_WINDOWPOS_CENTERED,
-                                SDL_WINDOWPOS_CENTERED, m_settings.size.x,
-                                m_settings.size.y, flags);
+                                SDL_WINDOWPOS_CENTERED, width, height, flags);
 
     if (m_window == nullptr) {
         auto error = GE_FMTSTR("Failed to create SDL Window: {}", SDL_GetError());
