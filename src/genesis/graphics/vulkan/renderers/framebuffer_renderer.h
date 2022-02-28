@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,26 +31,53 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
-#define GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
+#ifndef GENESIS_GRAPHICS_VULKAN_RENDERERS_FRAMEBUFFER_RENDERER_H_
+#define GENESIS_GRAPHICS_VULKAN_RENDERERS_FRAMEBUFFER_RENDERER_H_
 
-#include "buffers/buffer_base.h"
+#include "renderer_base.h"
 
 namespace GE::Vulkan {
 
-class StagingBuffer: public BufferBase
+class Device;
+class Framebuffer;
+
+class FramebufferRenderer: public RendererBase
 {
 public:
-    StagingBuffer(Shared<Device> device, const void* data, uint32_t size);
+    FramebufferRenderer(Shared<Device> device, Vulkan::Framebuffer *framebuffer);
+    ~FramebufferRenderer();
 
-    void copyTo(BufferBase* dest);
+    bool beginFrame(ClearMode clear_mode = CLEAR_ALL) override;
+    void endFrame() override;
+    void swapBuffers() override;
+
+    void onEvent([[maybe_unused]] Event *event) override{};
+
+    Scoped<GE::Pipeline> createPipeline(const pipeline_config_t &config) override;
+
+    VkRenderPass renderPass(ClearMode clear_mode) const
+    {
+        return m_render_passes[clear_mode];
+    }
 
 private:
-    void copyData(const void* data, uint32_t size);
+    void createClearValues();
+    void createRenderPasses();
+    void createSyncObjects();
+    void destroyVkHandles();
 
-    VkDeviceSize m_size{0};
+    bool submit();
+    void depthImagePipelineBarrier();
+
+    VkCommandBuffer cmdBuffer() const override;
+    VkFramebuffer currentFramebuffer() const override;
+    VkExtent2D extent() const override;
+    VkViewport viewport() const override;
+
+    Vulkan::Framebuffer *m_framebuffer{nullptr};
+    VkFence m_in_flight_fence{VK_NULL_HANDLE};
 };
 
 } // namespace GE::Vulkan
 
-#endif // GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
+#endif // GENESIS_GRAPHICS_VULKAN_RENDERERS_FRAMEBUFFER_RENDERER_H_

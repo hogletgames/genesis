@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,16 +35,22 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
+#include <genesis/graphics/framebuffer.h>
 #include <genesis/graphics/shader.h>
 
 namespace GE {
-
 class IndexBuffer;
 class VertexBuffer;
+class Texture;
+
+struct texture_config_t;
 
 class GE_API GraphicsFactory: public Interface
 {
 public:
+    virtual Scoped<Framebuffer>
+    createFramebuffer(const Framebuffer::config_t& config) const = 0;
+
     virtual Scoped<IndexBuffer> createIndexBuffer(const uint32_t* indices,
                                                   uint32_t count) const = 0;
     virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices,
@@ -52,6 +58,8 @@ public:
     virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;
 
     virtual Scoped<Shader> createShader(Shader::Type type) = 0;
+
+    virtual Scoped<Texture> createTexture(const texture_config_t& config) = 0;
 };
 
 } // namespace GE

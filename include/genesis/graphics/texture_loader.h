@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,27 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
-#define GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
+#ifndef GENESIS_GRAPHICS_TEXTURE_LOADER_H_
+#define GENESIS_GRAPHICS_TEXTURE_LOADER_H_
 
-#include "buffers/buffer_base.h"
+#include <genesis/core/export.h>
+#include <genesis/core/memory.h>
 
-namespace GE::Vulkan {
+namespace GE {
 
-class StagingBuffer: public BufferBase
+class Texture;
+
+class GE_API TextureLoader
 {
 public:
-    StagingBuffer(Shared<Device> device, const void* data, uint32_t size);
+    explicit TextureLoader(std::string filepath);
 
-    void copyTo(BufferBase* dest);
+    Scoped<Texture> load();
 
 private:
-    void copyData(const void* data, uint32_t size);
-
-    VkDeviceSize m_size{0};
+    std::string m_filepath;
 };
 
-} // namespace GE::Vulkan
+} // namespace GE
 
-#endif // GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
+#endif // GENESIS_GRAPHICS_TEXTURE_LOADER_H_

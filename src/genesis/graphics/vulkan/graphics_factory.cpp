@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,13 +33,21 @@
 #include "graphics_factory.h"
 #include "buffers/index_buffer.h"
 #include "buffers/vertex_buffer.h"
+#include "framebuffer.h"
 #include "shader.h"
+#include "texture.h"
 
 namespace GE::Vulkan {
 
 GraphicsFactory::GraphicsFactory(Shared<Device> device)
     : m_device{std::move(device)}
 {}
+
+Scoped<GE::Framebuffer>
+GraphicsFactory::createFramebuffer(const Framebuffer::config_t &config) const
+{
+    return tryMakeScoped<Vulkan::Framebuffer>(m_device, config);
+}
 
 Scoped<GE::IndexBuffer> GraphicsFactory::createIndexBuffer(const uint32_t *indices,
                                                            uint32_t count) const
@@ -62,6 +70,18 @@ Scoped<GE::VertexBuffer> GraphicsFactory::createVertexBuffer(uint32_t size) cons
 Scoped<GE::Shader> GraphicsFactory::createShader(Shader::Type type)
 {
     return tryMakeScoped<Vulkan::Shader>(m_device, type);
+}
+
+Scoped<GE::Texture> GraphicsFactory::createTexture(const texture_config_t &config)
+{
+    switch (config.type) {
+        case TextureType::TEXTURE_2D:
+            return tryMakeScoped<Vulkan::Texture2D>(m_device, config);
+        default: break;
+    }
+
+    GE_CORE_ERR("Unsupported texture type: {}", static_cast<int>(config.type));
+    return nullptr;
 }
 
 } // namespace GE::Vulkan

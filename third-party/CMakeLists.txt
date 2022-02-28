@@ -19,6 +19,8 @@ add_subdirectory(Vulkan)
 # stb
 add_library(stb-image INTERFACE)
 target_include_directories(stb-image INTERFACE stb)
+target_compile_options(stb-image INTERFACE
+    $<$<CXX_COMPILER_ID:GNU>:-Wno-sign-compare;-Wno-unused-but-set-variable>)
 target_compile_definitions(stb-image INTERFACE -DSTB_IMAGE_IMPLEMENTATION)
 add_library(stb::image ALIAS stb-image)
 

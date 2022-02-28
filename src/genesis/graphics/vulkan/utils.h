@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@
 #include <vulkan/vulkan.h>
 
 #include <type_traits>
+#include <utility>
 
 namespace GE::Vulkan {
 
@@ -79,6 +80,8 @@ inline void destroyDebugUtilsMessengerEXT(VkInstance instance,
     loadInstanceFuncAndCall<PFN_vkDestroyDebugUtilsMessengerEXT>(
         "vkDestroyDebugUtilsMessengerEXT", instance, debug_messenger, allocator);
 }
+
+VkSampleCountFlagBits toVkSampleCountFlag(uint8_t sample_count);
 
 } // namespace GE::Vulkan
 

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 #define GENESIS_CORE_H_
 
 #include <genesis/core/asserts.h>
+#include <genesis/core/defer.h>
 #include <genesis/core/enum.h>
 #include <genesis/core/export.h>
 #include <genesis/core/format.h>

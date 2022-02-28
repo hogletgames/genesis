@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,17 +34,25 @@
 #ifndef GENESIS_GRAPHICS_VULKAN_IMAGE_H_
 #define GENESIS_GRAPHICS_VULKAN_IMAGE_H_
 
+#include "pipeline_barrier.h"
+
 #include <genesis/core/memory.h>
 
 #include <vulkan/vulkan.h>
 
+#include <vector>
+
 namespace GE::Vulkan {
 
 class Device;
+class StagingBuffer;
+struct memory_barrier_config_t;
 
 struct image_config_t {
+    VkImageViewType view_type{VK_IMAGE_VIEW_TYPE_2D};
     VkExtent3D extent{0, 0, 1};
     uint32_t mip_levels{1};
+    uint32_t layers{1};
     VkSampleCountFlagBits samples{VK_SAMPLE_COUNT_1_BIT};
     VkFormat format{};
     VkImageTiling tiling{};
@@ -59,8 +67,18 @@ public:
     Image(Shared<Device> device, const image_config_t& config);
     ~Image();
 
+    void copyFrom(const StagingBuffer& buffer,
+                  const std::vector<VkBufferImageCopy>& regions);
+
+    memory_barrier_config_t memoryBarrierConfig() const;
+
     VkImage image() const { return m_image; }
     VkImageView view() const { return m_image_view; }
+
+    const VkExtent3D& extent() const { return m_extent; }
+    VkFormat format() const { return m_format; }
+    uint32_t MIPLevels() const { return m_mip_levels; }
+    uint32_t layers() const { return m_layers; }
 
 private:
     void createImage(const image_config_t& config);
@@ -71,11 +89,21 @@ private:
 
     uint32_t getMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
 
+    void transitionImageLayout();
+    void copyToImage(const StagingBuffer& buffer,
+                     const std::vector<VkBufferImageCopy>& regions);
+    void createMipmaps();
+
     Shared<Device> m_device;
 
     VkImage m_image{VK_NULL_HANDLE};
     VkDeviceMemory m_memory{VK_NULL_HANDLE};
     VkImageView m_image_view{VK_NULL_HANDLE};
+
+    VkExtent3D m_extent{};
+    VkFormat m_format{VK_FORMAT_UNDEFINED};
+    uint32_t m_mip_levels{};
+    uint32_t m_layers{};
 };
 
 } // namespace GE::Vulkan

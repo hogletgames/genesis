@@ -30,68 +30,67 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_TEXTURE_H_
-#define GENESIS_GRAPHICS_VULKAN_TEXTURE_H_
+#ifndef GENESIS_GRAPHICS_FRAMEBUFFER_H_
+#define GENESIS_GRAPHICS_FRAMEBUFFER_H_
 
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
+#include <genesis/graphics/renderer.h>
 #include <genesis/graphics/texture.h>
+#include <genesis/math/types.h>
 
-#include <vulkan/vulkan.h>
+#include <vector>
 
-namespace GE::Vulkan {
+namespace GE {
 
-class Device;
-class Image;
+class Texture;
 
-class Texture: public GE::Texture
-{
-public:
-    Texture(Shared<Device> device, const texture_config_t& config);
-    ~Texture();
+struct fb_attachment_t {
+    enum class Type : uint8_t
+    {
+        UNKNOWN = 0,
+        COLOR,
+        DEPTH,
+        DEPTH_STENCIL
+    };
 
-    NativeID nativeID() const override;
-    const Vec2& size() const override { return m_size; }
-    TextureFormat format() const override { return m_format; }
-    const Scoped<Image>& image() const { return m_image; }
-    VkSampler sampler() const { return m_sampler; }
-
-protected:
-    virtual uint32_t checkDepth(uint32_t depth) = 0;
-    virtual uint32_t checkLayers(uint32_t layers) = 0;
-
-    Shared<Device> m_device;
-
-    Scoped<Image> m_image;
-    Vec2 m_size{0.0f, 0.0f};
-    TextureFormat m_format{TextureFormat::UNKNOWN};
-    VkSampler m_sampler{VK_NULL_HANDLE};
-
-    mutable VkDescriptorSet m_descriptor_set{VK_NULL_HANDLE};
-
-private:
-    void createImage(const texture_config_t& config);
-    void createSampler(const texture_config_t& config);
-
-    void destroyVkHandles();
-
-    void colorImageBarrier();
+    Type type{Type::UNKNOWN};
+    TextureType texture_type{TextureType::UNKNOWN};
+    TextureFormat texture_format{TextureFormat::UNKNOWN};
 };
 
-class Texture2D: public Vulkan::Texture
+class GE_API Framebuffer: public NonCopyable
 {
 public:
-    using Vulkan::Texture::Texture;
+    struct config_t {
+        Vec2 size{1920.0f, 1080.0f};
+        uint32_t layers{1};
+        uint32_t msaa_samples{1};
+        Vec4 clear_color{1.0f, 1.0f, 1.0f, 1.0f};
+        float clear_depth{1.0f};
+        std::vector<fb_attachment_t> attachments = {
+            {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D,
+             TextureFormat::SRGBA8},
+            {fb_attachment_t::Type::DEPTH, TextureType::TEXTURE_2D, TextureFormat::D32F},
+        };
+    };
 
-    bool setData(const void* data, uint32_t size) override;
+    virtual void resize(const Vec2& size) = 0;
 
-private:
-    uint32_t checkDepth(uint32_t depth) override;
-    uint32_t checkLayers(uint32_t layers) override;
+    virtual Renderer* renderer() = 0;
+    virtual const Vec2& size() const = 0;
+    virtual uint32_t MSSASamples() const = 0;
+    virtual const Vec4& clearColor() const = 0;
+    virtual float clearDepth() const = 0;
+
+    virtual const Texture& colorTexture() const = 0;
+    virtual const Texture& depthTexture() const = 0;
+    virtual uint32_t colorAttachmentCount() const = 0;
+    virtual bool hasDepthAttachment() const = 0;
+
+    static Scoped<Framebuffer> create(const config_t& config);
 };
 
-VkFormat toVkFormat(TextureFormat format);
-TextureFormat toTextureFormat(VkFormat format);
+} // namespace GE
 
-} // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_TEXTURE_H_
+#endif // GENESIS_GRAPHICS_FRAMEBUFFER_H_

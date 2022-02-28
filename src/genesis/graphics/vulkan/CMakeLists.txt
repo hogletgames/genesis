@@ -4,32 +4,39 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     buffers/index_buffer.cpp
     buffers/staging_buffer.cpp
     buffers/vertex_buffer.cpp
+    renderers/framebuffer_renderer.cpp
     renderers/renderer_base.cpp
     renderers/window_renderer.cpp
     device.cpp
     graphics_context.cpp
     graphics_factory.cpp
+    framebuffer.cpp
     image.cpp
+    pipeline_barrier.cpp
     input_stage_descriptions.cpp
     instance.cpp
     pipeline.cpp
     sdl_gui_context.cpp
     shader.cpp
     single_command.cpp
-    swap_chain.cpp)
+    swap_chain.cpp
+    utils.cpp)
 
 list(APPEND GE_RENDERER_VULKAN_HEADERS
     buffers/buffer_base.h
     buffers/index_buffer.h
     buffers/staging_buffer.h
     buffers/vertex_buffer.h
+    renderers/framebuffer_renderer.h
     renderers/renderer_base.h
     renderers/window_renderer.h
     command_buffer.h
     device.h
     graphics_context.h
     graphics_factory.h
+    framebuffer.h
     image.h
+    pipeline_barrier.h
     input_stage_descriptions.h
     instance.h
     pipeline.h

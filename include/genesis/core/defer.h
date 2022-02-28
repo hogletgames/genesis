@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,27 +30,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
-#define GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
+#ifndef GENESIS_CORE_DEFER_H_
+#define GENESIS_CORE_DEFER_H_
 
-#include "buffers/buffer_base.h"
+#include <genesis/core/export.h>
+#include <genesis/core/utils.h>
 
-namespace GE::Vulkan {
+#include <functional>
 
-class StagingBuffer: public BufferBase
+namespace GE {
+
+template<typename T, typename... Args>
+class GE_API Beginner
 {
 public:
-    StagingBuffer(Shared<Device> device, const void* data, uint32_t size);
-
-    void copyTo(BufferBase* dest);
-
-private:
-    void copyData(const void* data, uint32_t size);
-
-    VkDeviceSize m_size{0};
+    explicit Beginner(Args&... args) { T::begin(std::forward<Args>(args)...); }
+    ~Beginner() { T::end(); }
 };
 
-} // namespace GE::Vulkan
+class Defer
+{
+public:
+    using DeferredFunc = std::function<void()>;
 
-#endif // GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
+    explicit Defer(DeferredFunc func)
+        : deferred_func{std::move(func)}
+    {}
+
+    ~Defer() { deferred_func(); }
+
+private:
+    DeferredFunc deferred_func;
+};
+
+} // namespace GE
+
+#endif // GENESIS_CORE_DEFER_H_

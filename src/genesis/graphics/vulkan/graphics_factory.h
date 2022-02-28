@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,9 @@ class GraphicsFactory: public GE::GraphicsFactory
 public:
     explicit GraphicsFactory(Shared<Device> device);
 
+    Scoped<GE::Framebuffer>
+    createFramebuffer(const Framebuffer::config_t& config) const override;
+
     Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
                                               uint32_t count) const override;
     Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
@@ -53,6 +56,8 @@ public:
     Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
 
     Scoped<GE::Shader> createShader(Shader::Type type) override;
+
+    Scoped<GE::Texture> createTexture(const texture_config_t& config) override;
 
 private:
     Shared<Device> m_device;

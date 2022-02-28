@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ void StagingBuffer::copyTo(BufferBase *dest)
     copy_region.srcOffset = 0;
     copy_region.dstOffset = 0;
     copy_region.size = m_size;
-    vkCmdCopyBuffer(cmd.getCmdBuffer(), m_buffer, dest->getBuffer(), 1, &copy_region);
+    vkCmdCopyBuffer(cmd.buffer(), m_buffer, dest->buffer(), 1, &copy_region);
 }
 
 void StagingBuffer::copyData(const void *data, uint32_t size)

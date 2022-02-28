@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,12 +32,12 @@
 
 #include "shader_precompiler.h"
 
+#include "genesis/core/filesystem.h"
 #include "genesis/core/log.h"
 
 #include <shaderc/shaderc.hpp>
 
 #include <filesystem>
-#include <fstream>
 
 namespace {
 
@@ -54,8 +54,8 @@ std::optional<shaderc_shader_kind> toShaderKind(GE::Shader::Type type)
 
 std::string readShaderCode(const std::string &filepath)
 {
-    if (std::ifstream file{filepath}; file) {
-        return {std::istreambuf_iterator<char>{file}, std::istreambuf_iterator<char>{}};
+    if (auto file = GE::readFile<char>(filepath); !file.empty()) {
+        return {file.begin(), file.end()};
     }
 
     GE_CORE_ERR("Failed to open Shader: '{}'", filepath);

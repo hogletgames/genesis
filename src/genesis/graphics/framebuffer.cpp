@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2021, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,27 +30,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
-#define GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
+#include "framebuffer.h"
+#include "graphics.h"
 
-#include "buffers/buffer_base.h"
+namespace GE {
 
-namespace GE::Vulkan {
-
-class StagingBuffer: public BufferBase
+Scoped<Framebuffer> Framebuffer::create(const config_t& config)
 {
-public:
-    StagingBuffer(Shared<Device> device, const void* data, uint32_t size);
+    return Graphics::factory()->createFramebuffer(config);
+}
 
-    void copyTo(BufferBase* dest);
-
-private:
-    void copyData(const void* data, uint32_t size);
-
-    VkDeviceSize m_size{0};
-};
-
-} // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
+} // namespace GE

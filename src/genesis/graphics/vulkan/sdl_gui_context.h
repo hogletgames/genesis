@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@
 
 namespace GE::Vulkan {
 class Device;
+class Texture;
 class WindowRenderer;
 } // namespace GE::Vulkan
 
@@ -66,6 +67,9 @@ private:
     Shared<Device> m_device;
     VkDescriptorPool m_descriptor_pool{VK_NULL_HANDLE};
 };
+
+VkDescriptorSet createGuiTextureID(const Vulkan::Texture& texture);
+void destroyGuiTextureID(VkDescriptorSet texture_id);
 
 } // namespace GE::Vulkan::SDL
 

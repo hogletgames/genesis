@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,26 +31,44 @@
  */
 
 // NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
-#define GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
+#ifndef GENESIS_GRAPHICS_VULKAN_PIPELINE_BARRIER_H_
+#define GENESIS_GRAPHICS_VULKAN_PIPELINE_BARRIER_H_
 
-#include "buffers/buffer_base.h"
+#include <vector>
+#include <vulkan/vulkan.h>
 
 namespace GE::Vulkan {
 
-class StagingBuffer: public BufferBase
+class Image;
+
+struct memory_barrier_config_t {
+    VkImage image{VK_NULL_HANDLE};
+    VkFormat image_format{VK_FORMAT_UNDEFINED};
+    uint32_t level_count{0};
+    uint32_t layer_count{0};
+
+    VkImageLayout old_layout{VK_IMAGE_LAYOUT_UNDEFINED};
+    VkImageLayout new_layout{VK_IMAGE_LAYOUT_UNDEFINED};
+    uint32_t base_mip_level{0};
+    uint32_t base_array_layer{0};
+};
+
+class MemoryBarrier
 {
 public:
-    StagingBuffer(Shared<Device> device, const void* data, uint32_t size);
+    static VkImageMemoryBarrier
+    createImageMemoryBarrier(const memory_barrier_config_t& config);
+};
 
-    void copyTo(BufferBase* dest);
-
-private:
-    void copyData(const void* data, uint32_t size);
-
-    VkDeviceSize m_size{0};
+class PipelineBarrier
+{
+public:
+    static void submit(VkCommandBuffer cmd,
+                       const std::vector<VkImageMemoryBarrier>& barriers,
+                       VkPipelineStageFlagBits src_stage,
+                       VkPipelineStageFlagBits dst_stage);
 };
 
 } // namespace GE::Vulkan
 
-#endif // GENESIS_GRAPHICS_VULKAN_BUFFERS_STAGING_BUFFER_H_
+#endif // GENESIS_GRAPHICS_VULKAN_PIPELINE_BARRIER_H_

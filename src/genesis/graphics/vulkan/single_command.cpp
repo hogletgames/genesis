@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,12 +34,14 @@
 #include "device.h"
 #include "vulkan_exception.h"
 
+#include "genesis/core/asserts.h"
 #include "genesis/core/log.h"
 
 namespace GE::Vulkan {
 
-SingleCommand::SingleCommand(Shared<Device> device)
+SingleCommand::SingleCommand(Shared<Device> device, QueueFamily queue_family)
     : m_device{std::move(device)}
+    , m_queue_family{queue_family}
 {
     VkCommandBufferAllocateInfo alloc_info{};
     alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -75,7 +77,7 @@ SingleCommand::~SingleCommand()
     submit_info.commandBufferCount = 1;
     submit_info.pCommandBuffers = &m_cmd_buffer;
 
-    if (vkQueueSubmit(m_device->graphicsQueue(), 1, &submit_info, VK_NULL_HANDLE) !=
+    if (vkQueueSubmit(getQueue(m_queue_family), 1, &submit_info, VK_NULL_HANDLE) !=
         VK_SUCCESS) {
         GE_CORE_WARN("Failed to submit Single Command");
         destroyVkHandles();
@@ -84,6 +86,19 @@ SingleCommand::~SingleCommand()
 
     vkQueueWaitIdle(m_device->graphicsQueue());
     destroyVkHandles();
+}
+
+VkQueue SingleCommand::getQueue(SingleCommand::QueueFamily family)
+{
+    switch (family) {
+        case QUEUE_GRAPHICS: return m_device->graphicsQueue();
+        case QUEUE_TRANSFER: return m_device->transferQueue();
+        case QUEUE_COMPUTE: return m_device->computeQueue();
+        default: break;
+    }
+
+    GE_CORE_ASSERT(false, "Unsupported Queue Family: {}", static_cast<int>(family));
+    return VK_NULL_HANDLE;
 }
 
 void SingleCommand::destroyVkHandles()

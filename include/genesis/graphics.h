@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 #ifndef GENESIS_GRAPHICS_H_
 #define GENESIS_GRAPHICS_H_
 
+#include <genesis/graphics/framebuffer.h>
 #include <genesis/graphics/gpu_command_queue.h>
 #include <genesis/graphics/graphics.h>
 #include <genesis/graphics/graphics_context.h>

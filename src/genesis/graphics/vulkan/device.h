@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,10 +47,13 @@ namespace GE::Vulkan {
 struct queue_family_indices_t {
     std::optional<uint32_t> graphics_family{};
     std::optional<uint32_t> present_family{};
+    std::optional<uint32_t> transfer_family{};
+    std::optional<uint32_t> compute_queue{};
 
     bool isComplete() const
     {
-        return graphics_family.has_value() && present_family.has_value();
+        return graphics_family.has_value() && present_family.has_value() &&
+               transfer_family.has_value() && compute_queue.has_value();
     }
 };
 
@@ -76,6 +79,8 @@ public:
 
     VkQueue graphicsQueue() const { return m_graphics_queue; }
     VkQueue presentQueue() const { return m_present_queue; }
+    VkQueue transferQueue() const { return m_transfer_queue; }
+    VkQueue computeQueue() const { return m_compute_queue; }
     const queue_family_indices_t& queueIndices() const { return m_queue_indices; }
 
     swap_chain_support_details_t swapChainDetails() const
@@ -110,6 +115,8 @@ private:
 
     VkQueue m_graphics_queue{VK_NULL_HANDLE};
     VkQueue m_present_queue{VK_NULL_HANDLE};
+    VkQueue m_transfer_queue{VK_NULL_HANDLE};
+    VkQueue m_compute_queue{VK_NULL_HANDLE};
 
     queue_family_indices_t m_queue_indices{};
 

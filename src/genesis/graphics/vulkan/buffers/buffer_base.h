@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ public:
     explicit BufferBase(Shared<Device> device);
     ~BufferBase();
 
-    VkBuffer getBuffer() { return m_buffer; };
+    VkBuffer buffer() const { return m_buffer; };
 
 protected:
     void createBuffer(uint32_t size, VkBufferUsageFlags usage,
