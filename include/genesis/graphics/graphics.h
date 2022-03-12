@@ -51,6 +51,7 @@ public:
     struct settings_t {
         API api{API_DEFAULT};
         std::string app_name;
+        uint8_t msaa_samples{1};
 
         static constexpr API API_DEFAULT{API::VULKAN};
     };

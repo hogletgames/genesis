@@ -47,7 +47,7 @@ class PlatformWindow;
 class Instance
 {
 public:
-    static void initialize(void* native_window, const std::string& app_name);
+    static void initialize(void* native_window, std::string_view app_name);
     static void shutdown();
 
     static VkInstance instance() { return get()->m_instance; }
@@ -61,7 +61,7 @@ private:
         return &instance;
     }
 
-    void createInstance(void* native_window, const std::string& app_name);
+    void createInstance(void* native_window, std::string_view app_name);
     void createDebugUtilsMessenger();
 
     void destroyVulkanHandles();

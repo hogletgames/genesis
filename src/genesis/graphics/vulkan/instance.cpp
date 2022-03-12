@@ -95,7 +95,7 @@ getDebugMsgrCreateInfo(VkDebugUtilsMessageSeverityFlagsEXT severity)
 
 namespace GE::Vulkan {
 
-void Instance::initialize(void* native_window, const std::string& app_name)
+void Instance::initialize(void* native_window, std::string_view app_name)
 {
     get()->createInstance(native_window, app_name);
 #ifndef GE_DISABLE_DEBUG
@@ -108,7 +108,7 @@ void Instance::shutdown()
     get()->destroyVulkanHandles();
 }
 
-void Instance::createInstance(void* native_window, const std::string& app_name)
+void Instance::createInstance(void* native_window, std::string_view app_name)
 {
     GE_CORE_INFO("Creating Vulkan Instance...");
     auto* window = reinterpret_cast<SDL_Window*>(native_window);
@@ -121,7 +121,7 @@ void Instance::createInstance(void* native_window, const std::string& app_name)
 
     VkApplicationInfo app_info{};
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    app_info.pApplicationName = app_name.c_str();
+    app_info.pApplicationName = app_name.data();
     app_info.apiVersion = VK_MAKE_VERSION(1, 0, 0);
     app_info.pEngineName = ENGINE_NAME.data();
     app_info.engineVersion = VK_MAKE_VERSION(VERSION_MAJOR, VERSION_MAJOR, VERSION_MAJOR);

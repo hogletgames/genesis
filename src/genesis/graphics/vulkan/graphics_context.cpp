@@ -49,8 +49,8 @@ VkSurfaceKHR createSurface(void* window)
     VkSurfaceKHR surface{VK_NULL_HANDLE};
     auto* sdl_window = reinterpret_cast<SDL_Window*>(window);
 
-    if (SDL_Vulkan_CreateSurface(sdl_window, GE::Vulkan::Instance::instance(),
-                                 &surface) == SDL_FALSE) {
+    if (::SDL_Vulkan_CreateSurface(sdl_window, GE::Vulkan::Instance::instance(),
+                                   &surface) == SDL_FALSE) {
         throw GE::Vulkan::Exception{"Failed to create Vulkan SDL Surface"};
     }
 
@@ -62,7 +62,7 @@ inline GE::Vec2 getWindowSize(void* window)
     auto* sdl_window = reinterpret_cast<SDL_Window*>(window);
     int width{0};
     int height{0};
-    SDL_GetWindowSize(sdl_window, &width, &height);
+    ::SDL_GetWindowSize(sdl_window, &width, &height);
     return {width, height};
 }
 
@@ -77,19 +77,20 @@ GraphicsContext::~GraphicsContext()
     clearResources();
 }
 
-bool GraphicsContext::initialize(void* window, const std::string& app_name)
+bool GraphicsContext::initialize(const config_t& config)
 {
     GE_CORE_INFO("Initializing Vulkan Context...");
-    Instance::initialize(window, app_name);
+    Instance::initialize(config.window, config.app_name);
 
-    m_surface = createSurface(window);
-    Vec2 window_size = getWindowSize(window);
+    m_surface = createSurface(config.window);
+    Vec2 window_size = getWindowSize(config.window);
 
     try {
         m_device = makeScoped<Device>(m_surface);
         m_window_renderer = makeScoped<WindowRenderer>(m_device, m_surface, window_size);
         m_factory = makeScoped<Vulkan::GraphicsFactory>(m_device);
-        m_gui = makeScoped<SDL::GUIContext>(window, m_device, m_window_renderer.get());
+        m_gui =
+            makeScoped<SDL::GUIContext>(config.window, m_device, m_window_renderer.get());
     } catch (const Vulkan::Exception& e) {
         GE_CORE_ERR("Failed to initialize context: {}", e.what());
         clearResources();

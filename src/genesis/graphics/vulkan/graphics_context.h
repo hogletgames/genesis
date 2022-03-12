@@ -55,7 +55,7 @@ public:
     GraphicsContext();
     ~GraphicsContext();
 
-    bool initialize(void* window, const std::string& app_name) override;
+    bool initialize(const config_t& config) override;
     void shutdown() override;
 
     GE::GraphicsFactory* factory() override { return m_factory.get(); }

@@ -44,7 +44,13 @@ namespace GE {
 class GE_API GraphicsContext: public Interface
 {
 public:
-    virtual bool initialize(void* window, const std::string& app_name) = 0;
+    struct config_t {
+        void* window{nullptr};
+        std::string_view app_name;
+        uint8_t msaa_samples{1};
+    };
+
+    virtual bool initialize(const config_t& config) = 0;
     virtual void shutdown() = 0;
 
     virtual GraphicsFactory* factory() = 0;
