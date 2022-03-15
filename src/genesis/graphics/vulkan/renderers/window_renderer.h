@@ -53,7 +53,13 @@ class SwapChain;
 class WindowRenderer: public RendererBase
 {
 public:
-    WindowRenderer(Shared<Device> device, VkSurfaceKHR surface, Vec2 window_size);
+    struct config_t {
+        VkSurfaceKHR surface{VK_NULL_HANDLE};
+        Vec2 window_size{0.0f, 0.0f};
+        uint8_t msaa_samples{1};
+    };
+
+    WindowRenderer(Shared<Device> device, const config_t& config);
     ~WindowRenderer();
 
     bool beginFrame(ClearMode clear_mode) override;

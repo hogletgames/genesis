@@ -63,6 +63,8 @@ public:
     GE::GUI::Context* gui() override { return m_gui.get(); }
 
 private:
+    Scoped<WindowRenderer> createWindowRenderer(const config_t& renderer_config);
+
     void clearResources();
     void destroyVulkanHandles();
 

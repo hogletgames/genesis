@@ -60,11 +60,11 @@ VkViewport toFlippedVkViewport(const VkExtent2D& extent)
 
 namespace GE::Vulkan {
 
-WindowRenderer::WindowRenderer(Shared<Device> device, VkSurfaceKHR surface,
-                               Vec2 window_size)
+WindowRenderer::WindowRenderer(Shared<Device> device, const config_t& config)
     : RendererBase{std::move(device)}
-    , m_surface{surface}
-    , m_window_size{window_size}
+    , m_surface{config.surface}
+    , m_window_size{config.window_size}
+    , m_msaa_samples{config.msaa_samples}
 {
     m_clear_values = {{}, {}};
 
