@@ -39,6 +39,7 @@
 #include "single_command.h"
 #include "swap_chain.h"
 #include "texture.h"
+#include "utils.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/log.h"
@@ -128,6 +129,7 @@ GUIContext::GUIContext(void *window, Shared<Device> device,
     init_info.Allocator = nullptr;
     init_info.MinImageCount = swap_chain->minImageCount();
     init_info.ImageCount = swap_chain->imageCount();
+    init_info.MSAASamples = toVkSampleCountFlag(window_renderer->MSAASamples());
     init_info.CheckVkResultFn = nullptr;
 
     if (!ImGui_ImplVulkan_Init(&init_info, render_pass)) {

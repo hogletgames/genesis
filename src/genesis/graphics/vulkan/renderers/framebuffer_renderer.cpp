@@ -204,23 +204,23 @@ void FramebufferRenderer::createRenderPasses()
     auto attachments = m_framebuffer->attachments();
 
     fillClearNoneAttachmentsOp(&attachments);
-    m_render_passes[CLEAR_NONE] = createRenderPass(attachments);
+    m_render_passes[CLEAR_NONE] = createRenderPass(attachments, false);
 
     if (m_framebuffer->MSSASamples() > 1) {
-        m_render_passes[CLEAR_COLOR] = createRenderPass(attachments);
-        m_render_passes[CLEAR_DEPTH] = createRenderPass(attachments);
-        m_render_passes[CLEAR_ALL] = createRenderPass(attachments);
+        m_render_passes[CLEAR_COLOR] = createRenderPass(attachments, false);
+        m_render_passes[CLEAR_DEPTH] = createRenderPass(attachments, false);
+        m_render_passes[CLEAR_ALL] = createRenderPass(attachments, false);
         return;
     }
 
     fillClearColorAttachmentsOp(&attachments);
-    m_render_passes[CLEAR_COLOR] = createRenderPass(attachments);
+    m_render_passes[CLEAR_COLOR] = createRenderPass(attachments, false);
 
     fillClearDepthAttachmentsOp(&attachments);
-    m_render_passes[CLEAR_DEPTH] = createRenderPass(attachments);
+    m_render_passes[CLEAR_DEPTH] = createRenderPass(attachments, false);
 
     fillClearAllAttachmentsOp(&attachments);
-    m_render_passes[CLEAR_ALL] = createRenderPass(attachments);
+    m_render_passes[CLEAR_ALL] = createRenderPass(attachments, false);
 }
 
 void FramebufferRenderer::createSyncObjects()

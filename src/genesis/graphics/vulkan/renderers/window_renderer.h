@@ -65,10 +65,17 @@ public:
     void onEvent(Event* event) override;
     bool onWindowResized(const WindowResizedEvent& event);
 
-    SwapChain* swapChain() { return m_swap_chain.get(); }
-    VkRenderPass renderPass(ClearMode clear_mode) { return m_render_passes[clear_mode]; }
+    SwapChain* swapChain() const { return m_swap_chain.get(); }
+
+    VkRenderPass renderPass(ClearMode clear_mode) const
+    {
+        return m_render_passes[clear_mode];
+    }
+
+    uint8_t MSAASamples() const { return m_msaa_samples; }
 
 private:
+    std::vector<VkAttachmentDescription> createAttachmentDescriptions();
     void createRenderPasses();
     void createSwapChain();
 
@@ -79,6 +86,8 @@ private:
 
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
     Vec2 m_window_size{0.0f, 0.0f};
+    uint8_t m_msaa_samples{1};
+
     bool m_is_framebuffer_resized{false};
     Scoped<SwapChain> m_swap_chain;
 };

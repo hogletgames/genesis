@@ -34,6 +34,7 @@
 #include "device.h"
 #include "pipeline.h"
 #include "swap_chain.h"
+#include "utils.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/enum.h"
@@ -127,6 +128,7 @@ Scoped<GE::Pipeline> WindowRenderer::createPipeline(const GE::pipeline_config_t&
     vulkan_config.pipeline_cache = m_pipeline_cache;
     vulkan_config.render_pass = m_render_passes[CLEAR_ALL];
     vulkan_config.front_face = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    vulkan_config.msaa_samples = toVkSampleCountFlag(m_msaa_samples);
     return tryMakeScoped<Vulkan::Pipeline>(m_device, vulkan_config);
 }
 
@@ -143,7 +145,7 @@ bool WindowRenderer::onWindowResized(const WindowResizedEvent& event)
     return false;
 }
 
-void WindowRenderer::createRenderPasses()
+std::vector<VkAttachmentDescription> WindowRenderer::createAttachmentDescriptions()
 {
     VkFormat color_format =
         SwapChain::chooseSurfaceFormat(m_device->swapChainDetails().formats).format;
@@ -152,7 +154,7 @@ void WindowRenderer::createRenderPasses()
     VkAttachmentDescription color_attachment{};
     color_attachment.format = color_format;
     color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -161,7 +163,7 @@ void WindowRenderer::createRenderPasses()
 
     VkAttachmentDescription depth_attachment{};
     depth_attachment.format = depth_format;
-    depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    depth_attachment.samples = toVkSampleCountFlag(m_msaa_samples);
     depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -169,26 +171,43 @@ void WindowRenderer::createRenderPasses()
     depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-    std::vector<VkAttachmentDescription> description = {
-        color_attachment,
-        depth_attachment,
-    };
+    if (m_msaa_samples == 1) {
+        return {color_attachment, depth_attachment};
+    }
 
-    description[0].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    description[1].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    m_render_passes[CLEAR_NONE] = createRenderPass(description);
+    VkAttachmentDescription color_attachment_resolve{};
+    color_attachment_resolve.format = color_format;
+    color_attachment_resolve.samples = toVkSampleCountFlag(m_msaa_samples);
+    color_attachment_resolve.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    color_attachment_resolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    color_attachment_resolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    color_attachment_resolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    color_attachment_resolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    color_attachment_resolve.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-    description[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    description[1].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    m_render_passes[CLEAR_COLOR] = createRenderPass(description);
+    return {color_attachment_resolve, depth_attachment, color_attachment};
+}
 
-    description[0].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    description[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    m_render_passes[CLEAR_DEPTH] = createRenderPass(description);
+void WindowRenderer::createRenderPasses()
+{
+    auto descriptions = createAttachmentDescriptions();
+    bool is_multisampled = m_msaa_samples > 1;
 
-    description[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    description[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    m_render_passes[CLEAR_ALL] = createRenderPass(description);
+    descriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    descriptions[1].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    m_render_passes[CLEAR_NONE] = createRenderPass(descriptions, is_multisampled);
+
+    descriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    descriptions[1].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    m_render_passes[CLEAR_COLOR] = createRenderPass(descriptions, is_multisampled);
+
+    descriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    descriptions[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    m_render_passes[CLEAR_DEPTH] = createRenderPass(descriptions, is_multisampled);
+
+    descriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    descriptions[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    m_render_passes[CLEAR_ALL] = createRenderPass(descriptions, is_multisampled);
 }
 
 void WindowRenderer::createSwapChain()
@@ -197,6 +216,7 @@ void WindowRenderer::createSwapChain()
     options.surface = m_surface;
     options.render_pass = m_render_passes[CLEAR_ALL];
     options.window_size = m_window_size;
+    options.msaa_samples = m_msaa_samples;
     m_swap_chain = makeScoped<SwapChain>(m_device, options);
 }
 

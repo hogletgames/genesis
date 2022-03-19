@@ -114,9 +114,10 @@ RendererBase::~RendererBase()
 }
 
 VkRenderPass
-RendererBase::createRenderPass(const std::vector<VkAttachmentDescription>& descriptions)
+RendererBase::createRenderPass(const std::vector<VkAttachmentDescription>& descriptions,
+                               bool is_multisampled)
 {
-    AttachmentRefBuilder attachment_builder{descriptions};
+    AttachmentRefBuilder attachment_builder{descriptions, is_multisampled};
 
     VkSubpassDescription subpass{};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
