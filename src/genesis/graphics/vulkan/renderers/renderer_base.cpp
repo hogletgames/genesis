@@ -35,6 +35,70 @@
 #include "texture.h"
 #include "vulkan_exception.h"
 
+namespace {
+
+class AttachmentRefBuilder
+{
+public:
+    using AttachmentDescriptions = std::vector<VkAttachmentDescription>;
+    using AttachmentRefs = std::vector<VkAttachmentReference>;
+
+    explicit AttachmentRefBuilder(const AttachmentDescriptions& attachments,
+                                  bool is_multisampled = false)
+        : m_is_multisampled{is_multisampled}
+    {
+        for (uint32_t i{0}; i < attachments.size(); i++) {
+            addRef(attachments[i], i);
+        }
+    }
+
+    const AttachmentRefs& color() const { return m_color_refs; }
+    const AttachmentRefs& colorResolve() const { return m_color_resolve_refs; }
+    const AttachmentRefs& depth() const { return m_depth_refs; }
+
+private:
+    void addRef(const VkAttachmentDescription& attachment, uint32_t index)
+    {
+        VkAttachmentReference ref{};
+        ref.attachment = index;
+
+        if (isColor(attachment)) {
+            ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            addColorRef(ref, isResolveAttachment(attachment));
+        } else {
+            ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            m_depth_refs.push_back(ref);
+        }
+    }
+
+    void addColorRef(const VkAttachmentReference& ref, bool is_resolve_attachment)
+    {
+        if (is_resolve_attachment) {
+            m_color_resolve_refs.push_back(ref);
+        } else {
+            m_color_refs.push_back(ref);
+        }
+    }
+
+    bool isColor(const VkAttachmentDescription& attachment) const
+    {
+        return GE::isColorFormat(GE::Vulkan::toTextureFormat(attachment.format));
+    }
+
+    bool isResolveAttachment(const VkAttachmentDescription& attachment) const
+    {
+        return m_is_multisampled && attachment.samples == VK_SAMPLE_COUNT_1_BIT;
+    }
+
+    bool m_is_multisampled{false};
+
+    AttachmentRefs m_color_refs;
+    AttachmentRefs m_color_resolve_refs;
+    AttachmentRefs m_depth_refs;
+};
+
+} // namespace
+
 namespace GE::Vulkan {
 
 RendererBase::RendererBase(Shared<Device> device)
@@ -52,27 +116,14 @@ RendererBase::~RendererBase()
 VkRenderPass
 RendererBase::createRenderPass(const std::vector<VkAttachmentDescription>& descriptions)
 {
-    std::vector<VkAttachmentReference> color_refs;
-    std::vector<VkAttachmentReference> depth_refs;
-
-    for (uint32_t i{0}; i < descriptions.size(); i++) {
-        VkAttachmentReference ref{};
-        ref.attachment = i;
-
-        if (isColorFormat(toTextureFormat(descriptions[i].format))) {
-            ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-            color_refs.push_back(ref);
-        } else {
-            ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-            depth_refs.push_back(ref);
-        }
-    }
+    AttachmentRefBuilder attachment_builder{descriptions};
 
     VkSubpassDescription subpass{};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpass.colorAttachmentCount = color_refs.size();
-    subpass.pColorAttachments = color_refs.data();
-    subpass.pDepthStencilAttachment = depth_refs.data();
+    subpass.colorAttachmentCount = attachment_builder.color().size();
+    subpass.pColorAttachments = attachment_builder.color().data();
+    subpass.pResolveAttachments = attachment_builder.colorResolve().data();
+    subpass.pDepthStencilAttachment = attachment_builder.depth().data();
 
     std::array<VkSubpassDependency, 2> dependencies{};
 
