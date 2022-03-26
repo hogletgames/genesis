@@ -55,11 +55,11 @@ public:
 
     Renderer* renderer() override;
     const Vec2& size() const override { return m_config.size; }
-    uint32_t MSSASamples() const override { return m_config.msaa_samples; }
+    uint32_t MSAASamples() const override { return m_config.msaa_samples; }
     const Vec4& clearColor() const override { return m_config.clear_color; }
     float clearDepth() const override { return m_config.clear_depth; }
 
-    const Vulkan::Texture& colorTexture() const override;
+    const Vulkan::Texture& colorTexture(size_t i) const override;
     const Vulkan::Texture& depthTexture() const override;
     uint32_t colorAttachmentCount() const override;
     bool hasDepthAttachment() const override;
@@ -72,13 +72,14 @@ public:
     VkFramebuffer framebuffer() const { return m_framebuffer; }
 
 private:
+    void createResources(const fb_attachment_t& attachment_config);
+    void createMSAAResources(const fb_attachment_t& attachment_config);
     void createAttachments();
     void createFramebuffer();
 
     void destroyVkHandles();
-
-    VkAttachmentDescription createAttachment(const fb_attachment_t& config) const;
     Scoped<Vulkan::Texture> createTexture(TextureType type, TextureFormat format);
+    Scoped<Image> createMSAAImage(TextureType type, TextureFormat format);
 
     Shared<Device> m_device;
     Scoped<FramebufferRenderer> m_renderer;
@@ -87,8 +88,10 @@ private:
     VkFramebuffer m_framebuffer{VK_NULL_HANDLE};
     std::vector<VkAttachmentDescription> m_attachments;
     std::vector<VkImageView> m_image_views;
-    Scoped<Vulkan::Texture> m_color_texture;
+    std::vector<Scoped<Vulkan::Texture>> m_color_textures;
+    std::vector<Scoped<Image>> m_color_msaa_images;
     Scoped<Vulkan::Texture> m_depth_texture;
+    Scoped<Image> m_depth_msaa_image;
     uint32_t m_color_attachment_count{0};
 };
 
