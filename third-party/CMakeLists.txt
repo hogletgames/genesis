@@ -22,7 +22,7 @@ add_subdirectory(Vulkan)
 add_library(stb-image INTERFACE)
 target_include_directories(stb-image INTERFACE stb)
 target_compile_options(stb-image INTERFACE
-    $<$<CXX_COMPILER_ID:GNU>:-Wno-sign-compare;-Wno-unused-but-set-variable>)
+    $<${IS_UNIX_COMPILER}:-Wno-sign-compare;-Wno-unused-but-set-variable>)
 target_compile_definitions(stb-image INTERFACE -DSTB_IMAGE_IMPLEMENTATION)
 add_library(stb::image ALIAS stb-image)
 
@@ -50,6 +50,7 @@ add_Library(imgui STATIC
     imgui/imgui_tables.cpp
     imgui/imgui_widgets.cpp)
 target_include_directories(imgui PUBLIC imgui)
+add_library(imgui::imgui ALIAS imgui)
 
 # imgui Vulkan SDL2
 add_library(imgui-vulkan STATIC
@@ -58,8 +59,9 @@ add_library(imgui-vulkan STATIC
 target_link_libraries(imgui-vulkan PUBLIC
     imgui
     SDL2-static
-    vulkan)
+    Vulkan::Vulkan)
 target_include_directories(imgui-vulkan PUBLIC imgui/backends)
+add_library(imgui::vulkan ALIAS imgui-vulkan)
 
 # ImGui SDL Vulcan example
 # NOTE: imgui patch below must be commented to be able to run this example

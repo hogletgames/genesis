@@ -1,16 +1,15 @@
-set(GE_APP_INCLUDE_DIR ${GE_INCLUDE_DIR}/app)
+set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/app)
 
-list(APPEND GE_CORE_SRC
+list(APPEND APP_SOURCES
     application.cpp)
 
-list(APPEND GE_CORE_HEADERS
-    ${GE_APP_INCLUDE_DIR}/application.h
-    ${GE_APP_INCLUDE_DIR}/layer.h)
+list(APPEND APP_HEADERS
+    ${INCLUDE_DIR}/application.h
+    ${INCLUDE_DIR}/layer.h)
 
-add_library(genesis-app STATIC ${GE_CORE_SRC} ${GE_CORE_HEADERS})
-target_link_libraries(genesis-app PUBLIC
-    genesis::core
-    genesis::window)
-target_include_directories(genesis-app PRIVATE ${GE_APP_INCLUDE_DIR})
-ge_default_target_config(genesis-app)
-add_library(genesis::app ALIAS genesis-app)
+ge_add_module(app
+    SOURCES ${APP_SOURCES} ${APP_SOURCES}
+    INCLUDE_DIR ${INCLUDE_DIR}
+    PUBLIC_DEPS
+        genesis::core
+        genesis::window)

@@ -1,21 +1,20 @@
-set(GE_WINDOW_EVENTS_INCLUDE_DIR ${GE_WINDOW_INCLUDE_DIR}/events)
+set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/window/events)
 
-list(APPEND GE_WINDOW_EVENTS_SRC
+list(APPEND WINDOW_EVENTS_SOURCES
     key_events.cpp
     mouse_events.cpp
     window_events.cpp)
 
-list(APPEND GE_WINDOW_EVENTS_HEADERS
-    ${GE_WINDOW_EVENTS_INCLUDE_DIR}/event.h
-    ${GE_WINDOW_EVENTS_INCLUDE_DIR}/event_dispatcher.h
-    ${GE_WINDOW_EVENTS_INCLUDE_DIR}/key_events.h
-    ${GE_WINDOW_EVENTS_INCLUDE_DIR}/mouse_events.h
-    ${GE_WINDOW_EVENTS_INCLUDE_DIR}/window_events.h)
+list(APPEND WINDOW_EVENTS_HEADERS
+    ${INCLUDE_DIR}/event.h
+    ${INCLUDE_DIR}/event_dispatcher.h
+    ${INCLUDE_DIR}/key_events.h
+    ${INCLUDE_DIR}/mouse_events.h
+    ${INCLUDE_DIR}/window_events.h)
 
-add_library(genesis-window-events STATIC ${GE_WINDOW_EVENTS_SRC} ${GE_WINDOW_EVENTS_HEADERS})
-target_link_libraries(genesis-window-events PUBLIC
-    genesis::core
-    genesis::math)
-target_include_directories(genesis-window-events PRIVATE ${GE_WINDOW_EVENTS_INCLUDE_DIR})
-ge_default_target_config(genesis-window-events)
-add_library(genesis::window::events ALIAS genesis-window-events)
+ge_add_module(window-events
+    SOURCES ${WINDOW_EVENTS_SOURCES} ${WINDOW_EVENTS_HEADERS}
+    INCLUDE_DIR ${INCLUDE_DIR}
+    PUBLIC_DEPS
+        genesis::core
+        genesis::math)

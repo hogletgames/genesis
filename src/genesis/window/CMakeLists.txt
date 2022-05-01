@@ -1,24 +1,23 @@
-set(GE_WINDOW_INCLUDE_DIR ${GE_INCLUDE_DIR}/window)
+set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/window)
 
-list(APPEND GE_WINDOW_SCR
+list(APPEND WINDOW_SOURCES
     input.cpp
     window.cpp)
 
-list(APPEND GE_WINDOW_HEADERS
-    ${GE_WINDOW_INCLUDE_DIR}/input.h
-    ${GE_WINDOW_INCLUDE_DIR}/key_codes.h
-    ${GE_WINDOW_INCLUDE_DIR}/mouse_button_codes.h
-    ${GE_WINDOW_INCLUDE_DIR}/window.h)
+list(APPEND WINDOW_HEADERS
+    ${INCLUDE_DIR}/input.h
+    ${INCLUDE_DIR}/key_codes.h
+    ${INCLUDE_DIR}/mouse_button_codes.h
+    ${INCLUDE_DIR}/window.h)
 
-add_library(genesis-window STATIC ${GE_WINDOW_SCR} ${GE_WINDOW_HEADERS})
-target_link_libraries(genesis-window PUBLIC
-    genesis::core
-    genesis::math
-    genesis::window::events
-    genesis::window::platform)
-target_include_directories(genesis-window PRIVATE ${GE_WINDOW_INCLUDE_DIR})
-ge_default_target_config(genesis-window)
-add_library(genesis::window ALIAS genesis-window)
+ge_add_module(window
+    SOURCES ${WINDOW_SOURCES} ${WINDOW_HEADERS}
+    INCLUDE_DIR ${INCLUDE_DIR}
+    PUBLIC_DEPS
+        genesis::core
+        genesis::math
+        genesis::window-events
+        genesis::window-platform)
 
 add_subdirectory(events)
 add_subdirectory(SDL)

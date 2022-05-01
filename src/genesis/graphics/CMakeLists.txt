@@ -1,6 +1,6 @@
-set(GE_RENDERER_INCLUDE_DIR ${GE_INCLUDE_DIR}/graphics)
+set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/graphics)
 
-list(APPEND GE_RENDERER_SRC
+list(APPEND GRAPHICS_SOURCES
     framebuffer.cpp
     gpu_command_queue.cpp
     graphics.cpp
@@ -14,39 +14,34 @@ list(APPEND GE_RENDERER_SRC
     texture_loader.cpp
     vertex_buffer.cpp)
 
-list(APPEND GE_RENDERER_HEADERS
-    ${GE_RENDERER_INCLUDE_DIR}/framebuffer.h
-    ${GE_RENDERER_INCLUDE_DIR}/gpu_command_queue.h
-    ${GE_RENDERER_INCLUDE_DIR}/graphics.h
-    ${GE_RENDERER_INCLUDE_DIR}/graphics_context.h
-    ${GE_RENDERER_INCLUDE_DIR}/graphics_factory.h
-    ${GE_RENDERER_INCLUDE_DIR}/index_buffer.h
-    ${GE_RENDERER_INCLUDE_DIR}/pipeline.h
-    ${GE_RENDERER_INCLUDE_DIR}/render_command.h
-    ${GE_RENDERER_INCLUDE_DIR}/renderer.h
-    ${GE_RENDERER_INCLUDE_DIR}/shader.h
-    ${GE_RENDERER_INCLUDE_DIR}/shader_input_layout.h
-    ${GE_RENDERER_INCLUDE_DIR}/shader_precompiler.h
-    ${GE_RENDERER_INCLUDE_DIR}/shader_reflection.h
-    ${GE_RENDERER_INCLUDE_DIR}/texture.h
-    ${GE_RENDERER_INCLUDE_DIR}/texture_loader.h
-    ${GE_RENDERER_INCLUDE_DIR}/vertex_buffer.h)
+list(APPEND GRAPHICS_HEADERS
+    ${INCLUDE_DIR}/framebuffer.h
+    ${INCLUDE_DIR}/gpu_command_queue.h
+    ${INCLUDE_DIR}/graphics.h
+    ${INCLUDE_DIR}/graphics_context.h
+    ${INCLUDE_DIR}/graphics_factory.h
+    ${INCLUDE_DIR}/index_buffer.h
+    ${INCLUDE_DIR}/pipeline.h
+    ${INCLUDE_DIR}/render_command.h
+    ${INCLUDE_DIR}/renderer.h
+    ${INCLUDE_DIR}/shader.h
+    ${INCLUDE_DIR}/shader_input_layout.h
+    ${INCLUDE_DIR}/shader_precompiler.h
+    ${INCLUDE_DIR}/shader_reflection.h
+    ${INCLUDE_DIR}/texture.h
+    ${INCLUDE_DIR}/texture_loader.h
+    ${INCLUDE_DIR}/vertex_buffer.h)
 
-add_library(genesis-graphics STATIC ${GE_RENDERER_SRC} ${GE_RENDERER_HEADERS})
-target_link_libraries(genesis-graphics
-    PUBLIC
+ge_add_module(graphics
+    SOURCES ${GRAPHICS_SOURCES} ${GRAPHICS_HEADERS}
+    INCLUDE_DIR ${INCLUDE_DIR}
+    PUBLIC_DEPS
         genesis::core
-    PRIVATE
-        genesis::graphics::vulkan
+        genesis::math
+    PRIVATE_DEPS
+        genesis::graphics-vulkan
         shaderc
         spirv-cross-cpp
-        stb-image)
-target_include_directories(genesis-graphics PRIVATE ${GE_RENDERER_INCLUDE_DIR})
-target_include_directories(genesis-graphics SYSTEM PRIVATE
-    ${GE_THIRD_PARTY_DIR}/stb
-    ${GE_THIRD_PARTY_DIR}/Vulkan/shaderc/libshaderc/include
-    ${GE_THIRD_PARTY_DIR}/Vulkan/SPIRV-Cross)
-ge_default_target_config(genesis-graphics)
-add_library(genesis::graphics ALIAS genesis-graphics)
+        stb::image)
 
 add_subdirectory(vulkan)
