@@ -1,3 +1,5 @@
+set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
+
 # SDL2
 set(SDL_SHARED OFF CACHE BOOL "Build a shared version of the library" FORCE)
 set(SDL_STATIC ON CACHE BOOL "Build a static version of the library" FORCE)

@@ -39,7 +39,7 @@ Checks:             '*,
                     -readability-convert-member-functions-to-static,
                     -readability-uppercase-literal-suffix'
 WarningsAsErrors:   '*'
-HeaderFilterRegex:  '.*'
+HeaderFilterRegex:  'include/genesis/.*/.*\.h$'
 FormatStyle:        'file'
 CheckOptions:
   - {key: cppcoreguidelines-avoid-magic-numbers.IgnoreAllFloatingPointValues, value: true }

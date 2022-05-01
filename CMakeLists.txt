@@ -65,6 +65,7 @@ endif()
 
 # Subdirectories
 add_subdirectory(src)
+add_subdirectory(third-party)
 
 if(GE_BUILD_EXAMPLES)
     message(STATUS "Build '${CMAKE_PROJECT_NAME}' examples")
@@ -75,8 +76,4 @@ if(GE_BUILD_TESTS)
     message(STATUS "Build '${CMAKE_PROJECT_NAME}' tests")
     enable_testing()
     add_subdirectory(tests)
-endif()
-
-if(NOT CMAKE_EXPORT_COMPILE_COMMANDS)
-    add_subdirectory(third-party)
 endif()
