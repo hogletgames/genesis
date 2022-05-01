@@ -80,6 +80,3 @@ endif()
 if(NOT CMAKE_EXPORT_COMPILE_COMMANDS)
     add_subdirectory(third-party)
 endif()
-
-# Patches
-ge_apply_patch(third-party/imgui)

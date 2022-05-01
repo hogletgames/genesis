@@ -35,6 +35,8 @@ add_subdirectory(googletest)
 target_compile_options(gtest PRIVATE $<${IS_GNU_COMPILER}:-Wno-error=maybe-uninitialized>)
 
 # imgui
+ge_apply_patch(imgui)
+
 add_Library(imgui STATIC
     imgui/imgui.cpp
     imgui/imgui_draw.cpp
