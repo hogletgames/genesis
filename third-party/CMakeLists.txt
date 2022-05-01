@@ -34,7 +34,11 @@ add_subdirectory(magic_enum)
 
 # googletest
 add_subdirectory(googletest)
-target_compile_options(gtest PRIVATE $<${IS_GNU_COMPILER}:-Wno-error=maybe-uninitialized>)
+target_compile_options(gtest
+    PRIVATE
+        $<${IS_GNU_COMPILER}:-Wno-maybe-uninitialized>
+    PUBLIC
+        $<${IS_CLANG_COMPILER}:-Wno-deprecated-copy>)
 
 # imgui
 ge_apply_patch(imgui)
