@@ -5,7 +5,7 @@ BUILD_EXAMPLES      ?= OFF
 BUILD_TESTS         ?= OFF
 
 SRC_DIR             := $(PWD)
-BUILD_DIR           := build
+BUILD_DIR           ?= build
 
 CMAKE_OPTIONS       ?= -Wno-dev -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DGE_STATIC=$(BUILD_STATIC) \
                        -DGE_DISABLE_ASSERTS=$(DISABLE_ASSERTS) -DGE_BUILD_EXAMPLES=$(BUILD_EXAMPLES) \
@@ -60,6 +60,7 @@ docker_run:
 		-w $(PWD) \
 		-u $$(id -u):$$(id -g) \
 		-e CMAKE_OPTIONS="$(CMAKE_OPTIONS)" \
+		-e BUILD_DIR="$(BUILD_DIR)/docker" \
 		$(DOCKER_IMAGE_NAME) \
 		bash -c "$(DOCKER_CMD)"
 
