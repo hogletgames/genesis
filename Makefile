@@ -41,7 +41,7 @@ clang-format:
 .PHONY: clang-tidy
 clang-tidy: CMAKE_OPTIONS += -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DGE_BUILD_EXAMPLES:BOOL=ON
 clang-tidy: generate_makefiles
-	$(RUN_CLANG_TIDY_BIN) -p $(BUILD_DIR)
+	$(RUN_CLANG_TIDY_BIN) -p $(BUILD_DIR) -j$$(nproc)
 
 # Docker
 .PHONY: docker_initialize
