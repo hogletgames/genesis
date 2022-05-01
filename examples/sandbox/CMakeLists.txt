@@ -1,4 +1,4 @@
-list(APPEND SANDBOX_SRC
+list(APPEND SANDBOX_SOURCES
     gui_layer.cpp
     render_layer.cpp
     sandbox.cpp
@@ -9,9 +9,8 @@ list(APPEND SANDBOX_HEADERS
     render_layer.h
     triangle_layer.h)
 
-add_executable(sandbox ${SANDBOX_SRC} ${SANDBOX_HEADERS})
-target_link_libraries(sandbox PRIVATE
-    genesis::genesis
-    imgui)
-target_include_directories(sandbox SYSTEM PRIVATE ${GE_THIRD_PARTY_DIR}/imgui)
-ge_default_target_config(sandbox)
+ge_add_executable(sandbox
+    SOURCES ${SANDBOX_SOURCES} ${SANDBOX_HEADERS}
+    PRIVATE_DEPS
+        genesis::genesis
+        imgui::imgui)
