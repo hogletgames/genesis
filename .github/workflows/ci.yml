@@ -52,8 +52,6 @@ jobs:
           - build-type: TSAN
             disable-asserts: OFF
     env:
-      CC: gcc
-      CXX: g++
       BUILD_TYPE: ${{ matrix.build-type }}
       DISABLE_ASSERTS: ${{ matrix.disable-asserts }}
       BUILD_TESTS: ON
