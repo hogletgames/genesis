@@ -17,7 +17,6 @@ include(cmake/AddModule.cmake)
 include(cmake/ApplyPatch.cmake)
 include(cmake/CompilerOptions.cmake)
 include(cmake/SanitizeHelpers.cmake)
-include(cmake/Utils.cmake)
 include(cmake/Macro.cmake)
 configure_file(cmake/CTestCustom.cmake ${CMAKE_BINARY_DIR})
 
