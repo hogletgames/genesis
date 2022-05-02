@@ -173,6 +173,7 @@ Scoped<Texture> TextureLoader::load()
     Defer texture_data_defer{[data = texture_data] { ::stbi_image_free(data); }};
 
     if (texture_data == nullptr) {
+        // NOLINTNEXTLINE(clang-analyzer-unix.Malloc)
         GE_CORE_ERR("Failed to load texture '{}'", m_filepath);
         return nullptr;
     }
