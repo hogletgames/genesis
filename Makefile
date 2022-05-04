@@ -5,7 +5,7 @@ BUILD_EXAMPLES      ?= OFF
 BUILD_TESTS         ?= OFF
 
 SRC_DIR             := $(PWD)
-BUILD_DIR           := build
+BUILD_DIR           ?= build
 
 CMAKE_OPTIONS       ?= -Wno-dev -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DGE_STATIC=$(BUILD_STATIC) \
                        -DGE_DISABLE_ASSERTS=$(DISABLE_ASSERTS) -DGE_BUILD_EXAMPLES=$(BUILD_EXAMPLES) \
@@ -39,9 +39,9 @@ clang-format:
 	bash tools/clang_format.sh --clang-format-bin $(CLANG_FORMAT_BIN)
 
 .PHONY: clang-tidy
-clang-tidy: CMAKE_OPTIONS += -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DGE_BUILD_EXAMPLES=ON
+clang-tidy: CMAKE_OPTIONS += -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DGE_BUILD_EXAMPLES:BOOL=ON
 clang-tidy: generate_makefiles
-	$(RUN_CLANG_TIDY_BIN) -p $(BUILD_DIR)
+	$(RUN_CLANG_TIDY_BIN) -p $(BUILD_DIR) -j$$(nproc)
 
 # Docker
 .PHONY: docker_initialize
@@ -60,8 +60,7 @@ docker_run:
 		-w $(PWD) \
 		-u $$(id -u):$$(id -g) \
 		-e CMAKE_OPTIONS="$(CMAKE_OPTIONS)" \
-		-e CLANG_FORMAT_BIN="$(CLANG_FORMAT_BIN)" \
-		-e RUN_CLANG_TIDY_BIN="$(RUN_CLANG_TIDY_BIN)" \
+		-e BUILD_DIR="$(BUILD_DIR)/docker" \
 		$(DOCKER_IMAGE_NAME) \
 		bash -c "$(DOCKER_CMD)"
 

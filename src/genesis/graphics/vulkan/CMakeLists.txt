@@ -1,5 +1,4 @@
-# Vulkan Graphics sources
-list(APPEND GE_RENDERER_VULKAN_SRC
+list(APPEND GRAPHICS_VULKAN_SOURCES
     buffers/buffer_base.cpp
     buffers/index_buffer.cpp
     buffers/staging_buffer.cpp
@@ -22,7 +21,7 @@ list(APPEND GE_RENDERER_VULKAN_SRC
     swap_chain.cpp
     utils.cpp)
 
-list(APPEND GE_RENDERER_VULKAN_HEADERS
+list(APPEND GRAPHICS_VULKAN_HEADERS
     buffers/buffer_base.h
     buffers/index_buffer.h
     buffers/staging_buffer.h
@@ -49,31 +48,21 @@ list(APPEND GE_RENDERER_VULKAN_HEADERS
     utils.h
     vulkan_exception.h)
 
-# Vulkan Graphics library
-add_library(genesis-graphics-vulkan ${GE_RENDERER_VULKAN_SRC} ${GE_RENDERER_VULKAN_HEADERS})
-target_link_libraries(genesis-graphics-vulkan
-    PUBLIC
+ge_add_module(graphics-vulkan
+    SOURCES ${GRAPHICS_VULKAN_SOURCES} ${GRAPHICS_VULKAN_HEADERS}
+    INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+    PUBLIC_DEPS
         genesis::core
         genesis::graphics
         genesis::math
-        vulkan
-    PRIVATE
-        imgui-vulkan)
-target_include_directories(genesis-graphics-vulkan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(genesis-graphics-vulkan SYSTEM
-    PUBLIC
-        ${GE_THIRD_PARTY_DIR}/Vulkan/Vulkan-Headers/include
-    PRIVATE
-        ${GE_THIRD_PARTY_DIR}/imgui
-        ${GE_THIRD_PARTY_DIR}/imgui/backends)
+        Vulkan::Vulkan
+    PRIVATE_DEPS
+        imgui::vulkan
+        SDL2-static
+        shaderc
+        spirv-cross-cpp
+        stb::image)
 
-if (NOT CMAKE_EXPORT_COMPILE_COMMANDS AND NOT GE_DISABLE_DEBUG)
+if (NOT GE_DISABLE_DEBUG)
     add_dependencies(genesis-graphics-vulkan VkLayer_khronos_validation-json)
 endif ()
-
-# Add SDL2 library/include directory
-target_link_libraries(genesis-graphics-vulkan PRIVATE SDL2-static)
-target_include_directories(genesis-graphics-vulkan SYSTEM PRIVATE ${GE_THIRD_PARTY_DIR}/SDL2/include)
-
-ge_default_target_config(genesis-graphics-vulkan)
-add_library(genesis::graphics::vulkan ALIAS genesis-graphics-vulkan)

@@ -4,7 +4,7 @@ function(ge_apply_patch REPO_DIR)
 
     # Path to patch dir for the repo
     get_filename_component(REPO_NAME ${ORIGIN_REPO_REALPATH} NAME)
-    set(PATCH_DIR ${GE_THIRD_PARTY_DIR}/patch/${REPO_NAME})
+    set(PATCH_DIR ${PROJECT_SOURCE_DIR}/third-party/patch/${REPO_NAME})
 
     message(STATUS "Patching '${REPO_NAME}':")
     file(GLOB PATCH_FILES "${PATCH_DIR}/*.patch")

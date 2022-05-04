@@ -1,27 +1,24 @@
-set(GE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include/genesis)
+set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis)
 
 add_definitions(-DGE_EXPORTS)
 
-list(APPEND GE_HEADERS
-    ${GE_INCLUDE_DIR}/app.h
-    ${GE_INCLUDE_DIR}/core.h
-    ${GE_INCLUDE_DIR}/gui.h
-    ${GE_INCLUDE_DIR}/genesis.h
-    ${GE_INCLUDE_DIR}/graphics.h
-    ${GE_INCLUDE_DIR}/math.h
-    ${GE_INCLUDE_DIR}/window.h
-)
+list(APPEND GENESIS_HEADERS
+    ${INCLUDE_DIR}/app.h
+    ${INCLUDE_DIR}/core.h
+    ${INCLUDE_DIR}/gui.h
+    ${INCLUDE_DIR}/genesis.h
+    ${INCLUDE_DIR}/graphics.h
+    ${INCLUDE_DIR}/math.h
+    ${INCLUDE_DIR}/window.h)
 
-add_library(genesis ${GE_LIB_TYPE} ${GE_HEADERS})
+add_library(genesis ${GE_LIB_TYPE} ${GENESIS_HEADERS})
 target_link_libraries(genesis PUBLIC
     genesis::app
     genesis::core
     genesis::graphics
     genesis::gui
     genesis::math
-    genesis::window
-)
-ge_default_target_config(genesis)
+    genesis::window)
 add_library(genesis::genesis ALIAS genesis)
 
 add_subdirectory(app)

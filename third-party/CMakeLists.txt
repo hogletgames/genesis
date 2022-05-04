@@ -1,3 +1,5 @@
+set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
+
 # SDL2
 set(SDL_SHARED OFF CACHE BOOL "Build a shared version of the library" FORCE)
 set(SDL_STATIC ON CACHE BOOL "Build a static version of the library" FORCE)
@@ -20,7 +22,7 @@ add_subdirectory(Vulkan)
 add_library(stb-image INTERFACE)
 target_include_directories(stb-image INTERFACE stb)
 target_compile_options(stb-image INTERFACE
-    $<$<CXX_COMPILER_ID:GNU>:-Wno-sign-compare;-Wno-unused-but-set-variable>)
+    $<${IS_UNIX_COMPILER}:-Wno-sign-compare;-Wno-unused-but-set-variable>)
 target_compile_definitions(stb-image INTERFACE -DSTB_IMAGE_IMPLEMENTATION)
 add_library(stb::image ALIAS stb-image)
 
@@ -32,9 +34,15 @@ add_subdirectory(magic_enum)
 
 # googletest
 add_subdirectory(googletest)
-target_compile_options(gtest PRIVATE $<${IS_GNU_COMPILER}:-Wno-error=maybe-uninitialized>)
+target_compile_options(gtest
+    PRIVATE
+        $<${IS_GNU_COMPILER}:-Wno-maybe-uninitialized>
+    PUBLIC
+        $<${IS_CLANG_COMPILER}:-Wno-deprecated-copy>)
 
 # imgui
+ge_apply_patch(imgui)
+
 add_Library(imgui STATIC
     imgui/imgui.cpp
     imgui/imgui_draw.cpp
@@ -42,6 +50,7 @@ add_Library(imgui STATIC
     imgui/imgui_tables.cpp
     imgui/imgui_widgets.cpp)
 target_include_directories(imgui PUBLIC imgui)
+add_library(imgui::imgui ALIAS imgui)
 
 # imgui Vulkan SDL2
 add_library(imgui-vulkan STATIC
@@ -50,8 +59,9 @@ add_library(imgui-vulkan STATIC
 target_link_libraries(imgui-vulkan PUBLIC
     imgui
     SDL2-static
-    vulkan)
+    Vulkan::Vulkan)
 target_include_directories(imgui-vulkan PUBLIC imgui/backends)
+add_library(imgui::vulkan ALIAS imgui-vulkan)
 
 # ImGui SDL Vulcan example
 # NOTE: imgui patch below must be commented to be able to run this example

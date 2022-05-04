@@ -133,8 +133,8 @@ void Instance::createInstance(void* native_window, const std::string& app_name)
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     app_info.pApplicationName = app_name.c_str();
     app_info.apiVersion = VK_MAKE_VERSION(1, 0, 0);
-    app_info.pEngineName = ENGINE_NAME;
-    app_info.engineVersion = VK_MAKE_VERSION(VER_MAJOR, VER_MINOR, VER_PATCH);
+    app_info.pEngineName = ENGINE_NAME.data();
+    app_info.engineVersion = VK_MAKE_VERSION(VERSION_MAJOR, VERSION_MAJOR, VERSION_MAJOR);
     app_info.apiVersion = VK_API_VERSION_1_2;
 
     VkInstanceCreateInfo instance_info{};

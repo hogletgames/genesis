@@ -1,16 +1,14 @@
-set(GE_MATH_INCLUDE_DIR ${GE_INCLUDE_DIR}/math)
+set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/math)
 
-list(APPEND GE_MATH_SRC
+list(APPEND MATH_SOURCES
     types.cpp)
 
-list(APPEND GE_MATH_HEADERS
-    ${GE_MATH_INCLUDE_DIR}/types.h)
+list(APPEND MATH_HEADERS
+    ${INCLUDE_DIR}/types.h)
 
-add_library(genesis-math ${GE_MATH_SRC} ${GE_MATH_HEADERS})
-target_link_libraries(genesis-math PUBLIC
-    genesis::core
-    glm)
-target_include_directories(genesis-math SYSTEM PUBLIC ${GE_THIRD_PARTY_DIR}/glm)
-target_include_directories(genesis-math PRIVATE ${GE_MATH_INCLUDE_DIR})
-ge_default_target_config(genesis-math)
-add_library(genesis::math ALIAS genesis-math)
+ge_add_module(math
+    SOURCES ${MATH_SOURCES} ${MATH_HEADERS}
+    INCLUDE_DIR ${INCLUDE_DIR}
+    PUBLIC_DEPS
+        genesis::core
+        glm::glm)

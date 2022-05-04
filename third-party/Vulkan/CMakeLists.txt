@@ -3,6 +3,10 @@ set(ENABLE_CTEST        OFF CACHE BOOL "Enable glslang tests" FORCE)
 set(SHADERC_SKIP_TESTS  ON  CACHE BOOL "Skip shaderc tests" FORCE)
 set(SPIRV_SKIP_TESTS    ON  CACHE BOOL "Skip SPIRV tests" FORCE)
 
+# Patches
+ge_apply_patch(glslang)
+ge_apply_patch(Vulkan-ValidationLayers)
+
 # Submodules
 add_subdirectory(Vulkan-Headers)
 add_subdirectory(Vulkan-Loader)
@@ -28,6 +32,6 @@ endforeach()
 target_compile_options(shaderc_util PRIVATE $<$<CONFIG:USAN>:-fno-sanitize=vptr>)
 
 # Dependencies
-if (CMAKE_BUILD_TYPE IN_LIST DEBUG_BUILD_LIST)
+if (NOT GE_DISABLE_DEBUG)
     add_dependencies(vulkan VkLayer_khronos_validation-json)
 endif ()

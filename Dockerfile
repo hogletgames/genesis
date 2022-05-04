@@ -1,36 +1,39 @@
 FROM ubuntu:bionic
 
-# Build tools
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y software-properties-common make cmake wget
+# Arguments
+ARG GCC_VER=11 \
+    CLANG_VER=13
 
-# git
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gpg-agent software-properties-common wget && \
 # actions/checkout@v2 requires git v2.18 and later for submodules
-RUN add-apt-repository ppa:git-core/ppa && apt-get update && \
-    apt-get -y install git
+    add-apt-repository ppa:git-core/ppa && \
+# GCC-11
+    apt-add-repository ppa:ubuntu-toolchain-r/test && \
+# Clang-13
+    wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
+    apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${CLANG_VER} main" && \
+# Essential build tools
+    apt-get update && apt-get install -y --no-install-recommends  \
+    make cmake git gcc-${GCC_VER} g++-${GCC_VER} clang-format-${CLANG_VER} clang-tidy-${CLANG_VER} && \
+# Clean-up atp cache
+    rm -rf /var/lib/apt/lists/*
 
 # SDL2 dependencies
-RUN apt-get install -y libx11-dev libsamplerate-dev libasound2-dev \
-                       libjack-dev libpulse-dev libsndio-dev \
-                       libxcursor-dev libxinerama-dev libxi-dev \
-                       libxrandr-dev libxss-dev libxxf86vm-dev \
-                       libdbus-1-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libx11-dev libsamplerate-dev libasound2-dev libjack-dev libpulse-dev libsndio-dev \
+    libxcursor-dev libxinerama-dev libxi-dev libxrandr-dev libxss-dev libxxf86vm-dev \
+    libdbus-1-dev && \
+# Clean-up atp cache
+    rm -rf /var/lib/apt/lists/*
 
 # Vulkan dependencies
-RUN apt-get install -y libwayland-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libwayland-dev && \
+# Clean-up atp cache
+    rm -rf /var/lib/apt/lists/*
 
-# Compilers
-ENV GCC_VERSION=11
-RUN apt-add-repository ppa:ubuntu-toolchain-r/test && \
-    apt-get update && apt-get install -y gcc-${GCC_VERSION} g++-${GCC_VERSION}
-
-# Clang tools
-ENV CLANG_VERSION=13
-RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
-    apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${CLANG_VERSION} main" && \
-    apt-get update && apt-get install -y clang-format-${CLANG_VERSION} clang-tidy-${CLANG_VERSION}
-
-# Update alternatives
-COPY tools/update_alternatives_gcc.sh tools/update_alternatives_clang.sh /tmp/
-RUN /tmp/update_alternatives_gcc.sh "${GCC_VERSION}" "${GCC_VERSION}0" && \
-    /tmp/update_alternatives_clang.sh "${CLANG_VERSION}" "${CLANG_VERSION}0"
+ENV CC="gcc-${GCC_VER}" \
+    CXX="g++-${GCC_VER}" \
+    CLANG_FORMAT_BIN="clang-format-${CLANG_VER}" \
+    RUN_CLANG_TIDY_BIN="run-clang-tidy-${CLANG_VER}"
