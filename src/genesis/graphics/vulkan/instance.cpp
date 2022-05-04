@@ -45,17 +45,6 @@ constexpr int VULKAN_SEVERITY{VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT};
 
-std::vector<const char*> getWindowExtensions(SDL_Window* window)
-{
-    uint32_t ext_count{0};
-    SDL_Vulkan_GetInstanceExtensions(window, &ext_count, nullptr);
-
-    std::vector<const char*> ext(ext_count);
-    SDL_Vulkan_GetInstanceExtensions(window, &ext_count, ext.data());
-
-    return ext;
-}
-
 VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT severity, VkDebugUtilsMessageTypeFlagsEXT type,
     const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
@@ -123,7 +112,8 @@ void Instance::createInstance(void* native_window, const std::string& app_name)
 {
     GE_CORE_INFO("Creating Vulkan Instance...");
     auto* window = reinterpret_cast<SDL_Window*>(native_window);
-    auto window_extensions = getWindowExtensions(window);
+    auto window_extensions =
+        vulkanGet<const char*>(::SDL_Vulkan_GetInstanceExtensions, window);
 
 #ifndef GE_DISABLE_DEBUG
     window_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);

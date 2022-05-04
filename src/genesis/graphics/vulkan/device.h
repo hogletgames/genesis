@@ -105,9 +105,6 @@ private:
     swap_chain_support_details_t
     querySwapChainSupport(VkPhysicalDevice physical_device) const;
 
-    std::vector<VkExtensionProperties>
-    getPhysicalDeviceExt(VkPhysicalDevice physical_device);
-
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
     VkPhysicalDevice m_physical_device{VK_NULL_HANDLE};
     VkDevice m_device{VK_NULL_HANDLE};

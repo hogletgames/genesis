@@ -33,6 +33,7 @@
 #include "swap_chain.h"
 #include "device.h"
 #include "image.h"
+#include "utils.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/enum.h"
@@ -236,12 +237,8 @@ void SwapChain::createSwapChain(VkSwapchainKHR old_swap_chain, const Vec2& windo
         throw Vulkan::Exception{"Failed to create Swap Chain"};
     }
 
-    uint32_t image_count{0};
-    vkGetSwapchainImagesKHR(device, m_swap_chain, &image_count, nullptr);
-    m_swap_chain_images.resize(image_count);
-    vkGetSwapchainImagesKHR(device, m_swap_chain, &image_count,
-                            m_swap_chain_images.data());
-
+    m_swap_chain_images =
+        vulkanGet<VkImage>(::vkGetSwapchainImagesKHR, device, m_swap_chain);
     m_image_format = surface_format.format;
     m_depth_format = choseDepthFormat(m_device.get());
 }

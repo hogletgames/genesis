@@ -32,6 +32,7 @@
 
 #include "device.h"
 #include "instance.h"
+#include "utils.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/format.h"
@@ -137,12 +138,7 @@ VkFormat Device::getSupportedFormat(const std::vector<VkFormat> &candidates,
 void Device::pickPhysicalDevice()
 {
     VkInstance instance = Instance::instance();
-
-    uint32_t device_count{0};
-    vkEnumeratePhysicalDevices(instance, &device_count, nullptr);
-
-    std::vector<VkPhysicalDevice> devices(device_count);
-    vkEnumeratePhysicalDevices(instance, &device_count, devices.data());
+    auto devices = vulkanGet<VkPhysicalDevice>(::vkEnumeratePhysicalDevices, instance);
 
     GE_CORE_INFO("Physical Device List: \n{}", ::toString(devices));
 
@@ -258,16 +254,10 @@ bool Device::isPhysicalDeviceSuitable(VkPhysicalDevice physical_device)
 queue_family_indices_t Device::findQueueFamilies(VkPhysicalDevice physical_device)
 {
     queue_family_indices_t indices{};
+    auto queue_families = vulkanGet<VkQueueFamilyProperties>(
+        ::vkGetPhysicalDeviceQueueFamilyProperties, physical_device);
 
-    uint32_t queue_family_count{0};
-    vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count,
-                                             nullptr);
-
-    std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
-    vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count,
-                                             queue_families.data());
-
-    for (uint32_t i{0}; i < queue_family_count; i++) {
+    for (uint32_t i{0}; i < queue_families.size(); i++) {
         if (isGraphicQueue(queue_families[i])) {
             indices.graphics_family = i;
         }
@@ -313,7 +303,8 @@ uint32_t Device::findMemoryType(uint32_t type_filter, VkMemoryPropertyFlags prop
 
 bool Device::checkPhysicalDeviceExtSupport(VkPhysicalDevice physical_device)
 {
-    auto device_extensions = getPhysicalDeviceExt(physical_device);
+    auto device_extensions = vulkanGet<VkExtensionProperties>(
+        ::vkEnumerateDeviceExtensionProperties, physical_device, nullptr);
     std::unordered_set<std::string> required_extensions = {m_extensions.begin(),
                                                            m_extensions.end()};
 
@@ -327,43 +318,15 @@ bool Device::checkPhysicalDeviceExtSupport(VkPhysicalDevice physical_device)
 swap_chain_support_details_t
 Device::querySwapChainSupport(VkPhysicalDevice physical_device) const
 {
-    // Capabilities
     swap_chain_support_details_t details{};
+    details.formats = vulkanGet<VkSurfaceFormatKHR>(
+        ::vkGetPhysicalDeviceSurfaceFormatsKHR, physical_device, m_surface);
+    details.present_mode = vulkanGet<VkPresentModeKHR>(
+        ::vkGetPhysicalDeviceSurfacePresentModesKHR, physical_device, m_surface);
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical_device, m_surface,
                                               &details.capabilities);
 
-    // Format
-    uint32_t format_count{0};
-    vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, m_surface, &format_count,
-                                         nullptr);
-
-    details.formats.resize(format_count);
-    vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, m_surface, &format_count,
-                                         details.formats.data());
-
-    // Present mode
-    uint32_t present_mode_count{0};
-    vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, m_surface,
-                                              &present_mode_count, nullptr);
-
-    details.present_mode.resize(present_mode_count);
-    vkGetPhysicalDeviceSurfacePresentModesKHR(
-        physical_device, m_surface, &present_mode_count, details.present_mode.data());
-
     return details;
-}
-
-std::vector<VkExtensionProperties>
-Device::getPhysicalDeviceExt(VkPhysicalDevice physical_device)
-{
-    uint32_t count{0};
-    vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &count, nullptr);
-
-    std::vector<VkExtensionProperties> extensions(count);
-    vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &count,
-                                         extensions.data());
-
-    return extensions;
 }
 
 } // namespace GE::Vulkan
