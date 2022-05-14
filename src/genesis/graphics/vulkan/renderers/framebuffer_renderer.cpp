@@ -177,8 +177,7 @@ void FramebufferRenderer::swapBuffers()
 Scoped<GE::Pipeline>
 FramebufferRenderer::createPipeline(const GE::pipeline_config_t& config)
 {
-    auto vulkan_config = Vulkan::Pipeline::makeDefaultConfig();
-    vulkan_config.base = config;
+    auto vulkan_config = Vulkan::Pipeline::createDefaultConfig(config);
     vulkan_config.pipeline_cache = m_pipeline_cache;
     vulkan_config.render_pass = m_render_passes[CLEAR_ALL];
     vulkan_config.front_face = VK_FRONT_FACE_CLOCKWISE;

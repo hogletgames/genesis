@@ -49,22 +49,22 @@ namespace GE::Vulkan {
 
 class Device;
 
-struct pipeline_config_t {
-    GE::pipeline_config_t base{};
+struct pipeline_config_t: GE::pipeline_config_t {
     VkPipelineCache pipeline_cache{VK_NULL_HANDLE};
     VkRenderPass render_pass{VK_NULL_HANDLE};
     uint32_t subpass{0};
     VkFrontFace front_face{VK_FRONT_FACE_COUNTER_CLOCKWISE};
+    VkSampleCountFlagBits msaa_samples{VK_SAMPLE_COUNT_1_BIT};
 
-    VkPipelineViewportStateCreateInfo viewport_state;
-    VkPipelineInputAssemblyStateCreateInfo input_assembly_state;
-    VkPipelineRasterizationStateCreateInfo rasterization_state;
-    VkPipelineMultisampleStateCreateInfo multisample_state;
-    VkPipelineColorBlendAttachmentState color_blend_attachment;
-    VkPipelineColorBlendStateCreateInfo color_blend_state;
-    VkPipelineDepthStencilStateCreateInfo depth_stencil_state;
-    std::vector<VkDynamicState> dynamic_state_list;
-    VkPipelineDynamicStateCreateInfo dynamic_state;
+    VkPipelineViewportStateCreateInfo viewport_state{};
+    VkPipelineInputAssemblyStateCreateInfo input_assembly_state{};
+    VkPipelineRasterizationStateCreateInfo rasterization_state{};
+    VkPipelineMultisampleStateCreateInfo multisample_state{};
+    VkPipelineColorBlendAttachmentState color_blend_attachment{};
+    VkPipelineColorBlendStateCreateInfo color_blend_state{};
+    VkPipelineDepthStencilStateCreateInfo depth_stencil_state{};
+    std::vector<VkDynamicState> dynamic_state_list{};
+    VkPipelineDynamicStateCreateInfo dynamic_state{};
 };
 
 class Pipeline: public GE::Pipeline
@@ -75,7 +75,8 @@ public:
 
     void bind(GPUCommandQueue* queue) override;
 
-    static Vulkan::pipeline_config_t makeDefaultConfig();
+    static Vulkan::pipeline_config_t
+    createDefaultConfig(GE::pipeline_config_t base_config);
 
 private:
     void createPipelineLayout();
