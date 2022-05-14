@@ -53,6 +53,7 @@ public:
         VkSurfaceKHR surface{VK_NULL_HANDLE};
         VkRenderPass render_pass{VK_NULL_HANDLE};
         Vec2 window_size{0.0f, 0.0f};
+        uint8_t msaa_samples{1};
     };
 
     SwapChain(Shared<Vulkan::Device> device, const options_t& options);
@@ -90,6 +91,8 @@ private:
     void createSyncObjects();
     void createFramebuffers();
 
+    std::vector<VkImageView> getFramebufferAttachments(uint32_t image_idx);
+
     void destroySwapChainResources();
     void destroySyncObjectHandles();
     void destroySwapChain(VkSwapchainKHR swap_chain);
@@ -103,6 +106,7 @@ private:
     Shared<Vulkan::Device> m_device;
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
     VkRenderPass m_render_pass{VK_NULL_HANDLE};
+    uint8_t m_msaa_samples{1};
 
     VkSwapchainKHR m_swap_chain{VK_NULL_HANDLE};
     std::vector<VkImage> m_swap_chain_images;
