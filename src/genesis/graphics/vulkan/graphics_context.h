@@ -34,6 +34,7 @@
 #ifndef GENESIS_GRAPHICS_VULKAN_GRAPHICS_CONTEXT_H_
 #define GENESIS_GRAPHICS_VULKAN_GRAPHICS_CONTEXT_H_
 
+#include <genesis/core/memory.h>
 #include <genesis/graphics/graphics_context.h>
 
 #include <vulkan/vulkan.h>
@@ -61,6 +62,8 @@ public:
     GE::GraphicsFactory* factory() override { return m_factory.get(); }
     GE::Renderer* windowRenderer() override;
     GE::GUI::Context* gui() override { return m_gui.get(); }
+
+    const limits_t& limits() const override;
 
 private:
     Scoped<WindowRenderer> createWindowRenderer(const config_t& renderer_config);

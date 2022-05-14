@@ -36,6 +36,7 @@
 
 #include <genesis/core/export.h>
 #include <genesis/core/memory.h>
+#include <genesis/graphics/graphics_context.h>
 
 #include <vulkan/vulkan.h>
 
@@ -82,6 +83,7 @@ public:
     VkQueue transferQueue() const { return m_transfer_queue; }
     VkQueue computeQueue() const { return m_compute_queue; }
     const queue_family_indices_t& queueIndices() const { return m_queue_indices; }
+    const GraphicsContext::limits_t& limits() const { return m_limits; }
 
     swap_chain_support_details_t swapChainDetails() const
     {
@@ -96,6 +98,7 @@ private:
     void pickPhysicalDevice();
     void createLogicalDevice();
     void createCommandPool();
+    void fillLimits();
 
     void destroyVkHandles();
 
@@ -116,6 +119,7 @@ private:
     VkQueue m_compute_queue{VK_NULL_HANDLE};
 
     queue_family_indices_t m_queue_indices{};
+    GraphicsContext::limits_t m_limits{};
 
     std::vector<const char*> m_extensions;
 };

@@ -87,6 +87,22 @@ bool isPresentSupported(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
     return is_present_supported == VK_TRUE;
 }
 
+uint8_t getMaxMSAA(VkSampleCountFlags device_count)
+{
+    static constexpr std::array<VkSampleCountFlags, 6> expected_counts = {
+        VK_SAMPLE_COUNT_64_BIT, VK_SAMPLE_COUNT_32_BIT, VK_SAMPLE_COUNT_16_BIT,
+        VK_SAMPLE_COUNT_8_BIT,  VK_SAMPLE_COUNT_4_BIT,  VK_SAMPLE_COUNT_2_BIT,
+    };
+
+    for (auto expected_count : expected_counts) {
+        if ((device_count & expected_count) != 0) {
+            return static_cast<uint8_t>(expected_count);
+        }
+    }
+
+    return static_cast<uint8_t>(VK_SAMPLE_COUNT_1_BIT);
+}
+
 } // namespace
 
 namespace GE::Vulkan {
@@ -99,6 +115,7 @@ Device::Device(VkSurfaceKHR surface)
     pickPhysicalDevice();
     createLogicalDevice();
     createCommandPool();
+    fillLimits();
 }
 
 Device::~Device()
@@ -215,6 +232,15 @@ void Device::createCommandPool()
         VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Command Pool"};
     }
+}
+
+void Device::fillLimits()
+{
+    VkPhysicalDeviceProperties properties{};
+    vkGetPhysicalDeviceProperties(m_physical_device, &properties);
+
+    m_limits.max_msaa = getMaxMSAA(properties.limits.framebufferColorSampleCounts &
+                                   properties.limits.framebufferDepthSampleCounts);
 }
 
 void Device::destroyVkHandles()

@@ -146,4 +146,9 @@ void GraphicsContext::destroyVulkanHandles()
     m_surface = VK_NULL_HANDLE;
 }
 
+const GraphicsContext::limits_t& GraphicsContext::limits() const
+{
+    return m_device->limits();
+}
+
 } // namespace GE::Vulkan
