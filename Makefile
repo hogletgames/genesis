@@ -15,6 +15,7 @@ CLANG_FORMAT_BIN    ?= clang-format
 RUN_CLANG_TIDY_BIN  ?= run-clang-tidy
 
 DOCKER_IMAGE_NAME   := genesis-engine-image
+DOCKER_CONTAINER    := genesis_engine
 DOCKER_CMD          ?= make -j$$(nproc)
 
 # Building project
@@ -61,6 +62,7 @@ docker_run:
 		-u $$(id -u):$$(id -g) \
 		-e CMAKE_OPTIONS="$(CMAKE_OPTIONS)" \
 		-e BUILD_DIR="$(BUILD_DIR)/docker" \
+		--name $(DOCKER_CONTAINER) \
 		$(DOCKER_IMAGE_NAME) \
 		bash -c "$(DOCKER_CMD)"
 
