@@ -36,6 +36,7 @@
 #include <genesis/core/export.h>
 #include <genesis/core/memory.h>
 #include <genesis/graphics/graphics_context.h>
+#include <genesis/graphics/renderer.h>
 
 namespace GE {
 
@@ -51,6 +52,7 @@ public:
     struct settings_t {
         API api{API_DEFAULT};
         std::string app_name;
+        uint8_t msaa_samples{1};
 
         static constexpr API API_DEFAULT{API::VULKAN};
     };
@@ -59,15 +61,17 @@ public:
     static void shutdown();
 
     static GraphicsContext* context() { return get()->m_context.get(); }
-    static GraphicsFactory* factory() { return get()->m_context->factory(); }
-    static Renderer* windowRenderer() { return get()->m_context->windowRenderer(); }
+    static GraphicsFactory* factory() { return context()->factory(); }
+    static Renderer* windowRenderer() { return context()->windowRenderer(); }
     static RenderCommand* command() { return windowRenderer()->command(); }
-    static GUI::Context* gui() { return get()->m_context->gui(); }
+    static GUI::Context* gui() { return context()->gui(); }
 
     static API api() { return get()->m_api; }
+    static const GraphicsContext::limits_t& limits() { return context()->limits(); }
 
 private:
     Graphics() = default;
+    ~Graphics();
 
     static Graphics* get()
     {

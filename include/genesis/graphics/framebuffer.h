@@ -79,11 +79,11 @@ public:
 
     virtual Renderer* renderer() = 0;
     virtual const Vec2& size() const = 0;
-    virtual uint32_t MSSASamples() const = 0;
+    virtual uint32_t MSAASamples() const = 0;
     virtual const Vec4& clearColor() const = 0;
     virtual float clearDepth() const = 0;
 
-    virtual const Texture& colorTexture() const = 0;
+    virtual const Texture& colorTexture(size_t i = 0) const = 0;
     virtual const Texture& depthTexture() const = 0;
     virtual uint32_t colorAttachmentCount() const = 0;
     virtual bool hasDepthAttachment() const = 0;

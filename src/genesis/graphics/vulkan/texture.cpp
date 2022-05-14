@@ -59,15 +59,6 @@ std::unordered_map<GE::TextureFormat, VkFormat> toVkFormatMap()
     };
 }
 
-VkImageViewType toImageViewType(GE::TextureType type)
-{
-    static const std::unordered_map<GE::TextureType, VkImageViewType> to_type = {
-        {GE::TextureType::TEXTURE_2D, VK_IMAGE_VIEW_TYPE_2D},
-    };
-
-    return GE::toType(to_type, type);
-}
-
 VkFilter toVkFilter(GE::TextureFilter filter)
 {
     switch (filter) {
@@ -151,15 +142,6 @@ VkImageUsageFlags toVkUsage(const GE::texture_config_t& config)
     return usage;
 }
 
-VkImageAspectFlags toVkImageAspect(GE::TextureFormat format)
-{
-    if (GE::isDepthFormat(format)) {
-        return VK_IMAGE_ASPECT_DEPTH_BIT;
-    }
-
-    return VK_IMAGE_ASPECT_COLOR_BIT;
-}
-
 GE::TextureFilter toMinFiler(const GE::texture_config_t& config)
 {
     if (config.min_filter != GE::TextureFilter::AUTO) {
@@ -216,7 +198,7 @@ Texture::NativeID Texture::nativeID() const
 void Texture::createImage(const texture_config_t& config)
 {
     image_config_t image_config{};
-    image_config.view_type = toImageViewType(config.type);
+    image_config.view_type = toVkImageViewType(config.type);
     image_config.extent = toVkExtent(config);
     image_config.mip_levels = toMipLevels(config);
     image_config.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -328,6 +310,24 @@ TextureFormat toTextureFormat(VkFormat format)
 {
     static const auto to_format = swapKeyAndValue(toVkFormatMap());
     return toType(to_format, format, TextureFormat::UNKNOWN);
+}
+
+VkImageViewType toVkImageViewType(TextureType type)
+{
+    static const std::unordered_map<TextureType, VkImageViewType> to_type = {
+        {TextureType::TEXTURE_2D, VK_IMAGE_VIEW_TYPE_2D},
+    };
+
+    return toType(to_type, type, VK_IMAGE_VIEW_TYPE_MAX_ENUM);
+}
+
+VkImageAspectFlags toVkImageAspect(TextureFormat format)
+{
+    if (isDepthFormat(format)) {
+        return VK_IMAGE_ASPECT_DEPTH_BIT;
+    }
+
+    return VK_IMAGE_ASPECT_COLOR_BIT;
 }
 
 } // namespace GE::Vulkan

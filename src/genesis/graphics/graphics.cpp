@@ -49,7 +49,12 @@ bool Graphics::initialize(const Graphics::settings_t& settings, void* window)
         default: break;
     }
 
-    if (!context || !context->initialize(window, settings.app_name)) {
+    GraphicsContext::config_t context_config{};
+    context_config.window = window;
+    context_config.app_name = settings.app_name;
+    context_config.msaa_samples = settings.msaa_samples;
+
+    if (!context || !context->initialize(context_config)) {
         GE_CORE_ERR("Failed to create Graphics Context");
         return false;
     }
@@ -60,9 +65,18 @@ bool Graphics::initialize(const Graphics::settings_t& settings, void* window)
 
 void Graphics::shutdown()
 {
+    if (context() == nullptr) {
+        return;
+    }
+
     get()->m_context->shutdown();
     get()->m_context.reset();
     get()->m_api = API::NONE;
+}
+
+Graphics::~Graphics()
+{
+    shutdown();
 }
 
 Graphics::API toRendererAPI(const std::string& api_str)

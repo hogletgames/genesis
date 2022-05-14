@@ -33,6 +33,7 @@
 #include "swap_chain.h"
 #include "device.h"
 #include "image.h"
+#include "utils.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/enum.h"
@@ -72,6 +73,7 @@ SwapChain::SwapChain(Shared<Vulkan::Device> device, const options_t& options)
     : m_device{std::move(device)}
     , m_surface{options.surface}
     , m_render_pass{options.render_pass}
+    , m_msaa_samples{options.msaa_samples}
 {
     createSwapChainWithResources(VK_NULL_HANDLE, options.window_size);
     createSyncObjects();
@@ -188,8 +190,11 @@ void SwapChain::createSwapChainWithResources(VkSwapchainKHR old_swap_chain,
 {
     createSwapChain(old_swap_chain, window_size);
     createImageViews();
-    // TODO: add multisampling support
-    // createColorResources();
+
+    if (m_msaa_samples > 1) {
+        createColorResources();
+    }
+
     createDepthResources();
     createFramebuffers();
 }
@@ -236,12 +241,8 @@ void SwapChain::createSwapChain(VkSwapchainKHR old_swap_chain, const Vec2& windo
         throw Vulkan::Exception{"Failed to create Swap Chain"};
     }
 
-    uint32_t image_count{0};
-    vkGetSwapchainImagesKHR(device, m_swap_chain, &image_count, nullptr);
-    m_swap_chain_images.resize(image_count);
-    vkGetSwapchainImagesKHR(device, m_swap_chain, &image_count,
-                            m_swap_chain_images.data());
-
+    m_swap_chain_images =
+        vulkanGet<VkImage>(::vkGetSwapchainImagesKHR, device, m_swap_chain);
     m_image_format = surface_format.format;
     m_depth_format = choseDepthFormat(m_device.get());
 }
@@ -262,6 +263,7 @@ void SwapChain::createColorResources()
     config.extent.width = m_extent.width;
     config.extent.height = m_extent.height;
     config.mip_levels = 1;
+    config.samples = toVkSampleCountFlag(m_msaa_samples);
     config.format = m_image_format;
     config.tiling = VK_IMAGE_TILING_OPTIMAL;
     config.usage =
@@ -278,6 +280,7 @@ void SwapChain::createDepthResources()
     config.extent.width = m_extent.width;
     config.extent.height = m_extent.height;
     config.mip_levels = 1;
+    config.samples = toVkSampleCountFlag(m_msaa_samples);
     config.format = choseDepthFormat(m_device.get());
     config.tiling = VK_IMAGE_TILING_OPTIMAL;
     config.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
@@ -292,10 +295,7 @@ void SwapChain::createFramebuffers()
     m_framebuffers.resize(m_swap_chain_image_views.size());
 
     for (size_t i = 0; i < m_swap_chain_image_views.size(); i++) {
-        std::array<VkImageView, 2> attachments = {
-            m_swap_chain_image_views[i],
-            m_depth_image->view(),
-        };
+        auto attachments = getFramebufferAttachments(i);
 
         VkFramebufferCreateInfo framebuffer_info{};
         framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -343,6 +343,19 @@ void SwapChain::createSyncObjects()
             throw Vulkan::Exception{"Failed to create an in flight fence"};
         }
     }
+}
+
+std::vector<VkImageView> SwapChain::getFramebufferAttachments(uint32_t image_idx)
+{
+    if (m_color_image != nullptr) {
+        return {
+            m_color_image->view(),
+            m_depth_image->view(),
+            m_swap_chain_image_views[image_idx],
+        };
+    }
+
+    return {m_swap_chain_image_views[image_idx], m_depth_image->view()};
 }
 
 void SwapChain::destroySwapChainResources()

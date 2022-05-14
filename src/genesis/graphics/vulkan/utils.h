@@ -38,6 +38,7 @@
 
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 namespace GE::Vulkan {
 
@@ -79,6 +80,18 @@ inline void destroyDebugUtilsMessengerEXT(VkInstance instance,
 {
     loadInstanceFuncAndCall<PFN_vkDestroyDebugUtilsMessengerEXT>(
         "vkDestroyDebugUtilsMessengerEXT", instance, debug_messenger, allocator);
+}
+
+template<typename T, typename Func, typename... Args>
+std::vector<T> vulkanGet(Func f, Args&&... args)
+{
+    uint32_t count{0};
+    f(std::forward<Args>(args)..., &count, nullptr);
+
+    std::vector<T> data(count);
+    f(std::forward<Args>(args)..., &count, data.data());
+
+    return data;
 }
 
 VkSampleCountFlagBits toVkSampleCountFlag(uint8_t sample_count);

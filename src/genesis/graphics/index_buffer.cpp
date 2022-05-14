@@ -32,6 +32,7 @@
 
 #include "index_buffer.h"
 #include "graphics.h"
+#include "graphics_factory.h"
 
 namespace GE {
 

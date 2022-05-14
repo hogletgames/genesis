@@ -38,7 +38,10 @@
 #include "pipeline_barrier.h"
 #include "single_command.h"
 #include "texture.h"
+#include "utils.h"
 #include "vulkan_exception.h"
+
+using AttachmentDescriptions = std::vector<VkAttachmentDescription>;
 
 namespace {
 
@@ -76,53 +79,93 @@ bool isColorAttachment(const VkAttachmentDescription& attachment)
     return GE::isColorFormat(GE::Vulkan::toTextureFormat(attachment.format));
 }
 
-void fillClearNoneAttachmentsOp(std::vector<VkAttachmentDescription>* attachments)
+inline constexpr bool isOneSampleAttachment(uint32_t sample_count,
+                                            VkSampleCountFlagBits sample_flags)
 {
-    for (auto& attachment : *attachments) {
-        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    return sample_count == 1 || sample_flags != VK_SAMPLE_COUNT_1_BIT;
+}
+
+void fillClearNoneAttachment(VkAttachmentDescription* attachment)
+{
+    attachment->loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    attachment->stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+}
+
+void fillClearColorAttachment(VkAttachmentDescription* attachment)
+{
+    if (isColorAttachment(*attachment)) {
+        attachment->loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        attachment->stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    } else {
+        attachment->loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        attachment->stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     }
 }
 
-void fillClearColorAttachmentsOp(std::vector<VkAttachmentDescription>* attachments)
+void fillClearDepthAttachment(VkAttachmentDescription* attachment)
+{
+    if (isColorAttachment(*attachment)) {
+        attachment->loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        attachment->stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    } else {
+        attachment->loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        attachment->stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    }
+}
+
+void fillClearAllAttachment(VkAttachmentDescription* attachment)
+{
+    if (isColorAttachment(*attachment)) {
+        attachment->loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        attachment->stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    } else {
+        attachment->loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        attachment->stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    }
+}
+
+void prepareClearNoneAttachments(AttachmentDescriptions* attachments)
 {
     for (auto& attachment : *attachments) {
-        if (isColorAttachment(attachment)) {
-            attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-            attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        fillClearNoneAttachment(&attachment);
+    }
+}
+
+void prepareClearColorAttachments(AttachmentDescriptions* attachments,
+                                  uint32_t sample_count)
+{
+    for (auto& attachment : *attachments) {
+        if (isOneSampleAttachment(sample_count, attachment.samples)) {
+            fillClearColorAttachment(&attachment);
         } else {
-            attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-            attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            fillClearNoneAttachment(&attachment);
         }
     }
 }
 
-void fillClearDepthAttachmentsOp(std::vector<VkAttachmentDescription>* attachments)
+void prepareClearDepthAttachments(AttachmentDescriptions* attachments,
+                                  uint32_t sample_count)
 {
     for (auto& attachment : *attachments) {
-        if (isColorAttachment(attachment)) {
-            attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-            attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        if (isOneSampleAttachment(sample_count, attachment.samples)) {
+            fillClearDepthAttachment(&attachment);
         } else {
-            attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-            attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            fillClearNoneAttachment(&attachment);
         }
     }
 }
 
-void fillClearAllAttachmentsOp(std::vector<VkAttachmentDescription>* attachments)
+void prepareClearAllAttachments(AttachmentDescriptions* attachments,
+                                uint32_t sample_count)
 {
     for (auto& attachment : *attachments) {
-        if (isColorAttachment(attachment)) {
-            attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-            attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        if (isOneSampleAttachment(sample_count, attachment.samples)) {
+            fillClearAllAttachment(&attachment);
         } else {
-            attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-            attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            fillClearNoneAttachment(&attachment);
         }
     }
 }
-
 } // namespace
 
 namespace GE::Vulkan {
@@ -177,11 +220,11 @@ void FramebufferRenderer::swapBuffers()
 Scoped<GE::Pipeline>
 FramebufferRenderer::createPipeline(const GE::pipeline_config_t& config)
 {
-    auto vulkan_config = Vulkan::Pipeline::makeDefaultConfig();
-    vulkan_config.base = config;
+    auto vulkan_config = Vulkan::Pipeline::createDefaultConfig(config);
     vulkan_config.pipeline_cache = m_pipeline_cache;
     vulkan_config.render_pass = m_render_passes[CLEAR_ALL];
     vulkan_config.front_face = VK_FRONT_FACE_CLOCKWISE;
+    vulkan_config.msaa_samples = toVkSampleCountFlag(m_framebuffer->MSAASamples());
     return tryMakeScoped<Vulkan::Pipeline>(m_device, vulkan_config);
 }
 
@@ -203,25 +246,20 @@ void FramebufferRenderer::createClearValues()
 void FramebufferRenderer::createRenderPasses()
 {
     auto attachments = m_framebuffer->attachments();
+    uint32_t sample_count = m_framebuffer->MSAASamples();
+    bool is_multisampled = sample_count > 1;
 
-    fillClearNoneAttachmentsOp(&attachments);
-    m_render_passes[CLEAR_NONE] = createRenderPass(attachments);
+    prepareClearNoneAttachments(&attachments);
+    m_render_passes[CLEAR_NONE] = createRenderPass(attachments, is_multisampled);
 
-    if (m_framebuffer->MSSASamples() > 1) {
-        m_render_passes[CLEAR_COLOR] = createRenderPass(attachments);
-        m_render_passes[CLEAR_DEPTH] = createRenderPass(attachments);
-        m_render_passes[CLEAR_ALL] = createRenderPass(attachments);
-        return;
-    }
+    prepareClearColorAttachments(&attachments, sample_count);
+    m_render_passes[CLEAR_COLOR] = createRenderPass(attachments, is_multisampled);
 
-    fillClearColorAttachmentsOp(&attachments);
-    m_render_passes[CLEAR_COLOR] = createRenderPass(attachments);
+    prepareClearDepthAttachments(&attachments, sample_count);
+    m_render_passes[CLEAR_DEPTH] = createRenderPass(attachments, is_multisampled);
 
-    fillClearDepthAttachmentsOp(&attachments);
-    m_render_passes[CLEAR_DEPTH] = createRenderPass(attachments);
-
-    fillClearAllAttachmentsOp(&attachments);
-    m_render_passes[CLEAR_ALL] = createRenderPass(attachments);
+    prepareClearAllAttachments(&attachments, sample_count);
+    m_render_passes[CLEAR_ALL] = createRenderPass(attachments, is_multisampled);
 }
 
 void FramebufferRenderer::createSyncObjects()

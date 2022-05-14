@@ -40,6 +40,7 @@ namespace {
 constexpr GE::Logger::Level LOG_LEVEL{GE::Logger::Level::TRACE};
 constexpr GE::Graphics::API RENDER_API{GE::Graphics::API::VULKAN};
 constexpr auto APP_NAME = "Sandbox";
+constexpr uint8_t MSAA_SAMPLES{4};
 
 } // namespace
 
@@ -52,6 +53,7 @@ int main()
     GE::Graphics::settings_t graphics_settings{};
     graphics_settings.api = RENDER_API;
     graphics_settings.app_name = APP_NAME;
+    graphics_settings.msaa_samples = MSAA_SAMPLES;
 
     GE::Window::settings_t window_settings{};
     window_settings.title = APP_NAME;
@@ -67,7 +69,5 @@ int main()
 
     GE::Application::attachLayer(GE::makeShared<GE::Examples::GUILayer>());
     GE::Application::run();
-    GE::Application::shutdown();
-
     return EXIT_SUCCESS;
 }

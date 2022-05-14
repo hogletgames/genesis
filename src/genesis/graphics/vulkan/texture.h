@@ -91,6 +91,8 @@ private:
 
 VkFormat toVkFormat(TextureFormat format);
 TextureFormat toTextureFormat(VkFormat format);
+VkImageViewType toVkImageViewType(TextureType type);
+VkImageAspectFlags toVkImageAspect(TextureFormat format);
 
 } // namespace GE::Vulkan
 

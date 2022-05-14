@@ -56,6 +56,10 @@ bool Application::initialize(const settings_t& settings)
 
 void Application::shutdown()
 {
+    if (window() == nullptr) {
+        return;
+    }
+
     get()->clearLayers();
     Graphics::shutdown();
     shutdownApp();
@@ -89,6 +93,11 @@ void Application::detachLayer(const Shared<Layer>& layer)
 void Application::close()
 {
     get()->m_running = false;
+}
+
+Application::~Application()
+{
+    shutdown();
 }
 
 bool Application::initializeApp(const settings_t& settings)
@@ -132,6 +141,8 @@ void Application::mainLoop()
             Graphics::windowRenderer()->swapBuffers();
         }
     }
+
+    shutdown();
 }
 
 void Application::onEvent(Event* event)

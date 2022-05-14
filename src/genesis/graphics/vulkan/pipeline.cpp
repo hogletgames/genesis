@@ -68,9 +68,9 @@ void Pipeline::bind(GPUCommandQueue* queue)
     });
 }
 
-Vulkan::pipeline_config_t Pipeline::makeDefaultConfig()
+Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t base_config)
 {
-    Vulkan::pipeline_config_t config{};
+    Vulkan::pipeline_config_t config{std::move(base_config)};
 
     config.input_assembly_state.sType =
         VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -170,14 +170,14 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     vert_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vert_shader_stage_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
     vert_shader_stage_info.module =
-        vulkanShaderHandle(config.base.vertex_shader->nativeHandle());
+        vulkanShaderHandle(config.vertex_shader->nativeHandle());
     vert_shader_stage_info.pName = SHADER_ENTRYPOINT;
 
     VkPipelineShaderStageCreateInfo frag_shader_stage_info{};
     frag_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     frag_shader_stage_info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
     frag_shader_stage_info.module =
-        vulkanShaderHandle(config.base.fragment_shader->nativeHandle());
+        vulkanShaderHandle(config.fragment_shader->nativeHandle());
     frag_shader_stage_info.pName = SHADER_ENTRYPOINT;
 
     std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages = {
@@ -185,7 +185,7 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
         frag_shader_stage_info,
     };
 
-    auto vert_layout = config.base.vertex_shader->inputLayout();
+    auto vert_layout = config.vertex_shader->inputLayout();
     auto binding_description = vertexInputBindDescription(vert_layout);
     auto attribute_descriptions = vertexInputAttributeDescriptions(vert_layout);
 
@@ -197,6 +197,7 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     vertex_input_state.pVertexAttributeDescriptions = attribute_descriptions.data();
 
     config.rasterization_state.frontFace = config.front_face;
+    config.multisample_state.rasterizationSamples = config.msaa_samples;
 
     VkGraphicsPipelineCreateInfo pipeline_info{};
     pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

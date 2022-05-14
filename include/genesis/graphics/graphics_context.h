@@ -34,22 +34,39 @@
 #define GENESIS_GRAPHICS_GRAPHICS_CONTEXT_H_
 
 #include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
-#include <genesis/graphics/graphics_factory.h>
-#include <genesis/graphics/renderer.h>
-#include <genesis/gui/context.h>
+
+#include <string_view>
+
+namespace GE::GUI {
+class Context;
+} // namespace GE::GUI
 
 namespace GE {
+
+class GraphicsFactory;
+class Renderer;
 
 class GE_API GraphicsContext: public Interface
 {
 public:
-    virtual bool initialize(void* window, const std::string& app_name) = 0;
+    struct config_t {
+        void* window{nullptr};
+        std::string_view app_name;
+        uint8_t msaa_samples{1};
+    };
+
+    struct limits_t {
+        uint8_t max_msaa{1};
+    };
+
+    virtual bool initialize(const config_t& config) = 0;
     virtual void shutdown() = 0;
 
     virtual GraphicsFactory* factory() = 0;
     virtual Renderer* windowRenderer() = 0;
     virtual GUI::Context* gui() = 0;
+
+    virtual const limits_t& limits() const = 0;
 };
 
 } // namespace GE
