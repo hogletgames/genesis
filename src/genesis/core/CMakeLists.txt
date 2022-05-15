@@ -12,6 +12,7 @@ list(APPEND CORE_HEADERS
     ${INCLUDE_DIR}/export.h
     ${INCLUDE_DIR}/filesystem.h
     ${INCLUDE_DIR}/format.h
+    ${INCLUDE_DIR}/hash.h
     ${INCLUDE_DIR}/interface.h
     ${INCLUDE_DIR}/log.h
     ${INCLUDE_DIR}/memory.h
