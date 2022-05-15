@@ -45,18 +45,6 @@ using AttachmentDescriptions = std::vector<VkAttachmentDescription>;
 
 namespace {
 
-VkClearValue toVkClearColorValue(const GE::Vec4& clear_color)
-{
-    return {{{clear_color.x, clear_color.y, clear_color.z, clear_color.w}}};
-}
-
-VkClearValue toVkClearDepthStencilValue(float clear_depth)
-{
-    VkClearValue clear_value;
-    clear_value.depthStencil = {clear_depth, 0};
-    return clear_value;
-}
-
 VkExtent2D toVkExtent(const GE::Vec2& size)
 {
     return {static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y)};

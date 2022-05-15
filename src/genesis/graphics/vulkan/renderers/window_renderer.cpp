@@ -66,7 +66,7 @@ WindowRenderer::WindowRenderer(Shared<Device> device, const config_t& config)
     , m_window_size{config.window_size}
     , m_msaa_samples{config.msaa_samples}
 {
-    m_clear_values = {{}, {}};
+    m_clear_values = {{}, toVkClearDepthStencilValue(1.0f)};
 
     createRenderPasses();
     createSwapChain();

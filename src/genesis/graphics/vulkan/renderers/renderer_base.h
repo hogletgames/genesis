@@ -82,4 +82,16 @@ private:
     void destroyVkHandles();
 };
 
+constexpr VkClearValue toVkClearColorValue(const GE::Vec4& clear_color)
+{
+    return {{{clear_color.x, clear_color.y, clear_color.z, clear_color.w}}};
+}
+
+constexpr VkClearValue toVkClearDepthStencilValue(float clear_depth)
+{
+    VkClearValue clear_value{};
+    clear_value.depthStencil = {clear_depth, 0};
+    return clear_value;
+}
+
 } // namespace GE::Vulkan
