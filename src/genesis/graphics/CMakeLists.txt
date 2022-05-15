@@ -34,6 +34,7 @@ list(APPEND GRAPHICS_HEADERS
     ${INCLUDE_DIR}/texture.h
     ${INCLUDE_DIR}/texture_loader.h
     ${INCLUDE_DIR}/uniform_buffer.h
+    ${INCLUDE_DIR}/vertex.h
     ${INCLUDE_DIR}/vertex_buffer.h
     )
 

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,22 +32,34 @@
 
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/hash.hpp>
-
-#include <string>
+#include "genesis/core/hash.h"
+#include <genesis/math/types.h>
 
 namespace GE {
 
-using Vec2 = glm::vec2;
-using Vec3 = glm::vec3;
-using Vec4 = glm::vec4;
+struct vertex_t {
+    GE::Vec3 position{0.0f, 0.0f, 0.0f};
+    GE::Vec3 color{0.0f, 0.0f, 0.0f};
+    GE::Vec2 tex_coord{0.0f, 0.0f};
+};
 
-using glm::value_ptr;
+constexpr bool operator==(const vertex_t& lhs, const vertex_t& rhs)
+{
+    return std::tie(lhs.position, lhs.color, lhs.tex_coord) ==
+           std::tie(rhs.position, rhs.color, rhs.tex_coord);
+}
 
-std::string toString(const Vec2& vec);
-std::string toString(const Vec3& vec);
-std::string toString(const Vec4& vec);
+constexpr bool operator!=(const vertex_t& lhs, const vertex_t& rhs)
+{
+    return !(lhs == rhs);
+}
 
 } // namespace GE
+
+template<>
+struct std::hash<GE::vertex_t> {
+    size_t operator()(const GE::vertex_t& vertex) const
+    {
+        return GE::combinedHash(vertex.position, vertex.color, vertex.tex_coord);
+    }
+};
