@@ -38,6 +38,7 @@
 #include <genesis/graphics/graphics_context.h>
 #include <genesis/graphics/graphics_factory.h>
 #include <genesis/graphics/index_buffer.h>
+#include <genesis/graphics/mesh.h>
 #include <genesis/graphics/pipeline.h>
 #include <genesis/graphics/render_command.h>
 #include <genesis/graphics/renderer.h>

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,42 +32,35 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
+#include <genesis/core/export.h>
 #include <genesis/core/memory.h>
-#include <genesis/graphics/gpu_command_queue.h>
-#include <genesis/math/types.h>
+
+namespace tinyobj {
+class ObjReader;
+} // namespace tinyobj
 
 namespace GE {
 
-namespace GUI {
-class Context;
-} // namespace GUI
-
+class GPUCommandQueue;
 class IndexBuffer;
-class Mesh;
-class Pipeline;
-class Texture;
-class UniformBuffer;
 class VertexBuffer;
 
-class GE_API RenderCommand
+class GE_API Mesh
 {
 public:
-    void bind(Pipeline* pipeline);
-    void bind(VertexBuffer* buffer);
-    void bind(IndexBuffer* buffer);
-    void bind(Pipeline* pipeline, const std::string& resource_name, UniformBuffer* buffer);
-    void bind(Pipeline* pipeline, const std::string& resource_name, Texture* texture);
+    Mesh();
+    ~Mesh();
 
-    void draw(const Mesh& mesh);
-    void draw(VertexBuffer* buffer, uint32_t vertex_count);
-    void draw(VertexBuffer* vbo, IndexBuffer* ibo);
-    void draw(GUI::Context* gui_layer);
+    bool fromObj(std::string_view filepath);
+    void destroy();
 
-    void submit(GPUCommandBuffer cmd);
+    void draw(GPUCommandQueue* queue) const;
 
 private:
-    GPUCommandQueue m_cmd_queue;
+    bool populateBuffers(const tinyobj::ObjReader& reader);
+
+    Scoped<VertexBuffer> m_vbo;
+    Scoped<IndexBuffer> m_ibo;
 };
 
 } // namespace GE

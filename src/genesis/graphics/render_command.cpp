@@ -32,6 +32,7 @@
 
 #include "render_command.h"
 #include "index_buffer.h"
+#include "mesh.h"
 #include "pipeline.h"
 #include "vertex_buffer.h"
 
@@ -63,6 +64,11 @@ void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name,
 void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name, Texture *texture)
 {
     pipeline->bind(&m_cmd_queue, resource_name, texture);
+}
+
+void RenderCommand::draw(const Mesh &mesh)
+{
+    mesh.draw(&m_cmd_queue);
 }
 
 void RenderCommand::draw(VertexBuffer *buffer, uint32_t vertex_count)
