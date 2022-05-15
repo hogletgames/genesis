@@ -32,8 +32,16 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <genesis/core/export.h>
+
+#include <string_view>
+
+namespace GE::GUI {
+
+class GE_API Checkbox
+{
+public:
+    static bool call(std::string_view title, bool* value);
+};
+
+} // namespace GE::GUI
