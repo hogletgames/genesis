@@ -32,11 +32,14 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/separator.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/value_editor.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <genesis/core/export.h>
+
+namespace GE::GUI {
+
+class GE_API Separator
+{
+public:
+    static void call();
+};
+
+} // namespace GE::GUI

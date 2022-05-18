@@ -30,13 +30,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "separator.h"
 
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/separator.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/value_editor.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <imgui.h>
+
+namespace GE::GUI {
+
+void Separator::call()
+{
+    ImGui::Separator();
+}
+
+} // namespace GE::GUI
