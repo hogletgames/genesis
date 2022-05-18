@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,21 +32,22 @@
 
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <genesis/core/export.h>
+#include <genesis/math/types.h>
 
-#include <string>
+#include <string_view>
 
-namespace GE {
+namespace GE::GUI {
 
-using Vec2 = glm::vec2;
-using Vec3 = glm::vec3;
-using Vec4 = glm::vec4;
+class GE_API ValueEditor
+{
+public:
+    using Flags = int;
 
-using glm::value_ptr;
+    static bool call(std::string_view label, Vec3* value, float v_speed = 1.0f, float v_min = 0.0f,
+                     float v_max = 1.0f, std::string_view format = "%.3f", Flags flags = 0);
+    static bool call(std::string_view label, float* value, float v_speed = 1.0f, float v_min = 0.0f,
+                     float v_max = 1.0f, std::string_view format = "%.3f", Flags flags = 0);
+};
 
-std::string toString(const Vec2& vec);
-std::string toString(const Vec3& vec);
-std::string toString(const Vec4& vec);
-
-} // namespace GE
+} // namespace GE::GUI
