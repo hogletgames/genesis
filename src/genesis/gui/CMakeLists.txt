@@ -5,6 +5,7 @@ list(APPEND GUI_SOURCES
     renderer.cpp
     widgets/checkbox.cpp
     widgets/image.cpp
+    widgets/text.cpp
     widgets/value_editor.cpp
     widgets/window.cpp
     )
@@ -17,6 +18,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/widgets.h
     ${INCLUDE_DIR}/widgets/checkbox.h
     ${INCLUDE_DIR}/widgets/image.h
+    ${INCLUDE_DIR}/widgets/text.h
     ${INCLUDE_DIR}/widgets/value_editor.h
     ${INCLUDE_DIR}/widgets/widget_node.h
     ${INCLUDE_DIR}/widgets/widget_node_guard.h

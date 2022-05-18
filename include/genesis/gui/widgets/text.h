@@ -32,10 +32,16 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/value_editor.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <genesis/core/export.h>
+
+#include <string_view>
+
+namespace GE::GUI {
+
+class GE_API Text
+{
+public:
+    static void call(std::string_view fmt, ...);
+};
+
+} // namespace GE::GUI

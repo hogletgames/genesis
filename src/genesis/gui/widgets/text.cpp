@@ -30,12 +30,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "text.h"
 
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/value_editor.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <imgui.h>
+
+namespace GE::GUI {
+
+void Text::call(std::string_view fmt, ...)
+{
+    va_list args{};
+    va_start(args, fmt);
+    ImGui::Text(fmt.data(), args);
+    va_end(args);
+}
+
+} // namespace GE::GUI
