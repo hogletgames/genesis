@@ -31,6 +31,7 @@
  */
 
 #include "buffers/vertex_buffer.h"
+#include "buffers/index_buffer.h"
 #include "buffers/staging_buffer.h"
 #include "command_buffer.h"
 #include "device.h"
@@ -69,6 +70,12 @@ void VertexBuffer::bind(GPUCommandQueue *queue) const
 void VertexBuffer::draw(GPUCommandQueue *queue, uint32_t vertex_count) const
 {
     queue->enqueue([vertex_count](void *cmd) { vkCmdDraw(cmdBuffer(cmd), vertex_count, 1, 0, 0); });
+}
+
+void VertexBuffer::draw(GPUCommandQueue *queue, GE::IndexBuffer *ibo) const
+{
+    queue->enqueue(
+        [ibo](void *cmd) { vkCmdDrawIndexed(cmdBuffer(cmd), ibo->count(), 1, 0, 0, 0); });
 }
 
 void VertexBuffer::setVertices(const void *vertices, uint32_t size)

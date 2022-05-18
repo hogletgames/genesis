@@ -60,6 +60,13 @@ void RenderCommand::draw(VertexBuffer *buffer, uint32_t vertex_count)
     buffer->draw(&m_cmd_queue, vertex_count);
 }
 
+void RenderCommand::draw(VertexBuffer *vbo, IndexBuffer *ibo)
+{
+    vbo->bind(&m_cmd_queue);
+    ibo->bind(&m_cmd_queue);
+    vbo->draw(&m_cmd_queue, ibo);
+}
+
 void RenderCommand::draw(GUI::Context *gui_layer)
 {
     gui_layer->draw(&m_cmd_queue);

@@ -55,6 +55,7 @@ public:
     void bind(IndexBuffer* buffer);
 
     void draw(VertexBuffer* buffer, uint32_t vertex_count);
+    void draw(VertexBuffer* vbo, IndexBuffer* ibo);
     void draw(GUI::Context* gui_layer);
 
     void submit(GPUCommandBuffer cmd);

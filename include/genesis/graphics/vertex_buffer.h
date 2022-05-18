@@ -38,12 +38,14 @@
 namespace GE {
 
 class GPUCommandQueue;
+class IndexBuffer;
 
 class GE_API VertexBuffer: public NonCopyable
 {
 public:
     virtual void bind(GPUCommandQueue* queue) const = 0;
     virtual void draw(GPUCommandQueue* queue, uint32_t vertex_count) const = 0;
+    virtual void draw(GPUCommandQueue* queue, IndexBuffer* ibo) const = 0;
 
     virtual void setVertices(const void* vertices, uint32_t size) = 0;
 

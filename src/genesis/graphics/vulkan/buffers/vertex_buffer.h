@@ -50,6 +50,7 @@ public:
 
     void bind(GPUCommandQueue* queue) const override;
     void draw(GPUCommandQueue* queue, uint32_t vertex_count) const override;
+    void draw(GPUCommandQueue* queue, GE::IndexBuffer* ibo) const override;
 
     void setVertices(const void* vertices, uint32_t size) override;
 
