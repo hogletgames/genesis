@@ -50,7 +50,6 @@ public:
     uint32_t count() const override { return m_count; }
 
 private:
-    Shared<Device> m_device;
     uint32_t m_count{0};
 };
 
