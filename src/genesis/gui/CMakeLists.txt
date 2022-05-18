@@ -12,6 +12,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/widgets.h
     ${INCLUDE_DIR}/widgets/widget_node.h
+    ${INCLUDE_DIR}/widgets/widget_node_guard.h
     )
 
 ge_add_module(gui
