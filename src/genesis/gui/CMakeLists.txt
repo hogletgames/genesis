@@ -7,6 +7,7 @@ list(APPEND GUI_SOURCES
     widgets/image.cpp
     widgets/separator.cpp
     widgets/text.cpp
+    widgets/tree_node.cpp
     widgets/value_editor.cpp
     widgets/window.cpp
     )
@@ -21,6 +22,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/widgets/image.h
     ${INCLUDE_DIR}/widgets/separator.h
     ${INCLUDE_DIR}/widgets/text.h
+    ${INCLUDE_DIR}/widgets/tree_node.h
     ${INCLUDE_DIR}/widgets/value_editor.h
     ${INCLUDE_DIR}/widgets/widget_node.h
     ${INCLUDE_DIR}/widgets/widget_node_guard.h

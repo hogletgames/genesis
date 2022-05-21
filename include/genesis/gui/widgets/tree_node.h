@@ -32,12 +32,37 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/separator.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/tree_node.h>
-#include <genesis/gui/widgets/value_editor.h>
+#include <genesis/core/bit.h>
 #include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+
+#include <string_view>
+
+namespace GE::GUI {
+
+class GE_API TreeNode: public WidgetNode
+{
+public:
+    enum Flags : int
+    {
+        NONE = 0,
+        SELECTED = bit(0),
+        FRAMED = bit(1),
+        ALLOW_ITEM_OVERLAP = bit(2),
+        NO_TREE_PUSH_ON_OPEN = bit(3),
+        NO_AUTO_OPEN_ON_LOG = bit(4),
+        DEFAULT_OPEN = bit(5),
+        OPEN_ON_DOUBLE_CLICK = bit(6),
+        OPEN_ON_ARROW = bit(7),
+        LEAF = bit(8),
+        BULLET = bit(9),
+        FRAME_PADDING = bit(10),
+        SPAN_AVAIL_WIDTH = bit(11),
+        SPAN_FULL_WIDTH = bit(12),
+        NAV_LEFT_JUMPS_BACK_HERE = bit(13),
+        COLLAPSING_HEADER = FRAMED | NO_TREE_PUSH_ON_OPEN | NO_AUTO_OPEN_ON_LOG
+    };
+
+    explicit TreeNode(std::string_view label, Flags flags = NONE);
+};
+
+} // namespace GE::GUI

@@ -30,14 +30,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "tree_node.h"
 
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/separator.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/tree_node.h>
-#include <genesis/gui/widgets/value_editor.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <imgui.h>
+
+namespace {
+
+bool treeNode(std::string_view label, GE::GUI::TreeNode::Flags flags)
+{
+    return ImGui::TreeNodeEx(label.data(), flags);
+}
+
+} // namespace
+
+namespace GE::GUI {
+
+TreeNode::TreeNode(std::string_view label, Flags flags)
+{
+    setBeginFunc(&treeNode, label, flags);
+    setEndFunc(&ImGui::TreePop);
+}
+
+} // namespace GE::GUI
