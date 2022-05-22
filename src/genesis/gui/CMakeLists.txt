@@ -11,7 +11,7 @@ list(APPEND GUI_HEADERS
 
 ge_add_module(gui
     SOURCES ${GUI_SOURCES} ${GUI_HEADERS}
-    INCLUDE_DIR ${INCLUDE_DIR}
+    INCLUDE_DIRS ${INCLUDE_DIR}
     PUBLIC_DEPS genesis::app
     PRIVATE_DEPS
         genesis::graphics

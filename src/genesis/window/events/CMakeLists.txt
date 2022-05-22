@@ -14,7 +14,7 @@ list(APPEND WINDOW_EVENTS_HEADERS
 
 ge_add_module(window-events
     SOURCES ${WINDOW_EVENTS_SOURCES} ${WINDOW_EVENTS_HEADERS}
-    INCLUDE_DIR ${INCLUDE_DIR}
+    INCLUDE_DIRS ${INCLUDE_DIR}
     PUBLIC_DEPS
         genesis::core
         genesis::math)

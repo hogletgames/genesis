@@ -22,8 +22,8 @@ endfunction()
 macro(_ge_parse_add_target_options)
     cmake_parse_arguments(THIS
         ""
-        "INCLUDE_DIR"
-        "SOURCES;PUBLIC_DEPS;PRIVATE_DEPS"
+        ""
+        "INCLUDE_DIRS;SOURCES;PUBLIC_DEPS;PRIVATE_DEPS"
         ${ARGN})
 endmacro()
 
@@ -34,7 +34,7 @@ function(_ge_set_target_options TARGET)
             ${GE_INCLUDE_DIR}
             ${GE_CONFIGURABLE_FILES_DEST}
         PRIVATE
-            ${THIS_INCLUDE_DIR})
+            ${THIS_INCLUDE_DIRS})
 
     # Dependencies
     target_link_libraries(${TARGET} PUBLIC ${THIS_PUBLIC_DEPS} PRIVATE ${THIS_PRIVATE_DEPS})

@@ -8,7 +8,7 @@ list(APPEND MATH_HEADERS
 
 ge_add_module(math
     SOURCES ${MATH_SOURCES} ${MATH_HEADERS}
-    INCLUDE_DIR ${INCLUDE_DIR}
+    INCLUDE_DIRS ${INCLUDE_DIR}
     PUBLIC_DEPS
         genesis::core
         glm::glm)

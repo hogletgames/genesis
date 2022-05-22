@@ -12,7 +12,7 @@ list(APPEND WINDOW_HEADERS
 
 ge_add_module(window
     SOURCES ${WINDOW_SOURCES} ${WINDOW_HEADERS}
-    INCLUDE_DIR ${INCLUDE_DIR}
+    INCLUDE_DIRS ${INCLUDE_DIR}
     PUBLIC_DEPS
         genesis::core
         genesis::math

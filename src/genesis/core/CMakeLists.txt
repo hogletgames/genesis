@@ -19,7 +19,7 @@ list(APPEND CORE_HEADERS
 
 ge_add_module(core
     SOURCES ${CORE_SOURCES} ${CORE_HEADERS}
-    INCLUDE_DIR ${INCLUDE_DIR}
+    INCLUDE_DIRS ${INCLUDE_DIR}
     PUBLIC_DEPS
         fmt::fmt
         magic_enum::magic_enum

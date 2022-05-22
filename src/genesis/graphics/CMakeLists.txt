@@ -34,7 +34,7 @@ list(APPEND GRAPHICS_HEADERS
 
 ge_add_module(graphics
     SOURCES ${GRAPHICS_SOURCES} ${GRAPHICS_HEADERS}
-    INCLUDE_DIR ${INCLUDE_DIR}
+    INCLUDE_DIRS ${INCLUDE_DIR}
     PUBLIC_DEPS
         genesis::core
         genesis::math
