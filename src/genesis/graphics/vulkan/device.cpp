@@ -110,7 +110,7 @@ namespace GE::Vulkan {
 Device::Device(VkSurfaceKHR surface)
     : m_surface{surface}
 {
-    m_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+    m_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_MAINTENANCE1_EXTENSION_NAME};
 
     pickPhysicalDevice();
     createLogicalDevice();
