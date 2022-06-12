@@ -62,7 +62,7 @@ Scoped<T> tryMakeScoped(Args&&... args)
 {
     try {
         return makeScoped<T>(std::forward<Args>(args)...);
-    } catch (const Exception& e) {
+    } catch (const std::exception& e) {
         GE_CORE_ERR("Exception: {}", e.what());
         return nullptr;
     }
@@ -73,7 +73,7 @@ Shared<T> tryMakeShared(Args&&... args)
 {
     try {
         return makeScoped<T>(std::forward<Args>(args)...);
-    } catch (const Exception& e) {
+    } catch (const std::exception& e) {
         GE_CORE_ERR("Exception: {}", e.what());
         return nullptr;
     }
