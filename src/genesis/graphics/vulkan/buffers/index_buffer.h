@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include "buffers/buffer_base.h"
+#include "buffer_base.h"
 
 #include <genesis/graphics/index_buffer.h>
 

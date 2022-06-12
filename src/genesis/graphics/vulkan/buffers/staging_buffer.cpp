@@ -38,30 +38,30 @@
 
 namespace GE::Vulkan {
 
-StagingBuffer::StagingBuffer(Shared<Device> device, const void *data, uint32_t size)
+StagingBuffer::StagingBuffer(Shared<Device> device, uint32_t size, const void *data)
     : BufferBase{std::move(device)}
 {
     VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
     VkMemoryPropertyFlags properties =
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
     createBuffer(size, usage, properties);
-    copyData(data, size);
+    copyData(size, data, 0);
 }
 
-void StagingBuffer::copyTo(BufferBase *dest)
+void StagingBuffer::copyTo(BufferBase *dest, uint32_t offset)
 {
     SingleCommand cmd{m_device};
     VkBufferCopy copy_region{};
     copy_region.srcOffset = 0;
-    copy_region.dstOffset = 0;
+    copy_region.dstOffset = offset;
     copy_region.size = m_size;
     vkCmdCopyBuffer(cmd.buffer(), m_buffer, dest->buffer(), 1, &copy_region);
 }
 
-void StagingBuffer::copyData(const void *data, uint32_t size)
+void StagingBuffer::copyData(uint32_t size, const void *data, uint32_t offset)
 {
     void *mem_ptr{nullptr};
-    vkMapMemory(m_device->device(), m_memory, 0, size, 0, &mem_ptr);
+    vkMapMemory(m_device->device(), m_memory, offset, size, 0, &mem_ptr);
     std::memcpy(mem_ptr, data, size);
     vkUnmapMemory(m_device->device(), m_memory);
     m_size = size;

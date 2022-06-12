@@ -31,7 +31,6 @@
  */
 
 #include "buffers/index_buffer.h"
-#include "buffers/staging_buffer.h"
 #include "command_buffer.h"
 
 #include "genesis/graphics/gpu_command_queue.h"
@@ -46,9 +45,7 @@ IndexBuffer::IndexBuffer(Shared<Device> device, const uint32_t* indices, uint32_
     VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
     VkMemoryPropertyFlagBits properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     createBuffer(size, usage, properties);
-
-    StagingBuffer staging_buffer{m_device, indices, size};
-    staging_buffer.copyTo(this);
+    copyFromHost(size, indices, 0);
 }
 
 void IndexBuffer::bind(GPUCommandQueue* cmd_queue) const

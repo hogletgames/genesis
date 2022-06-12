@@ -99,7 +99,7 @@ void TriangleLayer::onAttached()
         {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
     };
 
-    m_vbo = VertexBuffer::create(triangle.data(), triangle.size() * sizeof(vertex_t));
+    m_vbo = VertexBuffer::create(triangle.size() * sizeof(vertex_t), triangle.data());
 }
 
 void TriangleLayer::onDetached()

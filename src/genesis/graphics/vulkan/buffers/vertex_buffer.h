@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include "buffers/buffer_base.h"
+#include "buffer_base.h"
 
 #include <genesis/graphics/vertex_buffer.h>
 
@@ -45,8 +45,7 @@ class Device;
 class VertexBuffer: public GE::VertexBuffer, public BufferBase
 {
 public:
-    VertexBuffer(Shared<Device> device, const void* vertices, uint32_t size);
-    VertexBuffer(Shared<Device> device, uint32_t size);
+    VertexBuffer(Shared<Device> device, uint32_t size, const void* vertices);
 
     void bind(GPUCommandQueue* queue) const override;
     void draw(GPUCommandQueue* queue, uint32_t vertex_count) const override;

@@ -55,17 +55,13 @@ Scoped<GE::IndexBuffer> GraphicsFactory::createIndexBuffer(const uint32_t *indic
     return tryMakeScoped<Vulkan::IndexBuffer>(m_device, indices, count);
 }
 
-Scoped<GE::VertexBuffer> GraphicsFactory::createVertexBuffer(const void *vertices,
-                                                             uint32_t size) const
+Scoped<GE::VertexBuffer> GraphicsFactory::createVertexBuffer(uint32_t size,
+                                                             const void *vertices) const
 
 {
-    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, vertices, size);
+    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size, vertices);
 }
 
-Scoped<GE::VertexBuffer> GraphicsFactory::createVertexBuffer(uint32_t size) const
-{
-    return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size);
-}
 
 Scoped<GE::Shader> GraphicsFactory::createShader(Shader::Type type)
 {

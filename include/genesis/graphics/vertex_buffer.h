@@ -49,8 +49,7 @@ public:
 
     virtual void setVertices(const void* vertices, uint32_t size) = 0;
 
-    static Scoped<VertexBuffer> create(const void* vertices, uint32_t count);
-    static Scoped<VertexBuffer> create(uint32_t size);
+    static Scoped<VertexBuffer> create(uint32_t size, const void* vertices = nullptr);
 };
 
 } // namespace GE

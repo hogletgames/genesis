@@ -36,14 +36,9 @@
 
 namespace GE {
 
-Scoped<VertexBuffer> VertexBuffer::create(const void *vertices, uint32_t count)
+Scoped<VertexBuffer> VertexBuffer::create(uint32_t size, const void* vertices)
 {
-    return Graphics::factory()->createVertexBuffer(vertices, count);
-}
-
-Scoped<VertexBuffer> VertexBuffer::create(uint32_t size)
-{
-    return Graphics::factory()->createVertexBuffer(size);
+    return Graphics::factory()->createVertexBuffer(size, vertices);
 }
 
 } // namespace GE

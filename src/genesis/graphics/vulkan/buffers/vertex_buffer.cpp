@@ -32,17 +32,15 @@
 
 #include "buffers/vertex_buffer.h"
 #include "buffers/index_buffer.h"
-#include "buffers/staging_buffer.h"
 #include "command_buffer.h"
 #include "device.h"
-#include "vulkan_exception.h"
 
 #include "genesis/core/asserts.h"
 #include "genesis/graphics/gpu_command_queue.h"
 
 namespace GE::Vulkan {
 
-VertexBuffer::VertexBuffer(Shared<Device> device, const void *vertices, uint32_t size)
+VertexBuffer::VertexBuffer(Shared<Device> device, uint32_t size, const void *vertices)
     : BufferBase{std::move(device)}
     , m_size(size)
 {
@@ -51,13 +49,9 @@ VertexBuffer::VertexBuffer(Shared<Device> device, const void *vertices, uint32_t
     createBuffer(size, usage, properties);
 
     if (vertices != nullptr) {
-        setVertices(vertices, size);
+        copyFromHost(size, vertices, 0);
     }
 }
-
-VertexBuffer::VertexBuffer(Shared<Device> device, uint32_t size)
-    : VertexBuffer{std::move(device), nullptr, size}
-{}
 
 void VertexBuffer::bind(GPUCommandQueue *queue) const
 {
@@ -81,8 +75,7 @@ void VertexBuffer::draw(GPUCommandQueue *queue, GE::IndexBuffer *ibo) const
 void VertexBuffer::setVertices(const void *vertices, uint32_t size)
 {
     GE_ASSERT(m_size >= size, "Vertex Buffer overflow");
-    StagingBuffer staging_buffer{m_device, vertices, size};
-    staging_buffer.copyTo(this);
+    copyFromHost(size, vertices, 0);
 }
 
 } // namespace GE::Vulkan

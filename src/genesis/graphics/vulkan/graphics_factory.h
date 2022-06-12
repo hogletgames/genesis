@@ -48,8 +48,7 @@ public:
 
     Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
                                               uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices, uint32_t size) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
+    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size, const void* vertices) const override;
 
     Scoped<GE::Shader> createShader(Shader::Type type) override;
 

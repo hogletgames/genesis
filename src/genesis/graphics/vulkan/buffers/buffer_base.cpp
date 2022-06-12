@@ -32,6 +32,7 @@
 
 #include "buffer_base.h"
 #include "device.h"
+#include "staging_buffer.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/asserts.h"
@@ -45,6 +46,12 @@ BufferBase::BufferBase(Shared<Device> device)
 BufferBase::~BufferBase()
 {
     destroyVkHandles();
+}
+
+void BufferBase::copyFromHost(uint32_t size, const void *data, uint32_t offset)
+{
+    StagingBuffer staging_buffer{m_device, size, data};
+    staging_buffer.copyTo(this, offset);
 }
 
 void BufferBase::createBuffer(uint32_t size, VkBufferUsageFlags usage,

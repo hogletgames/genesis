@@ -280,7 +280,7 @@ bool Texture2D::setData(const void* data, uint32_t size)
     region.imageOffset = {0, 0, 0};
     region.imageExtent = m_image->extent();
 
-    StagingBuffer buffer{m_device, data, size};
+    StagingBuffer buffer{m_device, size, data};
     m_image->copyFrom(buffer, {region});
     return true;
 }

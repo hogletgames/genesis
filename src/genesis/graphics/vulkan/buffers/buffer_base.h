@@ -47,6 +47,7 @@ public:
     explicit BufferBase(Shared<Device> device);
     ~BufferBase();
 
+    void copyFromHost(uint32_t size, const void* data, uint32_t offset);
     VkBuffer buffer() const { return m_buffer; };
 
 protected:
