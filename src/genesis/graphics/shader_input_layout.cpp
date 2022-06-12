@@ -36,7 +36,7 @@
 
 namespace {
 
-uint32_t calculateStride(const std::vector<GE::shader_attribute_t>& attributes)
+uint32_t calculateStride(const std::deque<GE::shader_attribute_t>& attributes)
 {
     return std::accumulate(
         attributes.begin(), attributes.end(), 0u,
@@ -47,7 +47,7 @@ uint32_t calculateStride(const std::vector<GE::shader_attribute_t>& attributes)
 
 namespace GE {
 
-ShaderInputLayout::ShaderInputLayout(std::vector<shader_attribute_t> attributes)
+ShaderInputLayout::ShaderInputLayout(std::deque<shader_attribute_t> attributes)
     : m_attributes{std::move(attributes)}
     , m_stride{calculateStride(m_attributes)}
 {}
