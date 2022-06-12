@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <genesis/core/memory.h>
 #include <genesis/graphics/shader_input_layout.h>
 
 #include <vector>
@@ -41,7 +42,14 @@ namespace GE {
 class GE_API ShaderReflection
 {
 public:
-    static ShaderInputLayout getLayoutFromCache(std::vector<uint32_t> shader_cache);
+    explicit ShaderReflection(const std::vector<uint32_t> &shader_cache);
+    ~ShaderReflection();
+
+    ShaderInputLayout inputLayout() const;
+
+private:
+    struct Impl;
+    Scoped<Impl> m_pimpl;
 };
 
 } // namespace GE

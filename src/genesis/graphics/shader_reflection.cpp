@@ -81,14 +81,31 @@ GE::shader_attribute_t toAttribute(const spirv_cross::Compiler& compiler,
 
 namespace GE {
 
-ShaderInputLayout ShaderReflection::getLayoutFromCache(std::vector<uint32_t> shader_cache)
+struct ShaderReflection::Impl {
+    explicit Impl(std::vector<uint32_t> shader_cache)
+        : compiler{std::move(shader_cache)}
+    {}
+
+    spirv_cross::Compiler compiler;
+};
+
+ShaderReflection::ShaderReflection(const std::vector<uint32_t>& shader_cache)
+    : m_pimpl{tryMakeScoped<Impl>(shader_cache)}
+{}
+
+ShaderReflection::~ShaderReflection() = default;
+
+ShaderInputLayout ShaderReflection::inputLayout() const
 {
-    spirv_cross::Compiler compiler{std::move(shader_cache)};
-    const auto& resources = compiler.get_shader_resources();
-    std::vector<shader_attribute_t> attributes;
+    if (!m_pimpl) {
+        return {};
+    }
+
+    const auto& resources = m_pimpl->compiler.get_shader_resources();
+    std::deque<shader_attribute_t> attributes;
 
     for (const auto& resource : resources.stage_inputs) {
-        attributes.push_back(toAttribute(compiler, resource));
+        attributes.push_back(toAttribute(m_pimpl->compiler, resource));
     }
 
     std::sort(attributes.begin(), attributes.end(),
