@@ -57,11 +57,11 @@ ge_add_module(graphics-vulkan
         genesis::math
         Vulkan::Vulkan
     PRIVATE_DEPS
-        imgui::vulkan
+        imgui-vulkan
         SDL2-static
         shaderc
         spirv-cross-cpp
-        stb::image)
+        stb-image)
 
 if (NOT GE_DISABLE_DEBUG)
     add_dependencies(genesis-graphics-vulkan VkLayer_khronos_validation-json)

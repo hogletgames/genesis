@@ -13,4 +13,4 @@ ge_add_executable(sandbox
     SOURCES ${SANDBOX_SOURCES} ${SANDBOX_HEADERS}
     PRIVATE_DEPS
         genesis::genesis
-        imgui::imgui)
+        imgui)
