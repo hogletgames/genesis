@@ -2,7 +2,8 @@ FROM ubuntu:bionic
 
 # Arguments
 ARG GCC_VER=11 \
-    CLANG_VER=13
+    CLANG_VER=13 \
+    CMAKE_VER=v3.14.7
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gpg-agent software-properties-common wget && \
@@ -15,9 +16,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${CLANG_VER} main" && \
 # Essential build tools
     apt-get update && apt-get install -y --no-install-recommends  \
-    make cmake git gcc-${GCC_VER} g++-${GCC_VER} clang-format-${CLANG_VER} clang-tidy-${CLANG_VER} && \
+    make git gcc-${GCC_VER} g++-${GCC_VER} clang-format-${CLANG_VER} clang-tidy-${CLANG_VER} && \
 # Clean-up atp cache
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+# Configure git
+    git config --add --system user.name "hogletgames" && \
+    git config --add --system user.email "hogletgames@gmail.com"
+
+# Set compilers
+ENV CC="gcc-${GCC_VER}" \
+    CXX="g++-${GCC_VER}"
+
+# CMake
+RUN git clone --recursive --branch=${CMAKE_VER} https://github.com/Kitware/CMake.git /tmp/cmake && \
+    cd /tmp/cmake && ./bootstrap && make -j$(nproc) && make install && \
+    rm -rf /tmp/cmake
 
 # SDL2 dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \

@@ -42,6 +42,6 @@ ge_add_module(graphics
         genesis::graphics-vulkan
         shaderc
         spirv-cross-cpp
-        stb::image)
+        stb-image)
 
 add_subdirectory(vulkan)

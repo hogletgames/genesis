@@ -5,6 +5,6 @@ ge_add_executable(sdl2_vulkan_example
         glm
         SDL2-static
         shaderc_shared
-        stb::image
+        stb-image
         tinyobjloader
         Vulkan::Vulkan)

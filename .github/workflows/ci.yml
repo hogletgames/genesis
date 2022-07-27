@@ -11,6 +11,7 @@ env:
 
 jobs:
   cancel_previous_jobs:
+    name: Cancel previous jobs
     runs-on: ubuntu-18.04
     steps:
       - name: Cancel outdated jobs
@@ -18,13 +19,11 @@ jobs:
         with:
           access_token: ${{ github.token }}
   update_docker:
+    name: Update Docker image
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          submodules: false
-          fetch-depth: 0
       - name: Build docker image
         uses: whoan/docker-build-with-cache-action@v5
         with:
@@ -34,6 +33,7 @@ jobs:
           image_tag: ci
           build_extra_args: "--compress=true"
   tests:
+    name: Tests
     runs-on: ubuntu-18.04
     container: hogletgames/genesis-engine:ci
     needs: update_docker
@@ -58,14 +58,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Download deps cache
+        uses: actions/cache@v3
         with:
-          submodules: recursive
-          fetch-depth: 0
+          key: ${{ matrix.build-type }}-${{ hashFiles('third-party/CMakeLists.txt') }}
+          path: build/_deps
       - name: Build project
         run: make -j$(nproc)
       - name: Run tests
         run: make test
   linters:
+    name: Linters
     runs-on: ubuntu-18.04
     container: hogletgames/genesis-engine:ci
     needs: update_docker
@@ -75,9 +78,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Download deps cache
+        uses: actions/cache@v3
         with:
-          submodules: recursive
-          fetch-depth: 0
+          key: linters-${{ hashFiles('third-party/CMakeLists.txt') }}
+          path: build/_deps
       - name: clang-format
         run: make clang-format
       - name: clang-tidy

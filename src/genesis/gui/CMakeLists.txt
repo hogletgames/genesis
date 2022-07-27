@@ -15,4 +15,4 @@ ge_add_module(gui
     PUBLIC_DEPS genesis::app
     PRIVATE_DEPS
         genesis::graphics
-        imgui::imgui)
+        imgui)

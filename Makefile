@@ -28,7 +28,7 @@ build_project: generate_makefiles
 
 .PHONY: generate_makefiles
 generate_makefiles:
-	mkdir -p $(BUILD_DIR) && cd $(BUILD_DIR) && cmake $(CMAKE_OPTIONS) $(SRC_DIR)
+	cmake -S $(SRC_DIR) -B $(BUILD_DIR) $(CMAKE_OPTIONS)
 
 .PHONY: clean
 clean:
