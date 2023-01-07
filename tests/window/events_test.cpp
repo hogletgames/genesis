@@ -133,7 +133,7 @@ TEST_F(WindowEventsTest, WindowResizedEvent)
     GE::WindowResizedEvent win_resized{size};
 
     EXPECT_EQ(win_resized.getDescriptor(), GE::WindowResizedEvent::getStaticDescriptor());
-    EXPECT_EQ(win_resized.getSize(), size);
+    EXPECT_EQ(win_resized.size(), size);
 }
 
 TEST_F(WindowEventsTest, WindowClosedEvent)

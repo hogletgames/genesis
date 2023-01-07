@@ -38,14 +38,40 @@
 
 namespace GE {
 
-class GE_API WindowResizedEvent: public Event
+class GE_API WindowEvent: public Event
+{
+public:
+    explicit WindowEvent(uint32_t id = 0);
+
+    uint32_t id() const { return m_id; }
+
+protected:
+    uint32_t m_id{};
+};
+
+class GE_API WindowMovedEvent: public WindowEvent
+{
+public:
+    WindowMovedEvent() = default;
+    WindowMovedEvent(uint32_t id, Vec2 position);
+
+    std::string asString() const override;
+    const Vec2& position() const { return m_position; }
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowMovedEvent);
+
+private:
+    Vec2 m_position{};
+};
+
+class GE_API WindowResizedEvent: public WindowEvent
 {
 public:
     WindowResizedEvent() = default;
-    explicit WindowResizedEvent(const Vec2& size);
+    WindowResizedEvent(uint32_t id, const Vec2& size);
 
     std::string asString() const override;
-    const Vec2& getSize() const { return m_size; }
+    const Vec2& size() const { return m_size; }
 
     GE_DECLARE_EVENT_DESCRIPTOR(WindowResizedEvent)
 
@@ -53,36 +79,84 @@ private:
     Vec2 m_size{};
 };
 
-class GE_API WindowClosedEvent: public Event
+class GE_API WindowMinimizedEvent: public WindowEvent
 {
 public:
-    std::string asString() const override;
+    using WindowEvent::WindowEvent;
 
-    GE_DECLARE_EVENT_DESCRIPTOR(WindowClosedEvent)
-};
-
-class GE_API WindowMaximizedEvent: public Event
-{
-public:
-    std::string asString() const override;
-
-    GE_DECLARE_EVENT_DESCRIPTOR(WindowMaximizedEvent)
-};
-
-class GE_API WindowMinimizedEvent: public Event
-{
-public:
     std::string asString() const override;
 
     GE_DECLARE_EVENT_DESCRIPTOR(WindowMinimizedEvent)
 };
 
-class GE_API WindowRestoredEvent: public Event
+class GE_API WindowMaximizedEvent: public WindowEvent
 {
 public:
+    using WindowEvent::WindowEvent;
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowMaximizedEvent)
+};
+
+class GE_API WindowRestoredEvent: public WindowEvent
+{
+public:
+    using WindowEvent::WindowEvent;
+
     std::string asString() const override;
 
     GE_DECLARE_EVENT_DESCRIPTOR(WindowRestoredEvent)
+};
+
+class GE_API WindowEnteredEvent: public WindowEvent
+{
+public:
+    using WindowEvent::WindowEvent;
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowEnteredEvent);
+};
+
+class GE_API WindowLeftEvent: public WindowEvent
+{
+public:
+    using WindowEvent::WindowEvent;
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowLeftEvent);
+};
+
+class GE_API WindowFocusGainedEvent: public WindowEvent
+{
+public:
+    using WindowEvent::WindowEvent;
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowFocusGainedEvent);
+};
+
+class GE_API WindowFocusLostEvent: public WindowEvent
+{
+public:
+    using WindowEvent::WindowEvent;
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowFocusLostEvent);
+};
+
+class GE_API WindowClosedEvent: public WindowEvent
+{
+public:
+    using WindowEvent::WindowEvent;
+
+    std::string asString() const override;
+
+    GE_DECLARE_EVENT_DESCRIPTOR(WindowClosedEvent)
 };
 
 } // namespace GE

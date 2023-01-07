@@ -281,31 +281,58 @@ void Window::onKeyboardEvent(const SDL_Event& sdl_event)
 
 void Window::onWindowEvent(const SDL_Event& sdl_event)
 {
+    Uint32 id{sdl_event.window.windowID};
+
     switch (sdl_event.window.event) {
+        case SDL_WINDOWEVENT_MOVED: {
+            Vec2 position{sdl_event.window.data1, sdl_event.window.data2};
+            WindowMovedEvent event{id, position};
+            emitEvent(&event);
+            break;
+        }
         case SDL_WINDOWEVENT_RESIZED: {
             Vec2 size{sdl_event.window.data1, sdl_event.window.data2};
-            WindowResizedEvent event{size};
-            emitEvent(&event);
-            break;
-        }
-        case SDL_WINDOWEVENT_CLOSE: {
-            WindowClosedEvent event{};
-            emitEvent(&event);
-            break;
-        }
-        case SDL_WINDOWEVENT_MAXIMIZED: {
-            WindowMaximizedEvent event{};
+            WindowResizedEvent event{id, size};
             emitEvent(&event);
             break;
         }
         case SDL_WINDOWEVENT_MINIMIZED: {
-            WindowMinimizedEvent event{};
+            WindowMinimizedEvent event{id};
             emitEvent(&event);
             break;
         }
-        case SDL_WINDOWEVENT_SHOWN:
+        case SDL_WINDOWEVENT_MAXIMIZED: {
+            WindowMaximizedEvent event{id};
+            emitEvent(&event);
+            break;
+        }
         case SDL_WINDOWEVENT_RESTORED: {
-            WindowRestoredEvent event{};
+            WindowRestoredEvent event{id};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_ENTER: {
+            WindowEnteredEvent event{id};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_LEAVE: {
+            WindowLeftEvent event{id};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_FOCUS_GAINED: {
+            WindowFocusGainedEvent event{id};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_FOCUS_LOST: {
+            WindowFocusLostEvent event{id};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_CLOSE: {
+            WindowClosedEvent event{id};
             emitEvent(&event);
             break;
         }

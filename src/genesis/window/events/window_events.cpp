@@ -36,8 +36,23 @@
 
 namespace GE {
 
-WindowResizedEvent::WindowResizedEvent(const Vec2& size)
-    : m_size{size}
+WindowEvent::WindowEvent(uint32_t id)
+    : m_id{id}
+{}
+
+WindowMovedEvent::WindowMovedEvent(uint32_t id, Vec2 position)
+    : WindowEvent{id}
+    , m_position{position}
+{}
+
+std::string WindowMovedEvent::asString() const
+{
+    return GE_FMTSTR("WindowMovedEvent: {}", toString(m_position));
+}
+
+WindowResizedEvent::WindowResizedEvent(uint32_t id, const Vec2& size)
+    : WindowEvent{id}
+    , m_size{size}
 {}
 
 std::string WindowResizedEvent::asString() const
@@ -45,9 +60,9 @@ std::string WindowResizedEvent::asString() const
     return GE_FMTSTR("WindowResizedEvent: {}", toString(m_size));
 }
 
-std::string WindowClosedEvent::asString() const
+std::string WindowMinimizedEvent::asString() const
 {
-    return "WindowClosedEvent";
+    return "WindowMinimizedEvent";
 }
 
 std::string WindowMaximizedEvent::asString() const
@@ -55,14 +70,33 @@ std::string WindowMaximizedEvent::asString() const
     return "WindowMaximizedEvent";
 }
 
-std::string WindowMinimizedEvent::asString() const
-{
-    return "WindowMinimizedEvent";
-}
-
 std::string WindowRestoredEvent::asString() const
 {
     return "WindowRestoredEvent";
+}
+
+std::string WindowEnteredEvent::asString() const
+{
+    return "WindowEnteredEvent";
+}
+
+std::string WindowLeftEvent::asString() const
+{
+    return "WindowLeftEvent";
+}
+
+std::string WindowFocusGainedEvent::asString() const
+{
+    return "WindowFocusGainedEvent";
+}
+std::string WindowFocusLostEvent::asString() const
+{
+    return "WindowFocusLostEvent";
+}
+
+std::string WindowClosedEvent::asString() const
+{
+    return "WindowClosedEvent";
 }
 
 } // namespace GE
