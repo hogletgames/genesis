@@ -36,6 +36,7 @@
 #include "image.h"
 #include "instance.h"
 #include "renderers/window_renderer.h"
+#include "sdl_gui_event_handler.h"
 #include "single_command.h"
 #include "swap_chain.h"
 #include "texture.h"
@@ -87,6 +88,7 @@ namespace GE::Vulkan::SDL {
 GUIContext::GUIContext(void *window, Shared<Device> device,
                        WindowRenderer *window_renderer)
     : m_device{std::move(device)}
+    , m_event_handler{makeScoped<Vulkan::SDL::EventHandler>()}
 {
     GE_CORE_INFO("Initializing Vulkan SDL GUI");
 
@@ -185,6 +187,11 @@ void GUIContext::draw(GPUCommandQueue *queue)
     queue->enqueue([](void *cmd) {
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmdBuffer(cmd));
     });
+}
+
+GUI::EventHandler *GUIContext::eventHandler()
+{
+    return m_event_handler.get();
 }
 
 void GUIContext::createDescriptorPool()

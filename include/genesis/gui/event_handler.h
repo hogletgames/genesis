@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,52 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_SDL_GUI_CONTEXT_H_
-#define GENESIS_GRAPHICS_VULKAN_SDL_GUI_CONTEXT_H_
+#ifndef GENESIS_GUI_EVENT_HANDLER_H_
+#define GENESIS_GUI_EVENT_HANDLER_H_
 
-#include <genesis/core/memory.h>
-#include <genesis/gui/context.h>
-#include <vulkan/vulkan.h>
+#include <genesis/core/interface.h>
+#include <genesis/window/events/key_events.h>
+#include <genesis/window/events/mouse_events.h>
+#include <genesis/window/events/window_events.h>
 
-namespace GE::Vulkan {
-class Device;
-class Texture;
-class WindowRenderer;
-} // namespace GE::Vulkan
+namespace GE::GUI {
 
-namespace GE::Vulkan::SDL {
-
-class EventHandler;
-
-class GE_API GUIContext: public GUI::Context
+class GE_API EventHandler: public Interface
 {
 public:
-    GUIContext(void* window, Shared<Device> device, WindowRenderer* window_renderer);
-    ~GUIContext();
+    virtual bool onKeyPressedEvent(const KeyPressedEvent& event) = 0;
+    virtual bool onKeyReleasedEvent(const KeyReleasedEvent& event) = 0;
+    virtual bool onKeyTypedEvent(const KeyTypedEvent& event) = 0;
 
-    void begin() override;
-    void end() override;
+    virtual bool onMouseButtonPressedEvent(const MouseButtonPressedEvent& event) = 0;
+    virtual bool onMouseButtonReleasedEvent(const MouseButtonReleasedEvent& event) = 0;
+    virtual bool onMouseMovedEvent(const MouseMovedEvent& event) = 0;
+    virtual bool onMouseScrolledEvent(const MouseScrolledEvent& event) = 0;
 
-    void draw(GPUCommandQueue* queue) override;
-
-    GUI::EventHandler* eventHandler() override;
-
-private:
-    void createDescriptorPool();
-    void destroyVulkanHandles();
-
-    bool isDockingEnabled() const;
-    bool isViewportEnabled() const;
-
-    Shared<Device> m_device;
-    Scoped<Vulkan::SDL::EventHandler> m_event_handler;
-    VkDescriptorPool m_descriptor_pool{VK_NULL_HANDLE};
+    virtual bool onWindowMovedEvent(const WindowMovedEvent& event) = 0;
+    virtual bool onWindowResizedEvent(const WindowResizedEvent& event) = 0;
+    virtual bool onWindowEnteredEvent(const WindowEnteredEvent& event) = 0;
+    virtual bool onWindowLeftEvent(const WindowLeftEvent& event) = 0;
+    virtual bool onWindowFocusGainedEvent(const WindowFocusGainedEvent& event) = 0;
+    virtual bool onWindowFocusLostEvent(const WindowFocusLostEvent& event) = 0;
+    virtual bool onWindowClosedEvent(const WindowClosedEvent& event) = 0;
 };
 
-VkDescriptorSet createGuiTextureID(const Vulkan::Texture& texture);
-void destroyGuiTextureID(VkDescriptorSet texture_id);
+} // namespace GE::GUI
 
-} // namespace GE::Vulkan::SDL
-
-#endif // GENESIS_GRAPHICS_VULKAN_SDL_GUI_CONTEXT_H_
+#endif // GENESIS_GUI_EVENT_HANDLER_H_

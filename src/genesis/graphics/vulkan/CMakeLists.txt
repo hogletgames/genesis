@@ -7,19 +7,22 @@ list(APPEND GRAPHICS_VULKAN_SOURCES
     renderers/renderer_base.cpp
     renderers/window_renderer.cpp
     device.cpp
+    framebuffer.cpp
     graphics_context.cpp
     graphics_factory.cpp
-    framebuffer.cpp
     image.cpp
-    pipeline_barrier.cpp
     input_stage_descriptions.cpp
     instance.cpp
     pipeline.cpp
+    pipeline_barrier.cpp
     sdl_gui_context.cpp
+    sdl_gui_event_handler.cpp
     shader.cpp
     single_command.cpp
     swap_chain.cpp
-    utils.cpp)
+    texture.cpp
+    utils.cpp
+    )
 
 list(APPEND GRAPHICS_VULKAN_HEADERS
     buffers/buffer_base.h
@@ -31,22 +34,23 @@ list(APPEND GRAPHICS_VULKAN_HEADERS
     renderers/window_renderer.h
     command_buffer.h
     device.h
+    framebuffer.h
     graphics_context.h
     graphics_factory.h
-    framebuffer.h
     image.h
-    pipeline_barrier.h
     input_stage_descriptions.h
     instance.h
     pipeline.h
+    pipeline_barrier.h
+    sdl_gui_context.h
+    sdl_gui_event_handler.h
     shader.h
     single_command.h
-    sdl_gui_context.h
     swap_chain.h
-    texture.cpp
     texture.h
     utils.h
-    vulkan_exception.h)
+    vulkan_exception.h
+    )
 
 ge_add_module(graphics-vulkan
     SOURCES ${GRAPHICS_VULKAN_SOURCES} ${GRAPHICS_VULKAN_HEADERS}
@@ -55,6 +59,7 @@ ge_add_module(graphics-vulkan
         genesis::core
         genesis::graphics
         genesis::math
+        genesis::window
         Vulkan::Headers
         Vulkan::Vulkan
     PRIVATE_DEPS
