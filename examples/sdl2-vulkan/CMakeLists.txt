@@ -7,4 +7,6 @@ ge_add_executable(sdl2_vulkan_example
         shaderc_shared
         stb-image
         tinyobjloader
-        Vulkan::Vulkan)
+        Vulkan::Headers
+        Vulkan::Vulkan
+    )
