@@ -227,7 +227,8 @@ void Window::onMouseEvent(const SDL_Event& sdl_event)
 {
     switch (sdl_event.type) {
         case SDL_MOUSEMOTION: {
-            MouseMovedEvent event{{sdl_event.motion.x, sdl_event.motion.y}};
+            MouseMovedEvent event{{sdl_event.motion.x, sdl_event.motion.y},
+                                  sdl_event.motion.windowID};
             emitEvent(&event);
             break;
         }

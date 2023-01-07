@@ -43,15 +43,17 @@ class GE_API MouseMovedEvent: public Event
 {
 public:
     MouseMovedEvent() = default;
-    explicit MouseMovedEvent(const Vec2& position);
+    MouseMovedEvent(const Vec2& position, uint32_t window_id);
 
     std::string asString() const override;
     const Vec2& getPosition() const { return m_position; }
+    uint32_t windowID() const { return m_window_id; };
 
     GE_DECLARE_EVENT_DESCRIPTOR(MouseMovedEvent);
 
 private:
     Vec2 m_position{};
+    uint32_t m_window_id{0};
 };
 
 class GE_API MouseScrolledEvent: public Event
