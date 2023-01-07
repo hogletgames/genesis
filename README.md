@@ -5,8 +5,8 @@
 ### Acknowledgements
 
 - [SDL](https://github.com/libsdl-org/SDL.git) ([zlib](https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt))
-- [spdlog](https://github.com/gabime/spdlog) ([MIT](https://github.com/gabime/spdlog/blob/v1.8.2/LICENSE))
-- [glm](https://github.com/g-truc/glm) ([MIT](https://github.com/g-truc/glm/blob/0.9.9.8/copying.txt))
+- [spdlog](https://github.com/gabime/spdlog) ([MIT](https://github.com/gabime/spdlog/blob/v1.x/README.md))
+- [glm](https://github.com/g-truc/glm) ([MIT](https://github.com/g-truc/glm/blob/master/copying.txt))
 - Vulkan SDK (sdk-1.3.236.0):
   - [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-Headers/blob/main/LICENSE.txt))
   - [Vulkan-Loader](https://github.com/KhronosGroup/Vulkan-Loader) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-Loader/blob/master/LICENSE.txt))
@@ -20,7 +20,7 @@
 - [stb](https://github.com/nothings/stb) ([MIT](https://github.com/nothings/stb/blob/b42009b3b9d4ca35bc703f5310eedc74f584be58/LICENSE))
 - [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) ([MIT](https://github.com/tinyobjloader/tinyobjloader/blob/v2.0.0rc8/LICENSE))
 - [magic_enum](https://github.com/Neargye/magic_enum) ([MIT](https://github.com/Neargye/magic_enum/blob/v0.7.2/LICENSE))
-- [fmt](https://github.com/fmtlib/fmt) ([MIT](https://github.com/fmtlib/fmt/blob/7.1.3/LICENSE.rst))
+- [fmt](https://github.com/fmtlib/fmt) ([MIT](https://github.com/fmtlib/fmt/blob/master/LICENSE.rst))
 - [googletest](https://github.com/google/googletest) ([BSD-3](https://github.com/google/googletest/blob/release-1.12.0/LICENSE))
 - [imgui](https://github.com/ocornut/imgui) ([MIT](https://github.com/ocornut/imgui/blob/v1.84.2/LICENSE.txt))
 

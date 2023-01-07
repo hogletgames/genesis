@@ -8,7 +8,7 @@ set(DEPS_DIR ${FETCHCONTENT_BASE_DIR})
 # fmt
 FetchContent_Declare(fmt
     GIT_REPOSITORY https://github.com/hogletgames/fmt.git
-    GIT_TAG 7.1.3)
+    GIT_TAG 9.1.0)
 FetchContent_MakeAvailable(fmt)
 
 # glm
@@ -40,7 +40,7 @@ FetchContent_MakeAvailable(SDL2)
 # spdlog
 FetchContent_Declare(spdlog
     GIT_REPOSITORY https://github.com/hogletgames/spdlog.git
-    GIT_TAG v1.8.2)
+    GIT_TAG v1.11.0)
 set(SPDLOG_FMT_EXTERNAL ON)
 FetchContent_MakeAvailable(spdlog)
 
