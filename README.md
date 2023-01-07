@@ -4,7 +4,7 @@
 
 ### Acknowledgements
 
-- [SDL](https://www.libsdl.org) ([zlib](https://www.libsdl.org/license.php))
+- [SDL](https://github.com/libsdl-org/SDL.git) ([zlib](https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt))
 - [spdlog](https://github.com/gabime/spdlog) ([MIT](https://github.com/gabime/spdlog/blob/v1.8.2/LICENSE))
 - [glm](https://github.com/g-truc/glm) ([MIT](https://github.com/g-truc/glm/blob/0.9.9.8/copying.txt))
 - Vulkan SDK (sdk-1.3.236.0):

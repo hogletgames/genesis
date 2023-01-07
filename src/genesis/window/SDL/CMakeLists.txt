@@ -15,5 +15,5 @@ ge_add_module(window-platform
         genesis::math
         genesis::window-events
     PRIVATE_DEPS
-        SDL2-static)
+        SDL2::SDL2-static)
 

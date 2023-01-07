@@ -31,11 +31,11 @@ FetchContent_MakeAvailable(tinyobjloader)
 
 # SDL2
 FetchContent_Declare(SDL2
-    GIT_REPOSITORY https://github.com/hogletgames/SDL-mirror.git
-    GIT_TAG 4b160ce2c83048f10e34be0a91a18c92529d52a1)
+    GIT_REPOSITORY https://github.com/hogletgames/SDL.git
+    GIT_TAG release-2.26.2)
 set(SDL_SHARED OFF CACHE BOOL "Build a shared version of the library" FORCE)
 set(SDL_STATIC ON CACHE BOOL "Build a static version of the library" FORCE)
-FetchContent_MakeAvailable(sdl2)
+FetchContent_MakeAvailable(SDL2)
 
 # spdlog
 FetchContent_Declare(spdlog
