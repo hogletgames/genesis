@@ -237,14 +237,14 @@ bool GUIContext::isViewportEnabled() const
 VkDescriptorSet createGuiTextureID(const Vulkan::Texture &texture)
 {
     static constexpr VkImageLayout image_layout{VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
-    return reinterpret_cast<VkDescriptorSet>(::ImGui_ImplVulkan_AddTexture(
-        texture.sampler(), texture.image()->view(), image_layout));
+    return ::ImGui_ImplVulkan_AddTexture(texture.sampler(), texture.image()->view(),
+                                         image_layout);
 }
 
 void destroyGuiTextureID(VkDescriptorSet texture_id)
 {
     if (texture_id != VK_NULL_HANDLE) {
-        ::ImGui_ImplVulkan_DestroyTexture(reinterpret_cast<ImTextureID>(texture_id));
+        ::ImGui_ImplVulkan_RemoveTexture(texture_id);
     }
 };
 
