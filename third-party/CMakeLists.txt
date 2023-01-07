@@ -173,7 +173,7 @@ if (GE_BUILD_TESTS)
     # googletest
     FetchContent_Declare(googletest
         GIT_REPOSITORY https://github.com/hogletgames/googletest.git
-        GIT_TAG release-1.12.0)
+        GIT_TAG release-1.12.1)
     FetchContent_MakeAvailable(googletest)
 endif ()
 

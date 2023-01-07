@@ -21,7 +21,7 @@
 - [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) ([MIT](https://github.com/tinyobjloader/tinyobjloader/blob/release/CMakeLists.txt))
 - [magic_enum](https://github.com/Neargye/magic_enum) ([MIT](https://github.com/Neargye/magic_enum/blob/master/LICENSE))
 - [fmt](https://github.com/fmtlib/fmt) ([MIT](https://github.com/fmtlib/fmt/blob/master/LICENSE.rst))
-- [googletest](https://github.com/google/googletest) ([BSD-3](https://github.com/google/googletest/blob/release-1.12.0/LICENSE))
+- [googletest](https://github.com/google/googletest) ([BSD-3](https://github.com/google/googletest/blob/main/LICENSE))
 - [imgui](https://github.com/ocornut/imgui) ([MIT](https://github.com/ocornut/imgui/blob/v1.84.2/LICENSE.txt))
 
 ### To build manually
