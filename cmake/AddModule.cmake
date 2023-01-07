@@ -46,9 +46,20 @@ function(_ge_set_target_options TARGET)
     # Definitions
     target_compile_definitions(${TARGET} PUBLIC
         $<$<BOOL:${GE_DISABLE_ASSERTS}>:GE_DISABLE_ASSERTS>
-        $<$<BOOL:${GE_DISABLE_DEBUG}>:GE_DISABLE_DEBUG>
-        $<IF:$<BOOL:${UNIX}>,GE_PLATFORM_UNIX,
-           $<$<BOOL:${WIN32}>:GE_PLATFORM_WINDOWS>>)
+        $<$<BOOL:${GE_DISABLE_DEBUG}>:GE_DISABLE_DEBUG>)
+    _ge_set_target_platform(${TARGET})
+endfunction()
+
+function(_ge_set_target_platform TARGET)
+    if (UNIX)
+        target_compile_definitions(${TARGET} PUBLIC GE_PLATFORM_UNIX)
+    elseif (WIN32)
+        target_compile_definitions(${TARGET} PUBLIC GE_PLATFORM_WINDOWS)
+    endif()
+
+    if (APPLE)
+        target_compile_definitions(${TARGET} PUBLIC GE_PLATFORM_APPLE)
+    endif ()
 endfunction()
 
 function(_ge_configure_files MODULE TARGET)

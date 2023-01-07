@@ -119,6 +119,10 @@ void Instance::createInstance(void* native_window, std::string_view app_name)
     window_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif // GE_DISABLE_DEBUG
 
+#if GE_PLATFORM_APPLE
+    window_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif // GE_PLATFORM_APPLE
+
     VkApplicationInfo app_info{};
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     app_info.pApplicationName = app_name.data();
@@ -132,6 +136,10 @@ void Instance::createInstance(void* native_window, std::string_view app_name)
     instance_info.pApplicationInfo = &app_info;
     instance_info.enabledExtensionCount = window_extensions.size();
     instance_info.ppEnabledExtensionNames = window_extensions.data();
+
+#if GE_PLATFORM_APPLE
+    instance_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#endif // GE_PLATFORM_APPLE
 
 #ifndef GE_DISABLE_DEBUG
     auto debug_info = getDebugMsgrCreateInfo(VULKAN_SEVERITY);

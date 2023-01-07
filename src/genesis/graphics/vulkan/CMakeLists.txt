@@ -55,6 +55,7 @@ ge_add_module(graphics-vulkan
         genesis::core
         genesis::graphics
         genesis::math
+        Vulkan::Headers
         Vulkan::Vulkan
     PRIVATE_DEPS
         imgui-vulkan
@@ -64,5 +65,5 @@ ge_add_module(graphics-vulkan
         stb-image)
 
 if (NOT GE_DISABLE_DEBUG)
-    add_dependencies(genesis-graphics-vulkan VkLayer_khronos_validation-json)
+    add_dependencies(genesis-graphics-vulkan VkLayer_khronos_validation)
 endif ()
