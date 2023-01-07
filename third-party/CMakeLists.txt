@@ -26,7 +26,7 @@ FetchContent_MakeAvailable(magic_enum)
 # tinyobjloader
 FetchContent_Declare(tinyobjloader
     GIT_REPOSITORY https://github.com/hogletgames/tinyobjloader.git
-    GIT_TAG v2.0.0rc8)
+    GIT_TAG v2.0.0rc10)
 FetchContent_MakeAvailable(tinyobjloader)
 
 # SDL2
