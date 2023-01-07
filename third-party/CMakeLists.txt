@@ -47,7 +47,7 @@ FetchContent_MakeAvailable(spdlog)
 # imgui
 FetchContent_Declare(imgui
     GIT_REPOSITORY https://github.com/hogletgames/imgui.git
-    GIT_TAG dc8c3618e8f8e2dada23daa1aa237626af341fd8
+    GIT_TAG d822c65317ba881798bed8fce9ffba267d27dada
     PATCH_COMMAND ${GE_APPLY_PATCH} ${DEPS_DIR}/imgui-src ${GE_PATCHES_DIR}/imgui)
 FetchContent_GetProperties(imgui)
 if (NOT imgui_POPULATED)
