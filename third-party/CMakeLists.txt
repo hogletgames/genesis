@@ -20,7 +20,7 @@ FetchContent_MakeAvailable(glm)
 # magic_enum
 FetchContent_Declare(magic_enum
     GIT_REPOSITORY https://github.com/hogletgames/magic_enum.git
-    GIT_TAG v0.7.2)
+    GIT_TAG v0.8.2)
 FetchContent_MakeAvailable(magic_enum)
 
 # tinyobjloader
