@@ -69,6 +69,7 @@ public:
     virtual void* nativeWindow() = 0;
     virtual std::string title() = 0;
     virtual Vec2 size() const = 0;
+    virtual Vec2 position() const = 0;
 
     virtual void setVSync(bool enabled) = 0;
 

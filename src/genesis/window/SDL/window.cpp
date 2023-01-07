@@ -172,6 +172,15 @@ Vec2 Window::size() const
     return {width, height};
 }
 
+Vec2 Window::position() const
+{
+    int x{};
+    int y{};
+
+    SDL_GetWindowPosition(m_window, &x, &y);
+    return {x, y};
+}
+
 void Window::setVSync([[maybe_unused]] bool enabled) {}
 
 void Window::emitEvent(Event* event)

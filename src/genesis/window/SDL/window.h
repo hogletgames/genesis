@@ -65,6 +65,7 @@ public:
     void* nativeWindow() override { return m_window; }
     std::string title() override;
     Vec2 size() const override;
+    Vec2 position() const override;
 
     void setVSync(bool enabled) override;
 
