@@ -33,6 +33,7 @@
 #ifndef GENESIS_CORE_ENUM_H_
 #define GENESIS_CORE_ENUM_H_
 
+#include <fmt/format.h>
 #include <magic_enum.hpp>
 
 #define GE_EXTEND_ENUM_RANGE(enum_type, min_value, max_value)  \
@@ -46,8 +47,8 @@
 
 namespace GE {
 
-template<typename T>
-using EnableIfIsEnum = std::enable_if_t<std::is_enum_v<T>>;
+template<typename T, typename Ret = void>
+using EnableIfIsEnum = std::enable_if_t<std::is_enum_v<T>, Ret>;
 
 using magic_enum::bitwise_operators::operator~;
 using magic_enum::bitwise_operators::operator|;
@@ -69,12 +70,15 @@ std::optional<EnumType> toEnum(const std::string& string)
     return magic_enum::enum_cast<EnumType>(string);
 }
 
-template<typename OStream, typename EnumType, typename = EnableIfIsEnum<EnumType>>
-OStream& operator<<(OStream& os, EnumType value)
-{
-    return os << toString(value);
-}
-
 } // namespace GE
+
+template<typename EnumType>
+struct fmt::formatter<EnumType, GE::EnableIfIsEnum<EnumType, char>>
+    : fmt::formatter<std::string> {
+    auto format(EnumType value, fmt::format_context& ctx) -> decltype(ctx.out())
+    {
+        return format_to(ctx.out(), "{}", GE::toString(value));
+    }
+};
 
 #endif // GENESIS_CORE_ENUM_H_

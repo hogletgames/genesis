@@ -36,6 +36,7 @@
 #include "image.h"
 #include "instance.h"
 #include "renderers/window_renderer.h"
+#include "sdl_gui_event_handler.h"
 #include "single_command.h"
 #include "swap_chain.h"
 #include "texture.h"
@@ -87,6 +88,7 @@ namespace GE::Vulkan::SDL {
 GUIContext::GUIContext(void *window, Shared<Device> device,
                        WindowRenderer *window_renderer)
     : m_device{std::move(device)}
+    , m_event_handler{makeScoped<Vulkan::SDL::EventHandler>()}
 {
     GE_CORE_INFO("Initializing Vulkan SDL GUI");
 
@@ -187,6 +189,11 @@ void GUIContext::draw(GPUCommandQueue *queue)
     });
 }
 
+GUI::EventHandler *GUIContext::eventHandler()
+{
+    return m_event_handler.get();
+}
+
 void GUIContext::createDescriptorPool()
 {
     constexpr size_t descriptor_count{1000};
@@ -237,14 +244,14 @@ bool GUIContext::isViewportEnabled() const
 VkDescriptorSet createGuiTextureID(const Vulkan::Texture &texture)
 {
     static constexpr VkImageLayout image_layout{VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
-    return reinterpret_cast<VkDescriptorSet>(::ImGui_ImplVulkan_AddTexture(
-        texture.sampler(), texture.image()->view(), image_layout));
+    return ::ImGui_ImplVulkan_AddTexture(texture.sampler(), texture.image()->view(),
+                                         image_layout);
 }
 
 void destroyGuiTextureID(VkDescriptorSet texture_id)
 {
     if (texture_id != VK_NULL_HANDLE) {
-        ::ImGui_ImplVulkan_DestroyTexture(reinterpret_cast<ImTextureID>(texture_id));
+        ::ImGui_ImplVulkan_RemoveTexture(texture_id);
     }
 };
 

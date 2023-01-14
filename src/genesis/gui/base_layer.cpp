@@ -31,90 +31,49 @@
  */
 
 #include "base_layer.h"
+#include "context.h"
+#include "event_handler.h"
 
-#include "genesis/core/log.h"
 #include "genesis/graphics/graphics.h"
-#include "genesis/graphics/graphics_context.h"
-#include "genesis/graphics/render_command.h"
 #include "genesis/window/events/event_dispatcher.h"
-#include "genesis/window/events/key_events.h"
-#include "genesis/window/events/mouse_events.h"
-
-#include <imgui.h>
-
-namespace {
-
-bool onKeyEvent(const GE::KeyEvent& event, bool is_pressed)
-{
-    auto& io = ImGui::GetIO();
-    int key = static_cast<int>(event.getCode());
-
-    io.KeysDown[key] = is_pressed;
-    io.KeyShift = (event.getMod() & GE::KeyModFlags::SHIFT_BIT) != 0;
-    io.KeyCtrl = (event.getMod() & GE::KeyModFlags::CTRL_BIT) != 0;
-    io.KeyAlt = (event.getMod() & GE::KeyModFlags::ALT_BIT) != 0;
-#ifdef _WIN32
-    io.KeySuper = false;
-#else
-    io.KeySuper = (event.getMod() & GE::KeyModFlags::SUPER_BIT) != 0;
-#endif
-
-    return false;
-}
-
-bool onKeyPressedEvent(const GE::KeyPressedEvent& event)
-{
-    return onKeyEvent(event, true);
-}
-
-bool onKeyReleasedEvent(const GE::KeyReleasedEvent& event)
-{
-    return onKeyEvent(event, false);
-}
-
-bool onKeyTypedEvent(const GE::KeyTypedEvent& event)
-{
-    auto& io = ImGui::GetIO();
-    io.AddInputCharactersUTF8(event.getText());
-    return false;
-}
-
-bool onMouseScrolledEvent(const GE::MouseScrolledEvent& event)
-{
-    auto& io = ImGui::GetIO();
-    float offset_x = event.getOffset().x;
-    float offset_y = event.getOffset().y;
-
-    if (offset_x > 0.0f) {
-        io.MouseWheelH += 1;
-    }
-
-    if (offset_x < 0) {
-        io.MouseWheelH -= 1;
-    }
-
-    if (offset_y > 0) {
-        io.MouseWheel += 1;
-    }
-
-    if (offset_y < 0) {
-        io.MouseWheel -= 1;
-    }
-
-    return false;
-}
-
-} // namespace
 
 namespace GE::GUI {
 
 void BaseLayer::onEvent(Event* event)
 {
+    auto* handler = Graphics::gui()->eventHandler();
     EventDispatcher dispatcher{event};
-    dispatcher.dispatch<KeyPressedEvent>(onKeyPressedEvent);
-    dispatcher.dispatch<KeyReleasedEvent>(onKeyReleasedEvent);
-    dispatcher.dispatch<KeyTypedEvent>(onKeyTypedEvent);
-    dispatcher.dispatch<MouseScrolledEvent>(onMouseScrolledEvent);
+
+    dispatcher.dispatch<KeyPressedEvent>(
+        toEventHandler(&EventHandler::onKeyPressedEvent, handler));
+    dispatcher.dispatch<KeyReleasedEvent>(
+        toEventHandler(&EventHandler::onKeyReleasedEvent, handler));
+    dispatcher.dispatch<KeyTypedEvent>(
+        toEventHandler(&EventHandler::onKeyTypedEvent, handler));
+
+    dispatcher.dispatch<MouseButtonPressedEvent>(
+        toEventHandler(&EventHandler::onMouseButtonPressedEvent, handler));
+    dispatcher.dispatch<MouseButtonReleasedEvent>(
+        toEventHandler(&EventHandler::onMouseButtonReleasedEvent, handler));
+    dispatcher.dispatch<MouseMovedEvent>(
+        toEventHandler(&EventHandler::onMouseMovedEvent, handler));
+    dispatcher.dispatch<MouseScrolledEvent>(
+        toEventHandler(&EventHandler::onMouseScrolledEvent, handler));
+
+    dispatcher.dispatch<WindowMovedEvent>(
+        toEventHandler(&EventHandler::onWindowMovedEvent, handler));
+    dispatcher.dispatch<WindowResizedEvent>(
+        toEventHandler(&EventHandler::onWindowResizedEvent, handler));
+    dispatcher.dispatch<WindowEnteredEvent>(
+        toEventHandler(&EventHandler::onWindowEnteredEvent, handler));
+    dispatcher.dispatch<WindowLeftEvent>(
+        toEventHandler(&EventHandler::onWindowLeftEvent, handler));
+    dispatcher.dispatch<WindowFocusGainedEvent>(
+        toEventHandler(&EventHandler::onWindowFocusGainedEvent, handler));
+    dispatcher.dispatch<WindowFocusLostEvent>(
+        toEventHandler(&EventHandler::onWindowFocusLostEvent, handler));
+    dispatcher.dispatch<WindowClosedEvent>(
+        toEventHandler(&EventHandler::onWindowClosedEvent, handler));
 }
 
 } // namespace GE::GUI

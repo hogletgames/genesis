@@ -33,6 +33,7 @@
 #ifndef GENESIS_CORE_UTILS_H_
 #define GENESIS_CORE_UTILS_H_
 
+#include <functional>
 #include <unordered_map>
 
 // Breakpoint
@@ -60,6 +61,14 @@
 #define GE_UNIQ_NAME(prefix) GE_CONCAT(prefix##_, __COUNTER__)
 
 namespace GE {
+
+template<typename Func, typename Type>
+auto toEventHandler(Func&& f, Type* instance)
+{
+    return [&f, instance](const auto& event) {
+        return std::invoke(std::forward<Func>(f), instance, event);
+    };
+}
 
 template<typename FromType, typename ToType>
 inline ToType toType(const std::unordered_map<FromType, ToType>& container,

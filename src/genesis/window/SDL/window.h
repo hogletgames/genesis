@@ -62,11 +62,12 @@ public:
     void attachEventListener(EventListener* listener) override;
     void detachEventListener(EventListener* listener) override;
 
-    const Vec2& windowSize() const override { return m_settings.size; }
-    void setVSync(bool enabled) override;
-    const settings_t& settings() const override { return m_settings; }
-
     void* nativeWindow() override { return m_window; }
+    std::string title() override;
+    Vec2 size() const override;
+    Vec2 position() const override;
+
+    void setVSync(bool enabled) override;
 
 private:
     void emitEvent(Event* event);
@@ -75,9 +76,7 @@ private:
     void onKeyboardEvent(const SDL_Event& sdl_event);
     void onWindowEvent(const SDL_Event& sdl_event);
 
-    settings_t m_settings;
     SDL_Window* m_window{nullptr};
-
     std::list<EventListener*> m_event_listeners;
 };
 

@@ -1,36 +1,26 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 # Arguments
-ARG GCC_VER=11 \
-    CLANG_VER=13 \
-    CMAKE_VER=v3.14.7
+ARG DEBIAN_FRONTEND="noninteractive" \
+    GCC_VER=11 \
+    CLANG_VER=13
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gpg-agent software-properties-common wget && \
-# actions/checkout@v2 requires git v2.18 and later for submodules
-    add-apt-repository ppa:git-core/ppa && \
 # GCC-11
     apt-add-repository ppa:ubuntu-toolchain-r/test && \
 # Clang-13
     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
-    apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${CLANG_VER} main" && \
+    apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-${CLANG_VER} main" && \
 # Essential build tools
     apt-get update && apt-get install -y --no-install-recommends  \
-    make git gcc-${GCC_VER} g++-${GCC_VER} clang-format-${CLANG_VER} clang-tidy-${CLANG_VER} && \
+    gcc-${GCC_VER} g++-${GCC_VER} clang-format-${CLANG_VER} clang-tidy-${CLANG_VER}  \
+    make cmake git patch && \
 # Clean-up atp cache
     rm -rf /var/lib/apt/lists/* && \
 # Configure git
     git config --add --system user.name "hogletgames" && \
     git config --add --system user.email "hogletgames@gmail.com"
-
-# Set compilers
-ENV CC="gcc-${GCC_VER}" \
-    CXX="g++-${GCC_VER}"
-
-# CMake
-RUN git clone --recursive --branch=${CMAKE_VER} https://github.com/Kitware/CMake.git /tmp/cmake && \
-    cd /tmp/cmake && ./bootstrap && make -j$(nproc) && make install && \
-    rm -rf /tmp/cmake
 
 # SDL2 dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \

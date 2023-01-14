@@ -9,32 +9,29 @@ on:
 env:
   BUILD_EXAMPLES: ON
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  cancel_previous_jobs:
-    name: Cancel previous jobs
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Cancel outdated jobs
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
   update_docker:
     name: Update Docker image
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Build docker image
-        uses: whoan/docker-build-with-cache-action@v5
+        uses: whoan/docker-build-with-cache-action@v6
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           image_name: hogletgames/genesis-engine
           image_tag: ci
           build_extra_args: "--compress=true"
+
   tests:
     name: Tests
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     container: hogletgames/genesis-engine:ci
     needs: update_docker
     strategy:
@@ -57,8 +54,8 @@ jobs:
       BUILD_TESTS: ON
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Download deps cache
+        uses: actions/checkout@v3
+      - name: Download cache
         uses: actions/cache@v3
         with:
           key: ${{ matrix.build-type }}-${{ hashFiles('third-party/CMakeLists.txt') }}
@@ -67,9 +64,10 @@ jobs:
         run: make -j$(nproc)
       - name: Run tests
         run: make test
+
   linters:
     name: Linters
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     container: hogletgames/genesis-engine:ci
     needs: update_docker
     strategy:
@@ -77,11 +75,11 @@ jobs:
         build-type: [Release, Debug]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Download deps cache
+        uses: actions/checkout@v3
+      - name: Download cache
         uses: actions/cache@v3
         with:
-          key: linters-${{ hashFiles('third-party/CMakeLists.txt') }}
+          key: ${{ matrix.build-type }}-${{ hashFiles('third-party/CMakeLists.txt') }}
           path: build/_deps
       - name: clang-format
         run: make clang-format

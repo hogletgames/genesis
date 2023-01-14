@@ -36,8 +36,9 @@
 
 namespace GE {
 
-MouseMovedEvent::MouseMovedEvent(const Vec2& position)
+MouseMovedEvent::MouseMovedEvent(const Vec2& position, uint32_t window_id)
     : m_position{position}
+    , m_window_id{window_id}
 {}
 
 std::string MouseMovedEvent::asString() const

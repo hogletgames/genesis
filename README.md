@@ -4,25 +4,25 @@
 
 ### Acknowledgements
 
-- [SDL](https://www.libsdl.org) ([zlib](https://www.libsdl.org/license.php))
-- [spdlog](https://github.com/gabime/spdlog) ([MIT](https://github.com/gabime/spdlog/blob/v1.8.2/LICENSE))
-- [glm](https://github.com/g-truc/glm) ([MIT](https://github.com/g-truc/glm/blob/0.9.9.8/copying.txt))
-- Vulkan SDK:
-  - [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-Headers/blob/sdk-1.2.162.0/LICENSE.txt))
-  - [Vulkan-Loader](https://github.com/KhronosGroup/Vulkan-Loader) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-Loader/blob/sdk-1.2.162.0/LICENSE.txt))
-  - [glslang](https://github.com/KhronosGroup/glslang) ([Multi-licensed](https://github.com/KhronosGroup/glslang/blob/11.1.0/LICENSE.txt))
-  - [SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross) ([Apache 2.0](https://github.com/KhronosGroup/SPIRV-Cross/blob/2021-01-15/LICENSE))
-  - [SPIRV-Headers](https://github.com/KhronosGroup/SPIRV-Headers) ([MIT](https://github.com/KhronosGroup/SPIRV-Headers/blob/1.5.4.raytracing.fixed/LICENSE))
-  - [SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools) ([Apache 2.0](https://github.com/KhronosGroup/SPIRV-Tools/blob/v2020.6/LICENSE))
-  - [Vulkan-ValidationLayers](https://github.com/KhronosGroup/Vulkan-ValidationLayers) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/sdk-1.2.162.0/LICENSE.txt))
-  - [shaderc](https://github.com/google/shaderc) ([Apache 2.0](https://github.com/google/shaderc/blob/v2020.4/LICENSE))
-  - [MoltenVK](https://github.com/KhronosGroup/MoltenVK) ([Apache 2.0](https://github.com/KhronosGroup/MoltenVK/blob/v1.1.5/LICENSE))
-- [stb](https://github.com/nothings/stb) ([MIT](https://github.com/nothings/stb/blob/b42009b3b9d4ca35bc703f5310eedc74f584be58/LICENSE))
-- [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) ([MIT](https://github.com/tinyobjloader/tinyobjloader/blob/v2.0.0rc8/LICENSE))
-- [magic_enum](https://github.com/Neargye/magic_enum) ([MIT](https://github.com/Neargye/magic_enum/blob/v0.7.2/LICENSE))
-- [fmt](https://github.com/fmtlib/fmt) ([MIT](https://github.com/fmtlib/fmt/blob/7.1.3/LICENSE.rst))
-- [googletest](https://github.com/google/googletest) ([BSD-3](https://github.com/google/googletest/blob/release-1.12.0/LICENSE))
-- [imgui](https://github.com/ocornut/imgui) ([MIT](https://github.com/ocornut/imgui/blob/v1.84.2/LICENSE.txt))
+- [SDL](https://github.com/libsdl-org/SDL.git) ([zlib](https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt))
+- [spdlog](https://github.com/gabime/spdlog) ([MIT](https://github.com/gabime/spdlog/blob/v1.x/README.md))
+- [glm](https://github.com/g-truc/glm) ([MIT](https://github.com/g-truc/glm/blob/master/copying.txt))
+- Vulkan SDK (sdk-1.3.236.0):
+  - [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-Headers/blob/main/LICENSE.txt))
+  - [Vulkan-Loader](https://github.com/KhronosGroup/Vulkan-Loader) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-Loader/blob/master/LICENSE.txt))
+  - [glslang](https://github.com/KhronosGroup/glslang) ([Multi-licensed](https://github.com/KhronosGroup/glslang/blob/master/LICENSE.txt))
+  - [SPIRV-Headers](https://github.com/KhronosGroup/SPIRV-Headers) ([MIT](https://github.com/KhronosGroup/SPIRV-Headers/blob/main/LICENSE))
+  - [SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools) ([Apache 2.0](https://github.com/KhronosGroup/SPIRV-Tools/blob/main/LICENSE))
+  - [SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross) ([Apache 2.0](https://github.com/KhronosGroup/SPIRV-Cross/blob/main/LICENSE))
+  - [Vulkan-ValidationLayers](https://github.com/KhronosGroup/Vulkan-ValidationLayers) ([Apache 2.0](https://github.com/KhronosGroup/Vulkan-ValidationLayers/blob/master/LICENSE.txt))
+  - [shaderc](https://github.com/google/shaderc) ([Apache 2.0](https://github.com/google/shaderc/blob/main/LICENSE))
+  - [MoltenVK](https://github.com/KhronosGroup/MoltenVK) ([Apache 2.0](https://github.com/KhronosGroup/MoltenVK/blob/main/LICENSE))
+- [stb](https://github.com/nothings/stb) ([MIT](https://github.com/nothings/stb/blob/master/LICENSE))
+- [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) ([MIT](https://github.com/tinyobjloader/tinyobjloader/blob/release/CMakeLists.txt))
+- [magic_enum](https://github.com/Neargye/magic_enum) ([MIT](https://github.com/Neargye/magic_enum/blob/master/LICENSE))
+- [fmt](https://github.com/fmtlib/fmt) ([MIT](https://github.com/fmtlib/fmt/blob/master/LICENSE.rst))
+- [googletest](https://github.com/google/googletest) ([BSD-3](https://github.com/google/googletest/blob/main/LICENSE))
+- [imgui](https://github.com/ocornut/imgui) ([MIT](https://github.com/ocornut/imgui/blob/master/LICENSE.txt))
 
 ### To build manually
 
@@ -74,15 +74,15 @@ At the moment `VK_LAYER_PATH` should only be configured for `Debug` or
 #### Linux
 
 ```bash
-export VK_LAYER_PATH=build/third-party/Vulkan/Vulkan-ValidationLayers/layers
+export VK_LAYER_PATH=build/_deps/vulkan-validationlayers-build/layers
 build/examples/sandbox/sandbox
 ```
 
 #### MacOS
 
 ```bash
-export VK_LAYER_PATH=build/third-party/Vulkan/Vulkan-ValidationLayers/layers
-export VK_ICD_FILENAMES=third-party/Vulkan/MoltenVK/MoltenVK/Package/Latest/MoltenVK/dylib/macOS/MoltenVK_icd.json
+export VK_LAYER_PATH=build/_deps/vulkan-validationlayers-build/layers
+export VK_ICD_FILENAMES=build/_deps/moltenvk-src/Package/Release/MoltenVK/dylib/macOS/MoltenVK_icd.json
 build/examples/sandbox/sandbox
 ```
 

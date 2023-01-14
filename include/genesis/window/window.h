@@ -66,11 +66,12 @@ public:
     virtual void attachEventListener(EventListener* listener) = 0;
     virtual void detachEventListener(EventListener* listener) = 0;
 
-    virtual const Vec2& windowSize() const = 0;
-    virtual void setVSync(bool enabled) = 0;
-    virtual const settings_t& settings() const = 0;
-
     virtual void* nativeWindow() = 0;
+    virtual std::string title() = 0;
+    virtual Vec2 size() const = 0;
+    virtual Vec2 position() const = 0;
+
+    virtual void setVSync(bool enabled) = 0;
 
     static Scoped<Window> create(const settings_t& settings, Graphics::API api);
 };

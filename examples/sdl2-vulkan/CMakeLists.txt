@@ -3,8 +3,10 @@ ge_add_executable(sdl2_vulkan_example
     PRIVATE_DEPS
         genesis::core
         glm
-        SDL2-static
+        SDL2::SDL2-static
         shaderc_shared
         stb-image
         tinyobjloader
-        Vulkan::Vulkan)
+        Vulkan::Headers
+        Vulkan::Vulkan
+    )

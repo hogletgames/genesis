@@ -34,12 +34,15 @@
 #define GENESIS_GUI_CONTEXT_H_
 
 #include <genesis/core/interface.h>
+#include <genesis/window/mouse_button_codes.h>
 
 namespace GE {
 class GPUCommandQueue;
 } // namespace GE
 
 namespace GE::GUI {
+
+class EventHandler;
 
 class GE_API Context: public Interface
 {
@@ -48,6 +51,8 @@ public:
     virtual void end() = 0;
 
     virtual void draw(GPUCommandQueue* queue) = 0;
+
+    virtual EventHandler* eventHandler() = 0;
 };
 
 } // namespace GE::GUI

@@ -80,11 +80,10 @@ GraphicsContext::~GraphicsContext()
 bool GraphicsContext::initialize(const config_t& config)
 {
     GE_CORE_INFO("Initializing Vulkan Context...");
-    Instance::initialize(config.window, config.app_name);
-
-    m_surface = createSurface(config.window);
 
     try {
+        Instance::initialize(config.window, config.app_name);
+        m_surface = createSurface(config.window);
         m_device = makeScoped<Device>(m_surface);
         m_window_renderer = createWindowRenderer(config);
         m_factory = makeScoped<Vulkan::GraphicsFactory>(m_device);

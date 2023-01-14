@@ -140,7 +140,7 @@ void WindowRenderer::onEvent(Event* event)
 
 bool WindowRenderer::onWindowResized(const WindowResizedEvent& event)
 {
-    m_window_size = event.getSize();
+    m_window_size = event.size();
     m_is_framebuffer_resized = true;
     return false;
 }

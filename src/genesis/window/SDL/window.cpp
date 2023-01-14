@@ -29,13 +29,13 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #include "window.h"
 
 #include "genesis/core/exception.h"
 #include "genesis/core/format.h"
 #include "genesis/core/log.h"
 #include "genesis/core/utils.h"
-#include "genesis/graphics/graphics_context.h"
 #include "genesis/window/events/key_events.h"
 #include "genesis/window/events/mouse_events.h"
 #include "genesis/window/events/window_events.h"
@@ -101,14 +101,13 @@ int renderAPIToWindowFlag(GE::Graphics::API api)
 namespace GE::SDL {
 
 Window::Window(settings_t settings, Graphics::API api)
-    : m_settings{std::move(settings)}
 {
-    int width = static_cast<int>(m_settings.size.x);
-    int height = static_cast<int>(m_settings.size.y);
+    int width = static_cast<int>(settings.size.x);
+    int height = static_cast<int>(settings.size.y);
     auto flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN |
                  renderAPIToWindowFlag(api);
 
-    m_window = SDL_CreateWindow(m_settings.title.c_str(), SDL_WINDOWPOS_CENTERED,
+    m_window = SDL_CreateWindow(settings.title.c_str(), SDL_WINDOWPOS_CENTERED,
                                 SDL_WINDOWPOS_CENTERED, width, height, flags);
 
     if (m_window == nullptr) {
@@ -116,14 +115,14 @@ Window::Window(settings_t settings, Graphics::API api)
         throw Exception{error};
     }
 
-    GE_CORE_INFO("Window '{}' has been created", m_settings.title);
+    GE_CORE_INFO("Window '{}' has been created", settings.title);
 }
 
 Window::~Window()
 {
     if (m_window != nullptr) {
+        GE_CORE_INFO("Window '{}' has been destroyed", SDL_GetWindowTitle(m_window));
         SDL_DestroyWindow(m_window);
-        GE_CORE_INFO("Window '{}' has been destroyed", m_settings.title);
     }
 }
 
@@ -158,6 +157,28 @@ void Window::attachEventListener(EventListener* listener)
 void Window::detachEventListener(EventListener* listener)
 {
     m_event_listeners.remove(listener);
+}
+
+std::string Window::title()
+{
+    return SDL_GetWindowTitle(m_window);
+}
+
+Vec2 Window::size() const
+{
+    int width{};
+    int height{};
+    SDL_GetWindowSize(m_window, &width, &height);
+    return {width, height};
+}
+
+Vec2 Window::position() const
+{
+    int x{};
+    int y{};
+
+    SDL_GetWindowPosition(m_window, &x, &y);
+    return {x, y};
 }
 
 void Window::setVSync([[maybe_unused]] bool enabled) {}
@@ -206,7 +227,8 @@ void Window::onMouseEvent(const SDL_Event& sdl_event)
 {
     switch (sdl_event.type) {
         case SDL_MOUSEMOTION: {
-            MouseMovedEvent event{{sdl_event.motion.x, sdl_event.motion.y}};
+            MouseMovedEvent event{{sdl_event.motion.x, sdl_event.motion.y},
+                                  sdl_event.motion.windowID};
             emitEvent(&event);
             break;
         }
@@ -260,32 +282,58 @@ void Window::onKeyboardEvent(const SDL_Event& sdl_event)
 
 void Window::onWindowEvent(const SDL_Event& sdl_event)
 {
+    Uint32 id{sdl_event.window.windowID};
+
     switch (sdl_event.window.event) {
+        case SDL_WINDOWEVENT_MOVED: {
+            Vec2 position{sdl_event.window.data1, sdl_event.window.data2};
+            WindowMovedEvent event{id, position};
+            emitEvent(&event);
+            break;
+        }
         case SDL_WINDOWEVENT_RESIZED: {
             Vec2 size{sdl_event.window.data1, sdl_event.window.data2};
-            m_settings.size = size;
-            WindowResizedEvent event{size};
-            emitEvent(&event);
-            break;
-        }
-        case SDL_WINDOWEVENT_CLOSE: {
-            WindowClosedEvent event{};
-            emitEvent(&event);
-            break;
-        }
-        case SDL_WINDOWEVENT_MAXIMIZED: {
-            WindowMaximizedEvent event{};
+            WindowResizedEvent event{id, size};
             emitEvent(&event);
             break;
         }
         case SDL_WINDOWEVENT_MINIMIZED: {
-            WindowMinimizedEvent event{};
+            WindowMinimizedEvent event{id};
             emitEvent(&event);
             break;
         }
-        case SDL_WINDOWEVENT_SHOWN:
+        case SDL_WINDOWEVENT_MAXIMIZED: {
+            WindowMaximizedEvent event{id};
+            emitEvent(&event);
+            break;
+        }
         case SDL_WINDOWEVENT_RESTORED: {
-            WindowRestoredEvent event{};
+            WindowRestoredEvent event{id};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_ENTER: {
+            WindowEnteredEvent event{id};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_LEAVE: {
+            WindowLeftEvent event{id};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_FOCUS_GAINED: {
+            WindowFocusGainedEvent event{id};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_FOCUS_LOST: {
+            WindowFocusLostEvent event{id};
+            emitEvent(&event);
+            break;
+        }
+        case SDL_WINDOWEVENT_CLOSE: {
+            WindowClosedEvent event{id};
             emitEvent(&event);
             break;
         }
