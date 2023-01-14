@@ -74,15 +74,15 @@ At the moment `VK_LAYER_PATH` should only be configured for `Debug` or
 #### Linux
 
 ```bash
-export VK_LAYER_PATH=build/third-party/Vulkan/Vulkan-ValidationLayers/layers
+export VK_LAYER_PATH=build/_deps/vulkan-validationlayers-build/layers
 build/examples/sandbox/sandbox
 ```
 
 #### MacOS
 
 ```bash
-export VK_LAYER_PATH=build/third-party/Vulkan/Vulkan-ValidationLayers/layers
-export VK_ICD_FILENAMES=third-party/Vulkan/MoltenVK/MoltenVK/Package/Latest/MoltenVK/dylib/macOS/MoltenVK_icd.json
+export VK_LAYER_PATH=build/_deps/vulkan-validationlayers-build/layers
+export VK_ICD_FILENAMES=build/_deps/moltenvk-src/Package/Release/MoltenVK/dylib/macOS/MoltenVK_icd.json
 build/examples/sandbox/sandbox
 ```
 
