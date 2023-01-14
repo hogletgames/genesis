@@ -78,7 +78,7 @@ Value getValue(const std::unordered_map<Key, Value>& map, const Key& key,
 }
 
 template<typename T, typename U>
-inline std::unordered_map<U, T> swapKeyAndValue(const std::unordered_map<T, U>& map)
+std::unordered_map<U, T> swapKeyAndValue(const std::unordered_map<T, U>& map)
 {
     std::unordered_map<U, T> swapped_map;
 
@@ -87,6 +87,14 @@ inline std::unordered_map<U, T> swapKeyAndValue(const std::unordered_map<T, U>& 
     }
 
     return swapped_map;
+}
+
+template<typename Container, typename... Args>
+Container jointContainers(Container&& first, Args&&... others)
+{
+    Container result{std::forward<Container>(first)};
+    (result.insert(result.end(), others.begin(), others.end()), ...);
+    return result;
 }
 
 } // namespace GE
