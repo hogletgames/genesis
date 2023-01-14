@@ -1,8 +1,22 @@
 include(FetchContent)
+include(ExternalProject)
 
+# CMake options
+# set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
 set(FETCHCONTENT_QUIET OFF)
 
+# Third-party libs options
+set(SDL_STATIC ON)
+set(SDL_TEST_ENABLED_BY_DEFAULT OFF)
+set(SPDLOG_FMT_EXTERNAL ON)
+
+# Vulkan SDK
+set(UPDATE_DEPS ON)
+set(ENABLE_CTEST OFF)
+set(SHADERC_SKIP_TESTS ON)
+
+# Variables
 set(DEPS_DIR ${FETCHCONTENT_BASE_DIR})
 
 # fmt
@@ -33,15 +47,12 @@ FetchContent_MakeAvailable(tinyobjloader)
 FetchContent_Declare(SDL2
     GIT_REPOSITORY https://github.com/hogletgames/SDL.git
     GIT_TAG release-2.26.2)
-set(SDL_SHARED OFF CACHE BOOL "Build a shared version of the library" FORCE)
-set(SDL_STATIC ON CACHE BOOL "Build a static version of the library" FORCE)
 FetchContent_MakeAvailable(SDL2)
 
 # spdlog
 FetchContent_Declare(spdlog
     GIT_REPOSITORY https://github.com/hogletgames/spdlog.git
     GIT_TAG v1.11.0)
-set(SPDLOG_FMT_EXTERNAL ON)
 FetchContent_MakeAvailable(spdlog)
 
 # imgui
@@ -91,21 +102,19 @@ if (NOT stb_POPULATED)
     target_compile_definitions(stb-image INTERFACE -DSTB_IMAGE_IMPLEMENTATION)
 endif ()
 
-# Vulkan SDK config variables
-set(UPDATE_DEPS ON)
-
 # Vulkan-Loader
 FetchContent_Declare(Vulkan-Loader
     GIT_REPOSITORY https://github.com/hogletgames/Vulkan-Loader.git
     GIT_TAG sdk-1.3.236.0)
+ge_change_build_type(Release)
 FetchContent_MakeAvailable(Vulkan-Loader)
+ge_restore_build_type()
 
 # glslang
 FetchContent_Declare(glslang
     GIT_REPOSITORY https://github.com/hogletgames/glslang.git
     GIT_TAG sdk-1.3.236.0
     PATCH_COMMAND ${GE_APPLY_PATCH} ${DEPS_DIR}/glslang-src ${GE_PATCHES_DIR}/glslang)
-set(ENABLE_CTEST OFF)
 FetchContent_MakeAvailable(glslang)
 
 # SPIRV-Headers
@@ -119,9 +128,7 @@ FetchContent_Declare(SPIRV-Tools
     GIT_REPOSITORY https://github.com/hogletgames/SPIRV-Tools.git
     GIT_TAG sdk-1.3.236.0)
 FetchContent_MakeAvailable(SPIRV-Tools)
-set(DISABLE_STRINGOP_TRUNCATION $<$<AND:${IS_GNU_COMPILER},${IS_800_VERSION}>:-Wno-error=stringop-truncation>)
-target_compile_options(SPIRV-Tools-static PRIVATE ${DISABLE_STRINGOP_TRUNCATION})
-target_compile_options(SPIRV-Tools-shared PRIVATE ${DISABLE_STRINGOP_TRUNCATION})
+target_compile_options(SPIRV-Tools-opt PRIVATE $<$<CONFIG:USAN>:-fno-sanitize=vptr>)
 
 # SPIRV-Cross
 FetchContent_Declare(SPIRV-Cross
@@ -133,13 +140,14 @@ FetchContent_MakeAvailable(SPIRV-Cross)
 FetchContent_Declare(Vulkan-ValidationLayers
     GIT_REPOSITORY https://github.com/hogletgames/Vulkan-ValidationLayers.git
     GIT_TAG sdk-1.3.236.0)
+ge_change_build_type(Release)
 FetchContent_MakeAvailable(Vulkan-ValidationLayers)
+ge_restore_build_type()
 
 # shaderc
 FetchContent_Declare(shaderc
     GIT_REPOSITORY https://github.com/hogletgames/shaderc.git
     GIT_TAG v2022.4)
-set(SHADERC_SKIP_TESTS ON)
 FetchContent_MakeAvailable(shaderc)
 target_compile_options(shaderc_util PRIVATE $<$<CONFIG:USAN>:-fno-sanitize=vptr>)
 
@@ -157,7 +165,6 @@ if (APPLE)
         GIT_TAG v1.2.1)
     if (NOT MoltenVK_POPULATED)
         FetchContent_Populate(MoltenVK)
-        include(ExternalProject)
         ExternalProject_Add(libMoltenVK
             SOURCE_DIR ${moltenvk_SOURCE_DIR}
             BUILD_IN_SOURCE ON

@@ -15,6 +15,7 @@ option(GE_BUILD_TESTS "Build tests" OFF)
 # CMake modules
 include(cmake/AddModule.cmake)
 include(cmake/ApplyPatch.cmake)
+include(cmake/BuildType.cmake)
 include(cmake/CompilerOptions.cmake)
 include(cmake/SanitizeHelpers.cmake)
 include(cmake/Macro.cmake)
