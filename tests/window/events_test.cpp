@@ -43,38 +43,38 @@ class KeyEventsTest: public testing::Test
 
 TEST_F(KeyEventsTest, KeyPressedEvent)
 {
-    static constexpr GE::KeyCode code{GE::KeyCode::LALT};
-    static constexpr GE::KeyModFlags mod{GE::KeyModFlags::CAPS_LOCK_BIT};
-    static constexpr uint32_t repeat_count{49};
+    static constexpr auto CODE{GE::KeyCode::LALT};
+    static constexpr auto MOD{GE::KeyModFlags::CAPS_LOCK_BIT};
+    static constexpr uint32_t REPEAT_COUNT{49};
 
-    GE::KeyPressedEvent key_pressed{code, mod, repeat_count};
+    GE::KeyPressedEvent event{CODE, MOD, REPEAT_COUNT};
 
-    EXPECT_EQ(key_pressed.getDescriptor(), GE::KeyPressedEvent::getStaticDescriptor());
-    EXPECT_EQ(key_pressed.getCode(), code);
-    EXPECT_EQ(key_pressed.getMod(), mod);
-    EXPECT_EQ(key_pressed.getRepeatCount(), repeat_count);
+    EXPECT_EQ(event.getDescriptor(), GE::KeyPressedEvent::getStaticDescriptor());
+    EXPECT_EQ(event.getCode(), CODE);
+    EXPECT_EQ(event.getMod(), MOD);
+    EXPECT_EQ(event.getRepeatCount(), REPEAT_COUNT);
 }
 
 TEST_F(KeyEventsTest, ReleasedEvent)
 {
-    static constexpr GE::KeyCode code{GE::KeyCode::S};
-    static constexpr GE::KeyModFlags mod{GE::KeyModFlags::SUPER_BIT};
+    static constexpr auto CODE{GE::KeyCode::S};
+    static constexpr auto MOD{GE::KeyModFlags::SUPER_BIT};
 
-    GE::KeyReleasedEvent key_released{code, mod};
+    GE::KeyReleasedEvent event{CODE, MOD};
 
-    EXPECT_EQ(key_released.getDescriptor(), GE::KeyReleasedEvent::getStaticDescriptor());
-    EXPECT_EQ(key_released.getCode(), code);
-    EXPECT_EQ(key_released.getMod(), mod);
+    EXPECT_EQ(event.getDescriptor(), GE::KeyReleasedEvent::getStaticDescriptor());
+    EXPECT_EQ(event.getCode(), CODE);
+    EXPECT_EQ(event.getMod(), MOD);
 }
 
 TEST_F(KeyEventsTest, KeyTypedEvent)
 {
-    const char* typed_text = "key typed event test";
+    static constexpr auto TYPED_TEXT{"key typed event test"};
 
-    GE::KeyTypedEvent key_typed{typed_text};
+    GE::KeyTypedEvent event{TYPED_TEXT};
 
-    EXPECT_EQ(key_typed.getDescriptor(), GE::KeyTypedEvent::getStaticDescriptor());
-    EXPECT_STREQ(key_typed.getText(), typed_text);
+    EXPECT_EQ(event.getDescriptor(), GE::KeyTypedEvent::getStaticDescriptor());
+    EXPECT_STREQ(event.getText(), TYPED_TEXT);
 }
 
 class MouseEventsTest: public testing::Test
@@ -82,90 +82,152 @@ class MouseEventsTest: public testing::Test
 
 TEST_F(MouseEventsTest, MouseMovedEvent)
 {
-    static constexpr GE::Vec2 position{78.0f, 46.0f};
+    static constexpr GE::Vec2 POSITION{78.0f, 46.0f};
+    static constexpr uint32_t WINDOW_ID{431};
 
-    GE::MouseMovedEvent mouse_moved{position};
+    GE::MouseMovedEvent event{POSITION, WINDOW_ID};
 
-    EXPECT_EQ(mouse_moved.getDescriptor(), GE::MouseMovedEvent::getStaticDescriptor());
-    EXPECT_EQ(mouse_moved.getPosition(), position);
+    EXPECT_EQ(event.getDescriptor(), GE::MouseMovedEvent::getStaticDescriptor());
+    EXPECT_EQ(event.getPosition(), POSITION);
 }
 
 TEST_F(MouseEventsTest, MouseScrolledEvent)
 {
-    static constexpr GE::Vec2 offset{53.0f, 90.0f};
+    static constexpr GE::Vec2 OFFSET{53.0f, 90.0f};
 
-    GE::MouseScrolledEvent mouse_scrolled{offset};
+    GE::MouseScrolledEvent event{OFFSET};
 
-    EXPECT_EQ(mouse_scrolled.getDescriptor(),
-              GE::MouseScrolledEvent::getStaticDescriptor());
-    EXPECT_EQ(mouse_scrolled.getOffset(), offset);
+    EXPECT_EQ(event.getDescriptor(), GE::MouseScrolledEvent::getStaticDescriptor());
+    EXPECT_EQ(event.getOffset(), OFFSET);
 }
 
 TEST_F(MouseEventsTest, MouseButtonPressedEvent)
 {
-    static constexpr GE::MouseButton pressed_button{GE::MouseButton::LEFT};
+    static constexpr auto PRESSED_BUTTON{GE::MouseButton::LEFT};
 
-    GE::MouseButtonPressedEvent mouse_pressed{pressed_button};
+    GE::MouseButtonPressedEvent event{PRESSED_BUTTON};
 
-    EXPECT_EQ(mouse_pressed.getDescriptor(),
-              GE::MouseButtonPressedEvent::getStaticDescriptor());
-    EXPECT_EQ(mouse_pressed.getMouseButton(), pressed_button);
+    EXPECT_EQ(event.getDescriptor(), GE::MouseButtonPressedEvent::getStaticDescriptor());
+    EXPECT_EQ(event.getMouseButton(), PRESSED_BUTTON);
 }
 
 TEST_F(MouseEventsTest, MouseButtonReleasedEvent)
 {
-    static constexpr GE::MouseButton released_button{GE::MouseButton::MIDDLE};
+    static constexpr auto released_button{GE::MouseButton::MIDDLE};
 
-    GE::MouseButtonReleasedEvent mouse_released{released_button};
+    GE::MouseButtonReleasedEvent event{released_button};
 
-    EXPECT_EQ(mouse_released.getDescriptor(),
-              GE::MouseButtonReleasedEvent::getStaticDescriptor());
-    EXPECT_EQ(mouse_released.getMouseButton(), released_button);
+    EXPECT_EQ(event.getDescriptor(), GE::MouseButtonReleasedEvent::getStaticDescriptor());
+    EXPECT_EQ(event.getMouseButton(), released_button);
 }
 
 class WindowEventsTest: public testing::Test
 {};
 
+TEST_F(WindowEventsTest, WindowMovedEvent)
+{
+    static constexpr uint32_t WINDOW_ID{42};
+    static constexpr GE::Vec2 POSITION{320.0, 240.0};
+
+    GE::WindowMovedEvent event{WINDOW_ID, POSITION};
+
+    EXPECT_EQ(event.getDescriptor(), GE::WindowMovedEvent::getStaticDescriptor());
+    EXPECT_EQ(event.id(), WINDOW_ID);
+    EXPECT_EQ(event.position(), POSITION);
+}
+
 TEST_F(WindowEventsTest, WindowResizedEvent)
 {
-    static constexpr GE::Vec2 size{320.0f, 240.0f};
+    static constexpr uint32_t WINDOW_ID{89};
+    static constexpr GE::Vec2 SIZE{320.0f, 240.0f};
 
-    GE::WindowResizedEvent win_resized{size};
+    GE::WindowResizedEvent event{WINDOW_ID, SIZE};
 
-    EXPECT_EQ(win_resized.getDescriptor(), GE::WindowResizedEvent::getStaticDescriptor());
-    EXPECT_EQ(win_resized.size(), size);
-}
-
-TEST_F(WindowEventsTest, WindowClosedEvent)
-{
-    GE::WindowClosedEvent win_closed{};
-
-    EXPECT_EQ(win_closed.getDescriptor(), GE::WindowClosedEvent::getStaticDescriptor());
-}
-
-TEST_F(WindowEventsTest, WindowMaximizedEvent)
-{
-    GE::WindowMaximizedEvent win_maximized{};
-
-    EXPECT_EQ(win_maximized.getDescriptor(),
-              GE::WindowMaximizedEvent::getStaticDescriptor());
+    EXPECT_EQ(event.getDescriptor(), GE::WindowResizedEvent::getStaticDescriptor());
+    EXPECT_EQ(event.id(), WINDOW_ID);
+    EXPECT_EQ(event.size(), SIZE);
 }
 
 TEST_F(WindowEventsTest, WindowMinimizedEvent)
 {
-    GE::WindowMinimizedEvent win_minimazed{};
+    static constexpr uint32_t WINDOW_ID{45};
 
-    EXPECT_EQ(win_minimazed.getDescriptor(),
-              GE::WindowMinimizedEvent::getStaticDescriptor());
+    GE::WindowMinimizedEvent event{WINDOW_ID};
+
+    EXPECT_EQ(event.id(), WINDOW_ID);
+    EXPECT_EQ(event.getDescriptor(), GE::WindowMinimizedEvent::getStaticDescriptor());
+}
+
+TEST_F(WindowEventsTest, WindowMaximizedEvent)
+{
+    static constexpr uint32_t WINDOW_ID{63};
+
+    GE::WindowMaximizedEvent event{WINDOW_ID};
+
+    EXPECT_EQ(event.getDescriptor(), GE::WindowMaximizedEvent::getStaticDescriptor());
+    EXPECT_EQ(event.id(), WINDOW_ID);
 }
 
 TEST_F(WindowEventsTest, WindowRestoredEvent)
 {
-    GE::WindowRestoredEvent win_restored{};
+    static constexpr uint32_t WINDOW_ID{72};
 
-    EXPECT_EQ(win_restored.getDescriptor(),
-              GE::WindowRestoredEvent::getStaticDescriptor());
+    GE::WindowRestoredEvent event{WINDOW_ID};
+
+    EXPECT_EQ(event.getDescriptor(), GE::WindowRestoredEvent::getStaticDescriptor());
+    EXPECT_EQ(event.id(), WINDOW_ID);
 }
+
+TEST_F(WindowEventsTest, WindowEnteredEvent)
+{
+    static constexpr uint32_t WINDOW_ID{12};
+
+    GE::WindowRestoredEvent event{WINDOW_ID};
+
+    EXPECT_EQ(event.getDescriptor(), GE::WindowRestoredEvent::getStaticDescriptor());
+    EXPECT_EQ(event.id(), WINDOW_ID);
+}
+
+TEST_F(WindowEventsTest, WindowLeftEvent)
+{
+    static constexpr uint32_t WINDOW_ID{94};
+
+    GE::WindowLeftEvent envent{WINDOW_ID};
+
+    EXPECT_EQ(envent.getDescriptor(), GE::WindowLeftEvent::getStaticDescriptor());
+    EXPECT_EQ(envent.id(), WINDOW_ID);
+}
+
+TEST_F(WindowEventsTest, WindowFocusGainedEvent)
+{
+    static constexpr uint32_t WINDOW_ID{82};
+
+    GE::WindowFocusGainedEvent event{WINDOW_ID};
+
+    EXPECT_EQ(event.getDescriptor(), GE::WindowFocusGainedEvent::getStaticDescriptor());
+    EXPECT_EQ(event.id(), WINDOW_ID);
+}
+
+TEST_F(WindowEventsTest, WindowFocusLostEvent)
+{
+    static constexpr uint32_t WINDOW_ID{51};
+
+    GE::WindowFocusLostEvent event{WINDOW_ID};
+
+    EXPECT_EQ(event.getDescriptor(), GE::WindowFocusLostEvent::getStaticDescriptor());
+    EXPECT_EQ(event.id(), WINDOW_ID);
+}
+
+TEST_F(WindowEventsTest, WindowClosedEvent)
+{
+    static constexpr uint32_t WINDOW_ID{39};
+
+    GE::WindowClosedEvent event{WINDOW_ID};
+
+    EXPECT_EQ(event.getDescriptor(), GE::WindowClosedEvent::getStaticDescriptor());
+    EXPECT_EQ(event.id(), WINDOW_ID);
+}
+
 template<typename EventType>
 class EventDispatcherTest: public ::testing::Test
 {};
@@ -177,8 +239,10 @@ using EventTypeList = ::testing::Types<
     GE::MouseMovedEvent, GE::MouseScrolledEvent, GE::MouseButtonPressedEvent,
     GE::MouseButtonReleasedEvent,
     // Window events
-    GE::WindowResizedEvent, GE::WindowClosedEvent, GE::WindowMaximizedEvent,
-    GE::WindowMinimizedEvent, GE::WindowRestoredEvent>;
+    GE::WindowMovedEvent, GE::WindowResizedEvent, GE::WindowMinimizedEvent,
+    GE::WindowMaximizedEvent, GE::WindowRestoredEvent, GE::WindowEnteredEvent,
+    GE::WindowLeftEvent, GE::WindowFocusGainedEvent, GE::WindowFocusLostEvent,
+    GE::WindowClosedEvent>;
 
 TYPED_TEST_SUITE(EventDispatcherTest, EventTypeList);
 
