@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GUI_RENDERER_H_
-#define GENESIS_GUI_RENDERER_H_
+#pragma once
 
 #include <genesis/core/memory.h>
 #include <genesis/gui/context.h>
@@ -51,5 +50,3 @@ private:
 };
 
 } // namespace GE::GUI
-
-#endif // GENESIS_GUI_RENDERER_H_

@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_INTERFACE_H_
-#define GENESIS_CORE_INTERFACE_H_
+#pragma once
 
 #include <genesis/core/export.h>
 
@@ -55,5 +54,3 @@ public:
 };
 
 } // namespace GE
-
-#endif // GENESIS_CORE_INTERFACE_H_

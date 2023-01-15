@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_ENUM_H_
-#define GENESIS_CORE_ENUM_H_
+#pragma once
 
 #include <fmt/format.h>
 #include <magic_enum.hpp>
@@ -80,5 +79,3 @@ struct fmt::formatter<EnumType, GE::EnableIfIsEnum<EnumType, char>>
         return format_to(ctx.out(), "{}", GE::toString(value));
     }
 };
-
-#endif // GENESIS_CORE_ENUM_H_

@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_WINDOW_SDL_WINDOW_H_
-#define GENESIS_WINDOW_SDL_WINDOW_H_
+#pragma once
 
 #include <genesis/graphics/graphics.h>
 #include <genesis/window/window.h>
@@ -81,5 +79,3 @@ private:
 };
 
 } // namespace GE::SDL
-
-#endif // GENESIS_WINDOW_SDL_WINDOW_H_

@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef EXAMPLES_SANDBOX_GUI_LAYER_H_
-#define EXAMPLES_SANDBOX_GUI_LAYER_H_
+#pragma once
 
 #include <genesis/gui/base_layer.h>
 
@@ -48,5 +46,3 @@ class GE_API GUILayer: public GE::GUI::BaseLayer
 };
 
 } // namespace GE::Examples
-
-#endif // EXAMPLES_SANDBOX_GUI_LAYER_H_

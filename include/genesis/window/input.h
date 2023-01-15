@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_INPUT_H_
-#define GENESIS_WINDOW_INPUT_H_
+#pragma once
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
@@ -115,5 +114,3 @@ private:
 };
 
 } // namespace GE
-
-#endif // GENESIS_WINDOW_INPUT_H_

@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_H_
-#define GENESIS_CORE_H_
+#pragma once
 
 #include <genesis/core/asserts.h>
 #include <genesis/core/defer.h>
@@ -44,5 +43,3 @@
 #include <genesis/core/timestamp.h>
 #include <genesis/core/utils.h>
 #include <genesis/core/version.h>
-
-#endif // GENESIS_CORE_H_

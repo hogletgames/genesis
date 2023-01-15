@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_KEY_CODES_H_
-#define GENESIS_WINDOW_KEY_CODES_H_
+#pragma once
 
 #include <genesis/core/enum.h>
 #include <genesis/core/utils.h>
@@ -204,5 +203,3 @@ enum KeyModFlags : uint8_t
 } // namespace GE
 
 GE_EXTEND_ENUM_RANGE(::GE::KeyCode, ::GE::KeyCode::UNKNOWN, ::GE::KeyCode::MENU)
-
-#endif // GENESIS_WINDOW_KEY_CODES_H_

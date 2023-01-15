@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_EVENTS_KEY_EVENTS_H_
-#define GENESIS_WINDOW_EVENTS_KEY_EVENTS_H_
+#pragma once
 
 #include <genesis/window/events/event.h>
 #include <genesis/window/key_codes.h>
@@ -94,5 +93,3 @@ private:
 };
 
 } // namespace GE
-
-#endif // GENESIS_WINDOW_EVENTS_KEY_EVENTS_H_

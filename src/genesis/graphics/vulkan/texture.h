@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_TEXTURE_H_
-#define GENESIS_GRAPHICS_VULKAN_TEXTURE_H_
+#pragma once
 
 #include <genesis/graphics/texture.h>
 
@@ -95,5 +93,3 @@ VkImageViewType toVkImageViewType(TextureType type);
 VkImageAspectFlags toVkImageAspect(TextureFormat format);
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_TEXTURE_H_

@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_EXPORT_H_
-#define GENESIS_CORE_EXPORT_H_
+#pragma once
 
 #ifndef GE_STATIC
     #if GE_PLATFORM_WINDOWS
@@ -54,5 +53,3 @@
 #else
     #define GE_API GE_API_IMPORT
 #endif // GE_EXPORTS
-
-#endif // GENESIS_CORE_EXPORT_H_

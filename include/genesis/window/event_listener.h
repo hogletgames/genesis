@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_EVENT_LISTENER_H_
-#define GENESIS_WINDOW_EVENT_LISTENER_H_
+#pragma once
 
 #include <genesis/window/events/event.h>
 
@@ -44,5 +43,3 @@ public:
 };
 
 } // namespace GE
-
-#endif // GENESIS_WINDOW_EVENT_LISTENER_H_

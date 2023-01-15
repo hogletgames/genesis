@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GENESIS_H_
-#define GENESIS_GENESIS_H_
+#pragma once
 
 #include <genesis/app.h>
 #include <genesis/core.h>
@@ -39,5 +38,3 @@
 #include <genesis/gui.h>
 #include <genesis/math.h>
 #include <genesis/window.h>
-
-#endif // GENESIS_GENESIS_H_

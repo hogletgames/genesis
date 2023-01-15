@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_SHADER_H_
-#define GENESIS_GRAPHICS_VULKAN_SHADER_H_
+#pragma once
 
 #include <genesis/graphics/shader.h>
 
@@ -72,5 +70,3 @@ inline VkShaderModule vulkanShaderHandle(void *shader_handle)
 }
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_SHADER_H_

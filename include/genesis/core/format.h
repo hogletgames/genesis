@@ -30,11 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_FORMAT_H_
-#define GENESIS_CORE_FORMAT_H_
+#pragma once
 
 #include <fmt/compile.h>
 
 #define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
-
-#endif // GENESIS_CORE_FORMAT_H_

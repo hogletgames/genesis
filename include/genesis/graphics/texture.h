@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_TEXTURE_H_
-#define GENESIS_GRAPHICS_TEXTURE_H_
+#pragma once
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
@@ -145,5 +144,3 @@ inline constexpr uint32_t toTextureBPP(TextureFormat format)
 }
 
 } // namespace GE
-
-#endif // GENESIS_GRAPHICS_TEXTURE_H_

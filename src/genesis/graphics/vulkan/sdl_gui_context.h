@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_SDL_GUI_CONTEXT_H_
-#define GENESIS_GRAPHICS_VULKAN_SDL_GUI_CONTEXT_H_
+#pragma once
 
 #include <genesis/core/memory.h>
 #include <genesis/gui/context.h>
@@ -77,5 +75,3 @@ VkDescriptorSet createGuiTextureID(const Vulkan::Texture& texture);
 void destroyGuiTextureID(VkDescriptorSet texture_id);
 
 } // namespace GE::Vulkan::SDL
-
-#endif // GENESIS_GRAPHICS_VULKAN_SDL_GUI_CONTEXT_H_

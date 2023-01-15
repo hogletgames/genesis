@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_UTILS_H_
-#define GENESIS_GRAPHICS_VULKAN_UTILS_H_
+#pragma once
 
 #include <vulkan/vulkan.h>
 
@@ -97,5 +95,3 @@ std::vector<T> vulkanGet(Func f, Args&&... args)
 VkSampleCountFlagBits toVkSampleCountFlag(uint8_t sample_count);
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_UTILS_H_

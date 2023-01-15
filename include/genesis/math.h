@@ -30,9 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_MATH_H_
-#define GENESIS_MATH_H_
+#pragma once
 
 #include <genesis/math/types.h>
-
-#endif // GENESIS_MATH_H_

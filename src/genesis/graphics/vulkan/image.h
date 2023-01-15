@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_IMAGE_H_
-#define GENESIS_GRAPHICS_VULKAN_IMAGE_H_
+#pragma once
 
 #include "pipeline_barrier.h"
 
@@ -107,5 +105,3 @@ private:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_IMAGE_H_

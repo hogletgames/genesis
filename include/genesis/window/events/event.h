@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_EVENTS_EVENT_H_
-#define GENESIS_WINDOW_EVENTS_EVENT_H_
+#pragma once
 
 #include <genesis/core/interface.h>
 
@@ -73,5 +72,3 @@ OStream& operator<<(OStream& os, const Event& event)
 }
 
 } // namespace GE
-
-#endif // GENESIS_WINDOW_EVENTS_EVENT_H_

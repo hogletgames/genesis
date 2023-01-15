@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_DEFER_H_
-#define GENESIS_CORE_DEFER_H_
+#pragma once
 
 #include <genesis/core/export.h>
 #include <genesis/core/utils.h>
@@ -64,5 +63,3 @@ private:
 };
 
 } // namespace GE
-
-#endif // GENESIS_CORE_DEFER_H_

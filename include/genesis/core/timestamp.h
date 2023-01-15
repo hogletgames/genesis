@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_TIMESTAMP_H_
-#define GENESIS_CORE_TIMESTAMP_H_
+#pragma once
 
 #include <genesis/core/export.h>
 
@@ -114,5 +113,3 @@ private:
 };
 
 } // namespace GE
-
-#endif // GENESIS_CORE_TIMESTAMP_H_

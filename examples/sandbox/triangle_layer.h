@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef EXAMPLES_SANDBOX_TRIANGLE_LAYER_H_
-#define EXAMPLES_SANDBOX_TRIANGLE_LAYER_H_
+#pragma once
 
 #include <genesis/app/layer.h>
 #include <genesis/core/memory.h>
@@ -60,5 +58,3 @@ private:
 };
 
 } // namespace GE::Examples
-
-#endif // EXAMPLES_SANDBOX_TRIANGLE_LAYER_H_

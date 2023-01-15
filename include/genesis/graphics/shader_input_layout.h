@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_SHADER_INPUT_LAYOUT_H_
-#define GENESIS_GRAPHICS_SHADER_INPUT_LAYOUT_H_
+#pragma once
 
 #include <genesis/core/interface.h>
 
@@ -87,5 +86,3 @@ private:
 };
 
 } // namespace GE
-
-#endif // GENESIS_GRAPHICS_SHADER_INPUT_LAYOUT_H_

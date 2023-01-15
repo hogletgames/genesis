@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_
-#define GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_
+#pragma once
 
 #include <genesis/core/memory.h>
 #include <genesis/graphics/graphics_factory.h>
@@ -64,5 +62,3 @@ private:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_
