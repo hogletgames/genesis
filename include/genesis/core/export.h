@@ -33,23 +33,23 @@
 #pragma once
 
 #ifndef GE_STATIC
-    #if GE_PLATFORM_WINDOWS
-        #define GE_API_EXPORT __declspec(dllexport)
-        #define GE_API_IMPORT __declspec(dllimport)
-    #else
-        // https://www.gnu.org/software/gnulib/manual/html_node/Exported-Symbols-of-Shared-Libraries.html
-        #if __GNUC__ >= 4
-            #define GE_API_EXPORT __attribute__((__visibility__("default")))
-            #define GE_API_IMPORT __attribute__((__visibility__("default")))
-        #endif // __GNUC__ >= 4
-    #endif     // GE_PLATFORM_WINDOWS
+#if GE_PLATFORM_WINDOWS
+#define GE_API_EXPORT __declspec(dllexport)
+#define GE_API_IMPORT __declspec(dllimport)
 #else
-    #define GE_API_EXPORT
-    #define GE_API_IMPORT
+// https://www.gnu.org/software/gnulib/manual/html_node/Exported-Symbols-of-Shared-Libraries.html
+#if __GNUC__ >= 4
+#define GE_API_EXPORT __attribute__((__visibility__("default")))
+#define GE_API_IMPORT __attribute__((__visibility__("default")))
+#endif // __GNUC__ >= 4
+#endif // GE_PLATFORM_WINDOWS
+#else
+#define GE_API_EXPORT
+#define GE_API_IMPORT
 #endif // GE_STATIC
 
 #ifdef GE_EXPORTS
-    #define GE_API GE_API_EXPORT
+#define GE_API GE_API_EXPORT
 #else
-    #define GE_API GE_API_IMPORT
+#define GE_API GE_API_IMPORT
 #endif // GE_EXPORTS

@@ -37,12 +37,12 @@
 
 // Breakpoint
 #if defined(GE_PLATFORM_UNIX)
-    #include <csignal>
-    #define GE_DBGBREAK() ::raise(SIGTRAP)
+#include <csignal>
+#define GE_DBGBREAK() ::raise(SIGTRAP)
 #elif defined(GE_PLATFORM_WINDOWS)
-    #define GE_DBGBREAK() __debugbreak()
+#define GE_DBGBREAK() __debugbreak()
 #else
-    #error "Platform is not defined!"
+#error "Platform is not defined!"
 #endif
 
 // Set bit to position
