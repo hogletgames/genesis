@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_FILESYSTEM_H_
-#define GENESIS_CORE_FILESYSTEM_H_
+#pragma once
 
 #include <fstream>
 #include <vector>
@@ -50,5 +49,3 @@ std::vector<T> readFile(const std::string& filepath)
 }
 
 } // namespace GE
-
-#endif // GENESIS_CORE_FILESYSTEM_H_

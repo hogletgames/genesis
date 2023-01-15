@@ -128,8 +128,8 @@ void Device::waitIdle()
     vkDeviceWaitIdle(m_device);
 }
 
-VkFormat Device::getSupportedFormat(const std::vector<VkFormat> &candidates,
-                                    VkImageTiling tiling, VkFormatFeatureFlags features)
+VkFormat Device::getSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling,
+                                    VkFormatFeatureFlags features)
 {
     for (auto format : candidates) {
         VkFormatProperties props{};
@@ -204,19 +204,14 @@ void Device::createLogicalDevice()
     create_info.ppEnabledExtensionNames = m_extensions.data();
     create_info.enabledExtensionCount = m_extensions.size();
 
-    if (vkCreateDevice(m_physical_device, &create_info, nullptr, &m_device) !=
-        VK_SUCCESS) {
+    if (vkCreateDevice(m_physical_device, &create_info, nullptr, &m_device) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Logical Device"};
     }
 
-    vkGetDeviceQueue(m_device, m_queue_indices.graphics_family.value(), 0,
-                     &m_graphics_queue);
-    vkGetDeviceQueue(m_device, m_queue_indices.present_family.value(), 0,
-                     &m_present_queue);
-    vkGetDeviceQueue(m_device, m_queue_indices.transfer_family.value(), 0,
-                     &m_transfer_queue);
-    vkGetDeviceQueue(m_device, m_queue_indices.compute_queue.value(), 0,
-                     &m_compute_queue);
+    vkGetDeviceQueue(m_device, m_queue_indices.graphics_family.value(), 0, &m_graphics_queue);
+    vkGetDeviceQueue(m_device, m_queue_indices.present_family.value(), 0, &m_present_queue);
+    vkGetDeviceQueue(m_device, m_queue_indices.transfer_family.value(), 0, &m_transfer_queue);
+    vkGetDeviceQueue(m_device, m_queue_indices.compute_queue.value(), 0, &m_compute_queue);
 }
 
 void Device::createCommandPool()
@@ -228,8 +223,7 @@ void Device::createCommandPool()
     create_info.queueFamilyIndex = queue_family_indices.graphics_family.value();
     create_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    if (vkCreateCommandPool(m_device, &create_info, nullptr, &m_command_pool) !=
-        VK_SUCCESS) {
+    if (vkCreateCommandPool(m_device, &create_info, nullptr, &m_command_pool) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Command Pool"};
     }
 }
@@ -258,8 +252,7 @@ void Device::destroyVkHandles()
 
 bool Device::isPhysicalDeviceSuitable(VkPhysicalDevice physical_device)
 {
-    if (m_queue_indices = findQueueFamilies(physical_device);
-        !m_queue_indices.isComplete()) {
+    if (m_queue_indices = findQueueFamilies(physical_device); !m_queue_indices.isComplete()) {
         return false;
     }
 
@@ -341,16 +334,14 @@ bool Device::checkPhysicalDeviceExtSupport(VkPhysicalDevice physical_device)
     return required_extensions.empty();
 }
 
-swap_chain_support_details_t
-Device::querySwapChainSupport(VkPhysicalDevice physical_device) const
+swap_chain_support_details_t Device::querySwapChainSupport(VkPhysicalDevice physical_device) const
 {
     swap_chain_support_details_t details{};
-    details.formats = vulkanGet<VkSurfaceFormatKHR>(
-        ::vkGetPhysicalDeviceSurfaceFormatsKHR, physical_device, m_surface);
-    details.present_mode = vulkanGet<VkPresentModeKHR>(
-        ::vkGetPhysicalDeviceSurfacePresentModesKHR, physical_device, m_surface);
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical_device, m_surface,
-                                              &details.capabilities);
+    details.formats = vulkanGet<VkSurfaceFormatKHR>(::vkGetPhysicalDeviceSurfaceFormatsKHR,
+                                                    physical_device, m_surface);
+    details.present_mode = vulkanGet<VkPresentModeKHR>(::vkGetPhysicalDeviceSurfacePresentModesKHR,
+                                                       physical_device, m_surface);
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical_device, m_surface, &details.capabilities);
 
     return details;
 }

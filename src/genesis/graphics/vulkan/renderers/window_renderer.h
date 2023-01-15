@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_RENDERERS_WINDOW_RENDERER_H_
-#define GENESIS_GRAPHICS_VULKAN_RENDERERS_WINDOW_RENDERER_H_
+#pragma once
 
 #include "renderer_base.h"
 
@@ -73,10 +71,7 @@ public:
 
     SwapChain* swapChain() const { return m_swap_chain.get(); }
 
-    VkRenderPass renderPass(ClearMode clear_mode) const
-    {
-        return m_render_passes[clear_mode];
-    }
+    VkRenderPass renderPass(ClearMode clear_mode) const { return m_render_passes[clear_mode]; }
 
     uint8_t MSAASamples() const { return m_msaa_samples; }
 
@@ -99,5 +94,3 @@ private:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_RENDERERS_WINDOW_RENDERER_H_

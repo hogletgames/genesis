@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GUI_EVENT_HANDLER_H_
-#define GENESIS_GUI_EVENT_HANDLER_H_
+#pragma once
 
 #include <genesis/core/interface.h>
 #include <genesis/window/events/key_events.h>
@@ -62,5 +61,3 @@ public:
 };
 
 } // namespace GE::GUI
-
-#endif // GENESIS_GUI_EVENT_HANDLER_H_

@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_SHADER_PRECOMPILER_H_
-#define GENESIS_GRAPHICS_SHADER_PRECOMPILER_H_
+#pragma once
 
 #include <genesis/graphics/shader.h>
 
@@ -42,14 +41,11 @@ namespace GE {
 class GE_API ShaderPrecompiler
 {
 public:
-    static ShaderCache compileFromFile(Shader::Type shader_type,
-                                       const std::string &filepath);
-    static ShaderCache compileFromSource(Shader::Type shader_type,
-                                         const std::string &source_code);
+    static ShaderCache compileFromFile(Shader::Type shader_type, const std::string &filepath);
+    static ShaderCache compileFromSource(Shader::Type shader_type, const std::string &source_code);
 
     static ShaderCache loadShaderCache(const std::string &filepath);
-    static bool saveShaderCache(const ShaderCache &shader_cache,
-                                const std::string &filepath);
+    static bool saveShaderCache(const ShaderCache &shader_cache, const std::string &filepath);
 
 private:
     static ShaderCache compileShader(Shader::Type type, const std::string &source_code,
@@ -57,5 +53,3 @@ private:
 };
 
 } // namespace GE
-
-#endif // GENESIS_GRAPHICS_SHADER_PRECOMPILER_H_

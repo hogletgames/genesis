@@ -84,8 +84,7 @@ void TriangleLayer::onAttached()
     GE_ASSERT(vert->compileFromSource(VERTEX_SHADER), "Failed to compile vertex shader");
 
     Shared<Shader> frag = Shader::create(Shader::Type::FRAGMENT);
-    GE_ASSERT(frag->compileFromSource(FRAGMENT_SHADER),
-              "Failed to compile fragment shader");
+    GE_ASSERT(frag->compileFromSource(FRAGMENT_SHADER), "Failed to compile fragment shader");
 
     pipeline_config_t pipeline_config{};
     pipeline_config.vertex_shader = vert;

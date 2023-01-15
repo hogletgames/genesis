@@ -131,8 +131,7 @@ void prepareClearNoneAttachments(AttachmentDescriptions* attachments)
     }
 }
 
-void prepareClearColorAttachments(AttachmentDescriptions* attachments,
-                                  uint32_t sample_count)
+void prepareClearColorAttachments(AttachmentDescriptions* attachments, uint32_t sample_count)
 {
     for (auto& attachment : *attachments) {
         if (isOneSampleAttachment(sample_count, attachment.samples)) {
@@ -143,8 +142,7 @@ void prepareClearColorAttachments(AttachmentDescriptions* attachments,
     }
 }
 
-void prepareClearDepthAttachments(AttachmentDescriptions* attachments,
-                                  uint32_t sample_count)
+void prepareClearDepthAttachments(AttachmentDescriptions* attachments, uint32_t sample_count)
 {
     for (auto& attachment : *attachments) {
         if (isOneSampleAttachment(sample_count, attachment.samples)) {
@@ -155,8 +153,7 @@ void prepareClearDepthAttachments(AttachmentDescriptions* attachments,
     }
 }
 
-void prepareClearAllAttachments(AttachmentDescriptions* attachments,
-                                uint32_t sample_count)
+void prepareClearAllAttachments(AttachmentDescriptions* attachments, uint32_t sample_count)
 {
     for (auto& attachment : *attachments) {
         if (isOneSampleAttachment(sample_count, attachment.samples)) {
@@ -170,8 +167,7 @@ void prepareClearAllAttachments(AttachmentDescriptions* attachments,
 
 namespace GE::Vulkan {
 
-FramebufferRenderer::FramebufferRenderer(Shared<Device> device,
-                                         Vulkan::Framebuffer* framebuffer)
+FramebufferRenderer::FramebufferRenderer(Shared<Device> device, Vulkan::Framebuffer* framebuffer)
     : RendererBase{std::move(device)}
     , m_framebuffer{framebuffer}
 {
@@ -217,8 +213,7 @@ void FramebufferRenderer::swapBuffers()
                     std::numeric_limits<uint64_t>::max());
 }
 
-Scoped<GE::Pipeline>
-FramebufferRenderer::createPipeline(const GE::pipeline_config_t& config)
+Scoped<GE::Pipeline> FramebufferRenderer::createPipeline(const GE::pipeline_config_t& config)
 {
     auto vulkan_config = Vulkan::Pipeline::createDefaultConfig(config);
     vulkan_config.pipeline_cache = m_pipeline_cache;
@@ -313,8 +308,7 @@ void FramebufferRenderer::depthImagePipelineBarrier()
     auto barrier = MemoryBarrier::createImageMemoryBarrier(barrier_config);
     SingleCommand cmd{m_device};
 
-    PipelineBarrier::submit(cmd.buffer(), {barrier},
-                            VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+    PipelineBarrier::submit(cmd.buffer(), {barrier}, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
                             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 }
 

@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_H_
-#define GENESIS_WINDOW_H_
+#pragma once
 
 #include <genesis/window/event_listener.h>
 #include <genesis/window/events/event.h>
@@ -43,5 +42,3 @@
 #include <genesis/window/key_codes.h>
 #include <genesis/window/mouse_button_codes.h>
 #include <genesis/window/window.h>
-
-#endif // GENESIS_WINDOW_H_

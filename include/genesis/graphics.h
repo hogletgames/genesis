@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_H_
-#define GENESIS_GRAPHICS_H_
+#pragma once
 
 #include <genesis/graphics/framebuffer.h>
 #include <genesis/graphics/gpu_command_queue.h>
@@ -47,5 +46,3 @@
 #include <genesis/graphics/shader_precompiler.h>
 #include <genesis/graphics/texture.h>
 #include <genesis/graphics/vertex_buffer.h>
-
-#endif // GENESIS_GRAPHICS_H_

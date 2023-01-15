@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_EXCEPTION_H_
-#define GENESIS_CORE_EXCEPTION_H_
+#pragma once
 
 #include <stdexcept>
 
@@ -44,5 +43,3 @@ public:
 };
 
 } // namespace GE
-
-#endif // GENESIS_CORE_EXCEPTION_H_

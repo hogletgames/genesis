@@ -54,8 +54,7 @@ VkImageAspectFlags toVkAspect(VkFormat format)
 std::pair<VkAccessFlags, VkAccessFlags> undefinedToVkAccess(VkImageLayout new_layout)
 {
     switch (new_layout) {
-        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-            return {0, VK_ACCESS_TRANSFER_WRITE_BIT};
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: return {0, VK_ACCESS_TRANSFER_WRITE_BIT};
         case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL:
             return {0, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
                            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT};
@@ -71,10 +70,8 @@ std::pair<VkAccessFlags, VkAccessFlags> undefinedToVkAccess(VkImageLayout new_la
 std::pair<VkAccessFlags, VkAccessFlags> generalToVkAccess(VkImageLayout new_layout)
 {
     switch (new_layout) {
-        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-            return {0, VK_ACCESS_TRANSFER_WRITE_BIT};
-        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-            return {0, VK_ACCESS_SHADER_READ_BIT};
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: return {0, VK_ACCESS_TRANSFER_WRITE_BIT};
+        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: return {0, VK_ACCESS_SHADER_READ_BIT};
         default: break;
     }
 
@@ -124,8 +121,7 @@ std::pair<VkAccessFlags, VkAccessFlags> depthStencilToVkAccess(VkImageLayout new
 std::pair<VkAccessFlags, VkAccessFlags> shaderReadOnlyToVkAccess(VkImageLayout new_layout)
 {
     switch (new_layout) {
-        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-            return {0, VK_ACCESS_TRANSFER_READ_BIT};
+        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: return {0, VK_ACCESS_TRANSFER_READ_BIT};
         default: break;
     }
 
@@ -139,14 +135,11 @@ std::pair<VkAccessFlags, VkAccessFlags> toVkAccess(VkImageLayout old_layout,
     switch (old_layout) {
         case VK_IMAGE_LAYOUT_UNDEFINED: return undefinedToVkAccess(new_layout);
         case VK_IMAGE_LAYOUT_GENERAL: return generalToVkAccess(new_layout);
-        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-            return transferSrcToVkAccess(new_layout);
-        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-            return transferDstToVkAccess(new_layout);
+        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: return transferSrcToVkAccess(new_layout);
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: return transferDstToVkAccess(new_layout);
         case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
             return depthStencilToVkAccess(new_layout);
-        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-            return shaderReadOnlyToVkAccess(new_layout);
+        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: return shaderReadOnlyToVkAccess(new_layout);
         default: break;
     }
 
@@ -157,8 +150,7 @@ std::pair<VkAccessFlags, VkAccessFlags> toVkAccess(VkImageLayout old_layout,
 } // namespace
 namespace GE::Vulkan {
 
-VkImageMemoryBarrier
-MemoryBarrier::createImageMemoryBarrier(const memory_barrier_config_t &config)
+VkImageMemoryBarrier MemoryBarrier::createImageMemoryBarrier(const memory_barrier_config_t &config)
 {
     auto [src_access, dst_access] = toVkAccess(config.old_layout, config.new_layout);
 
@@ -180,13 +172,11 @@ MemoryBarrier::createImageMemoryBarrier(const memory_barrier_config_t &config)
     return barrier;
 }
 
-void PipelineBarrier::submit(VkCommandBuffer cmd,
-                             const std::vector<VkImageMemoryBarrier> &barriers,
-                             VkPipelineStageFlagBits src_stage,
-                             VkPipelineStageFlagBits dst_stage)
+void PipelineBarrier::submit(VkCommandBuffer cmd, const std::vector<VkImageMemoryBarrier> &barriers,
+                             VkPipelineStageFlagBits src_stage, VkPipelineStageFlagBits dst_stage)
 {
-    vkCmdPipelineBarrier(cmd, src_stage, dst_stage, 0, 0, nullptr, 0, nullptr,
-                         barriers.size(), barriers.data());
+    vkCmdPipelineBarrier(cmd, src_stage, dst_stage, 0, 0, nullptr, 0, nullptr, barriers.size(),
+                         barriers.data());
 }
 
 } // namespace GE::Vulkan

@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_APP_LAYER_H_
-#define GENESIS_APP_LAYER_H_
+#pragma once
 
 #include <genesis/core/interface.h>
 #include <genesis/core/timestamp.h>
@@ -52,5 +51,3 @@ public:
 };
 
 } // namespace GE
-
-#endif // GENESIS_APP_LAYER_H_

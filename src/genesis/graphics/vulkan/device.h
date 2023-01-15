@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_DEVICE_H_
-#define GENESIS_GRAPHICS_VULKAN_DEVICE_H_
+#pragma once
 
 #include <genesis/core/export.h>
 #include <genesis/core/memory.h>
@@ -90,8 +88,8 @@ public:
         return querySwapChainSupport(m_physical_device);
     }
 
-    VkFormat getSupportedFormat(const std::vector<VkFormat>& candidates,
-                                VkImageTiling tiling, VkFormatFeatureFlags features);
+    VkFormat getSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling,
+                                VkFormatFeatureFlags features);
     uint32_t findMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
 
 private:
@@ -105,8 +103,7 @@ private:
     bool isPhysicalDeviceSuitable(VkPhysicalDevice physical_device);
     queue_family_indices_t findQueueFamilies(VkPhysicalDevice physical_device);
     bool checkPhysicalDeviceExtSupport(VkPhysicalDevice physical_device);
-    swap_chain_support_details_t
-    querySwapChainSupport(VkPhysicalDevice physical_device) const;
+    swap_chain_support_details_t querySwapChainSupport(VkPhysicalDevice physical_device) const;
 
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
     VkPhysicalDevice m_physical_device{VK_NULL_HANDLE};
@@ -125,5 +122,3 @@ private:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_DEVICE_H_

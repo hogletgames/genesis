@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_SINGLE_COMMAND_H_
-#define GENESIS_GRAPHICS_VULKAN_SINGLE_COMMAND_H_
+#pragma once
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
@@ -54,8 +52,7 @@ public:
         QUEUE_COMPUTE
     };
 
-    explicit SingleCommand(Shared<Device> device,
-                           QueueFamily queue_family = QUEUE_GRAPHICS);
+    explicit SingleCommand(Shared<Device> device, QueueFamily queue_family = QUEUE_GRAPHICS);
     ~SingleCommand();
 
     VkCommandBuffer buffer() { return m_cmd_buffer; }
@@ -71,5 +68,3 @@ private:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_SINGLE_COMMAND_H_

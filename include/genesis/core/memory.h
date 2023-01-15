@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_MEMORY_H_
-#define GENESIS_CORE_MEMORY_H_
+#pragma once
 
 #include <genesis/core/exception.h>
 #include <genesis/core/log.h>
@@ -87,5 +86,3 @@ constexpr Shared<T> staticPtrCast(const Shared<U>& ptr)
 }
 
 } // namespace GE
-
-#endif // GENESIS_CORE_MEMORY_H_

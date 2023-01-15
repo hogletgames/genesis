@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_EVENTS_EVENT_DISPATCHER_H_
-#define GENESIS_WINDOW_EVENTS_EVENT_DISPATCHER_H_
+#pragma once
 
 #include <genesis/window/events/event.h>
 
@@ -52,8 +51,7 @@ public:
     template<typename EventType>
     bool dispatch(Callback<EventType> callback)
     {
-        if (m_event->getDescriptor() == EventType::getStaticDescriptor() &&
-            !m_event->handled()) {
+        if (m_event->getDescriptor() == EventType::getStaticDescriptor() && !m_event->handled()) {
             auto* callback_event = static_cast<EventType*>(m_event);
             m_event->setHandled(callback(*callback_event));
             return true;
@@ -67,5 +65,3 @@ private:
 };
 
 } // namespace GE
-
-#endif // GENESIS_WINDOW_EVENTS_EVENT_DISPATCHER_H_

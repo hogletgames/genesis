@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_LOG_H_
-#define GENESIS_CORE_LOG_H_
+#pragma once
 
 #include <genesis/core/enum.h>
 #include <genesis/core/export.h>
@@ -159,5 +158,3 @@ private:
 Logger::Level toLoggerLevel(const std::string& level_str);
 
 } // namespace GE
-
-#endif // GENESIS_CORE_LOG_H_

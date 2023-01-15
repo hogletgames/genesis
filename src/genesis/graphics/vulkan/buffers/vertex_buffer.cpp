@@ -45,8 +45,7 @@ VertexBuffer::VertexBuffer(Shared<Device> device, const void *vertices, uint32_t
     : BufferBase{std::move(device)}
     , m_size(size)
 {
-    VkBufferUsageFlags usage =
-        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+    VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
     VkMemoryPropertyFlagBits properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     createBuffer(size, usage, properties);
 
@@ -69,8 +68,7 @@ void VertexBuffer::bind(GPUCommandQueue *queue) const
 
 void VertexBuffer::draw(GPUCommandQueue *queue, uint32_t vertex_count) const
 {
-    queue->enqueue(
-        [vertex_count](void *cmd) { vkCmdDraw(cmdBuffer(cmd), vertex_count, 1, 0, 0); });
+    queue->enqueue([vertex_count](void *cmd) { vkCmdDraw(cmdBuffer(cmd), vertex_count, 1, 0, 0); });
 }
 
 void VertexBuffer::setVertices(const void *vertices, uint32_t size)

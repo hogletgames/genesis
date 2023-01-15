@@ -75,8 +75,7 @@ Scoped<GE::Shader> GraphicsFactory::createShader(Shader::Type type)
 Scoped<GE::Texture> GraphicsFactory::createTexture(const texture_config_t &config)
 {
     switch (config.type) {
-        case TextureType::TEXTURE_2D:
-            return tryMakeScoped<Vulkan::Texture2D>(m_device, config);
+        case TextureType::TEXTURE_2D: return tryMakeScoped<Vulkan::Texture2D>(m_device, config);
         default: break;
     }
 

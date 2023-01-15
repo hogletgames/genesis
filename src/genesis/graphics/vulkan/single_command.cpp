@@ -49,8 +49,7 @@ SingleCommand::SingleCommand(Shared<Device> device, QueueFamily queue_family)
     alloc_info.commandPool = m_device->commandPool();
     alloc_info.commandBufferCount = 1;
 
-    if (vkAllocateCommandBuffers(m_device->device(), &alloc_info, &m_cmd_buffer) !=
-        VK_SUCCESS) {
+    if (vkAllocateCommandBuffers(m_device->device(), &alloc_info, &m_cmd_buffer) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to allocate Single Command Buffer"};
     }
 
@@ -77,8 +76,7 @@ SingleCommand::~SingleCommand()
     submit_info.commandBufferCount = 1;
     submit_info.pCommandBuffers = &m_cmd_buffer;
 
-    if (vkQueueSubmit(getQueue(m_queue_family), 1, &submit_info, VK_NULL_HANDLE) !=
-        VK_SUCCESS) {
+    if (vkQueueSubmit(getQueue(m_queue_family), 1, &submit_info, VK_NULL_HANDLE) != VK_SUCCESS) {
         GE_CORE_WARN("Failed to submit Single Command");
         destroyVkHandles();
         return;

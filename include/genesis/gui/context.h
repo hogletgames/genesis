@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GUI_CONTEXT_H_
-#define GENESIS_GUI_CONTEXT_H_
+#pragma once
 
 #include <genesis/core/interface.h>
 #include <genesis/window/mouse_button_codes.h>
@@ -56,5 +55,3 @@ public:
 };
 
 } // namespace GE::GUI
-
-#endif // GENESIS_GUI_CONTEXT_H_

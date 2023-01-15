@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPICS_VULKAN_PIPELINE_H_
-#define GENESIS_GRAPICS_VULKAN_PIPELINE_H_
+#pragma once
 
 #include <genesis/graphics/pipeline.h>
 #include <genesis/math/types.h>
@@ -75,8 +73,7 @@ public:
 
     void bind(GPUCommandQueue* queue) override;
 
-    static Vulkan::pipeline_config_t
-    createDefaultConfig(GE::pipeline_config_t base_config);
+    static Vulkan::pipeline_config_t createDefaultConfig(GE::pipeline_config_t base_config);
 
 private:
     void createPipelineLayout();
@@ -89,5 +86,3 @@ private:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPICS_VULKAN_PIPELINE_H_

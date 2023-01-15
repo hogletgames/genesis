@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_FRAMEBUFFER_H_
-#define GENESIS_GRAPHICS_FRAMEBUFFER_H_
+#pragma once
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
@@ -69,8 +68,7 @@ public:
         Vec4 clear_color{1.0f, 1.0f, 1.0f, 1.0f};
         float clear_depth{1.0f};
         std::vector<fb_attachment_t> attachments = {
-            {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D,
-             TextureFormat::SRGBA8},
+            {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D, TextureFormat::SRGBA8},
             {fb_attachment_t::Type::DEPTH, TextureType::TEXTURE_2D, TextureFormat::D32F},
         };
     };
@@ -92,5 +90,3 @@ public:
 };
 
 } // namespace GE
-
-#endif // GENESIS_GRAPHICS_FRAMEBUFFER_H_

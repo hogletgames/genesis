@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GUI_BASE_LAYER_H_
-#define GENESIS_GUI_BASE_LAYER_H_
+#pragma once
 
 #include <genesis/app/layer.h>
 
@@ -48,5 +47,3 @@ public:
 };
 
 } // namespace GE::GUI
-
-#endif // GENESIS_GUI_BASE_LAYER_H_

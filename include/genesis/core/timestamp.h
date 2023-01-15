@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_TIMESTAMP_H_
-#define GENESIS_CORE_TIMESTAMP_H_
+#pragma once
 
 #include <genesis/core/export.h>
 
@@ -81,15 +80,9 @@ public:
 
     constexpr operator double() const { return sec(); } // NOLINT
 
-    constexpr Timestamp operator-(Timestamp rhs) const
-    {
-        return m_duration - rhs.m_duration;
-    }
+    constexpr Timestamp operator-(Timestamp rhs) const { return m_duration - rhs.m_duration; }
 
-    constexpr Timestamp operator+(Timestamp rhs) const
-    {
-        return m_duration + rhs.m_duration;
-    }
+    constexpr Timestamp operator+(Timestamp rhs) const { return m_duration + rhs.m_duration; }
 
     constexpr Timestamp operator-=(Timestamp rhs)
     {
@@ -114,5 +107,3 @@ private:
 };
 
 } // namespace GE
-
-#endif // GENESIS_CORE_TIMESTAMP_H_

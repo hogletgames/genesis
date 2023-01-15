@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_GRAPHICS_SHADER_INPUT_LAYOUT_H_
-#define GENESIS_GRAPHICS_SHADER_INPUT_LAYOUT_H_
+#pragma once
 
 #include <genesis/core/interface.h>
 
@@ -61,12 +60,10 @@ struct shader_attribute_t {
     uint32_t fullSize() const { return size * vec_size * vec_column; }
 };
 
-inline bool operator==(const GE::shader_attribute_t& lhs,
-                       const GE::shader_attribute_t& rhs)
+inline bool operator==(const GE::shader_attribute_t& lhs, const GE::shader_attribute_t& rhs)
 {
-    return lhs.base_type == rhs.base_type && lhs.name == rhs.name &&
-           lhs.size == rhs.size && lhs.offset == rhs.offset &&
-           lhs.location == rhs.location;
+    return lhs.base_type == rhs.base_type && lhs.name == rhs.name && lhs.size == rhs.size &&
+           lhs.offset == rhs.offset && lhs.location == rhs.location;
 }
 
 class GE_API ShaderInputLayout
@@ -87,5 +84,3 @@ private:
 };
 
 } // namespace GE
-
-#endif // GENESIS_GRAPHICS_SHADER_INPUT_LAYOUT_H_

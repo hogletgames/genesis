@@ -70,8 +70,7 @@ inline constexpr VkOffset3D toNextMipOffset(const VkOffset3D &offset)
 bool isLinearFilterSupported(const GE::Vulkan::Device &device, VkFormat format)
 {
     VkFormatProperties format_properties{};
-    vkGetPhysicalDeviceFormatProperties(device.physicalDevice(), format,
-                                        &format_properties);
+    vkGetPhysicalDeviceFormatProperties(device.physicalDevice(), format, &format_properties);
 
     return (format_properties.optimalTilingFeatures &
             VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT) != 0;
@@ -136,8 +135,7 @@ Image::~Image()
     destroyVulkanHandles();
 }
 
-void Image::copyFrom(const StagingBuffer &buffer,
-                     const std::vector<VkBufferImageCopy> &regions)
+void Image::copyFrom(const StagingBuffer &buffer, const std::vector<VkBufferImageCopy> &regions)
 {
     transitionImageLayout();
     copyToImage(buffer, regions);
@@ -184,11 +182,9 @@ void Image::allocateMemory(VkMemoryPropertyFlags properties)
     VkMemoryAllocateInfo alloc_info{};
     alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     alloc_info.allocationSize = mem_requirements.size;
-    alloc_info.memoryTypeIndex =
-        getMemoryType(mem_requirements.memoryTypeBits, properties);
+    alloc_info.memoryTypeIndex = getMemoryType(mem_requirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(m_device->device(), &alloc_info, nullptr, &m_memory) !=
-        VK_SUCCESS) {
+    if (vkAllocateMemory(m_device->device(), &alloc_info, nullptr, &m_memory) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to allocate Image Memory"};
     }
 
@@ -208,8 +204,7 @@ void Image::createImageView(const image_config_t &config)
     view_info.subresourceRange.baseArrayLayer = 0;
     view_info.subresourceRange.layerCount = config.layers;
 
-    if (vkCreateImageView(m_device->device(), &view_info, nullptr, &m_image_view) !=
-        VK_SUCCESS) {
+    if (vkCreateImageView(m_device->device(), &view_info, nullptr, &m_image_view) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Texture Image View"};
     }
 }
@@ -257,13 +252,11 @@ void Image::transitionImageLayout()
                             VK_PIPELINE_STAGE_TRANSFER_BIT);
 }
 
-void Image::copyToImage(const StagingBuffer &buffer,
-                        const std::vector<VkBufferImageCopy> &regions)
+void Image::copyToImage(const StagingBuffer &buffer, const std::vector<VkBufferImageCopy> &regions)
 {
     SingleCommand cmd{m_device, SingleCommand::QUEUE_TRANSFER};
     vkCmdCopyBufferToImage(cmd.buffer(), buffer.buffer(), m_image,
-                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.size(),
-                           regions.data());
+                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.size(), regions.data());
 }
 
 void Image::createMipmaps()

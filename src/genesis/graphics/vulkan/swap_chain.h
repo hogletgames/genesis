@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_SWAP_CHAIN_H_
-#define GENESIS_GRAPHICS_VULKAN_SWAP_CHAIN_H_
+#pragma once
 
 #include <genesis/core/memory.h>
 #include <genesis/math/types.h>
@@ -76,14 +74,12 @@ public:
     uint32_t minImageCount() const { return m_min_image_count; }
     uint32_t currentImage() const { return m_current_image; }
 
-    static VkSurfaceFormatKHR
-    chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats);
+    static VkSurfaceFormatKHR chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats);
 
     static VkFormat choseDepthFormat(Device* device);
 
 private:
-    void createSwapChainWithResources(VkSwapchainKHR old_swap_chain,
-                                      const Vec2& window_size);
+    void createSwapChainWithResources(VkSwapchainKHR old_swap_chain, const Vec2& window_size);
     void createSwapChain(VkSwapchainKHR old_swap_chain, const Vec2& window_size);
     void createImageViews();
     void createColorResources();
@@ -98,8 +94,8 @@ private:
     void destroySwapChain(VkSwapchainKHR swap_chain);
     void destroyVkHandles();
 
-    VkImageView createImageView(VkImage image, VkFormat format,
-                                VkImageAspectFlags aspect_flags, uint32_t mip_levels);
+    VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspect_flags,
+                                uint32_t mip_levels);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
                                 const Vec2& window_size) const;
 
@@ -131,5 +127,3 @@ private:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_SWAP_CHAIN_H_

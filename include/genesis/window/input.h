@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_INPUT_H_
-#define GENESIS_WINDOW_INPUT_H_
+#pragma once
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
@@ -72,20 +71,14 @@ public:
         return get()->m_pimpl->fromNativeKeyCode(key_code);
     }
 
-    static uint32_t toNativeKeyMod(KeyModFlags mod)
-    {
-        return get()->m_pimpl->toNativeKeyMod(mod);
-    }
+    static uint32_t toNativeKeyMod(KeyModFlags mod) { return get()->m_pimpl->toNativeKeyMod(mod); }
 
     static KeyModFlags fromNativeKeyMod(uint32_t mod)
     {
         return get()->m_pimpl->fromNativeKeyMod(mod);
     }
 
-    static bool isKeyPressed(KeyCode key_code)
-    {
-        return get()->m_pimpl->isKeyPressed(key_code);
-    }
+    static bool isKeyPressed(KeyCode key_code) { return get()->m_pimpl->isKeyPressed(key_code); }
 
     static uint8_t toNativeButton(MouseButton button)
     {
@@ -115,5 +108,3 @@ private:
 };
 
 } // namespace GE
-
-#endif // GENESIS_WINDOW_INPUT_H_

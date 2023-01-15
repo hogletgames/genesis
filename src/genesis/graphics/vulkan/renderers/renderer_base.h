@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_RENDERERS_RENDERER_BASE_H_
-#define GENESIS_GRAPHICS_VULKAN_RENDERERS_RENDERER_BASE_H_
+#pragma once
 
 #include <genesis/core/memory.h>
 #include <genesis/graphics/renderer.h>
@@ -55,9 +53,8 @@ public:
 protected:
     explicit RendererBase(Shared<Device> device);
 
-    VkRenderPass
-    createRenderPass(const std::vector<VkAttachmentDescription>& descriptions,
-                     bool is_multisampled = false);
+    VkRenderPass createRenderPass(const std::vector<VkAttachmentDescription>& descriptions,
+                                  bool is_multisampled = false);
     void createCommandPool();
     void createCommandBuffers(uint32_t count);
     void createPipelineCache();
@@ -86,5 +83,3 @@ private:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_RENDERERS_RENDERER_BASE_H_

@@ -218,12 +218,9 @@ std::unordered_map<GE::MouseButton, uint8_t> getToButtonMap()
 std::unordered_map<SDL_Keymod, GE::KeyModFlags> getFromKeyModMap()
 {
     std::unordered_map<SDL_Keymod, GE::KeyModFlags> sdl_keymod_to_keymod = {
-        {KMOD_SHIFT, GE::KeyModFlags::SHIFT_BIT},
-        {KMOD_CTRL, GE::KeyModFlags::CTRL_BIT},
-        {KMOD_ALT, GE::KeyModFlags::ALT_BIT},
-        {KMOD_GUI, GE::KeyModFlags::SUPER_BIT},
-        {KMOD_NUM, GE::KeyModFlags::NUM_LOCK_BIT},
-        {KMOD_CAPS, GE::KeyModFlags::CAPS_LOCK_BIT}};
+        {KMOD_SHIFT, GE::KeyModFlags::SHIFT_BIT},  {KMOD_CTRL, GE::KeyModFlags::CTRL_BIT},
+        {KMOD_ALT, GE::KeyModFlags::ALT_BIT},      {KMOD_GUI, GE::KeyModFlags::SUPER_BIT},
+        {KMOD_NUM, GE::KeyModFlags::NUM_LOCK_BIT}, {KMOD_CAPS, GE::KeyModFlags::CAPS_LOCK_BIT}};
 
     return sdl_keymod_to_keymod;
 }

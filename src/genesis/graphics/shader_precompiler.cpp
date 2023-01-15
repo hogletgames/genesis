@@ -78,8 +78,7 @@ ShaderCache ShaderPrecompiler::compileFromSource(Shader::Type shader_type,
     return compileShader(shader_type, source_code, {});
 }
 
-ShaderCache ShaderPrecompiler::compileShader(Shader::Type type,
-                                             const std::string &source_code,
+ShaderCache ShaderPrecompiler::compileShader(Shader::Type type, const std::string &source_code,
                                              const std::string &filepath)
 {
     if (source_code.empty()) {
@@ -124,15 +123,14 @@ bool ShaderPrecompiler::saveShaderCache(const ShaderCache &shader_cache,
 
     if (!std::filesystem::exists(cache_dir) &&
         !std::filesystem::create_directories(cache_dir, error_code)) {
-        GE_CORE_ERR("Failed to create Shader Cache directory '{}': {}",
-                    cache_dir.string(), error_code.message());
+        GE_CORE_ERR("Failed to create Shader Cache directory '{}': {}", cache_dir.string(),
+                    error_code.message());
         return false;
     }
 
     if (std::ofstream file{filepath, std::ios::binary}; file) {
         file << std::noskipws;
-        std::copy(shader_cache.begin(), shader_cache.end(),
-                  std::ostream_iterator<uint32_t>{file});
+        std::copy(shader_cache.begin(), shader_cache.end(), std::ostream_iterator<uint32_t>{file});
         return true;
     }
 

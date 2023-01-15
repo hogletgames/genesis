@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_SDL_GUI_EVENT_HANDLER_H_
-#define GENESIS_GRAPHICS_VULKAN_SDL_GUI_EVENT_HANDLER_H_
+#pragma once
 
 #include <genesis/gui/event_handler.h>
 
@@ -60,5 +58,3 @@ public:
 };
 
 } // namespace GE::Vulkan::SDL
-
-#endif // GENESIS_GRAPHICS_VULKAN_SDL_GUI_EVENT_HANDLER_H_

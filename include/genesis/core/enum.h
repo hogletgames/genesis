@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_ENUM_H_
-#define GENESIS_CORE_ENUM_H_
+#pragma once
 
 #include <fmt/format.h>
 #include <magic_enum.hpp>
@@ -73,12 +72,9 @@ std::optional<EnumType> toEnum(const std::string& string)
 } // namespace GE
 
 template<typename EnumType>
-struct fmt::formatter<EnumType, GE::EnableIfIsEnum<EnumType, char>>
-    : fmt::formatter<std::string> {
+struct fmt::formatter<EnumType, GE::EnableIfIsEnum<EnumType, char>>: fmt::formatter<std::string> {
     auto format(EnumType value, fmt::format_context& ctx) -> decltype(ctx.out())
     {
         return format_to(ctx.out(), "{}", GE::toString(value));
     }
 };
-
-#endif // GENESIS_CORE_ENUM_H_

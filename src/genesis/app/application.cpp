@@ -106,8 +106,7 @@ bool Application::initializeApp(const settings_t& settings)
 
     auto& window = get()->m_window;
 
-    if (window = Window::create(settings.window, settings.graphics.api);
-        window == nullptr) {
+    if (window = Window::create(settings.window, settings.graphics.api); window == nullptr) {
         GE_CORE_ERR("Failed to create Window");
         return false;
     }

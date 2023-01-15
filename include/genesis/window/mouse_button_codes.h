@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_WINDOW_MOUSE_BUTTON_CODES_H_
-#define GENESIS_WINDOW_MOUSE_BUTTON_CODES_H_
+#pragma once
 
 #include <genesis/core/enum.h>
 
@@ -48,5 +47,3 @@ enum class MouseButton : uint8_t
 };
 
 } // namespace GE
-
-#endif // GENESIS_WINDOW_MOUSE_BUTTON_CODES_H_

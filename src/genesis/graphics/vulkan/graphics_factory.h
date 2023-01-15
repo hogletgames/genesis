@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_
-#define GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_
+#pragma once
 
 #include <genesis/core/memory.h>
 #include <genesis/graphics/graphics_factory.h>
@@ -46,13 +44,11 @@ class GraphicsFactory: public GE::GraphicsFactory
 public:
     explicit GraphicsFactory(Shared<Device> device);
 
-    Scoped<GE::Framebuffer>
-    createFramebuffer(const Framebuffer::config_t& config) const override;
+    Scoped<GE::Framebuffer> createFramebuffer(const Framebuffer::config_t& config) const override;
 
     Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
                                               uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
-                                                uint32_t size) const override;
+    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices, uint32_t size) const override;
     Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
 
     Scoped<GE::Shader> createShader(Shader::Type type) override;
@@ -64,5 +60,3 @@ private:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_GRAPHICS_FACTORY_H_

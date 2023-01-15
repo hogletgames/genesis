@@ -30,20 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_CORE_UTILS_H_
-#define GENESIS_CORE_UTILS_H_
+#pragma once
 
 #include <functional>
 #include <unordered_map>
 
 // Breakpoint
 #if defined(GE_PLATFORM_UNIX)
-    #include <csignal>
-    #define GE_DBGBREAK() ::raise(SIGTRAP)
+#include <csignal>
+#define GE_DBGBREAK() ::raise(SIGTRAP)
 #elif defined(GE_PLATFORM_WINDOWS)
-    #define GE_DBGBREAK() __debugbreak()
+#define GE_DBGBREAK() __debugbreak()
 #else
-    #error "Platform is not defined!"
+#error "Platform is not defined!"
 #endif
 
 // Set bit to position
@@ -94,5 +93,3 @@ inline std::unordered_map<U, T> swapKeyAndValue(const std::unordered_map<T, U>& 
 }
 
 } // namespace GE
-
-#endif // GENESIS_CORE_UTILS_H_

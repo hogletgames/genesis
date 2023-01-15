@@ -30,8 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef GENESIS_MATH_TYPES_H_
-#define GENESIS_MATH_TYPES_H_
+#pragma once
 
 #include <glm/glm.hpp>
 
@@ -48,5 +47,3 @@ std::string toString(const Vec3& vec);
 std::string toString(const Vec4& vec);
 
 } // namespace GE
-
-#endif // GENESIS_MATH_TYPES_H_

@@ -59,23 +59,19 @@ const char* categoryToString(int category)
     return GE::toType(cat_to_str, category, default_category);
 }
 
-void debugCallback([[maybe_unused]] void* userdata, int category,
-                   SDL_LogPriority priority, const char* message)
+void debugCallback([[maybe_unused]] void* userdata, int category, SDL_LogPriority priority,
+                   const char* message)
 {
     const char* category_str = categoryToString(category);
     const char* pattern = "[SDL {}]: {}";
 
     switch (priority) {
-        case SDL_LOG_PRIORITY_VERBOSE:
-            GE_CORE_TRACE(pattern, category_str, message);
-            break;
+        case SDL_LOG_PRIORITY_VERBOSE: GE_CORE_TRACE(pattern, category_str, message); break;
         case SDL_LOG_PRIORITY_DEBUG: GE_CORE_DBG(pattern, category_str, message); break;
         case SDL_LOG_PRIORITY_INFO: GE_CORE_INFO(pattern, category_str, message); break;
         case SDL_LOG_PRIORITY_WARN: GE_CORE_WARN(pattern, category_str, message); break;
         case SDL_LOG_PRIORITY_ERROR: GE_CORE_ERR(pattern, category_str, message); break;
-        case SDL_LOG_PRIORITY_CRITICAL:
-            GE_CORE_CRIT(pattern, category_str, message);
-            break;
+        case SDL_LOG_PRIORITY_CRITICAL: GE_CORE_CRIT(pattern, category_str, message); break;
         default: GE_CORE_ERR("[SDL {}/Unknown]: {}", category_str, message); break;
     }
 }

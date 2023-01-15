@@ -240,9 +240,8 @@ using EventTypeList = ::testing::Types<
     GE::MouseButtonReleasedEvent,
     // Window events
     GE::WindowMovedEvent, GE::WindowResizedEvent, GE::WindowMinimizedEvent,
-    GE::WindowMaximizedEvent, GE::WindowRestoredEvent, GE::WindowEnteredEvent,
-    GE::WindowLeftEvent, GE::WindowFocusGainedEvent, GE::WindowFocusLostEvent,
-    GE::WindowClosedEvent>;
+    GE::WindowMaximizedEvent, GE::WindowRestoredEvent, GE::WindowEnteredEvent, GE::WindowLeftEvent,
+    GE::WindowFocusGainedEvent, GE::WindowFocusLostEvent, GE::WindowClosedEvent>;
 
 TYPED_TEST_SUITE(EventDispatcherTest, EventTypeList);
 
@@ -250,9 +249,7 @@ TYPED_TEST(EventDispatcherTest, SuccessfulDispatch)
 {
     TypeParam event{};
 
-    GE::EventDispatcher::Callback<TypeParam> callback = [](const TypeParam&) {
-        return true;
-    };
+    GE::EventDispatcher::Callback<TypeParam> callback = [](const TypeParam&) { return true; };
 
     GE::EventDispatcher dispatcher{&event};
 

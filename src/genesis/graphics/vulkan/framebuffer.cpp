@@ -55,9 +55,8 @@ constexpr VkExtent3D toVkExtent(const GE::Vec2& size)
 constexpr VkImageUsageFlags toMSAAImageUsage(GE::TextureFormat format)
 {
     constexpr auto default_usage{VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT};
-    return GE::isColorFormat(format)
-               ? default_usage | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-               : default_usage | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+    return GE::isColorFormat(format) ? default_usage | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+                                     : default_usage | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 }
 
 VkAttachmentDescription createColorAttachment(const GE::fb_attachment_t& config,
@@ -115,8 +114,8 @@ VkAttachmentDescription createDepthAttachment(const GE::fb_attachment_t& config,
     return attachment;
 }
 
-VkAttachmentDescription createAttachment(const GE::fb_attachment_t& config,
-                                         uint32_t sample_count, bool is_msaa = false)
+VkAttachmentDescription createAttachment(const GE::fb_attachment_t& config, uint32_t sample_count,
+                                         bool is_msaa = false)
 {
     if (GE::isColorFormat(config.texture_format)) {
         return createColorAttachment(config, sample_count, is_msaa);
@@ -189,8 +188,7 @@ void Framebuffer::createMSAAResources(const fb_attachment_t& attachment_config)
     auto format = attachment_config.texture_format;
     auto image = createMSAAImage(type, format);
 
-    m_attachments.push_back(
-        createAttachment(attachment_config, m_config.msaa_samples, true));
+    m_attachments.push_back(createAttachment(attachment_config, m_config.msaa_samples, true));
     m_image_views.push_back(image->view());
 
     if (isColorFormat(format)) {

@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_INPUT_STAGE_DESCRIPTIONS_H_
-#define GENESIS_GRAPHICS_VULKAN_INPUT_STAGE_DESCRIPTIONS_H_
+#pragma once
 
 #include <genesis/graphics/shader_input_layout.h>
 
@@ -47,5 +45,3 @@ VkVertexInputBindingDescription
 vertexInputBindDescription(const GE::ShaderInputLayout& input_layout);
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_INPUT_STAGE_DESCRIPTIONS_H_

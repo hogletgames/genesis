@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_RENDERERS_FRAMEBUFFER_RENDERER_H_
-#define GENESIS_GRAPHICS_VULKAN_RENDERERS_FRAMEBUFFER_RENDERER_H_
+#pragma once
 
 #include "renderer_base.h"
 
@@ -55,10 +53,7 @@ public:
 
     Scoped<GE::Pipeline> createPipeline(const pipeline_config_t &config) override;
 
-    VkRenderPass renderPass(ClearMode clear_mode) const
-    {
-        return m_render_passes[clear_mode];
-    }
+    VkRenderPass renderPass(ClearMode clear_mode) const { return m_render_passes[clear_mode]; }
 
 private:
     void createClearValues();
@@ -79,5 +74,3 @@ private:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_RENDERERS_FRAMEBUFFER_RENDERER_H_

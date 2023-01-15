@@ -71,8 +71,7 @@ GE::TextureFormat toTextureFormat(int channel_count, bool is_hdr)
     return GE::TextureFormat::UNKNOWN;
 }
 
-GE::texture_config_t toTextureConfig(int width, int height, int channel_count,
-                                     bool is_hdr)
+GE::texture_config_t toTextureConfig(int width, int height, int channel_count, bool is_hdr)
 {
     GE::texture_config_t config{};
     config.type = GE::TextureType::TEXTURE_2D;
@@ -97,12 +96,12 @@ void* stbiLoadWrapper(const std::vector<uint8_t>& memory, int* width, int* heigh
     bool is_hdr = ::stbi_is_hdr_from_memory(memory.data(), memory_size) != 0;
 
     if (!is_hdr) {
-        return ::stbi_load_from_memory(memory.data(), memory_size, width, height,
-                                       channel_count, desired_channels);
+        return ::stbi_load_from_memory(memory.data(), memory_size, width, height, channel_count,
+                                       desired_channels);
     }
 
-    return ::stbi_loadf_from_memory(memory.data(), memory_size, width, height,
-                                    channel_count, desired_channels);
+    return ::stbi_loadf_from_memory(memory.data(), memory_size, width, height, channel_count,
+                                    desired_channels);
 }
 
 bool isNullTextureData(const void* texture_data)
@@ -137,8 +136,7 @@ std::pair<void*, GE::texture_config_t> loadStbiTexture(const std::vector<uint8_t
     // Convert 3 to 4 channels
     if (channel_count == 3) {
         ::stbi_image_free(texture_data);
-        texture_data =
-            stbiLoadWrapper(data, &width, &height, &channel_count, ::STBI_rgb_alpha);
+        texture_data = stbiLoadWrapper(data, &width, &height, &channel_count, ::STBI_rgb_alpha);
     }
 
     if (isNullTextureData(texture_data)) {

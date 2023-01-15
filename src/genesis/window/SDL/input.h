@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef SRC_GENESIS_WINDOW_SDL_INPUT_H_
-#define SRC_GENESIS_WINDOW_SDL_INPUT_H_
+#pragma once
 
 #include <genesis/window/input.h>
 
@@ -54,5 +52,3 @@ public:
 };
 
 } // namespace GE::SDL
-
-#endif // SRC_GENESIS_WINDOW_SDL_INPUT_H_

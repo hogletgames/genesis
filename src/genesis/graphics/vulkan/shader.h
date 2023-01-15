@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_SHADER_H_
-#define GENESIS_GRAPHICS_VULKAN_SHADER_H_
+#pragma once
 
 #include <genesis/graphics/shader.h>
 
@@ -56,8 +54,7 @@ public:
     ShaderInputLayout inputLayout() const override { return m_input_layout; }
 
 private:
-    bool compileFromFileOrSource(const std::string &filepath,
-                                 const std::string &source_code);
+    bool compileFromFileOrSource(const std::string &filepath, const std::string &source_code);
     bool createShaderModule(const std::vector<uint32_t> &shader_code);
 
     Shared<Device> m_device;
@@ -72,5 +69,3 @@ inline VkShaderModule vulkanShaderHandle(void *shader_handle)
 }
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_SHADER_H_

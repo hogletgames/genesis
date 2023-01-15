@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_VULKAN_EXCEPTION_H_
-#define GENESIS_GRAPHICS_VULKAN_VULKAN_EXCEPTION_H_
+#pragma once
 
 #include <genesis/core/exception.h>
 
@@ -45,5 +43,3 @@ public:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_VULKAN_EXCEPTION_H_

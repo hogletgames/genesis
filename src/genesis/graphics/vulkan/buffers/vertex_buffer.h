@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// NOLINTNEXTLINE(llvm-header-guard)
-#ifndef GENESIS_GRAPHICS_VULKAN_BUFFERS_VERTEX_BUFFER_H_
-#define GENESIS_GRAPHICS_VULKAN_BUFFERS_VERTEX_BUFFER_H_
+#pragma once
 
 #include "buffers/buffer_base.h"
 
@@ -60,5 +58,3 @@ private:
 };
 
 } // namespace GE::Vulkan
-
-#endif // GENESIS_GRAPHICS_VULKAN_BUFFERS_VERTEX_BUFFER_H_
