@@ -54,17 +54,14 @@ struct memory_barrier_config_t {
 class MemoryBarrier
 {
 public:
-    static VkImageMemoryBarrier
-    createImageMemoryBarrier(const memory_barrier_config_t& config);
+    static VkImageMemoryBarrier createImageMemoryBarrier(const memory_barrier_config_t& config);
 };
 
 class PipelineBarrier
 {
 public:
-    static void submit(VkCommandBuffer cmd,
-                       const std::vector<VkImageMemoryBarrier>& barriers,
-                       VkPipelineStageFlagBits src_stage,
-                       VkPipelineStageFlagBits dst_stage);
+    static void submit(VkCommandBuffer cmd, const std::vector<VkImageMemoryBarrier>& barriers,
+                       VkPipelineStageFlagBits src_stage, VkPipelineStageFlagBits dst_stage);
 };
 
 } // namespace GE::Vulkan

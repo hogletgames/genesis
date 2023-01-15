@@ -51,8 +51,7 @@ public:
     template<typename EventType>
     bool dispatch(Callback<EventType> callback)
     {
-        if (m_event->getDescriptor() == EventType::getStaticDescriptor() &&
-            !m_event->handled()) {
+        if (m_event->getDescriptor() == EventType::getStaticDescriptor() && !m_event->handled()) {
             auto* callback_event = static_cast<EventType*>(m_event);
             m_event->setHandled(callback(*callback_event));
             return true;

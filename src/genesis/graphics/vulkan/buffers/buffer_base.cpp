@@ -58,8 +58,7 @@ void BufferBase::createBuffer(uint32_t size, VkBufferUsageFlags usage,
     buffer_info.usage = usage;
     buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateBuffer(m_device->device(), &buffer_info, nullptr, &m_buffer) !=
-        VK_SUCCESS) {
+    if (vkCreateBuffer(m_device->device(), &buffer_info, nullptr, &m_buffer) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Buffer"};
     }
 
@@ -72,8 +71,7 @@ void BufferBase::createBuffer(uint32_t size, VkBufferUsageFlags usage,
     alloc_info.memoryTypeIndex =
         m_device->findMemoryType(mem_requirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(m_device->device(), &alloc_info, nullptr, &m_memory) !=
-        VK_SUCCESS) {
+    if (vkAllocateMemory(m_device->device(), &alloc_info, nullptr, &m_memory) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to allocate Buffer Memory"};
     }
 

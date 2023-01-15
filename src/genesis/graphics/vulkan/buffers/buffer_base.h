@@ -50,8 +50,7 @@ public:
     VkBuffer buffer() const { return m_buffer; };
 
 protected:
-    void createBuffer(uint32_t size, VkBufferUsageFlags usage,
-                      VkMemoryPropertyFlags properties);
+    void createBuffer(uint32_t size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
     void destroyVkHandles();
 
     Shared<Device> m_device;

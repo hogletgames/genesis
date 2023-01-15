@@ -43,8 +43,7 @@ IndexBuffer::IndexBuffer(Shared<Device> device, const uint32_t* indices, uint32_
     , m_count{count}
 {
     const uint32_t size = count * sizeof(count);
-    VkBufferUsageFlags usage =
-        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+    VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
     VkMemoryPropertyFlagBits properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     createBuffer(size, usage, properties);
 

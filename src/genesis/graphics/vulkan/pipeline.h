@@ -73,8 +73,7 @@ public:
 
     void bind(GPUCommandQueue* queue) override;
 
-    static Vulkan::pipeline_config_t
-    createDefaultConfig(GE::pipeline_config_t base_config);
+    static Vulkan::pipeline_config_t createDefaultConfig(GE::pipeline_config_t base_config);
 
 private:
     void createPipelineLayout();

@@ -44,13 +44,11 @@ class GraphicsFactory: public GE::GraphicsFactory
 public:
     explicit GraphicsFactory(Shared<Device> device);
 
-    Scoped<GE::Framebuffer>
-    createFramebuffer(const Framebuffer::config_t& config) const override;
+    Scoped<GE::Framebuffer> createFramebuffer(const Framebuffer::config_t& config) const override;
 
     Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
                                               uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices,
-                                                uint32_t size) const override;
+    Scoped<GE::VertexBuffer> createVertexBuffer(const void* vertices, uint32_t size) const override;
     Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size) const override;
 
     Scoped<GE::Shader> createShader(Shader::Type type) override;

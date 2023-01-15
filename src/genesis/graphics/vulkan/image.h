@@ -65,8 +65,7 @@ public:
     Image(Shared<Device> device, const image_config_t& config);
     ~Image();
 
-    void copyFrom(const StagingBuffer& buffer,
-                  const std::vector<VkBufferImageCopy>& regions);
+    void copyFrom(const StagingBuffer& buffer, const std::vector<VkBufferImageCopy>& regions);
 
     memory_barrier_config_t memoryBarrierConfig() const;
 
@@ -88,8 +87,7 @@ private:
     uint32_t getMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
 
     void transitionImageLayout();
-    void copyToImage(const StagingBuffer& buffer,
-                     const std::vector<VkBufferImageCopy>& regions);
+    void copyToImage(const StagingBuffer& buffer, const std::vector<VkBufferImageCopy>& regions);
     void createMipmaps();
 
     Shared<Device> m_device;

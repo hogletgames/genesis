@@ -57,8 +57,8 @@ uint32_t imageCountFromCaps(const VkSurfaceCapabilitiesKHR& capabilities)
 
 VkPresentModeKHR choosePresentMode(const std::vector<VkPresentModeKHR>& present_modes)
 {
-    if (std::find(present_modes.begin(), present_modes.end(),
-                  VK_PRESENT_MODE_MAILBOX_KHR) != present_modes.end()) {
+    if (std::find(present_modes.begin(), present_modes.end(), VK_PRESENT_MODE_MAILBOX_KHR) !=
+        present_modes.end()) {
         return VK_PRESENT_MODE_MAILBOX_KHR;
     }
 
@@ -107,15 +107,15 @@ VkResult SwapChain::acquireNextImage()
     vkWaitForFences(m_device->device(), 1, &m_in_flight_fences[m_current_frame], VK_TRUE,
                     VULKAN_TIMEOUT_NONE);
     return vkAcquireNextImageKHR(m_device->device(), m_swap_chain, VULKAN_TIMEOUT_NONE,
-                                 m_image_available_semaphores[m_current_frame],
-                                 VK_NULL_HANDLE, &m_current_image);
+                                 m_image_available_semaphores[m_current_frame], VK_NULL_HANDLE,
+                                 &m_current_image);
 }
 
 VkResult SwapChain::submitCommandBuffer(VkCommandBuffer* command_buffer)
 {
     if (m_images_in_flight[m_current_image] != VK_NULL_HANDLE) {
-        vkWaitForFences(m_device->device(), 1, &m_images_in_flight[m_current_image],
-                        VK_TRUE, VULKAN_TIMEOUT_NONE);
+        vkWaitForFences(m_device->device(), 1, &m_images_in_flight[m_current_image], VK_TRUE,
+                        VULKAN_TIMEOUT_NONE);
     }
 
     m_images_in_flight[m_current_image] = m_in_flight_fences[m_current_frame];
@@ -160,8 +160,7 @@ VkResult SwapChain::presentImage()
     return present_result;
 }
 
-VkSurfaceFormatKHR
-SwapChain::chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats)
+VkSurfaceFormatKHR SwapChain::chooseSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats)
 {
     for (const auto& format : formats) {
         if (format.format == VK_FORMAT_B8G8R8A8_SRGB &&
@@ -185,8 +184,7 @@ VkFormat SwapChain::choseDepthFormat(Device* device)
                                       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
-void SwapChain::createSwapChainWithResources(VkSwapchainKHR old_swap_chain,
-                                             const Vec2& window_size)
+void SwapChain::createSwapChainWithResources(VkSwapchainKHR old_swap_chain, const Vec2& window_size)
 {
     createSwapChain(old_swap_chain, window_size);
     createImageViews();
@@ -236,13 +234,11 @@ void SwapChain::createSwapChain(VkSwapchainKHR old_swap_chain, const Vec2& windo
         create_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
     }
 
-    if (vkCreateSwapchainKHR(device, &create_info, nullptr, &m_swap_chain) !=
-        VK_SUCCESS) {
+    if (vkCreateSwapchainKHR(device, &create_info, nullptr, &m_swap_chain) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Swap Chain"};
     }
 
-    m_swap_chain_images =
-        vulkanGet<VkImage>(::vkGetSwapchainImagesKHR, device, m_swap_chain);
+    m_swap_chain_images = vulkanGet<VkImage>(::vkGetSwapchainImagesKHR, device, m_swap_chain);
     m_image_format = surface_format.format;
     m_depth_format = choseDepthFormat(m_device.get());
 }
@@ -252,8 +248,8 @@ void SwapChain::createImageViews()
     m_swap_chain_image_views.resize(m_swap_chain_images.size());
 
     for (size_t i{0}; i < m_swap_chain_image_views.size(); i++) {
-        m_swap_chain_image_views[i] = createImageView(
-            m_swap_chain_images[i], m_image_format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+        m_swap_chain_image_views[i] =
+            createImageView(m_swap_chain_images[i], m_image_format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 }
 
@@ -266,8 +262,7 @@ void SwapChain::createColorResources()
     config.samples = toVkSampleCountFlag(m_msaa_samples);
     config.format = m_image_format;
     config.tiling = VK_IMAGE_TILING_OPTIMAL;
-    config.usage =
-        VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    config.usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
     config.memory_properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     config.aspect_mask = VK_IMAGE_ASPECT_COLOR_BIT;
 
@@ -338,8 +333,8 @@ void SwapChain::createSyncObjects()
             throw Vulkan::Exception{"Failed to create a render finished semaphore"};
         }
 
-        if (vkCreateFence(m_device->device(), &fence_info, nullptr,
-                          &m_in_flight_fences[i]) != VK_SUCCESS) {
+        if (vkCreateFence(m_device->device(), &fence_info, nullptr, &m_in_flight_fences[i]) !=
+            VK_SUCCESS) {
             throw Vulkan::Exception{"Failed to create an in flight fence"};
         }
     }
@@ -400,8 +395,7 @@ void SwapChain::destroyVkHandles()
 }
 
 VkImageView SwapChain::createImageView(VkImage image, VkFormat format,
-                                       VkImageAspectFlags aspect_flags,
-                                       uint32_t mip_levels)
+                                       VkImageAspectFlags aspect_flags, uint32_t mip_levels)
 {
     VkImageView image_view{VK_NULL_HANDLE};
 
@@ -416,8 +410,7 @@ VkImageView SwapChain::createImageView(VkImage image, VkFormat format,
     view_info.subresourceRange.baseArrayLayer = 0;
     view_info.subresourceRange.layerCount = 1;
 
-    if (vkCreateImageView(m_device->device(), &view_info, nullptr, &image_view) !=
-        VK_SUCCESS) {
+    if (vkCreateImageView(m_device->device(), &view_info, nullptr, &image_view) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Texture Image View"};
     }
 
@@ -431,8 +424,7 @@ VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
         return capabilities.currentExtent;
     }
 
-    VkExtent2D extent{static_cast<uint32_t>(window_size.x),
-                      static_cast<uint32_t>(window_size.y)};
+    VkExtent2D extent{static_cast<uint32_t>(window_size.x), static_cast<uint32_t>(window_size.y)};
 
     extent.width = std::clamp(extent.width, capabilities.minImageExtent.width,
                               capabilities.maxImageExtent.width);

@@ -85,8 +85,7 @@ void mapKeys()
 
 namespace GE::Vulkan::SDL {
 
-GUIContext::GUIContext(void *window, Shared<Device> device,
-                       WindowRenderer *window_renderer)
+GUIContext::GUIContext(void *window, Shared<Device> device, WindowRenderer *window_renderer)
     : m_device{std::move(device)}
     , m_event_handler{makeScoped<Vulkan::SDL::EventHandler>()}
 {
@@ -184,9 +183,8 @@ void GUIContext::end()
 
 void GUIContext::draw(GPUCommandQueue *queue)
 {
-    queue->enqueue([](void *cmd) {
-        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmdBuffer(cmd));
-    });
+    queue->enqueue(
+        [](void *cmd) { ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmdBuffer(cmd)); });
 }
 
 GUI::EventHandler *GUIContext::eventHandler()
@@ -219,8 +217,8 @@ void GUIContext::createDescriptorPool()
     pool_info.poolSizeCount = pool_sizes.size();
     pool_info.pPoolSizes = pool_sizes.data();
 
-    if (vkCreateDescriptorPool(m_device->device(), &pool_info, nullptr,
-                               &m_descriptor_pool) != VK_SUCCESS) {
+    if (vkCreateDescriptorPool(m_device->device(), &pool_info, nullptr, &m_descriptor_pool) !=
+        VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Descriptor Pool"};
     }
 }
@@ -244,8 +242,7 @@ bool GUIContext::isViewportEnabled() const
 VkDescriptorSet createGuiTextureID(const Vulkan::Texture &texture)
 {
     static constexpr VkImageLayout image_layout{VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
-    return ::ImGui_ImplVulkan_AddTexture(texture.sampler(), texture.image()->view(),
-                                         image_layout);
+    return ::ImGui_ImplVulkan_AddTexture(texture.sampler(), texture.image()->view(), image_layout);
 }
 
 void destroyGuiTextureID(VkDescriptorSet texture_id)

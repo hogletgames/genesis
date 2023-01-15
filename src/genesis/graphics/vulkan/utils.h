@@ -41,8 +41,7 @@
 namespace GE::Vulkan {
 
 template<typename FuncPFN, typename... Args>
-VkResult loadInstanceFuncAndCall(const char* func_name, VkInstance instance,
-                                 Args&&... args)
+VkResult loadInstanceFuncAndCall(const char* func_name, VkInstance instance, Args&&... args)
 {
     auto* void_func = vkGetInstanceProcAddr(instance, func_name);
 
@@ -63,13 +62,13 @@ VkResult loadInstanceFuncAndCall(const char* func_name, VkInstance instance,
     return VK_SUCCESS;
 }
 
-inline VkResult createDebugUtilsMessengerEXT(
-    VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* create_info,
-    const VkAllocationCallbacks* allocator, VkDebugUtilsMessengerEXT* debug_messenger)
+inline VkResult createDebugUtilsMessengerEXT(VkInstance instance,
+                                             const VkDebugUtilsMessengerCreateInfoEXT* create_info,
+                                             const VkAllocationCallbacks* allocator,
+                                             VkDebugUtilsMessengerEXT* debug_messenger)
 {
     return loadInstanceFuncAndCall<PFN_vkCreateDebugUtilsMessengerEXT>(
-        "vkCreateDebugUtilsMessengerEXT", instance, create_info, allocator,
-        debug_messenger);
+        "vkCreateDebugUtilsMessengerEXT", instance, create_info, allocator, debug_messenger);
 }
 
 inline void destroyDebugUtilsMessengerEXT(VkInstance instance,

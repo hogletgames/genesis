@@ -41,14 +41,11 @@ namespace GE {
 class GE_API ShaderPrecompiler
 {
 public:
-    static ShaderCache compileFromFile(Shader::Type shader_type,
-                                       const std::string &filepath);
-    static ShaderCache compileFromSource(Shader::Type shader_type,
-                                         const std::string &source_code);
+    static ShaderCache compileFromFile(Shader::Type shader_type, const std::string &filepath);
+    static ShaderCache compileFromSource(Shader::Type shader_type, const std::string &source_code);
 
     static ShaderCache loadShaderCache(const std::string &filepath);
-    static bool saveShaderCache(const ShaderCache &shader_cache,
-                                const std::string &filepath);
+    static bool saveShaderCache(const ShaderCache &shader_cache, const std::string &filepath);
 
 private:
     static ShaderCache compileShader(Shader::Type type, const std::string &source_code,

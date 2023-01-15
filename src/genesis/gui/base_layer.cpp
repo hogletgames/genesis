@@ -44,19 +44,16 @@ void BaseLayer::onEvent(Event* event)
     auto* handler = Graphics::gui()->eventHandler();
     EventDispatcher dispatcher{event};
 
-    dispatcher.dispatch<KeyPressedEvent>(
-        toEventHandler(&EventHandler::onKeyPressedEvent, handler));
+    dispatcher.dispatch<KeyPressedEvent>(toEventHandler(&EventHandler::onKeyPressedEvent, handler));
     dispatcher.dispatch<KeyReleasedEvent>(
         toEventHandler(&EventHandler::onKeyReleasedEvent, handler));
-    dispatcher.dispatch<KeyTypedEvent>(
-        toEventHandler(&EventHandler::onKeyTypedEvent, handler));
+    dispatcher.dispatch<KeyTypedEvent>(toEventHandler(&EventHandler::onKeyTypedEvent, handler));
 
     dispatcher.dispatch<MouseButtonPressedEvent>(
         toEventHandler(&EventHandler::onMouseButtonPressedEvent, handler));
     dispatcher.dispatch<MouseButtonReleasedEvent>(
         toEventHandler(&EventHandler::onMouseButtonReleasedEvent, handler));
-    dispatcher.dispatch<MouseMovedEvent>(
-        toEventHandler(&EventHandler::onMouseMovedEvent, handler));
+    dispatcher.dispatch<MouseMovedEvent>(toEventHandler(&EventHandler::onMouseMovedEvent, handler));
     dispatcher.dispatch<MouseScrolledEvent>(
         toEventHandler(&EventHandler::onMouseScrolledEvent, handler));
 
@@ -66,8 +63,7 @@ void BaseLayer::onEvent(Event* event)
         toEventHandler(&EventHandler::onWindowResizedEvent, handler));
     dispatcher.dispatch<WindowEnteredEvent>(
         toEventHandler(&EventHandler::onWindowEnteredEvent, handler));
-    dispatcher.dispatch<WindowLeftEvent>(
-        toEventHandler(&EventHandler::onWindowLeftEvent, handler));
+    dispatcher.dispatch<WindowLeftEvent>(toEventHandler(&EventHandler::onWindowLeftEvent, handler));
     dispatcher.dispatch<WindowFocusGainedEvent>(
         toEventHandler(&EventHandler::onWindowFocusGainedEvent, handler));
     dispatcher.dispatch<WindowFocusLostEvent>(

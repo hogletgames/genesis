@@ -49,8 +49,8 @@ VkSurfaceKHR createSurface(void* window)
     VkSurfaceKHR surface{VK_NULL_HANDLE};
     auto* sdl_window = reinterpret_cast<SDL_Window*>(window);
 
-    if (::SDL_Vulkan_CreateSurface(sdl_window, GE::Vulkan::Instance::instance(),
-                                   &surface) == SDL_FALSE) {
+    if (::SDL_Vulkan_CreateSurface(sdl_window, GE::Vulkan::Instance::instance(), &surface) ==
+        SDL_FALSE) {
         throw GE::Vulkan::Exception{"Failed to create Vulkan SDL Surface"};
     }
 
@@ -87,8 +87,7 @@ bool GraphicsContext::initialize(const config_t& config)
         m_device = makeScoped<Device>(m_surface);
         m_window_renderer = createWindowRenderer(config);
         m_factory = makeScoped<Vulkan::GraphicsFactory>(m_device);
-        m_gui =
-            makeScoped<SDL::GUIContext>(config.window, m_device, m_window_renderer.get());
+        m_gui = makeScoped<SDL::GUIContext>(config.window, m_device, m_window_renderer.get());
     } catch (const Vulkan::Exception& e) {
         GE_CORE_ERR("Failed to initialize context: {}", e.what());
         clearResources();
@@ -108,8 +107,7 @@ Renderer* GraphicsContext::windowRenderer()
     return m_window_renderer.get();
 }
 
-Scoped<WindowRenderer>
-GraphicsContext::createWindowRenderer(const config_t& renderer_config)
+Scoped<WindowRenderer> GraphicsContext::createWindowRenderer(const config_t& renderer_config)
 {
     WindowRenderer::config_t config{};
     config.surface = m_surface;

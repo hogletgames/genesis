@@ -77,8 +77,7 @@ VkSamplerMipmapMode toVkMipmapMode(GE::TextureFilter filter)
     switch (filter) {
         case GE::TextureFilter::NEAREST:
         case GE::TextureFilter::NEAREST_MIPMAP_NEAREST:
-        case GE::TextureFilter::LINEAR_MIPMAP_NEAREST:
-            return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        case GE::TextureFilter::LINEAR_MIPMAP_NEAREST: return VK_SAMPLER_MIPMAP_MODE_NEAREST;
         case GE::TextureFilter::NEAREST_MIPMAP_LINEAR:
         case GE::TextureFilter::LINEAR:
         case GE::TextureFilter::LINEAR_MIPMAP_LINEAR:
@@ -89,17 +88,16 @@ VkSamplerMipmapMode toVkMipmapMode(GE::TextureFilter filter)
 VkSamplerAddressMode toVkSamplerAddressMode(GE::TextureWrap wrap)
 {
     using Wrap = GE::TextureWrap;
-    static const std::unordered_map<GE::TextureWrap, VkSamplerAddressMode> to_addr_mode =
-        {{Wrap::CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE},
-         {Wrap::CLAMP_TO_BORDER, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER},
-         {Wrap::REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT},
-         {Wrap::MIRROR_REPEAT, VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT}};
+    static const std::unordered_map<GE::TextureWrap, VkSamplerAddressMode> to_addr_mode = {
+        {Wrap::CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE},
+        {Wrap::CLAMP_TO_BORDER, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER},
+        {Wrap::REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT},
+        {Wrap::MIRROR_REPEAT, VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT}};
 
     return GE::toType(to_addr_mode, wrap, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 }
 
-VkSamplerAddressMode toVkSamplerAddressMode(GE::TextureFormat format,
-                                            GE::TextureWrap wrap)
+VkSamplerAddressMode toVkSamplerAddressMode(GE::TextureFormat format, GE::TextureWrap wrap)
 {
     if (wrap != GE::TextureWrap::AUTO) {
         return toVkSamplerAddressMode(wrap);
@@ -238,8 +236,7 @@ void Texture::createSampler(const texture_config_t& config)
     create_info.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK;
     create_info.unnormalizedCoordinates = VK_FALSE;
 
-    if (vkCreateSampler(m_device->device(), &create_info, nullptr, &m_sampler) !=
-        VK_SUCCESS) {
+    if (vkCreateSampler(m_device->device(), &create_info, nullptr, &m_sampler) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Sampler"};
     }
 }

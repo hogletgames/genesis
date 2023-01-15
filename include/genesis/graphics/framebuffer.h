@@ -68,8 +68,7 @@ public:
         Vec4 clear_color{1.0f, 1.0f, 1.0f, 1.0f};
         float clear_depth{1.0f};
         std::vector<fb_attachment_t> attachments = {
-            {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D,
-             TextureFormat::SRGBA8},
+            {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D, TextureFormat::SRGBA8},
             {fb_attachment_t::Type::DEPTH, TextureType::TEXTURE_2D, TextureFormat::D32F},
         };
     };

@@ -72,8 +72,7 @@ std::optional<EnumType> toEnum(const std::string& string)
 } // namespace GE
 
 template<typename EnumType>
-struct fmt::formatter<EnumType, GE::EnableIfIsEnum<EnumType, char>>
-    : fmt::formatter<std::string> {
+struct fmt::formatter<EnumType, GE::EnableIfIsEnum<EnumType, char>>: fmt::formatter<std::string> {
     auto format(EnumType value, fmt::format_context& ctx) -> decltype(ctx.out())
     {
         return format_to(ctx.out(), "{}", GE::toString(value));

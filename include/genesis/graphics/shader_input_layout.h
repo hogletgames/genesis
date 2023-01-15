@@ -60,12 +60,10 @@ struct shader_attribute_t {
     uint32_t fullSize() const { return size * vec_size * vec_column; }
 };
 
-inline bool operator==(const GE::shader_attribute_t& lhs,
-                       const GE::shader_attribute_t& rhs)
+inline bool operator==(const GE::shader_attribute_t& lhs, const GE::shader_attribute_t& rhs)
 {
-    return lhs.base_type == rhs.base_type && lhs.name == rhs.name &&
-           lhs.size == rhs.size && lhs.offset == rhs.offset &&
-           lhs.location == rhs.location;
+    return lhs.base_type == rhs.base_type && lhs.name == rhs.name && lhs.size == rhs.size &&
+           lhs.offset == rhs.offset && lhs.location == rhs.location;
 }
 
 class GE_API ShaderInputLayout

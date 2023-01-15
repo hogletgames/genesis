@@ -62,10 +62,7 @@ public:
     uint32_t colorAttachmentCount() const override;
     bool hasDepthAttachment() const override;
 
-    const std::vector<VkAttachmentDescription>& attachments() const
-    {
-        return m_attachments;
-    }
+    const std::vector<VkAttachmentDescription>& attachments() const { return m_attachments; }
 
     VkFramebuffer framebuffer() const { return m_framebuffer; }
 

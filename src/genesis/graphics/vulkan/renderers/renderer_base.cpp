@@ -155,8 +155,8 @@ RendererBase::createRenderPass(const std::vector<VkAttachmentDescription>& descr
 
     VkRenderPass render_pass{};
 
-    if (vkCreateRenderPass(m_device->device(), &render_pass_info, nullptr,
-                           &render_pass) != VK_SUCCESS) {
+    if (vkCreateRenderPass(m_device->device(), &render_pass_info, nullptr, &render_pass) !=
+        VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Render Pass"};
     }
 
@@ -197,8 +197,8 @@ void RendererBase::createPipelineCache()
     VkPipelineCacheCreateInfo create_info{};
     create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
 
-    if (vkCreatePipelineCache(m_device->device(), &create_info, nullptr,
-                              &m_pipeline_cache) != VK_SUCCESS) {
+    if (vkCreatePipelineCache(m_device->device(), &create_info, nullptr, &m_pipeline_cache) !=
+        VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Pipeline Cache"};
     }
 }

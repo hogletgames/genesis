@@ -63,8 +63,7 @@ Pipeline::~Pipeline()
 void Pipeline::bind(GPUCommandQueue* queue)
 {
     queue->enqueue([this](void* cmd_buffer) {
-        vkCmdBindPipeline(cmdBuffer(cmd_buffer), VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          m_pipeline);
+        vkCmdBindPipeline(cmdBuffer(cmd_buffer), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
     });
 }
 
@@ -72,8 +71,7 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
 {
     Vulkan::pipeline_config_t config{std::move(base_config)};
 
-    config.input_assembly_state.sType =
-        VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    config.input_assembly_state.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     config.input_assembly_state.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     config.input_assembly_state.primitiveRestartEnable = VK_FALSE;
 
@@ -83,8 +81,7 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     config.viewport_state.scissorCount = 1;
     config.viewport_state.pScissors = nullptr;
 
-    config.rasterization_state.sType =
-        VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    config.rasterization_state.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     config.rasterization_state.depthClampEnable = VK_FALSE;
     config.rasterization_state.rasterizerDiscardEnable = VK_FALSE;
     config.rasterization_state.polygonMode = VK_POLYGON_MODE_FILL;
@@ -96,8 +93,7 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     config.rasterization_state.depthBiasClamp = 0.0f;          // Optional
     config.rasterization_state.depthBiasSlopeFactor = 0.0f;    // Optional
 
-    config.multisample_state.sType =
-        VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    config.multisample_state.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     config.multisample_state.sampleShadingEnable = VK_FALSE;
     config.multisample_state.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
     config.multisample_state.minSampleShading = 1.0f;          // Optional
@@ -116,8 +112,7 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     config.color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
     config.color_blend_attachment.alphaBlendOp = VK_BLEND_OP_ADD;             // Optional
 
-    config.color_blend_state.sType =
-        VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    config.color_blend_state.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     config.color_blend_state.logicOpEnable = VK_FALSE;
     config.color_blend_state.pAttachments = &config.color_blend_attachment;
     config.color_blend_state.attachmentCount = 1;
@@ -127,8 +122,7 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     config.color_blend_state.blendConstants[2] = 0.0f;   // Optional
     config.color_blend_state.blendConstants[3] = 0.0f;   // Optional
 
-    config.depth_stencil_state.sType =
-        VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    config.depth_stencil_state.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     config.depth_stencil_state.depthTestEnable = VK_TRUE;
     config.depth_stencil_state.depthWriteEnable = VK_TRUE;
     config.depth_stencil_state.depthCompareOp = VK_COMPARE_OP_LESS;
@@ -169,15 +163,13 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     VkPipelineShaderStageCreateInfo vert_shader_stage_info{};
     vert_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vert_shader_stage_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vert_shader_stage_info.module =
-        vulkanShaderHandle(config.vertex_shader->nativeHandle());
+    vert_shader_stage_info.module = vulkanShaderHandle(config.vertex_shader->nativeHandle());
     vert_shader_stage_info.pName = SHADER_ENTRYPOINT;
 
     VkPipelineShaderStageCreateInfo frag_shader_stage_info{};
     frag_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     frag_shader_stage_info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    frag_shader_stage_info.module =
-        vulkanShaderHandle(config.fragment_shader->nativeHandle());
+    frag_shader_stage_info.module = vulkanShaderHandle(config.fragment_shader->nativeHandle());
     frag_shader_stage_info.pName = SHADER_ENTRYPOINT;
 
     std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages = {
@@ -217,8 +209,8 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     pipeline_info.basePipelineHandle = VK_NULL_HANDLE; // Optional
     pipeline_info.basePipelineIndex = -1;              // Optional
 
-    if (vkCreateGraphicsPipelines(m_device->device(), config.pipeline_cache, 1,
-                                  &pipeline_info, nullptr, &m_pipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(m_device->device(), config.pipeline_cache, 1, &pipeline_info,
+                                  nullptr, &m_pipeline) != VK_SUCCESS) {
         throw Vulkan::Exception{"Failed to create Graphics Pipeline"};
     }
 }

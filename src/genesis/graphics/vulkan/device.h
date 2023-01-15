@@ -88,8 +88,8 @@ public:
         return querySwapChainSupport(m_physical_device);
     }
 
-    VkFormat getSupportedFormat(const std::vector<VkFormat>& candidates,
-                                VkImageTiling tiling, VkFormatFeatureFlags features);
+    VkFormat getSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling,
+                                VkFormatFeatureFlags features);
     uint32_t findMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
 
 private:
@@ -103,8 +103,7 @@ private:
     bool isPhysicalDeviceSuitable(VkPhysicalDevice physical_device);
     queue_family_indices_t findQueueFamilies(VkPhysicalDevice physical_device);
     bool checkPhysicalDeviceExtSupport(VkPhysicalDevice physical_device);
-    swap_chain_support_details_t
-    querySwapChainSupport(VkPhysicalDevice physical_device) const;
+    swap_chain_support_details_t querySwapChainSupport(VkPhysicalDevice physical_device) const;
 
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
     VkPhysicalDevice m_physical_device{VK_NULL_HANDLE};

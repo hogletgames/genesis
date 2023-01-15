@@ -91,9 +91,8 @@ ShaderInputLayout ShaderReflection::getLayoutFromCache(std::vector<uint32_t> sha
         attributes.push_back(toAttribute(compiler, resource));
     }
 
-    std::sort(attributes.begin(), attributes.end(), [](const auto& lhs, const auto& rhs) {
-        return lhs.location < rhs.location;
-    });
+    std::sort(attributes.begin(), attributes.end(),
+              [](const auto& lhs, const auto& rhs) { return lhs.location < rhs.location; });
 
     uint32_t offset{0};
 

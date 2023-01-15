@@ -71,20 +71,14 @@ public:
         return get()->m_pimpl->fromNativeKeyCode(key_code);
     }
 
-    static uint32_t toNativeKeyMod(KeyModFlags mod)
-    {
-        return get()->m_pimpl->toNativeKeyMod(mod);
-    }
+    static uint32_t toNativeKeyMod(KeyModFlags mod) { return get()->m_pimpl->toNativeKeyMod(mod); }
 
     static KeyModFlags fromNativeKeyMod(uint32_t mod)
     {
         return get()->m_pimpl->fromNativeKeyMod(mod);
     }
 
-    static bool isKeyPressed(KeyCode key_code)
-    {
-        return get()->m_pimpl->isKeyPressed(key_code);
-    }
+    static bool isKeyPressed(KeyCode key_code) { return get()->m_pimpl->isKeyPressed(key_code); }
 
     static uint8_t toNativeButton(MouseButton button)
     {

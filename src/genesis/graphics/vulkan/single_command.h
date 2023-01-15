@@ -52,8 +52,7 @@ public:
         QUEUE_COMPUTE
     };
 
-    explicit SingleCommand(Shared<Device> device,
-                           QueueFamily queue_family = QUEUE_GRAPHICS);
+    explicit SingleCommand(Shared<Device> device, QueueFamily queue_family = QUEUE_GRAPHICS);
     ~SingleCommand();
 
     VkCommandBuffer buffer() { return m_cmd_buffer; }

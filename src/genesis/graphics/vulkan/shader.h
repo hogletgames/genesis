@@ -54,8 +54,7 @@ public:
     ShaderInputLayout inputLayout() const override { return m_input_layout; }
 
 private:
-    bool compileFromFileOrSource(const std::string &filepath,
-                                 const std::string &source_code);
+    bool compileFromFileOrSource(const std::string &filepath, const std::string &source_code);
     bool createShaderModule(const std::vector<uint32_t> &shader_code);
 
     Shared<Device> m_device;

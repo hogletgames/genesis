@@ -80,15 +80,9 @@ public:
 
     constexpr operator double() const { return sec(); } // NOLINT
 
-    constexpr Timestamp operator-(Timestamp rhs) const
-    {
-        return m_duration - rhs.m_duration;
-    }
+    constexpr Timestamp operator-(Timestamp rhs) const { return m_duration - rhs.m_duration; }
 
-    constexpr Timestamp operator+(Timestamp rhs) const
-    {
-        return m_duration + rhs.m_duration;
-    }
+    constexpr Timestamp operator+(Timestamp rhs) const { return m_duration + rhs.m_duration; }
 
     constexpr Timestamp operator-=(Timestamp rhs)
     {

@@ -47,13 +47,11 @@ struct texture_config_t;
 class GE_API GraphicsFactory: public Interface
 {
 public:
-    virtual Scoped<Framebuffer>
-    createFramebuffer(const Framebuffer::config_t& config) const = 0;
+    virtual Scoped<Framebuffer> createFramebuffer(const Framebuffer::config_t& config) const = 0;
 
     virtual Scoped<IndexBuffer> createIndexBuffer(const uint32_t* indices,
                                                   uint32_t count) const = 0;
-    virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices,
-                                                    uint32_t size) const = 0;
+    virtual Scoped<VertexBuffer> createVertexBuffer(const void* vertices, uint32_t size) const = 0;
     virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size) const = 0;
 
     virtual Scoped<Shader> createShader(Shader::Type type) = 0;

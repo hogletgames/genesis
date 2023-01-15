@@ -59,8 +59,7 @@ bool Shader::compileFromSource(const std::string& source_code)
     return compileFromFileOrSource({}, source_code);
 }
 
-bool Shader::compileFromFileOrSource(const std::string& filepath,
-                                     const std::string& source_code)
+bool Shader::compileFromFileOrSource(const std::string& filepath, const std::string& source_code)
 {
     ShaderCache shader_cache;
 
@@ -93,8 +92,8 @@ bool Shader::createShaderModule(const std::vector<uint32_t>& shader_code)
     create_info.codeSize = shader_code.size() * sizeof(uint32_t);
     create_info.pCode = shader_code.data();
 
-    if (vkCreateShaderModule(m_device->device(), &create_info, nullptr,
-                             &m_shader_module) != VK_SUCCESS) {
+    if (vkCreateShaderModule(m_device->device(), &create_info, nullptr, &m_shader_module) !=
+        VK_SUCCESS) {
         GE_CORE_ERR("Failed to create Vulkan Shader Module");
         return false;
     }

@@ -113,8 +113,8 @@ void WindowRenderer::swapBuffers()
 {
     auto present_result = m_swap_chain->presentImage();
 
-    if (present_result == VK_ERROR_OUT_OF_DATE_KHR ||
-        present_result == VK_SUBOPTIMAL_KHR || m_is_framebuffer_resized) {
+    if (present_result == VK_ERROR_OUT_OF_DATE_KHR || present_result == VK_SUBOPTIMAL_KHR ||
+        m_is_framebuffer_resized) {
         m_swap_chain->recreate(m_window_size);
         m_is_framebuffer_resized = false;
     } else if (present_result != VK_SUCCESS) {

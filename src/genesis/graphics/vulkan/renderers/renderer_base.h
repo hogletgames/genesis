@@ -53,9 +53,8 @@ public:
 protected:
     explicit RendererBase(Shared<Device> device);
 
-    VkRenderPass
-    createRenderPass(const std::vector<VkAttachmentDescription>& descriptions,
-                     bool is_multisampled = false);
+    VkRenderPass createRenderPass(const std::vector<VkAttachmentDescription>& descriptions,
+                                  bool is_multisampled = false);
     void createCommandPool();
     void createCommandBuffers(uint32_t count);
     void createPipelineCache();

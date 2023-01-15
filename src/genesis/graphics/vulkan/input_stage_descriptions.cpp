@@ -95,8 +95,7 @@ std::optional<VkFormat> getFormat(const GE::shader_attribute_t& attribute)
     }
 }
 
-VkVertexInputAttributeDescription
-inputAttributeDescription(const GE::shader_attribute_t& attribute)
+VkVertexInputAttributeDescription inputAttributeDescription(const GE::shader_attribute_t& attribute)
 {
     auto format = getFormat(attribute);
 
@@ -153,8 +152,7 @@ vertexInputAttributeDescriptions(const ShaderInputLayout& input_layout)
     return descriptions;
 }
 
-VkVertexInputBindingDescription
-vertexInputBindDescription(const ShaderInputLayout& input_layout)
+VkVertexInputBindingDescription vertexInputBindDescription(const ShaderInputLayout& input_layout)
 {
     VkVertexInputBindingDescription description{};
     description.binding = 0;

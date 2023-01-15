@@ -47,8 +47,7 @@ protected:
     {
         GE::Log::initialize({});
 
-        shader =
-            GE::ShaderPrecompiler::compileFromFile(GE::Shader::Type::VERTEX, TEST_SHADER);
+        shader = GE::ShaderPrecompiler::compileFromFile(GE::Shader::Type::VERTEX, TEST_SHADER);
         ASSERT_FALSE(shader.empty());
 
         expected_layout = fillExpectedLayout();
