@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,33 +30,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "uniform_buffer.h"
+#include "graphics.h"
+#include "graphics_factory.h"
 
-#include <genesis/core/memory.h>
-#include <genesis/graphics/graphics_factory.h>
+namespace GE {
 
-namespace GE::Vulkan {
-
-class Device;
-
-class GraphicsFactory: public GE::GraphicsFactory
+Scoped<UniformBuffer> UniformBuffer::create(uint32_t size, const void *data)
 {
-public:
-    explicit GraphicsFactory(Shared<Device> device);
+    return Graphics::factory()->createUniformBuffer(size, data);
+}
 
-    Scoped<GE::Framebuffer> createFramebuffer(const Framebuffer::config_t& config) const override;
-
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size, const void* vertices) const override;
-    Scoped<GE::UniformBuffer> createUniformBuffer(uint32_t size, const void* data) const override;
-
-    Scoped<GE::Shader> createShader(Shader::Type type) override;
-
-    Scoped<GE::Texture> createTexture(const texture_config_t& config) override;
-
-private:
-    Shared<Device> m_device;
-};
-
-} // namespace GE::Vulkan
+} // namespace GE

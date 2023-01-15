@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,33 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
-
-#include <genesis/core/memory.h>
-#include <genesis/graphics/graphics_factory.h>
+#include "uniform_buffer.h"
 
 namespace GE::Vulkan {
 
-class Device;
-
-class GraphicsFactory: public GE::GraphicsFactory
+UniformBuffer::UniformBuffer(Shared<Device> device, uint32_t size, const void *data)
+    : Vulkan::BufferBase{std::move(device)}
 {
-public:
-    explicit GraphicsFactory(Shared<Device> device);
+    VkBufferUsageFlags usage =
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    VkMemoryPropertyFlagBits properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    createBuffer(size, usage, properties);
 
-    Scoped<GE::Framebuffer> createFramebuffer(const Framebuffer::config_t& config) const override;
+    if (data != nullptr) {
+        copyFromHost(size, data, 0);
+    }
+}
 
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size, const void* vertices) const override;
-    Scoped<GE::UniformBuffer> createUniformBuffer(uint32_t size, const void* data) const override;
-
-    Scoped<GE::Shader> createShader(Shader::Type type) override;
-
-    Scoped<GE::Texture> createTexture(const texture_config_t& config) override;
-
-private:
-    Shared<Device> m_device;
-};
+void UniformBuffer::setData(size_t size, const void *data)
+{
+    copyFromHost(size, data, 0);
+}
 
 } // namespace GE::Vulkan

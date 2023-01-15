@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,31 +32,24 @@
 
 #pragma once
 
+#include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
-#include <genesis/graphics/graphics_factory.h>
 
-namespace GE::Vulkan {
+namespace GE {
 
-class Device;
+class GPUCommandQueue;
 
-class GraphicsFactory: public GE::GraphicsFactory
+class UniformBuffer: NonCopyable
 {
 public:
-    explicit GraphicsFactory(Shared<Device> device);
+    using NativeHandle = void*;
 
-    Scoped<GE::Framebuffer> createFramebuffer(const Framebuffer::config_t& config) const override;
+    virtual void setData(size_t size, const void* data) = 0;
 
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size, const void* vertices) const override;
-    Scoped<GE::UniformBuffer> createUniformBuffer(uint32_t size, const void* data) const override;
+    virtual NativeHandle nativeHandle() const = 0;
+    virtual uint32_t size() const = 0;
 
-    Scoped<GE::Shader> createShader(Shader::Type type) override;
-
-    Scoped<GE::Texture> createTexture(const texture_config_t& config) override;
-
-private:
-    Shared<Device> m_device;
+    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
 };
 
-} // namespace GE::Vulkan
+} // namespace GE

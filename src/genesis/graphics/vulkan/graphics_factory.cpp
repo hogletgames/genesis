@@ -32,6 +32,7 @@
 
 #include "graphics_factory.h"
 #include "buffers/index_buffer.h"
+#include "buffers/uniform_buffer.h"
 #include "buffers/vertex_buffer.h"
 #include "framebuffer.h"
 #include "shader.h"
@@ -62,6 +63,11 @@ Scoped<GE::VertexBuffer> GraphicsFactory::createVertexBuffer(uint32_t size,
     return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size, vertices);
 }
 
+Scoped<GE::UniformBuffer> GraphicsFactory::createUniformBuffer(uint32_t size,
+                                                               const void *data) const
+{
+    return tryMakeScoped<Vulkan::UniformBuffer>(m_device, size, data);
+}
 
 Scoped<GE::Shader> GraphicsFactory::createShader(Shader::Type type)
 {

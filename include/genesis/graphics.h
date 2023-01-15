@@ -47,4 +47,5 @@
 #include <genesis/graphics/shader_reflection.h>
 #include <genesis/graphics/texture.h>
 #include <genesis/graphics/texture_loader.h>
+#include <genesis/graphics/uniform_buffer.h>
 #include <genesis/graphics/vertex_buffer.h>

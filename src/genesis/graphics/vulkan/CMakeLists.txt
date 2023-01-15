@@ -2,6 +2,7 @@ list(APPEND GRAPHICS_VULKAN_SOURCES
     buffers/buffer_base.cpp
     buffers/index_buffer.cpp
     buffers/staging_buffer.cpp
+    buffers/uniform_buffer.cpp
     buffers/vertex_buffer.cpp
     renderers/framebuffer_renderer.cpp
     renderers/renderer_base.cpp
@@ -28,6 +29,7 @@ list(APPEND GRAPHICS_VULKAN_HEADERS
     buffers/buffer_base.h
     buffers/index_buffer.h
     buffers/staging_buffer.h
+    buffers/uniform_buffer.h
     buffers/vertex_buffer.h
     renderers/framebuffer_renderer.h
     renderers/renderer_base.h
@@ -67,7 +69,8 @@ ge_add_module(graphics-vulkan
         SDL2::SDL2-static
         shaderc
         spirv-cross-cpp
-        stb-image)
+        stb-image
+    )
 
 if (NOT GE_DISABLE_DEBUG)
     add_dependencies(genesis-graphics-vulkan VkLayer_khronos_validation)
