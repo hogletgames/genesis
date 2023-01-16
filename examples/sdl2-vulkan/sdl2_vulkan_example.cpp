@@ -863,6 +863,10 @@ void HelloTriangleApplication::createVkInstance()
     create_info.enabledLayerCount = static_cast<uint32_t>(m_validation_layers.size());
     create_info.pNext = &debug_create_info;
 
+#ifdef GE_PLATFORM_APPLE
+    create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#endif // GE_PLATFORM_APPLE
+
     if (vkCreateInstance(&create_info, nullptr, &m_vk_instance) != VK_SUCCESS) {
         throw std::runtime_error{"Failed to create Vulkan Instance!"};
     }
@@ -2149,6 +2153,9 @@ NamesVector HelloTriangleApplication::getRequiredExtensions()
     SDL_Vulkan_GetInstanceExtensions(m_window, &extensions_count, extension.data());
 
     extension.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#ifdef GE_PLATFORM_APPLE
+    extension.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif // GE_PLATFORM_APPLE
 
     return extension;
 }
