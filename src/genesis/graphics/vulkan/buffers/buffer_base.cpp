@@ -58,10 +58,11 @@ void BufferBase::createBuffer(uint32_t size, VkBufferUsageFlags usage,
                               VkMemoryPropertyFlags properties)
 {
     GE_ASSERT(m_buffer == VK_NULL_HANDLE, "Buffer has already been allocated");
+    m_size = size;
 
     VkBufferCreateInfo buffer_info{};
     buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    buffer_info.size = size;
+    buffer_info.size = m_size;
     buffer_info.usage = usage;
     buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 

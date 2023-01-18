@@ -45,8 +45,6 @@ public:
 
 private:
     void copyData(uint32_t size, const void* data, uint32_t offset);
-
-    VkDeviceSize m_size{0};
 };
 
 } // namespace GE::Vulkan

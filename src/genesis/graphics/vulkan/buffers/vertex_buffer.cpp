@@ -42,7 +42,6 @@ namespace GE::Vulkan {
 
 VertexBuffer::VertexBuffer(Shared<Device> device, uint32_t size, const void *vertices)
     : BufferBase{std::move(device)}
-    , m_size(size)
 {
     VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
     VkMemoryPropertyFlagBits properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;

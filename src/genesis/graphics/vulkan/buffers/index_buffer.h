@@ -47,6 +47,8 @@ public:
 
     void bind(GPUCommandQueue* cmd_queue) const override;
 
+    NativeHandle nativeHandle() const override { return buffer(); }
+    uint32_t size() const override { return m_size; }
     uint32_t count() const override { return m_count; }
 
 private:

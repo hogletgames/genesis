@@ -64,7 +64,6 @@ void StagingBuffer::copyData(uint32_t size, const void *data, uint32_t offset)
     vkMapMemory(m_device->device(), m_memory, offset, size, 0, &mem_ptr);
     std::memcpy(mem_ptr, data, size);
     vkUnmapMemory(m_device->device(), m_memory);
-    m_size = size;
 }
 
 } // namespace GE::Vulkan

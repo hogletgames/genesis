@@ -51,10 +51,10 @@ public:
     void draw(GPUCommandQueue* queue, uint32_t vertex_count) const override;
     void draw(GPUCommandQueue* queue, GE::IndexBuffer* ibo) const override;
 
-    void setVertices(const void* vertices, uint32_t size) override;
+    NativeHandle nativeHandle() const override { return buffer(); }
+    uint32_t size() const override { return m_size; }
 
-private:
-    VkDeviceSize m_size{0};
+    void setVertices(const void* vertices, uint32_t size) override;
 };
 
 } // namespace GE::Vulkan
