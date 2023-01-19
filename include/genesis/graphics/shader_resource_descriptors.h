@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,34 +32,35 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
-#include <genesis/graphics/shader_input_layout.h>
-#include <genesis/graphics/shader_resource_descriptors.h>
+#include <genesis/core/export.h>
+
+#include <string>
+#include <tuple>
+#include <vector>
 
 namespace GE {
 
-using ShaderCache = std::vector<uint32_t>;
-
-class GE_API Shader: public NonCopyable
-{
-public:
-    enum class Type : uint8_t
+struct GE_API resource_descriptor_t {
+    enum Type : uint8_t
     {
-        NONE = 0,
-        VERTEX,
-        FRAGMENT
+        UNKNOWN = 0,
+        UNIFORM_BUFFER,
+        COMBINED_IMAGE_SAMPLER
     };
 
-    virtual bool compileFromFile(const std::string& filepath) = 0;
-    virtual bool compileFromSource(const std::string& source_code) = 0;
-
-    virtual Type type() const = 0;
-    virtual void* nativeHandle() const = 0;
-    virtual const ShaderInputLayout& inputLayout() const = 0;
-    virtual const ResourceDescriptors& resourceDescriptors() const = 0;
-
-    static Scoped<Shader> create(Type type);
+    std::string name;
+    Type type{UNKNOWN};
+    uint32_t set{0};
+    uint32_t binding{0};
+    uint32_t count{0};
 };
+
+inline bool operator==(const resource_descriptor_t& lhs, const resource_descriptor_t& rhs)
+{
+    return std::tie(lhs.name, lhs.type, lhs.set, lhs.binding, lhs.count) ==
+           std::tie(rhs.name, rhs.type, rhs.set, rhs.binding, rhs.count);
+}
+
+using ResourceDescriptors = std::vector<resource_descriptor_t>;
 
 } // namespace GE

@@ -34,6 +34,7 @@
 
 #include <genesis/core/memory.h>
 #include <genesis/graphics/shader_input_layout.h>
+#include <genesis/graphics/shader_resource_descriptors.h>
 
 #include <vector>
 
@@ -46,6 +47,7 @@ public:
     ~ShaderReflection();
 
     ShaderInputLayout inputLayout() const;
+    ResourceDescriptors resourceDescriptors() const;
 
 private:
     struct Impl;

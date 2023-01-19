@@ -37,6 +37,7 @@
 #include <spirv_cross.hpp>
 
 using AttrType = GE::shader_attribute_t::BaseType;
+using DescType = GE::resource_descriptor_t::Type;
 
 namespace {
 
@@ -75,6 +76,27 @@ GE::shader_attribute_t toAttribute(const spirv_cross::Compiler& compiler,
     attribute.offset = compiler.get_decoration(resource.id, spv::DecorationOffset);
 
     return attribute;
+}
+
+uint32_t toResourceDescriptorCount(const spirv_cross::SmallVector<uint32_t>& type_array)
+{
+    uint32_t count{1};
+    std::for_each(type_array.begin(), type_array.end(),
+                  [&count](uint32_t dim_size) { count *= dim_size; });
+    return count;
+}
+
+GE::resource_descriptor_t toResourceDescriptors(const spirv_cross::Compiler& compiler,
+                                                const spirv_cross::Resource& resource,
+                                                DescType type)
+{
+    return {
+        resource.name,
+        type,
+        compiler.get_decoration(resource.id, spv::DecorationDescriptorSet),
+        compiler.get_decoration(resource.id, spv::DecorationBinding),
+        toResourceDescriptorCount(compiler.get_type(resource.type_id).array),
+    };
 }
 
 } // namespace
@@ -119,6 +141,29 @@ ShaderInputLayout ShaderReflection::inputLayout() const
     }
 
     return ShaderInputLayout{std::move(attributes)};
+}
+
+ResourceDescriptors ShaderReflection::resourceDescriptors() const
+{
+    if (!m_pimpl) {
+        return {};
+    }
+
+    using Resources = spirv_cross::SmallVector<spirv_cross::Resource>;
+
+    ResourceDescriptors descriptors;
+    const auto& compiler = m_pimpl->compiler;
+    const auto& resources = compiler.get_shader_resources();
+
+    auto fill_descriptors = [&compiler, &descriptors](const Resources& resources, DescType type) {
+        for (const auto& resource : resources) {
+            descriptors.push_back(toResourceDescriptors(compiler, resource, type));
+        }
+    };
+
+    fill_descriptors(resources.uniform_buffers, DescType::UNIFORM_BUFFER);
+    fill_descriptors(resources.sampled_images, DescType::COMBINED_IMAGE_SAMPLER);
+    return descriptors;
 }
 
 } // namespace GE

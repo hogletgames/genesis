@@ -30,6 +30,7 @@ list(APPEND GRAPHICS_HEADERS
     ${INCLUDE_DIR}/shader_input_layout.h
     ${INCLUDE_DIR}/shader_precompiler.h
     ${INCLUDE_DIR}/shader_reflection.h
+    ${INCLUDE_DIR}/shader_resource_descriptors.h
     ${INCLUDE_DIR}/texture.h
     ${INCLUDE_DIR}/texture_loader.h
     ${INCLUDE_DIR}/uniform_buffer.h

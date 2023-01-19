@@ -45,6 +45,7 @@
 #include <genesis/graphics/shader_input_layout.h>
 #include <genesis/graphics/shader_precompiler.h>
 #include <genesis/graphics/shader_reflection.h>
+#include <genesis/graphics/shader_resource_descriptors.h>
 #include <genesis/graphics/texture.h>
 #include <genesis/graphics/texture_loader.h>
 #include <genesis/graphics/uniform_buffer.h>
