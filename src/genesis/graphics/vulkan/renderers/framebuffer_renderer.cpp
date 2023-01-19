@@ -31,6 +31,7 @@
  */
 
 #include "framebuffer_renderer.h"
+#include "descriptor_pool.h"
 #include "device.h"
 #include "framebuffer.h"
 #include "image.h"
@@ -193,6 +194,8 @@ void FramebufferRenderer::endFrame()
     if (m_framebuffer->hasDepthAttachment()) {
         depthImagePipelineBarrier();
     }
+
+    m_descriptor_pool->reset();
 }
 
 void FramebufferRenderer::swapBuffers()
@@ -208,6 +211,7 @@ Scoped<GE::Pipeline> FramebufferRenderer::createPipeline(const GE::pipeline_conf
     vulkan_config.render_pass = m_render_passes[CLEAR_ALL];
     vulkan_config.front_face = VK_FRONT_FACE_CLOCKWISE;
     vulkan_config.msaa_samples = toVkSampleCountFlag(m_framebuffer->MSAASamples());
+    vulkan_config.descriptor_pool = m_descriptor_pool;
     return tryMakeScoped<Vulkan::Pipeline>(m_device, vulkan_config);
 }
 

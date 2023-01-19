@@ -45,6 +45,7 @@ class Shader;
 
 namespace GE::Vulkan {
 
+class DescriptorPool;
 class Device;
 
 struct pipeline_config_t: GE::pipeline_config_t {
@@ -53,6 +54,7 @@ struct pipeline_config_t: GE::pipeline_config_t {
     uint32_t subpass{0};
     VkFrontFace front_face{VK_FRONT_FACE_COUNTER_CLOCKWISE};
     VkSampleCountFlagBits msaa_samples{VK_SAMPLE_COUNT_1_BIT};
+    Shared<DescriptorPool> descriptor_pool{};
 
     VkPipelineViewportStateCreateInfo viewport_state{};
     VkPipelineInputAssemblyStateCreateInfo input_assembly_state{};

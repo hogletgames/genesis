@@ -33,67 +33,38 @@
 #pragma once
 
 #include <genesis/core/memory.h>
-#include <genesis/graphics/renderer.h>
 
 #include <vulkan/vulkan.h>
 
-#include <vector>
+#include <list>
 
 namespace GE::Vulkan {
 
-class DescriptorPool;
 class Device;
 
-class RendererBase: public GE::Renderer
+class DescriptorPool
 {
 public:
-    ~RendererBase();
+    explicit DescriptorPool(Shared<Device> device, uint32_t count = MAX_COUNT_DEFAULT);
+    ~DescriptorPool();
 
-    RenderCommand* command() override { return &m_render_command; }
+    VkDescriptorSet allocateDescriptorSet(VkDescriptorSetLayout layout);
+    void reset();
 
-protected:
-    explicit RendererBase(Shared<Device> device);
-
-    VkRenderPass createRenderPass(const std::vector<VkAttachmentDescription>& descriptions,
-                                  bool is_multisampled = false);
-    void createCommandPool();
-    void createCommandBuffers(uint32_t count);
-    void createPipelineCache();
-
-    bool beginRenderPass(ClearMode clear_mode);
-    void updateDynamicState();
-    bool endRenderPass();
-
-    virtual VkCommandBuffer cmdBuffer() const = 0;
-    virtual VkFramebuffer currentFramebuffer() const = 0;
-    virtual VkExtent2D extent() const = 0;
-    virtual VkViewport viewport() const = 0;
-
-    Shared<Device> m_device;
-
-    VkPipelineCache m_pipeline_cache{VK_NULL_HANDLE};
-    VkCommandPool m_command_pool{VK_NULL_HANDLE};
-    Shared<DescriptorPool> m_descriptor_pool;
-    std::array<VkRenderPass, 4> m_render_passes{VK_NULL_HANDLE};
-    std::vector<VkCommandBuffer> m_cmd_buffers;
-    std::vector<VkClearValue> m_clear_values;
-
-    RenderCommand m_render_command;
+    static constexpr uint32_t MAX_COUNT_DEFAULT{1000};
 
 private:
+    VkResult allocateDescriptorSet(VkDescriptorPool pool, VkDescriptorSetLayout layout,
+                                   VkDescriptorSet *set);
+    VkDescriptorPool getPool();
+    VkDescriptorPool createPool();
+
     void destroyVkHandles();
+
+    Shared<Device> m_device;
+    std::list<VkDescriptorPool> m_pools;
+    std::vector<VkDescriptorPoolSize> m_sizes;
+    uint32_t m_max_count{};
 };
-
-constexpr VkClearValue toVkClearColorValue(const GE::Vec4& clear_color)
-{
-    return {{{clear_color.x, clear_color.y, clear_color.z, clear_color.w}}};
-}
-
-constexpr VkClearValue toVkClearDepthStencilValue(float clear_depth)
-{
-    VkClearValue clear_value{};
-    clear_value.depthStencil = {clear_depth, 0};
-    return clear_value;
-}
 
 } // namespace GE::Vulkan
