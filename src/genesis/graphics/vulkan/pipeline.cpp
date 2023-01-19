@@ -31,10 +31,14 @@
  */
 
 #include "pipeline.h"
+#include "buffers/uniform_buffer.h"
 #include "command_buffer.h"
 #include "device.h"
+#include "image.h"
 #include "input_stage_descriptions.h"
+#include "pipeline_resources.h"
 #include "shader.h"
+#include "texture.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/log.h"
@@ -50,6 +54,7 @@ namespace GE::Vulkan {
 
 Pipeline::Pipeline(Shared<Device> device, const Vulkan::pipeline_config_t& config)
     : m_device{std::move(device)}
+    , m_resources{makeScoped<PipelineResources>(m_device, config)}
 {
     createPipelineLayout();
     createPipeline(config);
@@ -65,6 +70,33 @@ void Pipeline::bind(GPUCommandQueue* queue)
     queue->enqueue([this](void* cmd_buffer) {
         vkCmdBindPipeline(cmdBuffer(cmd_buffer), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
     });
+}
+
+void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, GE::UniformBuffer* ubo)
+{
+    VkDescriptorBufferInfo info{};
+    info.buffer = toVkBuffer(ubo->nativeHandle());
+    info.range = ubo->size();
+
+    VkWriteDescriptorSet write_descriptor_set{};
+    write_descriptor_set.pBufferInfo = &info;
+
+    bindResource(queue, name, &write_descriptor_set);
+}
+
+void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, GE::Texture* texture)
+{
+    auto* vk_texture = toVulkan(texture);
+
+    VkDescriptorImageInfo info{};
+    info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    info.imageView = vk_texture->image()->view();
+    info.sampler = vk_texture->sampler();
+
+    VkWriteDescriptorSet write_descriptor_set{};
+    write_descriptor_set.pImageInfo = &info;
+
+    bindResource(queue, name, &write_descriptor_set);
 }
 
 Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t base_config)
@@ -145,12 +177,17 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
 
 void Pipeline::createPipelineLayout()
 {
+    const auto& descriptor_set_layouts = m_resources->descriptorSetLayouts();
+
     VkPipelineLayoutCreateInfo pipeline_layout_info{};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipeline_layout_info.pSetLayouts = nullptr;
-    pipeline_layout_info.setLayoutCount = 0;
     pipeline_layout_info.pPushConstantRanges = nullptr;
     pipeline_layout_info.pushConstantRangeCount = 0;
+
+    if (!descriptor_set_layouts.empty()) {
+        pipeline_layout_info.setLayoutCount = descriptor_set_layouts.size();
+        pipeline_layout_info.pSetLayouts = descriptor_set_layouts.data();
+    }
 
     if (vkCreatePipelineLayout(m_device->device(), &pipeline_layout_info, nullptr,
                                &m_pipeline_layout) != VK_SUCCESS) {
@@ -163,13 +200,13 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     VkPipelineShaderStageCreateInfo vert_shader_stage_info{};
     vert_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vert_shader_stage_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vert_shader_stage_info.module = vulkanShaderHandle(config.vertex_shader->nativeHandle());
+    vert_shader_stage_info.module = toVkShaderModule(*config.vertex_shader);
     vert_shader_stage_info.pName = SHADER_ENTRYPOINT;
 
     VkPipelineShaderStageCreateInfo frag_shader_stage_info{};
     frag_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     frag_shader_stage_info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    frag_shader_stage_info.module = vulkanShaderHandle(config.fragment_shader->nativeHandle());
+    frag_shader_stage_info.module = toVkShaderModule(*config.fragment_shader);
     frag_shader_stage_info.pName = SHADER_ENTRYPOINT;
 
     std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages = {
@@ -215,6 +252,32 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     }
 }
 
+void Pipeline::bindResource(GPUCommandQueue* queue, const std::string& name,
+                            VkWriteDescriptorSet* write_descriptor_set)
+{
+    auto resource = m_resources->resource(name);
+
+    if (!resource.has_value()) {
+        GE_ERR("Failed to bound '{}': there is no such resource");
+        return;
+    }
+
+    auto* descriptor_set = m_resources->descriptorSet(resource->set);
+
+    write_descriptor_set->sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    write_descriptor_set->dstSet = descriptor_set;
+    write_descriptor_set->dstBinding = resource->binding;
+    write_descriptor_set->descriptorCount = resource->count;
+    write_descriptor_set->descriptorType = toVkDescriptorType(resource->type);
+
+    vkUpdateDescriptorSets(m_device->device(), 1, write_descriptor_set, 0, nullptr);
+
+    queue->enqueue([this, set = resource->set, descriptor_set](void* cmd) {
+        vkCmdBindDescriptorSets(cmdBuffer(cmd), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout,
+                                set, 1, &descriptor_set, 0, nullptr);
+    });
+}
+
 void Pipeline::destroyVkHandles()
 {
     m_device->waitIdle();
@@ -224,6 +287,8 @@ void Pipeline::destroyVkHandles()
 
     vkDestroyPipelineLayout(m_device->device(), m_pipeline_layout, nullptr);
     m_pipeline_layout = VK_NULL_HANDLE;
+
+    m_resources.reset();
 }
 
 } // namespace GE::Vulkan

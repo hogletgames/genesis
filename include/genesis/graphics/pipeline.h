@@ -39,6 +39,8 @@ namespace GE {
 
 class GPUCommandQueue;
 class Shader;
+class Texture;
+class UniformBuffer;
 
 struct pipeline_config_t {
     Shared<Shader> vertex_shader;
@@ -49,6 +51,8 @@ class Pipeline: public Interface
 {
 public:
     virtual void bind(GPUCommandQueue* queue) = 0;
+    virtual void bind(GPUCommandQueue* queue, const std::string& name, UniformBuffer* ubo) = 0;
+    virtual void bind(GPUCommandQueue* queue, const std::string& name, Texture* texture) = 0;
 };
 
 } // namespace GE

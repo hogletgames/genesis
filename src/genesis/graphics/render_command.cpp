@@ -54,6 +54,17 @@ void RenderCommand::bind(IndexBuffer *buffer)
     buffer->bind(&m_cmd_queue);
 }
 
+void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name,
+                         UniformBuffer *buffer)
+{
+    pipeline->bind(&m_cmd_queue, resource_name, buffer);
+}
+
+void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name, Texture *texture)
+{
+    pipeline->bind(&m_cmd_queue, resource_name, texture);
+}
+
 void RenderCommand::draw(VertexBuffer *buffer, uint32_t vertex_count)
 {
     buffer->bind(&m_cmd_queue);

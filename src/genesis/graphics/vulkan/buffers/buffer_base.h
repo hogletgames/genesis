@@ -61,4 +61,9 @@ protected:
     uint32_t m_size{};
 };
 
+constexpr VkBuffer toVkBuffer(void* buffer)
+{
+    return static_cast<VkBuffer>(buffer);
+}
+
 } // namespace GE::Vulkan

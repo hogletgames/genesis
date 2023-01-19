@@ -45,6 +45,8 @@ class Context;
 
 class IndexBuffer;
 class Pipeline;
+class Texture;
+class UniformBuffer;
 class VertexBuffer;
 
 class GE_API RenderCommand
@@ -53,6 +55,8 @@ public:
     void bind(Pipeline* pipeline);
     void bind(VertexBuffer* buffer);
     void bind(IndexBuffer* buffer);
+    void bind(Pipeline* pipeline, const std::string& resource_name, UniformBuffer* buffer);
+    void bind(Pipeline* pipeline, const std::string& resource_name, Texture* texture);
 
     void draw(VertexBuffer* buffer, uint32_t vertex_count);
     void draw(VertexBuffer* vbo, IndexBuffer* ibo);

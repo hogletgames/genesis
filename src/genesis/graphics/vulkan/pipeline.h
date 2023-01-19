@@ -47,6 +47,7 @@ namespace GE::Vulkan {
 
 class DescriptorPool;
 class Device;
+class PipelineResources;
 
 struct pipeline_config_t: GE::pipeline_config_t {
     VkPipelineCache pipeline_cache{VK_NULL_HANDLE};
@@ -74,17 +75,24 @@ public:
     ~Pipeline();
 
     void bind(GPUCommandQueue* queue) override;
+    void bind(GPUCommandQueue* queue, const std::string& name, GE::UniformBuffer* ubo) override;
+    void bind(GPUCommandQueue* queue, const std::string& name, GE::Texture* texture) override;
 
     static Vulkan::pipeline_config_t createDefaultConfig(GE::pipeline_config_t base_config);
 
 private:
     void createPipelineLayout();
     void createPipeline(Vulkan::pipeline_config_t config);
+
+    void bindResource(GPUCommandQueue* queue, const std::string& name,
+                      VkWriteDescriptorSet* write_descriptor_set);
+
     void destroyVkHandles();
 
     Shared<Device> m_device;
     VkPipeline m_pipeline{VK_NULL_HANDLE};
     VkPipelineLayout m_pipeline_layout{VK_NULL_HANDLE};
+    Scoped<PipelineResources> m_resources;
 };
 
 } // namespace GE::Vulkan
