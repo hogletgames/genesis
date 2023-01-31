@@ -5,6 +5,7 @@ list(APPEND CORE_SOURCES
 
 list(APPEND CORE_HEADERS
     ${INCLUDE_DIR}/asserts.h
+    ${INCLUDE_DIR}/bit.h
     ${INCLUDE_DIR}/defer.h
     ${INCLUDE_DIR}/enum.h
     ${INCLUDE_DIR}/exception.h

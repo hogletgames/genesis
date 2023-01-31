@@ -45,9 +45,6 @@
 #error "Platform is not defined!"
 #endif
 
-// Set bit to position
-#define GE_BIT(bit) (1 << (bit))
-
 // Bind member function
 #define GE_EVENT_MEM_FN(mem_func) \
     [this](auto&&... args) { return mem_func(std::forward<decltype(args)>(args)...); }

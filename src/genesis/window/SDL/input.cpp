@@ -33,6 +33,7 @@
 #include "input.h"
 
 #include "genesis/core/log.h"
+#include "genesis/core/utils.h"
 
 #include <SDL.h>
 
