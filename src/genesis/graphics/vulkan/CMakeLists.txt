@@ -54,7 +54,7 @@ list(APPEND GRAPHICS_VULKAN_HEADERS
 
 ge_add_module(graphics-vulkan
     SOURCES ${GRAPHICS_VULKAN_SOURCES} ${GRAPHICS_VULKAN_HEADERS}
-    INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+    INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
     PUBLIC_DEPS
         genesis::core
         genesis::graphics

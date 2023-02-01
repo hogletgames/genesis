@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,37 @@
 
 #pragma once
 
-#include <genesis/core/asserts.h>
 #include <genesis/core/bit.h>
-#include <genesis/core/defer.h>
-#include <genesis/core/enum.h>
-#include <genesis/core/export.h>
-#include <genesis/core/format.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/timestamp.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+#include <genesis/gui/widgets/widget_node.h>
+
+#include <string_view>
+
+namespace GE::GUI {
+
+class GE_API TreeNode: public WidgetNode
+{
+public:
+    enum Flags : int
+    {
+        NONE = 0,
+        SELECTED = bit(0),
+        FRAMED = bit(1),
+        ALLOW_ITEM_OVERLAP = bit(2),
+        NO_TREE_PUSH_ON_OPEN = bit(3),
+        NO_AUTO_OPEN_ON_LOG = bit(4),
+        DEFAULT_OPEN = bit(5),
+        OPEN_ON_DOUBLE_CLICK = bit(6),
+        OPEN_ON_ARROW = bit(7),
+        LEAF = bit(8),
+        BULLET = bit(9),
+        FRAME_PADDING = bit(10),
+        SPAN_AVAIL_WIDTH = bit(11),
+        SPAN_FULL_WIDTH = bit(12),
+        NAV_LEFT_JUMPS_BACK_HERE = bit(13),
+        COLLAPSING_HEADER = FRAMED | NO_TREE_PUSH_ON_OPEN | NO_AUTO_OPEN_ON_LOG
+    };
+
+    explicit TreeNode(std::string_view label, Flags flags = NONE);
+};
+
+} // namespace GE::GUI

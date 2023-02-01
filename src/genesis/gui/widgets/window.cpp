@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2021, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,17 +30,49 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "window.h"
+#include "private/types.h"
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/bit.h>
-#include <genesis/core/defer.h>
-#include <genesis/core/enum.h>
-#include <genesis/core/export.h>
-#include <genesis/core/format.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/timestamp.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+#include <imgui.h>
+
+namespace {
+
+bool hasDrawData()
+{
+    return ImGui::GetDrawData() != nullptr;
+}
+
+} // namespace
+
+namespace GE::GUI {
+
+Window::Window(std::string_view title, bool* is_open, Flags flags)
+{
+    if (is_open != nullptr && !*is_open) {
+        return;
+    }
+
+    setBeginFunc(&ImGui::Begin, title.data(), is_open, flags);
+    setEndFunc(&ImGui::End);
+    forceEnd();
+}
+
+Vec2 Window::size() const
+{
+    if (hasDrawData()) {
+        return toVec2(ImGui::GetDrawData()->DisplaySize);
+    }
+
+    return {};
+}
+
+float Window::aspectRatio() const
+{
+    if (auto window_size = size(); window_size.y > 0.0f) {
+        return window_size.x / window_size.y;
+    }
+
+    return 0.0f;
+}
+
+} // namespace GE::GUI

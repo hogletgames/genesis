@@ -36,3 +36,4 @@
 #include <genesis/gui/context.h>
 #include <genesis/gui/event_handler.h>
 #include <genesis/gui/renderer.h>
+#include <genesis/gui/widgets.h>

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,12 @@
 
 #pragma once
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/bit.h>
-#include <genesis/core/defer.h>
-#include <genesis/core/enum.h>
-#include <genesis/core/export.h>
-#include <genesis/core/format.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/timestamp.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+namespace GE {
+
+template<typename T = int>
+constexpr T bit(T offset)
+{
+    return 1 << offset;
+}
+
+} // namespace GE

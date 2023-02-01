@@ -34,6 +34,7 @@
 #include "context.h"
 #include "event_handler.h"
 
+#include "genesis/core/utils.h"
 #include "genesis/graphics/graphics.h"
 #include "genesis/window/events/event_dispatcher.h"
 

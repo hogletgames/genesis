@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,61 @@
 
 #pragma once
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/bit.h>
-#include <genesis/core/defer.h>
-#include <genesis/core/enum.h>
-#include <genesis/core/export.h>
-#include <genesis/core/format.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
 #include <genesis/core/memory.h>
-#include <genesis/core/timestamp.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+#include <genesis/gui/widgets/widget_node.h>
+
+#include <deque>
+
+namespace GE::GUI {
+
+class GE_API WidgetNodeGuard
+{
+public:
+    explicit WidgetNodeGuard(WidgetNode* node)
+        : m_node{node}
+    {
+        if (m_node != nullptr) {
+            m_node->begin();
+        }
+    }
+
+    ~WidgetNodeGuard()
+    {
+        if (m_node != nullptr) {
+            m_node->end();
+        }
+    }
+
+    template<typename T, typename... Args>
+    auto call(Args&&... args) -> std::enable_if_t<std::is_void_v<decltype(T::call(args...))>>
+    {
+        if (m_node != nullptr && m_node->isOpened()) {
+            T::call(std::forward<Args>(args)...);
+        }
+    }
+
+    template<typename T, typename... Args>
+    auto call(Args&&... args)
+        -> std::enable_if_t<std::is_same_v<decltype(T::call(args...)), bool>, bool>
+    {
+        if (m_node != nullptr && m_node->isOpened()) {
+            return T::call(std::forward<Args>(args)...);
+        }
+
+        return false;
+    }
+
+    WidgetNodeGuard subNode(WidgetNode* node)
+    {
+        if (m_node->isOpened()) {
+            return WidgetNodeGuard{node};
+        }
+
+        return WidgetNodeGuard{nullptr};
+    }
+
+private:
+    WidgetNode* m_node{nullptr};
+};
+
+} // namespace GE::GUI

@@ -9,7 +9,7 @@ list(APPEND APP_HEADERS
 
 ge_add_module(app
     SOURCES ${APP_SOURCES} ${APP_SOURCES}
-    INCLUDE_DIR ${INCLUDE_DIR}
+    INCLUDE_DIRS ${INCLUDE_DIR}
     PUBLIC_DEPS
         genesis::core
         genesis::window)

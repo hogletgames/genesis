@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,51 @@
 
 #pragma once
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/bit.h>
-#include <genesis/core/defer.h>
-#include <genesis/core/enum.h>
-#include <genesis/core/export.h>
-#include <genesis/core/format.h>
 #include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/timestamp.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+
+#include <functional>
+
+namespace GE::GUI {
+
+class GE_API WidgetNode: public Interface
+{
+public:
+    void begin()
+    {
+        if (m_begin != nullptr) {
+            m_is_opened = m_begin();
+        }
+    }
+
+    void end()
+    {
+        if (m_end != nullptr && (m_is_opened || m_force_end)) {
+            m_end();
+        }
+    }
+
+    bool isOpened() const { return m_is_opened; }
+
+protected:
+    using BeginFunc = std::function<bool()>;
+    using EndFunc = std::function<void()>;
+
+    template<typename Func, typename... Args>
+    void setBeginFunc(Func&& f, Args&&... args)
+    {
+        m_begin = std::bind(std::forward<Func>(f), std::forward<Args>(args)...);
+    }
+
+    void setEndFunc(EndFunc&& f) { m_end = std::forward<EndFunc>(f); }
+
+    void forceEnd() { m_force_end = true; }
+
+private:
+    BeginFunc m_begin{nullptr};
+    EndFunc m_end{nullptr};
+
+    bool m_is_opened{false};
+    bool m_force_end{false};
+};
+
+} // namespace GE::GUI

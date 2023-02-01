@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2021, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,20 @@
 
 #pragma once
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/bit.h>
-#include <genesis/core/defer.h>
-#include <genesis/core/enum.h>
 #include <genesis/core/export.h>
-#include <genesis/core/format.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/timestamp.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+#include <genesis/math/types.h>
+
+namespace GE::GUI {
+
+class GE_API Image
+{
+public:
+    using NativeID = void*;
+
+    static void call(NativeID image_id, const Vec2& size, const Vec2& uv0 = {0.0f, 1.0f},
+                     const Vec2& uv1 = {1.0f, 0.0f},
+                     const Vec4& tint_col = {1.0f, 1.0f, 1.0f, 1.0f},
+                     const Vec4& border_col = {0.0f, 0.0f, 0.0f, 0.0f});
+};
+
+} // namespace GE::GUI

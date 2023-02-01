@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,17 +30,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "value_editor.h"
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/bit.h>
-#include <genesis/core/defer.h>
-#include <genesis/core/enum.h>
-#include <genesis/core/export.h>
-#include <genesis/core/format.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/timestamp.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+#include <imgui.h>
+
+namespace GE::GUI {
+
+bool ValueEditor::call(std::string_view label, Vec3* value, float v_speed, float v_min, float v_max,
+                       std::string_view format, Flags flags)
+{
+    ImGui::PushID(value);
+    auto is_changed = ImGui::DragFloat3(label.data(), value_ptr(*value), v_speed, v_min, v_max,
+                                        format.data(), flags);
+    ImGui::PopID();
+    return is_changed;
+}
+
+bool ValueEditor::call(std::string_view label, float* value, float v_speed, float v_min,
+                       float v_max, std::string_view format, ValueEditor::Flags flags)
+{
+    ImGui::PushID(value);
+    auto is_changed =
+        ImGui::DragFloat(label.data(), value, v_speed, v_min, v_max, format.data(), flags);
+    ImGui::PopID();
+    return is_changed;
+}
+
+} // namespace GE::GUI

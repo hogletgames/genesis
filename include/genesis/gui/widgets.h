@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,12 @@
 
 #pragma once
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/bit.h>
-#include <genesis/core/defer.h>
-#include <genesis/core/enum.h>
-#include <genesis/core/export.h>
-#include <genesis/core/format.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/timestamp.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+#include <genesis/gui/widgets/checkbox.h>
+#include <genesis/gui/widgets/image.h>
+#include <genesis/gui/widgets/separator.h>
+#include <genesis/gui/widgets/text.h>
+#include <genesis/gui/widgets/tree_node.h>
+#include <genesis/gui/widgets/value_editor.h>
+#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget_node_guard.h>
+#include <genesis/gui/widgets/window.h>

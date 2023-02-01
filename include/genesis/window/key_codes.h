@@ -32,8 +32,8 @@
 
 #pragma once
 
+#include <genesis/core/bit.h>
 #include <genesis/core/enum.h>
-#include <genesis/core/utils.h>
 
 namespace GE {
 
@@ -192,12 +192,12 @@ enum class KeyCode : uint16_t
 enum KeyModFlags : uint8_t
 {
     NONE = 0,
-    SHIFT_BIT = GE_BIT(1),
-    CTRL_BIT = GE_BIT(2),
-    ALT_BIT = GE_BIT(3),
-    SUPER_BIT = GE_BIT(4),
-    NUM_LOCK_BIT = GE_BIT(5),
-    CAPS_LOCK_BIT = GE_BIT(6)
+    SHIFT_BIT = bit(1),
+    CTRL_BIT = bit(2),
+    ALT_BIT = bit(3),
+    SUPER_BIT = bit(4),
+    NUM_LOCK_BIT = bit(5),
+    CAPS_LOCK_BIT = bit(6)
 };
 
 } // namespace GE

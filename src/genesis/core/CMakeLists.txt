@@ -5,6 +5,7 @@ list(APPEND CORE_SOURCES
 
 list(APPEND CORE_HEADERS
     ${INCLUDE_DIR}/asserts.h
+    ${INCLUDE_DIR}/bit.h
     ${INCLUDE_DIR}/defer.h
     ${INCLUDE_DIR}/enum.h
     ${INCLUDE_DIR}/exception.h
@@ -19,7 +20,7 @@ list(APPEND CORE_HEADERS
 
 ge_add_module(core
     SOURCES ${CORE_SOURCES} ${CORE_HEADERS}
-    INCLUDE_DIR ${INCLUDE_DIR}
+    INCLUDE_DIRS ${INCLUDE_DIR}
     PUBLIC_DEPS
         fmt::fmt
         magic_enum::magic_enum
