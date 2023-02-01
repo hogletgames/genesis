@@ -86,8 +86,8 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     config.rasterization_state.rasterizerDiscardEnable = VK_FALSE;
     config.rasterization_state.polygonMode = VK_POLYGON_MODE_FILL;
     config.rasterization_state.lineWidth = 1.0f;
-    config.rasterization_state.cullMode = VK_CULL_MODE_NONE;
-    config.rasterization_state.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    config.rasterization_state.cullMode = VK_CULL_MODE_BACK_BIT;
+    config.rasterization_state.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     config.rasterization_state.depthBiasEnable = VK_FALSE;
     config.rasterization_state.depthBiasConstantFactor = 0.0f; // Optional
     config.rasterization_state.depthBiasClamp = 0.0f;          // Optional
