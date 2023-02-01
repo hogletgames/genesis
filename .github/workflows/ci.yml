@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  BUILD_EXAMPLES: ON
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -30,27 +27,21 @@ jobs:
           build_extra_args: "--compress=true"
 
   tests:
-    name: Tests
+    name: Tests (${{ matrix.build-type }})
     runs-on: ubuntu-20.04
     container: hogletgames/genesis-engine:ci
     needs: update_docker
     strategy:
       matrix:
-        build-type: [Release, Debug, ASAN, USAN, TSAN]
         include:
           - build-type: Release
             disable-asserts: ON
           - build-type: Debug
             disable-asserts: OFF
-          - build-type: ASAN
-            disable-asserts: OFF
-          - build-type: USAN
-            disable-asserts: OFF
-          - build-type: TSAN
-            disable-asserts: OFF
     env:
       BUILD_TYPE: ${{ matrix.build-type }}
       DISABLE_ASSERTS: ${{ matrix.disable-asserts }}
+      BUILD_EXAMPLES: ON
       BUILD_TESTS: ON
     steps:
       - name: Checkout repository
@@ -77,7 +68,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Download cache
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
           key: ${{ matrix.build-type }}-${{ hashFiles('third-party/CMakeLists.txt') }}
           path: build/_deps
