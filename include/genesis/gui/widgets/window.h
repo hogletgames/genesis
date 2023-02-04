@@ -47,6 +47,7 @@ public:
     explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
 
     Vec2 size() const;
+    Vec2 availableRegion() const;
     float aspectRatio() const;
 };
 

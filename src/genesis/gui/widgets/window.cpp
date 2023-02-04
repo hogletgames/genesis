@@ -35,23 +35,10 @@
 
 #include <imgui.h>
 
-namespace {
-
-bool hasDrawData()
-{
-    return ImGui::GetDrawData() != nullptr;
-}
-
-} // namespace
-
 namespace GE::GUI {
 
 Window::Window(std::string_view title, bool* is_open, Flags flags)
 {
-    if (is_open != nullptr && !*is_open) {
-        return;
-    }
-
     setBeginFunc(&ImGui::Begin, title.data(), is_open, flags);
     setEndFunc(&ImGui::End);
     forceEnd();
@@ -59,11 +46,12 @@ Window::Window(std::string_view title, bool* is_open, Flags flags)
 
 Vec2 Window::size() const
 {
-    if (hasDrawData()) {
-        return toVec2(ImGui::GetDrawData()->DisplaySize);
-    }
+    return toVec2(ImGui::GetWindowSize());
+}
 
-    return {};
+Vec2 Window::availableRegion() const
+{
+    return toVec2(ImGui::GetContentRegionAvail());
 }
 
 float Window::aspectRatio() const
