@@ -150,7 +150,6 @@ void Framebuffer::resize(const Vec2& size)
         return;
     }
 
-    m_renderer->swapBuffers();
     destroyVkHandles();
 
     m_config.size = size;
