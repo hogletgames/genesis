@@ -52,7 +52,7 @@ AttrType toAttributeType(const spirv_cross::SPIRType& spir_type)
         {SPIRBaseType::Float, AttrType::FLOAT},
         {SPIRBaseType::Double, AttrType::DOUBLE}};
 
-    return GE::toType(to_type, spir_type.basetype, AttrType::NONE);
+    return GE::getValue(to_type, spir_type.basetype, AttrType::NONE);
 }
 
 uint32_t toAttributeSize(uint32_t resource_size)

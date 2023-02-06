@@ -47,7 +47,7 @@ constexpr auto LOG_FTM_PATTERN = "[%H:%M:%S.%e] [%l] %n: %v%$ (%s:%#)";
 
 spdlogLevel toSpdlogLvl(GE::Logger::Level level)
 {
-    std::unordered_map<GE::Logger::Level, spdlogLevel> level_to_spdlog = {
+    static const std::unordered_map<GE::Logger::Level, spdlogLevel> LEVEL_TO_SPDLOG = {
         {GE::Logger::Level::CRITICAL, spdlogLevel::critical},
         {GE::Logger::Level::ERROR, spdlogLevel::err},
         {GE::Logger::Level::WARNING, spdlogLevel::warn},
@@ -55,7 +55,7 @@ spdlogLevel toSpdlogLvl(GE::Logger::Level level)
         {GE::Logger::Level::DEBUG, spdlogLevel::debug},
         {GE::Logger::Level::TRACE, spdlogLevel::trace}};
 
-    return GE::toType(level_to_spdlog, level, spdlogLevel::critical);
+    return GE::getValue(LEVEL_TO_SPDLOG, level, spdlogLevel::critical);
 }
 
 } // namespace

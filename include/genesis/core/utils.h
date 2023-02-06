@@ -66,15 +66,15 @@ auto toEventHandler(Func&& f, Type* instance)
     };
 }
 
-template<typename FromType, typename ToType>
-inline ToType toType(const std::unordered_map<FromType, ToType>& container,
-                     const FromType& from_value, const ToType& def_ret = {})
+template<typename Key, typename Value>
+Value getValue(const std::unordered_map<Key, Value>& map, const Key& key,
+               const Value& default_value = {})
 {
-    if (auto it = container.find(from_value); it != container.end()) {
+    if (auto it = map.find(key); it != map.end()) {
         return it->second;
     }
 
-    return def_ret;
+    return default_value;
 }
 
 template<typename T, typename U>
