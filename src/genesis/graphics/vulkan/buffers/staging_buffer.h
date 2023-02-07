@@ -32,21 +32,19 @@
 
 #pragma once
 
-#include "buffers/buffer_base.h"
+#include "buffer_base.h"
 
 namespace GE::Vulkan {
 
 class StagingBuffer: public BufferBase
 {
 public:
-    StagingBuffer(Shared<Device> device, const void* data, uint32_t size);
+    StagingBuffer(Shared<Device> device, uint32_t size, const void* data);
 
-    void copyTo(BufferBase* dest);
+    void copyTo(BufferBase* dest, uint32_t offset);
 
 private:
-    void copyData(const void* data, uint32_t size);
-
-    VkDeviceSize m_size{0};
+    void copyData(uint32_t size, const void* data, uint32_t offset);
 };
 
 } // namespace GE::Vulkan

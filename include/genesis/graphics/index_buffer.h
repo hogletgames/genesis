@@ -42,8 +42,12 @@ class GPUCommandQueue;
 class GE_API IndexBuffer: public NonCopyable
 {
 public:
+    using NativeHandle = void*;
+
     virtual void bind(GPUCommandQueue* cmd_queue) const = 0;
 
+    virtual NativeHandle nativeHandle() const = 0;
+    virtual uint32_t size() const = 0;
     virtual uint32_t count() const = 0;
 
     static Scoped<IndexBuffer> create(const uint32_t* indices, uint32_t count);

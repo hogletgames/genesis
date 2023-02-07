@@ -34,8 +34,8 @@
 
 #include <genesis/core/interface.h>
 
+#include <deque>
 #include <string>
-#include <vector>
 
 namespace GE {
 
@@ -70,16 +70,16 @@ class GE_API ShaderInputLayout
 {
 public:
     ShaderInputLayout() = default;
-    explicit ShaderInputLayout(std::vector<shader_attribute_t> attributes);
+    explicit ShaderInputLayout(std::deque<shader_attribute_t> attributes);
 
     void append(const shader_attribute_t& attribute);
     void clear();
 
-    const std::vector<shader_attribute_t>& attributes() const { return m_attributes; }
+    const std::deque<shader_attribute_t>& attributes() const { return m_attributes; }
     uint32_t stride() const { return m_stride; }
 
 private:
-    std::vector<shader_attribute_t> m_attributes;
+    std::deque<shader_attribute_t> m_attributes;
     uint32_t m_stride{0};
 };
 

@@ -34,6 +34,7 @@
 #include "vulkan_exception.h"
 
 #include <optional>
+#include <vector>
 
 namespace {
 

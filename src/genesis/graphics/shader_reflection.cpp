@@ -37,6 +37,7 @@
 #include <spirv_cross.hpp>
 
 using AttrType = GE::shader_attribute_t::BaseType;
+using DescType = GE::resource_descriptor_t::Type;
 
 namespace {
 
@@ -52,7 +53,7 @@ AttrType toAttributeType(const spirv_cross::SPIRType& spir_type)
         {SPIRBaseType::Float, AttrType::FLOAT},
         {SPIRBaseType::Double, AttrType::DOUBLE}};
 
-    return GE::toType(to_type, spir_type.basetype, AttrType::NONE);
+    return GE::getValue(to_type, spir_type.basetype, AttrType::NONE);
 }
 
 uint32_t toAttributeSize(uint32_t resource_size)
@@ -77,18 +78,56 @@ GE::shader_attribute_t toAttribute(const spirv_cross::Compiler& compiler,
     return attribute;
 }
 
+uint32_t toResourceDescriptorCount(const spirv_cross::SmallVector<uint32_t>& type_array)
+{
+    uint32_t count{1};
+    std::for_each(type_array.begin(), type_array.end(),
+                  [&count](uint32_t dim_size) { count *= dim_size; });
+    return count;
+}
+
+GE::resource_descriptor_t toResourceDescriptors(const spirv_cross::Compiler& compiler,
+                                                const spirv_cross::Resource& resource,
+                                                DescType type)
+{
+    return {
+        resource.name,
+        type,
+        compiler.get_decoration(resource.id, spv::DecorationDescriptorSet),
+        compiler.get_decoration(resource.id, spv::DecorationBinding),
+        toResourceDescriptorCount(compiler.get_type(resource.type_id).array),
+    };
+}
+
 } // namespace
 
 namespace GE {
 
-ShaderInputLayout ShaderReflection::getLayoutFromCache(std::vector<uint32_t> shader_cache)
+struct ShaderReflection::Impl {
+    explicit Impl(std::vector<uint32_t> shader_cache)
+        : compiler{std::move(shader_cache)}
+    {}
+
+    spirv_cross::Compiler compiler;
+};
+
+ShaderReflection::ShaderReflection(const std::vector<uint32_t>& shader_cache)
+    : m_pimpl{tryMakeScoped<Impl>(shader_cache)}
+{}
+
+ShaderReflection::~ShaderReflection() = default;
+
+ShaderInputLayout ShaderReflection::inputLayout() const
 {
-    spirv_cross::Compiler compiler{std::move(shader_cache)};
-    const auto& resources = compiler.get_shader_resources();
-    std::vector<shader_attribute_t> attributes;
+    if (!m_pimpl) {
+        return {};
+    }
+
+    const auto& resources = m_pimpl->compiler.get_shader_resources();
+    std::deque<shader_attribute_t> attributes;
 
     for (const auto& resource : resources.stage_inputs) {
-        attributes.push_back(toAttribute(compiler, resource));
+        attributes.push_back(toAttribute(m_pimpl->compiler, resource));
     }
 
     std::sort(attributes.begin(), attributes.end(),
@@ -102,6 +141,29 @@ ShaderInputLayout ShaderReflection::getLayoutFromCache(std::vector<uint32_t> sha
     }
 
     return ShaderInputLayout{std::move(attributes)};
+}
+
+ResourceDescriptors ShaderReflection::resourceDescriptors() const
+{
+    if (!m_pimpl) {
+        return {};
+    }
+
+    using Resources = spirv_cross::SmallVector<spirv_cross::Resource>;
+
+    ResourceDescriptors descriptors;
+    const auto& compiler = m_pimpl->compiler;
+    const auto& resources = compiler.get_shader_resources();
+
+    auto fill_descriptors = [&compiler, &descriptors](const Resources& resources, DescType type) {
+        for (const auto& resource : resources) {
+            descriptors.push_back(toResourceDescriptors(compiler, resource, type));
+        }
+    };
+
+    fill_descriptors(resources.uniform_buffers, DescType::UNIFORM_BUFFER);
+    fill_descriptors(resources.sampled_images, DescType::COMBINED_IMAGE_SAMPLER);
+    return descriptors;
 }
 
 } // namespace GE

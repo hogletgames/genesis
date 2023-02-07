@@ -87,6 +87,11 @@ private:
     uint32_t checkLayers(uint32_t layers) override;
 };
 
+inline Vulkan::Texture* toVulkan(GE::Texture* texture)
+{
+    return dynamic_cast<Vulkan::Texture*>(texture);
+}
+
 VkFormat toVkFormat(TextureFormat format);
 TextureFormat toTextureFormat(VkFormat format);
 VkImageViewType toVkImageViewType(TextureType type);

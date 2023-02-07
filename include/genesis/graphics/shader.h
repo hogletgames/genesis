@@ -35,6 +35,7 @@
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
 #include <genesis/graphics/shader_input_layout.h>
+#include <genesis/graphics/shader_resource_descriptors.h>
 
 namespace GE {
 
@@ -55,7 +56,8 @@ public:
 
     virtual Type type() const = 0;
     virtual void* nativeHandle() const = 0;
-    virtual ShaderInputLayout inputLayout() const = 0;
+    virtual const ShaderInputLayout& inputLayout() const = 0;
+    virtual const ResourceDescriptors& resourceDescriptors() const = 0;
 
     static Scoped<Shader> create(Type type);
 };

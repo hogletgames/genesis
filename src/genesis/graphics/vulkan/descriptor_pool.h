@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,30 +33,38 @@
 #pragma once
 
 #include <genesis/core/memory.h>
-#include <genesis/graphics/graphics_factory.h>
+
+#include <vulkan/vulkan.h>
+
+#include <list>
 
 namespace GE::Vulkan {
 
 class Device;
 
-class GraphicsFactory: public GE::GraphicsFactory
+class DescriptorPool
 {
 public:
-    explicit GraphicsFactory(Shared<Device> device);
+    explicit DescriptorPool(Shared<Device> device, uint32_t count = MAX_COUNT_DEFAULT);
+    ~DescriptorPool();
 
-    Scoped<GE::Framebuffer> createFramebuffer(const Framebuffer::config_t& config) const override;
+    VkDescriptorSet allocateDescriptorSet(VkDescriptorSetLayout layout);
+    void reset();
 
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size, const void* vertices) const override;
-    Scoped<GE::UniformBuffer> createUniformBuffer(uint32_t size, const void* data) const override;
-
-    Scoped<GE::Shader> createShader(Shader::Type type) override;
-
-    Scoped<GE::Texture> createTexture(const texture_config_t& config) override;
+    static constexpr uint32_t MAX_COUNT_DEFAULT{1000};
 
 private:
+    VkResult allocateDescriptorSet(VkDescriptorPool pool, VkDescriptorSetLayout layout,
+                                   VkDescriptorSet *set);
+    VkDescriptorPool getPool();
+    VkDescriptorPool createPool();
+
+    void destroyVkHandles();
+
     Shared<Device> m_device;
+    std::list<VkDescriptorPool> m_pools;
+    std::vector<VkDescriptorPoolSize> m_sizes;
+    uint32_t m_max_count{};
 };
 
 } // namespace GE::Vulkan

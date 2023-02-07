@@ -51,7 +51,12 @@ public:
 
     Type type() const override { return m_type; }
     void *nativeHandle() const override { return m_shader_module; }
-    ShaderInputLayout inputLayout() const override { return m_input_layout; }
+    const ShaderInputLayout &inputLayout() const override { return m_input_layout; }
+
+    const ResourceDescriptors &resourceDescriptors() const override
+    {
+        return m_resource_descriptors;
+    }
 
 private:
     bool compileFromFileOrSource(const std::string &filepath, const std::string &source_code);
@@ -61,11 +66,12 @@ private:
     Type m_type{Type::NONE};
     VkShaderModule m_shader_module{VK_NULL_HANDLE};
     ShaderInputLayout m_input_layout;
+    ResourceDescriptors m_resource_descriptors;
 };
 
-inline VkShaderModule vulkanShaderHandle(void *shader_handle)
+inline VkShaderModule toVkShaderModule(const GE::Shader &shader)
 {
-    return reinterpret_cast<VkShaderModule>(shader_handle);
+    return reinterpret_cast<VkShaderModule>(shader.nativeHandle());
 }
 
 } // namespace GE::Vulkan

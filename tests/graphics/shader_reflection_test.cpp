@@ -38,17 +38,15 @@
 
 namespace {
 
-constexpr auto TEST_SHADER = "tests/graphics/data/shader_reflection_test.vert";
+constexpr auto INPUT_LAYOUT_SHADER = "tests/graphics/data/input_layout_test.vert";
+constexpr auto BIND_DESC_SHADER = "tests/graphics/data/binding_description_test.vert";
 
-class ShaderReflectionTest: public testing::Test
+class ShaderInputLayoutTest: public testing::Test
 {
 protected:
     void SetUp() override
     {
         GE::Log::initialize({});
-
-        shader = GE::ShaderPrecompiler::compileFromFile(GE::Shader::Type::VERTEX, TEST_SHADER);
-        ASSERT_FALSE(shader.empty());
 
         expected_layout = fillExpectedLayout();
         ASSERT_EQ(expected_layout.stride(), 248);
@@ -73,16 +71,42 @@ protected:
         return layout;
     }
 
-    GE::ShaderCache shader;
+    GE::ShaderReflection shader_reflection{
+        GE::ShaderPrecompiler::compileFromFile(GE::Shader::Type::VERTEX, INPUT_LAYOUT_SHADER)};
     GE::ShaderInputLayout expected_layout;
 };
 
-TEST_F(ShaderReflectionTest, ShaderLayoutTest)
+class ShaderBindingDescriptionTest: public testing::Test
 {
-    auto shader_layout = GE::ShaderReflection::getLayoutFromCache(shader);
+protected:
+    GE::ResourceDescriptors fillExpectedBindDesc()
+    {
+        using Desc = GE::resource_descriptor_t;
+
+        return {
+            {"u_MVP", Desc::UNIFORM_BUFFER, 0, 0, 1},
+            {"u_Elements", Desc::UNIFORM_BUFFER, 1, 0, 1},
+            {"u_Texture", Desc::COMBINED_IMAGE_SAMPLER, 0, 1, 12},
+        };
+    }
+
+    GE::ShaderReflection shader_reflection{
+        GE::ShaderPrecompiler::compileFromFile(GE::Shader::Type::VERTEX, BIND_DESC_SHADER)};
+    GE::ResourceDescriptors expected_binding_descriptions{fillExpectedBindDesc()};
+};
+
+TEST_F(ShaderInputLayoutTest, ShaderLayoutTest)
+{
+    const auto& shader_layout = shader_reflection.inputLayout();
     ASSERT_FALSE(shader_layout.attributes().empty());
     ASSERT_EQ(expected_layout.attributes(), shader_layout.attributes());
     ASSERT_EQ(expected_layout.stride(), shader_layout.stride());
+}
+
+TEST_F(ShaderBindingDescriptionTest, ShaderLayoutTest)
+{
+    const auto& shader_bind_desc = shader_reflection.resourceDescriptors();
+    ASSERT_EQ(shader_bind_desc, expected_binding_descriptions);
 }
 
 } // namespace

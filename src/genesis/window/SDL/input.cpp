@@ -252,13 +252,13 @@ namespace GE::SDL {
 int32_t InputController::toNativeKeyCode(KeyCode key_code) const
 {
     static const auto sdl_key_to_key = getToKeyMap();
-    return toType(sdl_key_to_key, key_code, SDLK_UNKNOWN);
+    return getValue(sdl_key_to_key, key_code, SDLK_UNKNOWN);
 }
 
 KeyCode InputController::fromNativeKeyCode(int32_t key_code) const
 {
     static const auto key_to_sdl_key = getFromKeyMap();
-    return toType(key_to_sdl_key, static_cast<SDL_KeyCode>(key_code), KeyCode::UNKNOWN);
+    return getValue(key_to_sdl_key, static_cast<SDL_KeyCode>(key_code), KeyCode::UNKNOWN);
 }
 
 uint32_t InputController::toNativeKeyMod(KeyModFlags key_mod) const
@@ -290,13 +290,13 @@ bool InputController::isKeyPressed(KeyCode key_code) const
 uint8_t InputController::toNativeButton(MouseButton button) const
 {
     static const auto button_to_sdl_button = getToButtonMap();
-    return toType(button_to_sdl_button, button, uint8_t{0});
+    return getValue(button_to_sdl_button, button, uint8_t{0});
 }
 
 MouseButton InputController::fromNativeButton(uint8_t button) const
 {
     static const auto sdl_button_to_button = getFromButtonMap();
-    return toType(sdl_button_to_button, button, MouseButton::UNKNOWN);
+    return getValue(sdl_button_to_button, button, MouseButton::UNKNOWN);
 }
 
 bool InputController::isButtonPressed(MouseButton button) const

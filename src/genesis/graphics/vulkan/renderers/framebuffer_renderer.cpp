@@ -31,6 +31,7 @@
  */
 
 #include "framebuffer_renderer.h"
+#include "descriptor_pool.h"
 #include "device.h"
 #include "framebuffer.h"
 #include "image.h"
@@ -44,18 +45,6 @@
 using AttachmentDescriptions = std::vector<VkAttachmentDescription>;
 
 namespace {
-
-VkClearValue toVkClearColorValue(const GE::Vec4& clear_color)
-{
-    return {{{clear_color.x, clear_color.y, clear_color.z, clear_color.w}}};
-}
-
-VkClearValue toVkClearDepthStencilValue(float clear_depth)
-{
-    VkClearValue clear_value;
-    clear_value.depthStencil = {clear_depth, 0};
-    return clear_value;
-}
 
 VkExtent2D toVkExtent(const GE::Vec2& size)
 {
@@ -205,6 +194,8 @@ void FramebufferRenderer::endFrame()
     if (m_framebuffer->hasDepthAttachment()) {
         depthImagePipelineBarrier();
     }
+
+    m_descriptor_pool->reset();
 }
 
 void FramebufferRenderer::swapBuffers()
@@ -220,6 +211,7 @@ Scoped<GE::Pipeline> FramebufferRenderer::createPipeline(const GE::pipeline_conf
     vulkan_config.render_pass = m_render_passes[CLEAR_ALL];
     vulkan_config.front_face = VK_FRONT_FACE_CLOCKWISE;
     vulkan_config.msaa_samples = toVkSampleCountFlag(m_framebuffer->MSAASamples());
+    vulkan_config.descriptor_pool = m_descriptor_pool;
     return tryMakeScoped<Vulkan::Pipeline>(m_device, vulkan_config);
 }
 

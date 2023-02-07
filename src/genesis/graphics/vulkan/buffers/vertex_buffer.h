@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include "buffers/buffer_base.h"
+#include "buffer_base.h"
 
 #include <genesis/graphics/vertex_buffer.h>
 
@@ -45,16 +45,16 @@ class Device;
 class VertexBuffer: public GE::VertexBuffer, public BufferBase
 {
 public:
-    VertexBuffer(Shared<Device> device, const void* vertices, uint32_t size);
-    VertexBuffer(Shared<Device> device, uint32_t size);
+    VertexBuffer(Shared<Device> device, uint32_t size, const void* vertices);
 
     void bind(GPUCommandQueue* queue) const override;
     void draw(GPUCommandQueue* queue, uint32_t vertex_count) const override;
+    void draw(GPUCommandQueue* queue, GE::IndexBuffer* ibo) const override;
+
+    NativeHandle nativeHandle() const override { return buffer(); }
+    uint32_t size() const override { return m_size; }
 
     void setVertices(const void* vertices, uint32_t size) override;
-
-private:
-    VkDeviceSize m_size{0};
 };
 
 } // namespace GE::Vulkan

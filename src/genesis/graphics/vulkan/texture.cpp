@@ -94,7 +94,7 @@ VkSamplerAddressMode toVkSamplerAddressMode(GE::TextureWrap wrap)
         {Wrap::REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT},
         {Wrap::MIRROR_REPEAT, VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT}};
 
-    return GE::toType(to_addr_mode, wrap, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+    return GE::getValue(to_addr_mode, wrap, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 }
 
 VkSamplerAddressMode toVkSamplerAddressMode(GE::TextureFormat format, GE::TextureWrap wrap)
@@ -280,7 +280,7 @@ bool Texture2D::setData(const void* data, uint32_t size)
     region.imageOffset = {0, 0, 0};
     region.imageExtent = m_image->extent();
 
-    StagingBuffer buffer{m_device, data, size};
+    StagingBuffer buffer{m_device, size, data};
     m_image->copyFrom(buffer, {region});
     return true;
 }
@@ -300,13 +300,13 @@ uint32_t Texture2D::checkLayers(uint32_t layers)
 VkFormat toVkFormat(TextureFormat format)
 {
     static const auto to_format = toVkFormatMap();
-    return toType(to_format, format, VK_FORMAT_UNDEFINED);
+    return getValue(to_format, format, VK_FORMAT_UNDEFINED);
 }
 
 TextureFormat toTextureFormat(VkFormat format)
 {
     static const auto to_format = swapKeyAndValue(toVkFormatMap());
-    return toType(to_format, format, TextureFormat::UNKNOWN);
+    return getValue(to_format, format, TextureFormat::UNKNOWN);
 }
 
 VkImageViewType toVkImageViewType(TextureType type)
@@ -315,7 +315,7 @@ VkImageViewType toVkImageViewType(TextureType type)
         {TextureType::TEXTURE_2D, VK_IMAGE_VIEW_TYPE_2D},
     };
 
-    return toType(to_type, type, VK_IMAGE_VIEW_TYPE_MAX_ENUM);
+    return getValue(to_type, type, VK_IMAGE_VIEW_TYPE_MAX_ENUM);
 }
 
 VkImageAspectFlags toVkImageAspect(TextureFormat format)

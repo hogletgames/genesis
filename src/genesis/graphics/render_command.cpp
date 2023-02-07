@@ -54,10 +54,28 @@ void RenderCommand::bind(IndexBuffer *buffer)
     buffer->bind(&m_cmd_queue);
 }
 
+void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name,
+                         UniformBuffer *buffer)
+{
+    pipeline->bind(&m_cmd_queue, resource_name, buffer);
+}
+
+void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name, Texture *texture)
+{
+    pipeline->bind(&m_cmd_queue, resource_name, texture);
+}
+
 void RenderCommand::draw(VertexBuffer *buffer, uint32_t vertex_count)
 {
     buffer->bind(&m_cmd_queue);
     buffer->draw(&m_cmd_queue, vertex_count);
+}
+
+void RenderCommand::draw(VertexBuffer *vbo, IndexBuffer *ibo)
+{
+    vbo->bind(&m_cmd_queue);
+    ibo->bind(&m_cmd_queue);
+    vbo->draw(&m_cmd_queue, ibo);
 }
 
 void RenderCommand::draw(GUI::Context *gui_layer)

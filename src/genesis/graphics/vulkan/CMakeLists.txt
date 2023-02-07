@@ -2,10 +2,12 @@ list(APPEND GRAPHICS_VULKAN_SOURCES
     buffers/buffer_base.cpp
     buffers/index_buffer.cpp
     buffers/staging_buffer.cpp
+    buffers/uniform_buffer.cpp
     buffers/vertex_buffer.cpp
     renderers/framebuffer_renderer.cpp
     renderers/renderer_base.cpp
     renderers/window_renderer.cpp
+    descriptor_pool.cpp
     device.cpp
     framebuffer.cpp
     graphics_context.cpp
@@ -15,6 +17,7 @@ list(APPEND GRAPHICS_VULKAN_SOURCES
     instance.cpp
     pipeline.cpp
     pipeline_barrier.cpp
+    pipeline_resources.cpp
     sdl_gui_context.cpp
     sdl_gui_event_handler.cpp
     shader.cpp
@@ -28,11 +31,13 @@ list(APPEND GRAPHICS_VULKAN_HEADERS
     buffers/buffer_base.h
     buffers/index_buffer.h
     buffers/staging_buffer.h
+    buffers/uniform_buffer.h
     buffers/vertex_buffer.h
     renderers/framebuffer_renderer.h
     renderers/renderer_base.h
     renderers/window_renderer.h
     command_buffer.h
+    descriptor_pool.h
     device.h
     framebuffer.h
     graphics_context.h
@@ -42,6 +47,7 @@ list(APPEND GRAPHICS_VULKAN_HEADERS
     instance.h
     pipeline.h
     pipeline_barrier.h
+    pipeline_resources.h
     sdl_gui_context.h
     sdl_gui_event_handler.h
     shader.h
@@ -67,7 +73,8 @@ ge_add_module(graphics-vulkan
         SDL2::SDL2-static
         shaderc
         spirv-cross-cpp
-        stb-image)
+        stb-image
+    )
 
 if (NOT GE_DISABLE_DEBUG)
     add_dependencies(genesis-graphics-vulkan VkLayer_khronos_validation)

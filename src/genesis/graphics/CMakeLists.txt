@@ -12,7 +12,9 @@ list(APPEND GRAPHICS_SOURCES
     shader_reflection.cpp
     texture.cpp
     texture_loader.cpp
-    vertex_buffer.cpp)
+    vertex_buffer.cpp
+    uniform_buffer.cpp
+    )
 
 list(APPEND GRAPHICS_HEADERS
     ${INCLUDE_DIR}/framebuffer.h
@@ -28,9 +30,12 @@ list(APPEND GRAPHICS_HEADERS
     ${INCLUDE_DIR}/shader_input_layout.h
     ${INCLUDE_DIR}/shader_precompiler.h
     ${INCLUDE_DIR}/shader_reflection.h
+    ${INCLUDE_DIR}/shader_resource_descriptors.h
     ${INCLUDE_DIR}/texture.h
     ${INCLUDE_DIR}/texture_loader.h
-    ${INCLUDE_DIR}/vertex_buffer.h)
+    ${INCLUDE_DIR}/uniform_buffer.h
+    ${INCLUDE_DIR}/vertex_buffer.h
+    )
 
 ge_add_module(graphics
     SOURCES ${GRAPHICS_SOURCES} ${GRAPHICS_HEADERS}
@@ -42,6 +47,7 @@ ge_add_module(graphics
         genesis::graphics-vulkan
         shaderc
         spirv-cross-cpp
-        stb-image)
+        stb-image
+    )
 
 add_subdirectory(vulkan)

@@ -31,6 +31,7 @@
  */
 
 #include "renderer_base.h"
+#include "descriptor_pool.h"
 #include "device.h"
 #include "texture.h"
 #include "vulkan_exception.h"
@@ -103,6 +104,7 @@ namespace GE::Vulkan {
 
 RendererBase::RendererBase(Shared<Device> device)
     : m_device{std::move(device)}
+    , m_descriptor_pool{makeShared<DescriptorPool>(m_device)}
 {
     createCommandPool();
     createPipelineCache();

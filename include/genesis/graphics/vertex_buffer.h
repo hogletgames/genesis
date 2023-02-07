@@ -38,17 +38,23 @@
 namespace GE {
 
 class GPUCommandQueue;
+class IndexBuffer;
 
 class GE_API VertexBuffer: public NonCopyable
 {
 public:
+    using NativeHandle = void*;
+
     virtual void bind(GPUCommandQueue* queue) const = 0;
     virtual void draw(GPUCommandQueue* queue, uint32_t vertex_count) const = 0;
+    virtual void draw(GPUCommandQueue* queue, IndexBuffer* ibo) const = 0;
+
+    virtual NativeHandle nativeHandle() const = 0;
+    virtual uint32_t size() const = 0;
 
     virtual void setVertices(const void* vertices, uint32_t size) = 0;
 
-    static Scoped<VertexBuffer> create(const void* vertices, uint32_t count);
-    static Scoped<VertexBuffer> create(uint32_t size);
+    static Scoped<VertexBuffer> create(uint32_t size, const void* vertices = nullptr);
 };
 
 } // namespace GE

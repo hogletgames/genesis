@@ -36,6 +36,8 @@
 
 #include <vulkan/vulkan.h>
 
+#include <vector>
+
 namespace GE::Vulkan {
 
 std::vector<VkVertexInputAttributeDescription>

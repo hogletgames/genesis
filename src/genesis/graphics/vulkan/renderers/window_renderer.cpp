@@ -31,6 +31,7 @@
  */
 
 #include "window_renderer.h"
+#include "descriptor_pool.h"
 #include "device.h"
 #include "pipeline.h"
 #include "swap_chain.h"
@@ -66,7 +67,7 @@ WindowRenderer::WindowRenderer(Shared<Device> device, const config_t& config)
     , m_window_size{config.window_size}
     , m_msaa_samples{config.msaa_samples}
 {
-    m_clear_values = {{}, {}};
+    m_clear_values = {{}, toVkClearDepthStencilValue(1.0f)};
 
     createRenderPasses();
     createSwapChain();
@@ -107,6 +108,7 @@ void WindowRenderer::endFrame()
     }
 
     m_swap_chain->submitCommandBuffer(cmd);
+    m_descriptor_pool->reset();
 }
 
 void WindowRenderer::swapBuffers()
@@ -129,6 +131,7 @@ Scoped<GE::Pipeline> WindowRenderer::createPipeline(const GE::pipeline_config_t&
     vulkan_config.render_pass = m_render_passes[CLEAR_ALL];
     vulkan_config.front_face = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     vulkan_config.msaa_samples = toVkSampleCountFlag(m_msaa_samples);
+    vulkan_config.descriptor_pool = m_descriptor_pool;
     return tryMakeScoped<Vulkan::Pipeline>(m_device, vulkan_config);
 }
 

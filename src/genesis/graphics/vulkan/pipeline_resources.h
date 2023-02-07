@@ -33,67 +33,66 @@
 #pragma once
 
 #include <genesis/core/memory.h>
-#include <genesis/graphics/renderer.h>
+#include <genesis/graphics/pipeline.h>
+#include <genesis/graphics/shader_resource_descriptors.h>
 
 #include <vulkan/vulkan.h>
 
+#include <optional>
+#include <unordered_map>
 #include <vector>
 
 namespace GE::Vulkan {
 
 class DescriptorPool;
 class Device;
+struct pipeline_config_t;
 
-class RendererBase: public GE::Renderer
+class PipelineResources
 {
 public:
-    ~RendererBase();
+    using DescriptorSetLayouts = std::vector<VkDescriptorSetLayout>;
+    using ResourcesPerState = std::pair<GE::ResourceDescriptors, VkShaderStageFlags>;
+    using Resources = std::vector<ResourcesPerState>;
 
-    RenderCommand* command() override { return &m_render_command; }
+    PipelineResources(Shared<Device> device, const Vulkan::pipeline_config_t& pipeline_config);
+    ~PipelineResources();
 
-protected:
-    explicit RendererBase(Shared<Device> device);
+    std::optional<resource_descriptor_t> resource(const std::string& name) const;
+    VkDescriptorSet descriptorSet(uint32_t set) const;
+    const DescriptorSetLayouts& descriptorSetLayouts() const { return m_descriptor_set_layouts; }
 
-    VkRenderPass createRenderPass(const std::vector<VkAttachmentDescription>& descriptions,
-                                  bool is_multisampled = false);
-    void createCommandPool();
-    void createCommandBuffers(uint32_t count);
-    void createPipelineCache();
-
-    bool beginRenderPass(ClearMode clear_mode);
-    void updateDynamicState();
-    bool endRenderPass();
-
-    virtual VkCommandBuffer cmdBuffer() const = 0;
-    virtual VkFramebuffer currentFramebuffer() const = 0;
-    virtual VkExtent2D extent() const = 0;
-    virtual VkViewport viewport() const = 0;
-
-    Shared<Device> m_device;
-
-    VkPipelineCache m_pipeline_cache{VK_NULL_HANDLE};
-    VkCommandPool m_command_pool{VK_NULL_HANDLE};
-    Shared<DescriptorPool> m_descriptor_pool;
-    std::array<VkRenderPass, 4> m_render_passes{VK_NULL_HANDLE};
-    std::vector<VkCommandBuffer> m_cmd_buffers;
-    std::vector<VkClearValue> m_clear_values;
-
-    RenderCommand m_render_command;
+    VkDescriptorSetLayout descriptorSetLayout(uint32_t set) const
+    {
+        return m_descriptor_set_layouts.at(set);
+    }
 
 private:
+    using BindingVector = std::vector<VkDescriptorSetLayoutBinding>;
+    using SetLayoutBindings = std::vector<BindingVector>;
+
+    void createDescriptorSetLayouts(const Vulkan::pipeline_config_t& pipeline_config);
+    SetLayoutBindings createSetLayoutBindings(const Resources& descriptor_resources);
+
     void destroyVkHandles();
+
+    Shared<Device> m_device;
+    Shared<DescriptorPool> m_descriptor_pool;
+    DescriptorSetLayouts m_descriptor_set_layouts;
+    std::unordered_map<std::string, resource_descriptor_t> m_resources;
 };
 
-constexpr VkClearValue toVkClearColorValue(const GE::Vec4& clear_color)
+constexpr VkDescriptorType toVkDescriptorType(resource_descriptor_t::Type type)
 {
-    return {{{clear_color.x, clear_color.y, clear_color.z, clear_color.w}}};
-}
+    using Type = resource_descriptor_t::Type;
 
-constexpr VkClearValue toVkClearDepthStencilValue(float clear_depth)
-{
-    VkClearValue clear_value{};
-    clear_value.depthStencil = {clear_depth, 0};
-    return clear_value;
+    switch (type) {
+        case Type::UNIFORM_BUFFER: return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        case Type::COMBINED_IMAGE_SAMPLER: return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        default: break;
+    }
+
+    return VK_DESCRIPTOR_TYPE_MAX_ENUM;
 }
 
 } // namespace GE::Vulkan

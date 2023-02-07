@@ -47,6 +47,8 @@ public:
     explicit BufferBase(Shared<Device> device);
     ~BufferBase();
 
+    void copyFromHost(uint32_t size, const void* data, uint32_t offset);
+
     VkBuffer buffer() const { return m_buffer; };
 
 protected:
@@ -56,6 +58,12 @@ protected:
     Shared<Device> m_device;
     VkBuffer m_buffer{VK_NULL_HANDLE};
     VkDeviceMemory m_memory{VK_NULL_HANDLE};
+    uint32_t m_size{};
 };
+
+constexpr VkBuffer toVkBuffer(void* buffer)
+{
+    return static_cast<VkBuffer>(buffer);
+}
 
 } // namespace GE::Vulkan

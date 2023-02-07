@@ -56,7 +56,7 @@ const char* categoryToString(int category)
         {SDL_LOG_CATEGORY_RENDER, "Render"},   {SDL_LOG_CATEGORY_INPUT, "Input"},
         {SDL_LOG_CATEGORY_TEST, "Test"},       {SDL_LOG_CATEGORY_CUSTOM, "Custom"}};
 
-    return GE::toType(cat_to_str, category, default_category);
+    return GE::getValue(cat_to_str, category, default_category);
 }
 
 void debugCallback([[maybe_unused]] void* userdata, int category, SDL_LogPriority priority,
@@ -83,7 +83,7 @@ int renderAPIToWindowFlag(GE::Graphics::API api)
 
     static constexpr int default_flag{0};
     static std::unordered_map<API, int> api_to_flag = {{API::VULKAN, SDL_WINDOW_VULKAN}};
-    int flag = GE::toType(api_to_flag, api, default_flag);
+    int flag = GE::getValue(api_to_flag, api, default_flag);
 
     if (flag == default_flag) {
         GE_CORE_ERR("Failed to get SDL Window Flag: unsupported API '{}'", api);

@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include "buffers/buffer_base.h"
+#include "buffer_base.h"
 
 #include <genesis/graphics/index_buffer.h>
 
@@ -47,10 +47,11 @@ public:
 
     void bind(GPUCommandQueue* cmd_queue) const override;
 
+    NativeHandle nativeHandle() const override { return buffer(); }
+    uint32_t size() const override { return m_size; }
     uint32_t count() const override { return m_count; }
 
 private:
-    Shared<Device> m_device;
     uint32_t m_count{0};
 };
 

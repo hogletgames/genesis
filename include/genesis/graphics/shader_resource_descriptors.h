@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,31 +32,35 @@
 
 #pragma once
 
-#include <genesis/core/memory.h>
-#include <genesis/graphics/graphics_factory.h>
+#include <genesis/core/export.h>
 
-namespace GE::Vulkan {
+#include <string>
+#include <tuple>
+#include <vector>
 
-class Device;
+namespace GE {
 
-class GraphicsFactory: public GE::GraphicsFactory
-{
-public:
-    explicit GraphicsFactory(Shared<Device> device);
+struct GE_API resource_descriptor_t {
+    enum Type : uint8_t
+    {
+        UNKNOWN = 0,
+        UNIFORM_BUFFER,
+        COMBINED_IMAGE_SAMPLER
+    };
 
-    Scoped<GE::Framebuffer> createFramebuffer(const Framebuffer::config_t& config) const override;
-
-    Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
-    Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size, const void* vertices) const override;
-    Scoped<GE::UniformBuffer> createUniformBuffer(uint32_t size, const void* data) const override;
-
-    Scoped<GE::Shader> createShader(Shader::Type type) override;
-
-    Scoped<GE::Texture> createTexture(const texture_config_t& config) override;
-
-private:
-    Shared<Device> m_device;
+    std::string name;
+    Type type{UNKNOWN};
+    uint32_t set{0};
+    uint32_t binding{0};
+    uint32_t count{0};
 };
 
-} // namespace GE::Vulkan
+inline bool operator==(const resource_descriptor_t& lhs, const resource_descriptor_t& rhs)
+{
+    return std::tie(lhs.name, lhs.type, lhs.set, lhs.binding, lhs.count) ==
+           std::tie(rhs.name, rhs.type, rhs.set, rhs.binding, rhs.count);
+}
+
+using ResourceDescriptors = std::vector<resource_descriptor_t>;
+
+} // namespace GE
