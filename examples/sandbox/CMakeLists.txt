@@ -7,6 +7,8 @@ list(APPEND SANDBOX_SOURCES
     drawable/model.cpp
     drawable/shape.cpp
     drawable/triangle.cpp
+    gui_layer/camera.cpp
+    gui_layer/gui_layer_window.cpp
     )
 
 list(APPEND SANDBOX_HEADERS
@@ -17,6 +19,8 @@ list(APPEND SANDBOX_HEADERS
     drawable/model.h
     drawable/shape.h
     drawable/triangle.h
+    gui_layer/camera.h
+    gui_layer/gui_layer_window.h
     )
 
 ge_add_executable(sandbox
