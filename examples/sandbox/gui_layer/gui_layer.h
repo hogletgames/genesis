@@ -30,21 +30,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "gui_layer.h"
+#pragma once
 
-#include "genesis/gui/renderer.h"
-
-#include <imgui.h>
+#include <genesis/core/memory.h>
+#include <genesis/graphics/mesh.h>
+#include <genesis/gui/base_layer.h>
+#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget_node_guard.h>
 
 namespace GE::Examples {
 
-void GUILayer::onUpdate([[maybe_unused]] Timestamp ts) {}
+class GuiLayerWindow;
 
-void GUILayer::onRender()
+class GE_API GUILayer: public GE::GUI::BaseLayer
 {
-    GUI::Renderer::begin();
-    ImGui::ShowDemoWindow();
-    GUI::Renderer::end();
-}
+public:
+    GUILayer();
+    ~GUILayer();
+
+    void onAttached() override;
+    void onDetached() override;
+
+    void onUpdate(Timestamp ts) override;
+    void onRender() override;
+
+private:
+    void drawCheckboxWindow();
+    void drawTransformTreeNode(GE::GUI::WidgetNodeGuard* node_guard, GuiLayerWindow* gui_window);
+    void drawGuiWindows();
+
+    std::vector<Scoped<GuiLayerWindow>> m_gui_windows;
+};
 
 } // namespace GE::Examples

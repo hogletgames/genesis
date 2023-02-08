@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "gui_layer.h"
+#include "gui_layer/gui_layer.h"
 #include "triangle_layer.h"
 
 #include <genesis/genesis.h>
