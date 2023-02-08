@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,12 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "render_layer.h"
+#pragma once
+
+#include <genesis/core/export.h>
+#include <genesis/math/types.h>
+
+namespace GE {
+class Event;
+} // namespace GE
 
 namespace GE::Examples {
 
-void RenderLayer::onEvent([[maybe_unused]] Event *event) {}
+class GE_API Camera
+{
+public:
+    Camera();
 
-void RenderLayer::onUpdate([[maybe_unused]] Timestamp ts) {}
+    Mat4 view() const { return m_view; }
+    Mat4 projection() const { return m_proj; }
+
+    void setSize(const Vec2 &size);
+
+private:
+    void updateView();
+    void updateProjection();
+
+    Mat4 m_view{};
+    Mat4 m_proj{};
+
+    Vec2 m_size{};
+};
 
 } // namespace GE::Examples

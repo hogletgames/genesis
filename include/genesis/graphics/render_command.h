@@ -44,6 +44,7 @@ class Context;
 } // namespace GUI
 
 class IndexBuffer;
+class Mesh;
 class Pipeline;
 class Texture;
 class UniformBuffer;
@@ -58,6 +59,7 @@ public:
     void bind(Pipeline* pipeline, const std::string& resource_name, UniformBuffer* buffer);
     void bind(Pipeline* pipeline, const std::string& resource_name, Texture* texture);
 
+    void draw(const Mesh& mesh);
     void draw(VertexBuffer* buffer, uint32_t vertex_count);
     void draw(VertexBuffer* vbo, IndexBuffer* ibo);
     void draw(GUI::Context* gui_layer);

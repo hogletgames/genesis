@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,51 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/math/types.h>
+#include "camera.h"
+#include "drawable/drawable.h"
 
-#include <string_view>
+#include <genesis/graphics/framebuffer.h>
+#include <genesis/gui/widgets.h>
 
-namespace GE::GUI {
+namespace GE::Examples {
 
-class GE_API Window: public WidgetNode
+class GE_API GuiLayerWindow
 {
 public:
-    using Flags = int;
+    void draw();
+    void update();
 
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+    std::string_view name() const { return m_name; }
+    bool* isOpenFlag() { return &m_is_open; }
+    Vec3* objectTranslation() { return &m_translation; }
+    Vec3* objectRotation() { return &m_rotation; }
+    Vec3* objectScale() { return &m_scale; }
 
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
+    Mat4 transform() const;
+
+    template<typename T, typename... Args>
+    static Scoped<GuiLayerWindow> create(const std::string& name, Args&&... args)
+    {
+        auto window = Scoped<GuiLayerWindow>(new GuiLayerWindow{name});
+        auto* renderer = window->m_fbo->renderer();
+        window->m_draw_object = makeScoped<T>(renderer, std::forward<Args>(args)...);
+        return window;
+    }
+
+private:
+    explicit GuiLayerWindow(std::string name);
+
+    bool m_is_open{false};
+    std::string m_name;
+    GUI::Window m_window{m_name, &m_is_open};
+
+    Camera m_camera;
+    Vec3 m_translation{0.0f, 0.0f, 0.0f};
+    Vec3 m_rotation{0.0f, 0.0f, 0.0f};
+    Vec3 m_scale{1.0f, 1.0f, 1.0f};
+
+    Scoped<Framebuffer> m_fbo;
+    Scoped<Drawable> m_draw_object;
 };
 
-} // namespace GE::GUI
+} // namespace GE::Examples

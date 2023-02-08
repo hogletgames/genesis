@@ -5,6 +5,7 @@ list(APPEND GRAPHICS_SOURCES
     gpu_command_queue.cpp
     graphics.cpp
     index_buffer.cpp
+    mesh.cpp
     render_command.cpp
     shader.cpp
     shader_input_layout.cpp
@@ -23,6 +24,7 @@ list(APPEND GRAPHICS_HEADERS
     ${INCLUDE_DIR}/graphics_context.h
     ${INCLUDE_DIR}/graphics_factory.h
     ${INCLUDE_DIR}/index_buffer.h
+    ${INCLUDE_DIR}/mesh.h
     ${INCLUDE_DIR}/pipeline.h
     ${INCLUDE_DIR}/render_command.h
     ${INCLUDE_DIR}/renderer.h
@@ -34,6 +36,7 @@ list(APPEND GRAPHICS_HEADERS
     ${INCLUDE_DIR}/texture.h
     ${INCLUDE_DIR}/texture_loader.h
     ${INCLUDE_DIR}/uniform_buffer.h
+    ${INCLUDE_DIR}/vertex.h
     ${INCLUDE_DIR}/vertex_buffer.h
     )
 
@@ -48,6 +51,7 @@ ge_add_module(graphics
         shaderc
         spirv-cross-cpp
         stb-image
+        tinyobjloader
     )
 
 add_subdirectory(vulkan)

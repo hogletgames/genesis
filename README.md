@@ -23,6 +23,7 @@
 - [fmt](https://github.com/fmtlib/fmt) ([MIT](https://github.com/fmtlib/fmt/blob/master/LICENSE.rst))
 - [googletest](https://github.com/google/googletest) ([BSD-3](https://github.com/google/googletest/blob/main/LICENSE))
 - [imgui](https://github.com/ocornut/imgui) ([MIT](https://github.com/ocornut/imgui/blob/master/LICENSE.txt))
+- [docopt.cpp](https://github.com/docopt/docopt.cpp) ([MIT](https://github.com/docopt/docopt.cpp/blob/master/LICENSE-MIT), [Boost 1.0](https://github.com/docopt/docopt.cpp/blob/master/LICENSE-Boost-1.0))
 
 ### To build manually
 

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,26 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/math/types.h>
+#include "drawable.h"
 
-#include <string_view>
+#include <genesis/graphics/mesh.h>
 
-namespace GE::GUI {
+namespace GE {
+class Texture;
+} // namespace GE
 
-class GE_API Window: public WidgetNode
+namespace GE::Examples {
+
+class GE_API Model: public Drawable
 {
 public:
-    using Flags = int;
+    Model(Renderer* renderer, std::string_view model, std::string_view texture);
 
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+    void draw(Renderer* renderer, const mvp_t& mvp) override;
 
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
+private:
+    Mesh m_mesh;
+    Scoped<Texture> m_texture;
 };
 
-} // namespace GE::GUI
+} // namespace GE::Examples

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,25 +30,43 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "camera.h"
 
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/math/types.h>
+namespace {
 
-#include <string_view>
-
-namespace GE::GUI {
-
-class GE_API Window: public WidgetNode
+float aspectRatio(const GE::Vec2& size)
 {
-public:
-    using Flags = int;
+    if (size.y > 0.0f) {
+        return size.x / size.y;
+    }
 
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+    return 1.0f;
+}
 
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
-};
+} // namespace
 
-} // namespace GE::GUI
+namespace GE::Examples {
+
+Camera::Camera()
+{
+    updateView();
+    updateProjection();
+}
+
+void Camera::setSize(const Vec2& size)
+{
+    m_size = size;
+    updateProjection();
+}
+
+void Camera::updateView()
+{
+    m_view = glm::lookAt(Vec3{2.0f, 2.0f, 2.0f}, Vec3{0.0f, 0.0f, 0.0f}, Vec3{0.0f, 0.0f, 1.0f});
+}
+
+void Camera::updateProjection()
+{
+    m_proj = glm::perspective(glm::radians(45.0f), aspectRatio(m_size), 0.1f, 10.0f);
+}
+
+} // namespace GE::Examples

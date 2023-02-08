@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,35 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/math/types.h>
+#include <genesis/core/export.h>
+#include <genesis/core/memory.h>
 
-#include <string_view>
+namespace tinyobj {
+class ObjReader;
+} // namespace tinyobj
 
-namespace GE::GUI {
+namespace GE {
 
-class GE_API Window: public WidgetNode
+class GPUCommandQueue;
+class IndexBuffer;
+class VertexBuffer;
+
+class GE_API Mesh
 {
 public:
-    using Flags = int;
+    Mesh();
+    ~Mesh();
 
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+    bool fromObj(std::string_view filepath);
+    void destroy();
 
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
+    void draw(GPUCommandQueue* queue) const;
+
+private:
+    bool populateBuffers(const tinyobj::ObjReader& reader);
+
+    Scoped<VertexBuffer> m_vbo;
+    Scoped<IndexBuffer> m_ibo;
 };
 
-} // namespace GE::GUI
+} // namespace GE

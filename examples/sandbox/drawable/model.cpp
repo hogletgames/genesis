@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,25 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "model.h"
 
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/math/types.h>
+#include "genesis/core.h"
+#include "genesis/graphics.h"
 
-#include <string_view>
+namespace {
 
-namespace GE::GUI {
+constexpr auto VERTEX_SHADER{"examples/sandbox/assets/shaders/model_shader.vert"};
+constexpr auto FRAGMENT_SHADER{"examples/sandbox/assets/shaders/model_shader.frag"};
 
-class GE_API Window: public WidgetNode
+} // namespace
+
+namespace GE::Examples {
+
+Model::Model(Renderer* renderer, std::string_view model, std::string_view texture)
+    : Drawable{renderer, VERTEX_SHADER, FRAGMENT_SHADER}
 {
-public:
-    using Flags = int;
+    GE_ASSERT(m_mesh.fromObj(model), "Failed to load mesh");
 
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+    m_texture = GE::TextureLoader{texture.data()}.load();
+    GE_ASSERT(m_texture, "Failed to load texture");
+}
 
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
-};
+void Model::draw(Renderer* renderer, const mvp_t& mvp)
+{
+    bind(renderer, mvp);
+    renderer->command()->bind(m_pipeline.get(), "u_Texture", m_texture.get());
+    renderer->command()->draw(m_mesh);
+}
 
-} // namespace GE::GUI
+} // namespace GE::Examples

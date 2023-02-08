@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,34 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
+#include "genesis/core/hash.h"
 #include <genesis/math/types.h>
 
-#include <string_view>
+namespace GE {
 
-namespace GE::GUI {
-
-class GE_API Window: public WidgetNode
-{
-public:
-    using Flags = int;
-
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
-
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
+struct vertex_t {
+    GE::Vec3 position{0.0f, 0.0f, 0.0f};
+    GE::Vec3 color{0.0f, 0.0f, 0.0f};
+    GE::Vec2 tex_coord{0.0f, 0.0f};
 };
 
-} // namespace GE::GUI
+constexpr bool operator==(const vertex_t& lhs, const vertex_t& rhs)
+{
+    return std::tie(lhs.position, lhs.color, lhs.tex_coord) ==
+           std::tie(rhs.position, rhs.color, rhs.tex_coord);
+}
+
+constexpr bool operator!=(const vertex_t& lhs, const vertex_t& rhs)
+{
+    return !(lhs == rhs);
+}
+
+} // namespace GE
+
+template<>
+struct std::hash<GE::vertex_t> {
+    size_t operator()(const GE::vertex_t& vertex) const
+    {
+        return GE::combinedHash(vertex.position, vertex.color, vertex.tex_coord);
+    }
+};

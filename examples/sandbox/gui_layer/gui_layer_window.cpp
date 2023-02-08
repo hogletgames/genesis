@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,69 +30,62 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "render_command.h"
-#include "index_buffer.h"
-#include "mesh.h"
-#include "pipeline.h"
-#include "vertex_buffer.h"
+#include "gui_layer_window.h"
+#include "drawable/drawable.h"
 
-#include "genesis/gui/context.h"
+#include "genesis/core.h"
+#include "genesis/graphics.h"
+#include "genesis/gui/widgets.h"
 
-namespace GE {
+namespace GE::Examples {
 
-void RenderCommand::bind(Pipeline *pipeline)
+GuiLayerWindow::GuiLayerWindow(std::string name)
+    : m_name{std::move(name)}
 {
-    pipeline->bind(&m_cmd_queue);
+    Framebuffer::config_t model_fbo_config{};
+    model_fbo_config.clear_color = {0.3f, 0.3f, 0.3f, 1.0f};
+    model_fbo_config.size = {720.0f, 480.0f};
+    model_fbo_config.msaa_samples = GE::Graphics::limits().max_msaa;
+
+    m_fbo = Framebuffer::create(model_fbo_config);
+    GE_ASSERT(m_fbo, "Failed to create framebuffer");
 }
 
-void RenderCommand::bind(VertexBuffer *buffer)
+void GuiLayerWindow::draw()
 {
-    buffer->bind(&m_cmd_queue);
+    if (!m_is_open) {
+        return;
+    }
+
+    GUI::WidgetNodeGuard node{&m_window};
+    update();
+
+    Drawable::mvp_t mvp{};
+    mvp.model = transform();
+    mvp.view = m_camera.view();
+    mvp.projection = m_camera.projection();
+
+    m_fbo->renderer()->beginFrame();
+    m_draw_object->draw(m_fbo->renderer(), mvp);
+    m_fbo->renderer()->endFrame();
+    m_fbo->renderer()->swapBuffers();
+
+    const auto& texture = m_fbo->colorTexture();
+    node.call<GUI::Image>(texture.nativeID(), texture.size());
 }
 
-void RenderCommand::bind(IndexBuffer *buffer)
+void GuiLayerWindow::update()
 {
-    buffer->bind(&m_cmd_queue);
+    if (auto window_size = m_window.availableRegion(); window_size != m_fbo->size()) {
+        m_fbo->resize(window_size);
+        m_camera.setSize(window_size);
+    }
 }
 
-void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name,
-                         UniformBuffer *buffer)
+Mat4 GuiLayerWindow::transform() const
 {
-    pipeline->bind(&m_cmd_queue, resource_name, buffer);
+    return glm::translate(glm::mat4{1.0f}, m_translation) * glm::toMat4(glm::quat(m_rotation)) *
+           glm::scale(glm::mat4{1.0f}, m_scale);
 }
 
-void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name, Texture *texture)
-{
-    pipeline->bind(&m_cmd_queue, resource_name, texture);
-}
-
-void RenderCommand::draw(const Mesh &mesh)
-{
-    mesh.draw(&m_cmd_queue);
-}
-
-void RenderCommand::draw(VertexBuffer *buffer, uint32_t vertex_count)
-{
-    buffer->bind(&m_cmd_queue);
-    buffer->draw(&m_cmd_queue, vertex_count);
-}
-
-void RenderCommand::draw(VertexBuffer *vbo, IndexBuffer *ibo)
-{
-    vbo->bind(&m_cmd_queue);
-    ibo->bind(&m_cmd_queue);
-    vbo->draw(&m_cmd_queue, ibo);
-}
-
-void RenderCommand::draw(GUI::Context *gui_layer)
-{
-    gui_layer->draw(&m_cmd_queue);
-}
-
-void RenderCommand::submit(GPUCommandBuffer cmd)
-{
-    m_cmd_queue.execCommands(cmd);
-    m_cmd_queue.clear();
-}
-
-} // namespace GE
+} // namespace GE::Examples

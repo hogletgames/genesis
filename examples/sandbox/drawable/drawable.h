@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,37 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/core/interface.h>
+#include <genesis/core/memory.h>
 #include <genesis/math/types.h>
 
-#include <string_view>
+namespace GE {
+class Pipeline;
+class Renderer;
+class UniformBuffer;
+} // namespace GE
 
-namespace GE::GUI {
+namespace GE::Examples {
 
-class GE_API Window: public WidgetNode
+class GE_API Drawable: public Interface
 {
 public:
-    using Flags = int;
+    struct mvp_t {
+        alignas(16) Mat4 model{1.0f};
+        alignas(16) Mat4 view{1.0f};
+        alignas(16) Mat4 projection{1.0f};
+    };
 
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+    ~Drawable();
 
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
+    virtual void draw(Renderer* renderer, const mvp_t& mvp) = 0;
+
+protected:
+    Drawable(Renderer* renderer, const std::string& vert_shader, const std::string& frag_shader);
+    void bind(Renderer* renderer, const mvp_t& mvp);
+
+    Scoped<Pipeline> m_pipeline;
+    Scoped<UniformBuffer> m_mpv;
 };
 
-} // namespace GE::GUI
+} // namespace GE::Examples

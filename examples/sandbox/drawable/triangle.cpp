@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,25 +30,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "triangle.h"
 
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/math/types.h>
+namespace GE::Examples {
 
-#include <string_view>
-
-namespace GE::GUI {
-
-class GE_API Window: public WidgetNode
+Triangle::Triangle(Renderer* renderer)
+    : Shape(renderer)
 {
-public:
-    using Flags = int;
+    static const std::vector<vertex_t> VERTICES = {
+        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+        {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+    };
 
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+    static const std::vector<uint32_t> INDICES = {0, 1, 2};
 
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
-};
+    setVertices(VERTICES);
+    setIndices(INDICES);
+}
 
-} // namespace GE::GUI
+} // namespace GE::Examples

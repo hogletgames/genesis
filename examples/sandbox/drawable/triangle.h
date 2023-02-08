@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,14 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/math/types.h>
+#include "shape.h"
 
-#include <string_view>
+namespace GE::Examples {
 
-namespace GE::GUI {
-
-class GE_API Window: public WidgetNode
+class GE_API Triangle: public Shape
 {
 public:
-    using Flags = int;
-
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
-
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
+    explicit Triangle(Renderer* renderer);
 };
 
-} // namespace GE::GUI
+} // namespace GE::Examples

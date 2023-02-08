@@ -32,23 +32,34 @@
 
 #pragma once
 
+#include <genesis/core/memory.h>
+#include <genesis/graphics/mesh.h>
+#include <genesis/gui/base_layer.h>
 #include <genesis/gui/widgets/widget_node.h>
-#include <genesis/math/types.h>
+#include <genesis/gui/widgets/widget_node_guard.h>
 
-#include <string_view>
+namespace GE::Examples {
 
-namespace GE::GUI {
+class GuiLayerWindow;
 
-class GE_API Window: public WidgetNode
+class GE_API GUILayer: public GE::GUI::BaseLayer
 {
 public:
-    using Flags = int;
+    GUILayer();
+    ~GUILayer();
 
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+    void onAttached() override;
+    void onDetached() override;
 
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
+    void onUpdate(Timestamp ts) override;
+    void onRender() override;
+
+private:
+    void drawCheckboxWindow();
+    void drawTransformTreeNode(GE::GUI::WidgetNodeGuard* node_guard, GuiLayerWindow* gui_window);
+    void drawGuiWindows();
+
+    std::vector<Scoped<GuiLayerWindow>> m_gui_windows;
 };
 
-} // namespace GE::GUI
+} // namespace GE::Examples

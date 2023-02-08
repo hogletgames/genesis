@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,33 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/math/types.h>
+#include "drawable.h"
 
-#include <string_view>
+#include <genesis/core/memory.h>
+#include <genesis/graphics/vertex.h>
 
-namespace GE::GUI {
+namespace GE {
+class IndexBuffer;
+class VertexBuffer;
+} // namespace GE
 
-class GE_API Window: public WidgetNode
+namespace GE::Examples {
+
+class GE_API Shape: public Drawable
 {
 public:
-    using Flags = int;
+    explicit Shape(Renderer* renderer);
+    ~Shape();
 
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+    void draw(Renderer* renderer, const mvp_t& mvp) override;
 
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
+protected:
+    void setVertices(const std::vector<vertex_t>& vertices);
+    void setIndices(const std::vector<uint32_t>& indices);
+
+private:
+    Scoped<VertexBuffer> m_vbo;
+    Scoped<IndexBuffer> m_ibo;
 };
 
-} // namespace GE::GUI
+} // namespace GE::Examples

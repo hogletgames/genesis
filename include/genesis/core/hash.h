@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,23 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/math/types.h>
+#include <functional>
 
-#include <string_view>
+namespace GE {
 
-namespace GE::GUI {
-
-class GE_API Window: public WidgetNode
+template<typename T>
+void combineHash(size_t& seed, const T& value)
 {
-public:
-    using Flags = int;
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    seed ^= std::hash<T>{}(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
 
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+template<typename... Args>
+size_t combinedHash(const Args&... args)
+{
+    size_t seed{0};
+    (combineHash(seed, args), ...);
+    return seed;
+}
 
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
-};
-
-} // namespace GE::GUI
+} // namespace GE

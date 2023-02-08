@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,21 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "gui_layer.h"
-
-#include "genesis/gui/renderer.h"
-
-#include <imgui.h>
+#include "cube.h"
 
 namespace GE::Examples {
 
-void GUILayer::onUpdate([[maybe_unused]] Timestamp ts) {}
-
-void GUILayer::onRender()
+Cube::Cube(Renderer *renderer)
+    : Shape(renderer)
 {
-    GUI::Renderer::begin();
-    ImGui::ShowDemoWindow();
-    GUI::Renderer::end();
+    static const std::vector<vertex_t> VERTICES = {
+        // front
+        {{-0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}},  // 0
+        {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}}, // 1
+        {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},  // 2
+        {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},   // 3
+        // left
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}}, // 4
+        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},  // 5
+        // bottom
+        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}}, // 6
+        // right
+        {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}}, // 7
+    };
+
+    static const std::vector<uint32_t> INDICES = {
+        // front
+        0, 1, 2, 2, 3, 0,
+        // left
+        4, 1, 5, 0, 5, 1,
+        // bottom
+        1, 4, 2, 2, 4, 6,
+        // right
+        3, 2, 7, 7, 2, 6,
+        // top
+        5, 0, 3, 3, 7, 5,
+        // back
+        7, 6, 4, 4, 5, 7,
+        //
+    };
+
+    setVertices(VERTICES);
+    setIndices(INDICES);
 }
 
 } // namespace GE::Examples

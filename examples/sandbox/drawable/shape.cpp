@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "shape.h"
 
-#include <genesis/gui/base_layer.h>
+#include "genesis/core.h"
+#include "genesis/graphics.h"
+
+namespace {
+
+constexpr auto VERTEX_SHADER{"examples/sandbox/assets/shaders/shape_shader.vert"};
+constexpr auto FRAGMENT_SHADER{"examples/sandbox/assets/shaders/shape_shader.frag"};
+
+} // namespace
 
 namespace GE::Examples {
 
-class GE_API GUILayer: public GE::GUI::BaseLayer
-{
-    void onAttached() override {}
-    void onDetached() override {}
+Shape::Shape(Renderer* renderer)
+    : Drawable{renderer, VERTEX_SHADER, FRAGMENT_SHADER}
+{}
 
-    void onUpdate(Timestamp ts) override;
-    void onRender() override;
-};
+Shape::~Shape() = default;
+
+void Shape::draw(Renderer* renderer, const mvp_t& mvp)
+{
+    bind(renderer, mvp);
+    renderer->command()->draw(m_vbo.get(), m_ibo.get());
+}
+
+void Shape::setVertices(const std::vector<vertex_t>& vertices)
+{
+    m_vbo = VertexBuffer::create(vertices.size() * sizeof(vertex_t), vertices.data());
+    GE_ASSERT(m_vbo, "Failed to create vertex buffer");
+}
+
+void Shape::setIndices(const std::vector<uint32_t>& indices)
+{
+    m_ibo = IndexBuffer::create(indices.data(), indices.size());
+    GE_ASSERT(m_ibo, "Failed to create vertex buffer");
+}
 
 } // namespace GE::Examples

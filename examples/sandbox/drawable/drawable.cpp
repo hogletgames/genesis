@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2022, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,20 +30,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "drawable.h"
 
-#include <genesis/app/layer.h>
+#include "genesis/core.h"
+#include "genesis/graphics.h"
 
 namespace GE::Examples {
 
-class GE_API RenderLayer: public Layer
-{
-    void onAttached() override {}
-    void onDetached() override {}
+Drawable::~Drawable() = default;
 
-    void onEvent(Event* event) override;
-    void onUpdate(Timestamp ts) override;
-    void onRender() override {}
-};
+Drawable::Drawable(Renderer *renderer, const std::string &vert_shader,
+                   const std::string &frag_shader)
+{
+    auto vert = Shader::create(Shader::Type::VERTEX);
+    GE_ASSERT(vert->compileFromFile(vert_shader), "Failed to compile vertex shader");
+
+    auto frag = Shader::create(Shader::Type::FRAGMENT);
+    GE_ASSERT(frag->compileFromFile(frag_shader), "Failed to compile fragment shader");
+
+    pipeline_config_t pipeline_config{};
+    pipeline_config.vertex_shader = std::move(vert);
+    pipeline_config.fragment_shader = std::move(frag);
+
+    m_pipeline = renderer->createPipeline(pipeline_config);
+    GE_ASSERT(m_pipeline, "Failed to create pipeline");
+
+    m_mpv = UniformBuffer::create(sizeof(mvp_t), nullptr);
+}
+
+void Drawable::bind(Renderer *renderer, const mvp_t &mvp)
+{
+    m_mpv->setData(sizeof(mvp_t), &mvp);
+
+    renderer->command()->bind(m_pipeline.get());
+    renderer->command()->bind(m_pipeline.get(), "MVP", m_mpv.get());
+}
 
 } // namespace GE::Examples
