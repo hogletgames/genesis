@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,25 @@ namespace GE {
 template<typename T = int>
 constexpr T bit(T offset)
 {
-    return 1 << offset;
+    return static_cast<T>(1 << offset);
+}
+
+template<typename T = int>
+constexpr bool checkBits(T flags, T bits)
+{
+    return (flags & bits) == bits;
+}
+
+template<typename T = int>
+constexpr T setBits(T bits, T mask)
+{
+    return static_cast<T>(bits | mask);
+}
+
+template<typename T = int>
+constexpr T clearBits(T bits, T mask)
+{
+    return static_cast<T>(bits & (~mask));
 }
 
 } // namespace GE
