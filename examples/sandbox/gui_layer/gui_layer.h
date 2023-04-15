@@ -52,11 +52,11 @@ public:
     void onDetached() override;
 
     void onUpdate(Timestamp ts) override;
+    void onEvent(Event* event) override;
     void onRender() override;
 
 private:
     void drawCheckboxWindow();
-    void drawTransformTreeNode(GE::GUI::WidgetNodeGuard* node_guard, GuiLayerWindow* gui_window);
     void drawGuiWindows();
 
     std::vector<Scoped<GuiLayerWindow>> m_gui_windows;

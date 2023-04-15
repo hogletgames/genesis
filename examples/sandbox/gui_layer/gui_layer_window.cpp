@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,19 +36,25 @@
 #include "genesis/core.h"
 #include "genesis/graphics.h"
 #include "genesis/gui/widgets.h"
+#include "genesis/math.h"
+#include "genesis/scene.h"
 
 namespace GE::Examples {
 
-GuiLayerWindow::GuiLayerWindow(std::string name)
-    : m_name{std::move(name)}
-{
-    Framebuffer::config_t model_fbo_config{};
-    model_fbo_config.clear_color = {0.3f, 0.3f, 0.3f, 1.0f};
-    model_fbo_config.size = {720.0f, 480.0f};
-    model_fbo_config.msaa_samples = GE::Graphics::limits().max_msaa;
+GuiLayerWindow::~GuiLayerWindow() = default;
 
-    m_fbo = Framebuffer::create(model_fbo_config);
-    GE_ASSERT(m_fbo, "Failed to create framebuffer");
+void GuiLayerWindow::onUpdate(GE::Timestamp ts)
+{
+    if (m_is_focused) {
+        m_camera_controller->onUpdate(ts);
+    }
+}
+
+void GuiLayerWindow::onEvent(Event* event)
+{
+    if (m_is_focused) {
+        m_camera_controller->onEvent(event);
+    }
 }
 
 void GuiLayerWindow::draw()
@@ -57,13 +63,13 @@ void GuiLayerWindow::draw()
         return;
     }
 
+    GUI::StyleVar padding{GUI::StyleVar::WINDOW_PADDING, {0.0f, 0.0f}};
     GUI::WidgetNodeGuard node{&m_window};
-    update();
 
     Drawable::mvp_t mvp{};
-    mvp.model = transform();
-    mvp.view = m_camera.view();
-    mvp.projection = m_camera.projection();
+    mvp.model = translate(Mat4{1.0f}, m_camera->position());
+    mvp.view = m_camera->view();
+    mvp.projection = m_camera->projection();
 
     m_fbo->renderer()->beginFrame();
     m_draw_object->draw(m_fbo->renderer(), mvp);
@@ -74,18 +80,28 @@ void GuiLayerWindow::draw()
     node.call<GUI::Image>(texture.nativeID(), texture.size());
 }
 
-void GuiLayerWindow::update()
+GuiLayerWindow::GuiLayerWindow(std::string name)
+    : m_name{std::move(name)}
+    , m_camera{makeShared<Scene::ViewProjectionCamera>()}
+    , m_camera_controller{makeScoped<Scene::VPCameraController>(m_camera)}
 {
-    if (auto window_size = m_window.availableRegion(); window_size != m_fbo->size()) {
-        m_fbo->resize(window_size);
-        m_camera.setSize(window_size);
-    }
-}
+    Framebuffer::config_t model_fbo_config{};
+    model_fbo_config.clear_color = {0.3f, 0.3f, 0.3f, 1.0f};
+    model_fbo_config.size = {720.0f, 480.0f};
+    model_fbo_config.msaa_samples = GE::Graphics::limits().max_msaa;
 
-Mat4 GuiLayerWindow::transform() const
-{
-    return glm::translate(glm::mat4{1.0f}, m_translation) * glm::toMat4(glm::quat(m_rotation)) *
-           glm::scale(glm::mat4{1.0f}, m_scale);
+    m_fbo = Framebuffer::create(model_fbo_config);
+    GE_ASSERT(m_fbo, "Failed to create framebuffer");
+
+    m_camera_controller->setViewport(model_fbo_config.size);
+
+    m_window.isFocusedSignal()->connect([this](bool is_focused) { m_is_focused = is_focused; });
+    m_window.availableRegionSignal()->connect([this](const Vec2& size) {
+        if (m_fbo->size() != size) {
+            m_fbo->resize(size);
+            m_camera_controller->setViewport(size);
+        }
+    });
 }
 
 } // namespace GE::Examples
