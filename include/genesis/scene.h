@@ -34,3 +34,4 @@
 
 #include <genesis/scene/camera/projection_camera.h>
 #include <genesis/scene/camera/view_projection_camera.h>
+#include <genesis/scene/camera/vp_camera_controller.h>
