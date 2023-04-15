@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,4 +33,39 @@
 #pragma once
 
 #include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
+
+namespace GE::Scene {
+
+class GE_API ViewProjectionCamera: public ProjectionCamera
+{
+public:
+    ViewProjectionCamera();
+
+    const Mat4& view() const { return m_view; }
+
+    void setDistance(float distance);
+    void setRotationAngles(float pitch, float yaw);
+    void setFocalPoint(const Vec3& focal_point);
+
+    float distance() const { return m_distance; }
+    float pitch() const { return m_pitch; }
+    float yaw() const { return m_yaw; }
+    const Vec3& focalPoint() const { return m_focal_point; }
+    Quat orientation() const { return Quat{Vec3{-m_yaw, -m_pitch, 0.0f}}; }
+    Vec3 position() const { return m_focal_point - (forwardDirection() * m_distance); }
+
+    Vec3 upDirection() const;
+    Vec3 rightDirection() const;
+    Vec3 forwardDirection() const;
+
+private:
+    void calculateView();
+
+    float m_distance{2.0f};
+    float m_yaw{0.0f};
+    float m_pitch{0.0f};
+    Vec3 m_focal_point{0.0f};
+    Mat4 m_view{1.0f};
+};
+
+} // namespace GE::Scene

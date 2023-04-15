@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,55 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "camera/view_projection_camera.h"
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
+#include "genesis/math/transform.h"
+
+namespace GE::Scene {
+
+ViewProjectionCamera::ViewProjectionCamera()
+{
+    calculateView();
+}
+
+void ViewProjectionCamera::setDistance(float distance)
+{
+    m_distance = distance;
+    calculateView();
+}
+
+void ViewProjectionCamera::setRotationAngles(float pitch, float yaw)
+{
+    m_pitch = pitch;
+    m_yaw = yaw;
+    calculateView();
+}
+
+void ViewProjectionCamera::setFocalPoint(const Vec3& focal_point)
+{
+    m_focal_point = focal_point;
+    calculateView();
+}
+
+Vec3 ViewProjectionCamera::upDirection() const
+{
+    return rotate(orientation(), {0.0f, 1.0f, 0.0f});
+}
+
+Vec3 ViewProjectionCamera::rightDirection() const
+{
+    return rotate(orientation(), {1.0f, 0.0f, 0.0f});
+}
+
+Vec3 ViewProjectionCamera::forwardDirection() const
+{
+    return rotate(orientation(), {0.0f, 0.0f, 1.0f});
+}
+
+void ViewProjectionCamera::calculateView()
+{
+    auto transform = translate(Mat4{1.0f}, position());
+    m_view = transpose(transform * toMat4(orientation()));
+}
+
+} // namespace GE::Scene
