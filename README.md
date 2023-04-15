@@ -36,7 +36,7 @@ make -j$(nproc)
 ```bash
 make docker_initialize  # Create Docker image
 make docker_build       # Build project inside Docker container
-make docker_cleenup     # Remove docker container (optional)
+make docker_cleanup     # Remove docker container (optional)
 ```
 
 ### To run custom command inside docker container
@@ -76,7 +76,7 @@ At the moment `VK_LAYER_PATH` should only be configured for `Debug` or
 
 ```bash
 export VK_LAYER_PATH=build/_deps/vulkan-validationlayers-build/layers
-build/examples/sandbox/sandbox
+build/examples/sandbox/sandbox -e gui
 ```
 
 #### MacOS
@@ -84,7 +84,7 @@ build/examples/sandbox/sandbox
 ```bash
 export VK_LAYER_PATH=build/_deps/vulkan-validationlayers-build/layers
 export VK_ICD_FILENAMES=build/_deps/moltenvk-src/Package/Release/MoltenVK/dylib/macOS/MoltenVK_icd.json
-build/examples/sandbox/sandbox
+build/examples/sandbox/sandbox -e gui
 ```
 
 ### genesis build options
