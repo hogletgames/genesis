@@ -83,12 +83,14 @@ class MouseEventsTest: public testing::Test
 TEST_F(MouseEventsTest, MouseMovedEvent)
 {
     static constexpr GE::Vec2 POSITION{78.0f, 46.0f};
+    static constexpr GE::Vec2 OFFSET{12.6f, 56.9f};
     static constexpr uint32_t WINDOW_ID{431};
 
-    GE::MouseMovedEvent event{POSITION, WINDOW_ID};
+    GE::MouseMovedEvent event{POSITION, OFFSET, WINDOW_ID};
 
     EXPECT_EQ(event.getDescriptor(), GE::MouseMovedEvent::getStaticDescriptor());
     EXPECT_EQ(event.getPosition(), POSITION);
+    EXPECT_EQ(event.getOffset(), OFFSET);
 }
 
 TEST_F(MouseEventsTest, MouseScrolledEvent)

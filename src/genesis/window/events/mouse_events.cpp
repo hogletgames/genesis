@@ -36,14 +36,16 @@
 
 namespace GE {
 
-MouseMovedEvent::MouseMovedEvent(const Vec2& position, uint32_t window_id)
+MouseMovedEvent::MouseMovedEvent(const Vec2& position, const Vec2& offset, uint32_t window_id)
     : m_position{position}
+    , m_offset{offset}
     , m_window_id{window_id}
 {}
 
 std::string MouseMovedEvent::asString() const
 {
-    return GE_FMTSTR("MouseMovedEvent: {}", toString(m_position));
+    return GE_FMTSTR("MouseMovedEvent: position {}, offset {}, window {}", toString(m_position),
+                     toString(m_offset), m_window_id);
 }
 
 MouseScrolledEvent::MouseScrolledEvent(const Vec2& offset)

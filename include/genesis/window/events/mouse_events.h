@@ -42,16 +42,18 @@ class GE_API MouseMovedEvent: public Event
 {
 public:
     MouseMovedEvent() = default;
-    MouseMovedEvent(const Vec2& position, uint32_t window_id);
+    MouseMovedEvent(const Vec2& position, const Vec2& offset, uint32_t window_id);
 
     std::string asString() const override;
     const Vec2& getPosition() const { return m_position; }
+    const Vec2& getOffset() const { return m_offset; }
     uint32_t windowID() const { return m_window_id; };
 
     GE_DECLARE_EVENT_DESCRIPTOR(MouseMovedEvent);
 
 private:
     Vec2 m_position{};
+    Vec2 m_offset{};
     uint32_t m_window_id{0};
 };
 
