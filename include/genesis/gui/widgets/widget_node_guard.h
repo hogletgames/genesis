@@ -47,6 +47,7 @@ public:
     {
         if (m_node != nullptr) {
             m_node->begin();
+            m_node->emitSignals();
         }
     }
 

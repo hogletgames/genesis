@@ -36,7 +36,9 @@ ge_add_module(gui
         ${INCLUDE_DIR}
         ${INCLUDE_DIR}/widgets
         ${CMAKE_CURRENT_SOURCE_DIR}
-    PUBLIC_DEPS genesis::app
+    PUBLIC_DEPS
+        Boost::signals2
+        genesis::app
     PRIVATE_DEPS
         genesis::graphics
         imgui
