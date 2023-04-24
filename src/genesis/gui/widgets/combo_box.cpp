@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,15 +30,55 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "widgets/combo_box.h"
 
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/combo_box.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/separator.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/tree_node.h>
-#include <genesis/gui/widgets/value_editor.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <imgui.h>
+
+namespace {
+
+bool beginCombo(std::string_view name, const GE::GUI::ComboBox::Items& items,
+                std::string_view current_item, GE::GUI::ComboBox::Flags flags,
+                std::string_view* selected_item)
+{
+    *selected_item = current_item;
+
+    if (!ImGui::BeginCombo(name.data(), current_item.data(), flags)) {
+        return false;
+    }
+
+    for (std::string_view item : items) {
+        bool is_selected = item == *selected_item;
+
+        if (ImGui::Selectable(item.data(), is_selected)) {
+            *selected_item = item;
+        }
+
+        if (is_selected) {
+            ImGui::SetItemDefaultFocus();
+        }
+    }
+
+    return true;
+}
+
+} // namespace
+
+namespace GE::GUI {
+
+ComboBox::ComboBox(std::string_view name, Items items, std::string_view current_item, Flags flags)
+    : m_items{std::move(items)}
+    , m_current_item{current_item}
+    , m_selected_item{current_item}
+{
+    setBeginFunc(&beginCombo, name, m_items, m_current_item, flags, &m_selected_item);
+    setEndFunc(&ImGui::EndCombo);
+}
+
+void ComboBox::emitSignals()
+{
+    if (m_selected_item != m_current_item) {
+        m_item_changed(m_selected_item);
+    }
+}
+
+} // namespace GE::GUI

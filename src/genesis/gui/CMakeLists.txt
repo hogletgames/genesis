@@ -4,6 +4,7 @@ list(APPEND GUI_SOURCES
     base_layer.cpp
     renderer.cpp
     widgets/checkbox.cpp
+    widgets/combo_box.cpp
     widgets/image.cpp
     widgets/separator.cpp
     widgets/text.cpp
@@ -19,6 +20,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/widgets.h
     ${INCLUDE_DIR}/widgets/checkbox.h
+    ${INCLUDE_DIR}/widgets/combo_box.h
     ${INCLUDE_DIR}/widgets/image.h
     ${INCLUDE_DIR}/widgets/separator.h
     ${INCLUDE_DIR}/widgets/text.h

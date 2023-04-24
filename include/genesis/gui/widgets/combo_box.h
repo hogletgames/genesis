@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,13 +32,55 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/combo_box.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/separator.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/tree_node.h>
-#include <genesis/gui/widgets/value_editor.h>
+#include <genesis/core/bit.h>
 #include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+
+#include <boost/signals2/signal.hpp>
+
+#include <string>
+
+namespace GE::GUI {
+
+class GE_API ComboBox: public WidgetNode
+{
+public:
+    using Items = std::vector<std::string_view>;
+
+    using ItemChangedSignal = boost::signals2::signal<void(std::string_view)>;
+
+    enum Flags : int
+    {
+        NONE = 0,
+        POPUP_ALIGN_LEFT = bit(0),
+        HEIGHT_SMALL = bit(1),
+        HEIGHT_REGULAR = bit(2),
+        HEIGHT_LARGE = bit(3),
+        HEIGHT_LARGEST = bit(4),
+        NO_ARROW_BUTTON = bit(5),
+        NO_PREVIEW = bit(5),
+        HEIGHT_MASK = HEIGHT_SMALL | HEIGHT_REGULAR | HEIGHT_LARGE | HEIGHT_LARGEST,
+    };
+
+    template<typename Items>
+    ComboBox(std::string_view name, const Items& items, std::string_view current_item,
+             Flags flags = NONE)
+        : ComboBox(name, {items.begin(), items.end()}, current_item, flags)
+    {}
+
+    ComboBox(std::string_view name, Items items, std::string_view current_item, Flags flags = NONE);
+
+    void emitSignals() override;
+
+    std::string_view selectedItem() const { return m_selected_item; }
+
+    ItemChangedSignal* itemChangedSignal() { return &m_item_changed; }
+
+private:
+    Items m_items;
+    std::string_view m_current_item;
+    std::string_view m_selected_item;
+
+    ItemChangedSignal m_item_changed;
+};
+
+} // namespace GE::GUI
