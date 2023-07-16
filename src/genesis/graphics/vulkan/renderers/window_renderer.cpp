@@ -39,9 +39,10 @@
 #include "vulkan_exception.h"
 
 #include "genesis/core/enum.h"
+#include "genesis/core/format.h"
+#include "genesis/core/format_user_type.h"
 #include "genesis/core/log.h"
 #include "genesis/core/utils.h"
-#include "genesis/graphics/render_command.h"
 #include "genesis/window/events/event_dispatcher.h"
 #include "genesis/window/events/window_events.h"
 

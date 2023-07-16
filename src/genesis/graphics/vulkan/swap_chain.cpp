@@ -37,6 +37,7 @@
 #include "vulkan_exception.h"
 
 #include "genesis/core/enum.h"
+#include "genesis/core/format_user_type.h"
 #include "genesis/core/log.h"
 
 namespace {

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,46 +30,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "key_events.h"
+#pragma once
 
-#include "genesis/core/format.h"
-#include "genesis/core/format_user_type.h"
+#include <fmt/core.h>
 
-namespace GE {
+namespace GE::Details {
 
-KeyEvent::KeyEvent(KeyCode code, KeyModFlags mod)
-    : m_code{code}
-    , m_mod{mod}
-{}
+template<typename T, typename = void>
+struct hasToString: std::false_type {};
 
-KeyPressedEvent::KeyPressedEvent(KeyCode code, KeyModFlags mod, uint32_t repeat_count)
-    : KeyEvent{code, mod}
-    , m_repeat_count{repeat_count}
-{}
+template<typename T>
+struct hasToString<T, std::void_t<decltype(GE::toString(std::declval<T>()))>>: std::true_type {};
 
-std::string KeyPressedEvent::asString() const
-{
-    return GE_FMTSTR("KeyPressedEvent: Key: '{}', Mod: '{:#010b}' ({})", toString(m_code),
-                     static_cast<uint8_t>(m_mod), m_repeat_count);
-}
+template<typename T, typename Ret = void>
+using enableIfHasToString = std::enable_if_t<hasToString<T>::value, Ret>;
 
-KeyReleasedEvent::KeyReleasedEvent(KeyCode code, KeyModFlags mod)
-    : KeyEvent{code, mod}
-{}
+} // namespace GE::Details
 
-std::string KeyReleasedEvent::asString() const
-{
-    return GE_FMTSTR("KeyReleasedEvent: Key: '{}', Mod: '{:#010b}'", toString(m_code),
-                     static_cast<uint8_t>(m_mod));
-}
+namespace fmt {
 
-KeyTypedEvent::KeyTypedEvent(const char* text)
-    : m_text{text}
-{}
+template<typename T>
+struct formatter<T, ::GE::Details::enableIfHasToString<T, char>>: formatter<std::string> {
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx)
+    {
+        return ctx.begin();
+    }
 
-std::string KeyTypedEvent::asString() const
-{
-    return GE_FMTSTR("KeyTypedEvent: '{}'", m_text);
-}
+    template<typename FormatContext>
+    auto format(const T& value, FormatContext& ctx)
+    {
+        return format_to(ctx.out(), ::GE::toString(value));
+    }
+};
 
-} // namespace GE
+} // namespace fmt

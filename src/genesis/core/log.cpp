@@ -32,6 +32,8 @@
 
 #include "log.h"
 #include "asserts.h"
+#include "enum.h"
+#include "format_user_type.h"
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 
@@ -117,7 +119,7 @@ void Log::shutdown()
     get()->m_core_logger.shutdown();
 }
 
-Logger::Level toLoggerLevel(const std::string& level_str)
+Logger::Level toLoggerLevel(std::string_view level_str)
 {
     auto level = toEnum<Logger::Level>(level_str);
     return level.has_value() ? level.value() : Logger::Level::UNKNOWN;

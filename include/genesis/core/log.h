@@ -32,10 +32,8 @@
 
 #pragma once
 
-#include <genesis/core/enum.h>
 #include <genesis/core/export.h>
 
-#include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
 
 #include <memory>
@@ -155,6 +153,6 @@ private:
     Logger m_client_logger;
 };
 
-Logger::Level toLoggerLevel(const std::string& level_str);
+Logger::Level toLoggerLevel(std::string_view level_str);
 
 } // namespace GE

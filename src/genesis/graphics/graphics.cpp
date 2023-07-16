@@ -35,6 +35,7 @@
 #include "vulkan/graphics_context.h"
 
 #include "genesis/core/enum.h"
+#include "genesis/core/format_user_type.h"
 
 namespace GE {
 

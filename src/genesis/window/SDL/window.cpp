@@ -32,8 +32,10 @@
 
 #include "window.h"
 
+#include "genesis/core/enum.h"
 #include "genesis/core/exception.h"
 #include "genesis/core/format.h"
+#include "genesis/core/format_user_type.h"
 #include "genesis/core/log.h"
 #include "genesis/core/utils.h"
 #include "genesis/window/events/key_events.h"

@@ -31,9 +31,10 @@
  */
 
 #include "pipeline_barrier.h"
-#include "image.h"
 
 #include "genesis/core/asserts.h"
+#include "genesis/core/enum.h"
+#include "genesis/core/format_user_type.h"
 
 namespace {
 

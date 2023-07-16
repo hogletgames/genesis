@@ -32,7 +32,6 @@
 
 #pragma once
 
-#include <fmt/format.h>
 #include <magic_enum.hpp>
 
 #define GE_EXTEND_ENUM_RANGE(enum_type, min_value, max_value)  \
@@ -45,9 +44,12 @@
     } // namespace magic_enum::customize
 
 namespace GE {
+namespace Details {
 
 template<typename T, typename Ret = void>
 using EnableIfIsEnum = std::enable_if_t<std::is_enum_v<T>, Ret>;
+
+} // namespace Details
 
 using magic_enum::bitwise_operators::operator~;
 using magic_enum::bitwise_operators::operator|;
@@ -57,24 +59,16 @@ using magic_enum::bitwise_operators::operator|=;
 using magic_enum::bitwise_operators::operator&=;
 using magic_enum::bitwise_operators::operator^=;
 
-template<typename EnumType, typename = EnableIfIsEnum<EnumType>>
+template<typename EnumType, typename = Details::EnableIfIsEnum<EnumType>>
 std::string toString(EnumType value)
 {
     return std::string{magic_enum::enum_name(value)};
 }
 
 template<typename EnumType>
-std::optional<EnumType> toEnum(const std::string& string)
+std::optional<EnumType> toEnum(std::string_view string)
 {
     return magic_enum::enum_cast<EnumType>(string);
 }
 
 } // namespace GE
-
-template<typename EnumType>
-struct fmt::formatter<EnumType, GE::EnableIfIsEnum<EnumType, char>>: fmt::formatter<std::string> {
-    auto format(EnumType value, fmt::format_context& ctx) -> decltype(ctx.out())
-    {
-        return format_to(ctx.out(), "{}", GE::toString(value));
-    }
-};

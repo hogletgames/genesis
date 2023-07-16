@@ -33,6 +33,7 @@
 #include "mouse_events.h"
 
 #include "genesis/core/format.h"
+#include "genesis/core/format_user_type.h"
 
 namespace GE {
 

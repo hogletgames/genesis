@@ -32,7 +32,9 @@
 
 #include "shader_precompiler.h"
 
+#include "genesis/core/enum.h"
 #include "genesis/core/filesystem.h"
+#include "genesis/core/format_user_type.h"
 #include "genesis/core/log.h"
 
 #include <shaderc/shaderc.hpp>

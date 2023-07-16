@@ -40,6 +40,7 @@
 #include <genesis/core/export.h>
 #include <genesis/core/filesystem.h>
 #include <genesis/core/format.h>
+#include <genesis/core/format_user_type.h>
 #include <genesis/core/interface.h>
 #include <genesis/core/log.h>
 #include <genesis/core/memory.h>
