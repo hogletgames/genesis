@@ -49,7 +49,7 @@ KeyPressedEvent::KeyPressedEvent(KeyCode code, KeyModFlags mod, uint32_t repeat_
 
 std::string KeyPressedEvent::asString() const
 {
-    return GE_FMTSTR("KeyPressedEvent: Key: '{}', Mod: '{:#010b}' ({})", toString(m_code),
+    return GE_FMTSTR("KeyPressedEvent: Key: '{}', Mod: '{:#010b}' ({})", m_code,
                      static_cast<uint8_t>(m_mod), m_repeat_count);
 }
 
@@ -59,7 +59,7 @@ KeyReleasedEvent::KeyReleasedEvent(KeyCode code, KeyModFlags mod)
 
 std::string KeyReleasedEvent::asString() const
 {
-    return GE_FMTSTR("KeyReleasedEvent: Key: '{}', Mod: '{:#010b}'", toString(m_code),
+    return GE_FMTSTR("KeyReleasedEvent: Key: '{}', Mod: '{:#010b}'", m_code,
                      static_cast<uint8_t>(m_mod));
 }
 

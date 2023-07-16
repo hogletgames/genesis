@@ -87,7 +87,7 @@ bool WindowRenderer::beginFrame(ClearMode clear_mode)
     }
 
     if (acquire_result != VK_SUCCESS && acquire_result != VK_SUBOPTIMAL_KHR) {
-        GE_CORE_ERR("Failed to acquire Swap Chain image: {}", toString(acquire_result));
+        GE_CORE_ERR("Failed to acquire Swap Chain image: {}", acquire_result);
         return false;
     }
 

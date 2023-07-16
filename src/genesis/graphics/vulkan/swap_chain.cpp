@@ -138,7 +138,7 @@ VkResult SwapChain::submitCommandBuffer(VkCommandBuffer* command_buffer)
     if (auto submit_result = vkQueueSubmit(m_device->graphicsQueue(), 1, &submit_info,
                                            m_in_flight_fences[m_current_frame]);
         submit_result != VK_SUCCESS) {
-        GE_CORE_ERR("Failed to submit Draw Command Buffer: {}", toString(submit_result));
+        GE_CORE_ERR("Failed to submit Draw Command Buffer: {}", submit_result);
         return submit_result;
     }
 

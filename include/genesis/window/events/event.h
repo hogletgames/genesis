@@ -62,10 +62,9 @@ private:
     bool m_handled{false};
 };
 
-template<typename OStream>
-OStream& operator<<(OStream& os, const Event& event)
+inline std::string toString(const Event& event)
 {
-    return os << event.asString();
+    return event.asString();
 }
 
 } // namespace GE

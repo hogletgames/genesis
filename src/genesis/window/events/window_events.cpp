@@ -48,7 +48,7 @@ WindowMovedEvent::WindowMovedEvent(uint32_t id, Vec2 position)
 
 std::string WindowMovedEvent::asString() const
 {
-    return GE_FMTSTR("WindowMovedEvent: {}", toString(m_position));
+    return GE_FMTSTR("WindowMovedEvent: {}", m_position);
 }
 
 WindowResizedEvent::WindowResizedEvent(uint32_t id, const Vec2& size)
@@ -58,7 +58,7 @@ WindowResizedEvent::WindowResizedEvent(uint32_t id, const Vec2& size)
 
 std::string WindowResizedEvent::asString() const
 {
-    return GE_FMTSTR("WindowResizedEvent: {}", toString(m_size));
+    return GE_FMTSTR("WindowResizedEvent: {}", m_size);
 }
 
 std::string WindowMinimizedEvent::asString() const

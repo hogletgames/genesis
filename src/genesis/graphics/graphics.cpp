@@ -41,7 +41,7 @@ namespace GE {
 
 bool Graphics::initialize(const Graphics::settings_t& settings, void* window)
 {
-    GE_CORE_INFO("Initializing Graphics, API: {}", toString(settings.api));
+    GE_CORE_INFO("Initializing Graphics, API: {}", settings.api);
     auto& context = get()->m_context;
 
     switch (settings.api) {

@@ -44,7 +44,7 @@ MouseMovedEvent::MouseMovedEvent(const Vec2& position, uint32_t window_id)
 
 std::string MouseMovedEvent::asString() const
 {
-    return GE_FMTSTR("MouseMovedEvent: {}", toString(m_position));
+    return GE_FMTSTR("MouseMovedEvent: {}", m_position);
 }
 
 MouseScrolledEvent::MouseScrolledEvent(const Vec2& offset)
@@ -53,7 +53,7 @@ MouseScrolledEvent::MouseScrolledEvent(const Vec2& offset)
 
 std::string MouseScrolledEvent::asString() const
 {
-    return GE_FMTSTR("MouseScrolledEvent: {}", toString(m_offset));
+    return GE_FMTSTR("MouseScrolledEvent: {}", m_offset);
 }
 
 MouseButtonEvent::MouseButtonEvent(MouseButton button)
@@ -66,7 +66,7 @@ MouseButtonPressedEvent::MouseButtonPressedEvent(MouseButton button)
 
 std::string MouseButtonPressedEvent::asString() const
 {
-    return GE_FMTSTR("MouseButtonPressedEvent: {}", toString(m_button));
+    return GE_FMTSTR("MouseButtonPressedEvent: {}", m_button);
 }
 
 MouseButtonReleasedEvent::MouseButtonReleasedEvent(MouseButton button)
@@ -75,7 +75,7 @@ MouseButtonReleasedEvent::MouseButtonReleasedEvent(MouseButton button)
 
 std::string MouseButtonReleasedEvent::asString() const
 {
-    return GE_FMTSTR("MouseButtonReleasedEvent: {}", toString(m_button));
+    return GE_FMTSTR("MouseButtonReleasedEvent: {}", m_button);
 }
 
 } // namespace GE

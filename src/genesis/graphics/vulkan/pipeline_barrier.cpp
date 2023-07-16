@@ -64,7 +64,7 @@ std::pair<VkAccessFlags, VkAccessFlags> undefinedToVkAccess(VkImageLayout new_la
         default: break;
     }
 
-    GE_ASSERT(false, "Unsupported layout: {}", GE::toString(new_layout));
+    GE_ASSERT(false, "Unsupported layout: {}", new_layout);
     return {};
 }
 
@@ -76,7 +76,7 @@ std::pair<VkAccessFlags, VkAccessFlags> generalToVkAccess(VkImageLayout new_layo
         default: break;
     }
 
-    GE_ASSERT(false, "Unsupported layout: {}", GE::toString(new_layout));
+    GE_ASSERT(false, "Unsupported layout: {}", new_layout);
     return {};
 }
 
@@ -88,7 +88,7 @@ std::pair<VkAccessFlags, VkAccessFlags> transferSrcToVkAccess(VkImageLayout new_
         default: break;
     }
 
-    GE_ASSERT(false, "Unsupported layout: {}", GE::toString(new_layout));
+    GE_ASSERT(false, "Unsupported layout: {}", new_layout);
     return {};
 }
 
@@ -101,7 +101,7 @@ std::pair<VkAccessFlags, VkAccessFlags> transferDstToVkAccess(VkImageLayout new_
         default: break;
     }
 
-    GE_ASSERT(false, "Unsupported layout: {}", GE::toString(new_layout));
+    GE_ASSERT(false, "Unsupported layout: {}", new_layout);
     return {};
 }
 
@@ -115,7 +115,7 @@ std::pair<VkAccessFlags, VkAccessFlags> depthStencilToVkAccess(VkImageLayout new
         default: break;
     }
 
-    GE_ASSERT(false, "Unsupported layout: {}", GE::toString(new_layout));
+    GE_ASSERT(false, "Unsupported layout: {}", new_layout);
     return {};
 }
 
@@ -126,7 +126,7 @@ std::pair<VkAccessFlags, VkAccessFlags> shaderReadOnlyToVkAccess(VkImageLayout n
         default: break;
     }
 
-    GE_ASSERT(false, "Unsupported layout: {}", GE::toString(new_layout));
+    GE_ASSERT(false, "Unsupported layout: {}", new_layout);
     return {};
 }
 
@@ -144,7 +144,7 @@ std::pair<VkAccessFlags, VkAccessFlags> toVkAccess(VkImageLayout old_layout,
         default: break;
     }
 
-    GE_ASSERT(false, "Unsupported layout: {}", GE::toString(old_layout));
+    GE_ASSERT(false, "Unsupported layout: {}", old_layout);
     return {};
 };
 
