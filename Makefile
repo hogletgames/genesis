@@ -63,7 +63,6 @@ docker_run:
 		-u $$(id -u):$$(id -g) \
 		-e CMAKE_OPTIONS="$(CMAKE_OPTIONS)" \
 		-e BUILD_DIR="$(BUILD_DIR)/docker" \
-		--name $(DOCKER_CONTAINER) \
 		$(DOCKER_IMAGE_NAME) \
 		bash -c "$(DOCKER_CMD)"
 

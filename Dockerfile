@@ -3,13 +3,13 @@ FROM ubuntu:focal
 # Arguments
 ARG DEBIAN_FRONTEND="noninteractive" \
     GCC_VER=11 \
-    CLANG_VER=13
+    CLANG_VER=16
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gpg-agent software-properties-common wget && \
 # GCC-11
     apt-add-repository ppa:ubuntu-toolchain-r/test && \
-# Clang-13
+# Clang-16
     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
     apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-${CLANG_VER} main" && \
 # Essential build tools
