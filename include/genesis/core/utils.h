@@ -35,10 +35,13 @@
 #include <functional>
 #include <unordered_map>
 
+// Unused
+#define GE_UNUSED(x) static_cast<void>(x)
+
 // Breakpoint
 #if defined(GE_PLATFORM_UNIX)
 #include <csignal>
-#define GE_DBGBREAK() ::raise(SIGTRAP)
+#define GE_DBGBREAK() GE_UNUSED(::raise(SIGTRAP))
 #elif defined(GE_PLATFORM_WINDOWS)
 #define GE_DBGBREAK() __debugbreak()
 #else
