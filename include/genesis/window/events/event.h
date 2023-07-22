@@ -37,12 +37,15 @@
 #include <string>
 #include <typeindex>
 
-#define GE_DECLARE_EVENT_DESCRIPTOR(EventType)                                               \
-    ::GE::Event::Descriptor getDescriptor() const override { return getStaticDescriptor(); } \
-                                                                                             \
-    static ::GE::Event::Descriptor getStaticDescriptor()                                     \
-    {                                                                                        \
-        return ::GE::Event::Descriptor{typeid(EventType)};                                   \
+#define GE_DECLARE_EVENT_DESCRIPTOR(EventType)             \
+    ::GE::Event::Descriptor getDescriptor() const override \
+    {                                                      \
+        return getStaticDescriptor();                      \
+    }                                                      \
+                                                           \
+    static ::GE::Event::Descriptor getStaticDescriptor()   \
+    {                                                      \
+        return ::GE::Event::Descriptor{typeid(EventType)}; \
     }
 
 namespace GE {
