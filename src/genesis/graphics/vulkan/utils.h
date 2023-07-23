@@ -34,6 +34,7 @@
 
 #include <vulkan/vulkan.h>
 
+#include <functional>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -80,13 +81,13 @@ inline void destroyDebugUtilsMessengerEXT(VkInstance instance,
 }
 
 template<typename T, typename Func, typename... Args>
-std::vector<T> vulkanGet(Func f, Args&&... args)
+std::vector<T> vulkanGet(Func&& f, Args&&... args)
 {
     uint32_t count{0};
-    f(std::forward<Args>(args)..., &count, nullptr);
+    std::invoke(std::forward<Func>(f), std::forward<Args>(args)..., &count, nullptr);
 
     std::vector<T> data(count);
-    f(std::forward<Args>(args)..., &count, data.data());
+    std::invoke(std::forward<Func>(f), std::forward<Args>(args)..., &count, data.data());
 
     return data;
 }
