@@ -36,6 +36,16 @@
 
 namespace GE::GUI {
 
+bool ValueEditor::call(std::string_view label, Vec2* value, float v_speed, float v_min, float v_max,
+                       std::string_view format, ValueEditor::Flags flags)
+{
+    ImGui::PushID(value);
+    auto is_changed = ImGui::DragFloat2(label.data(), value_ptr(*value), v_speed, v_min, v_max,
+                                        format.data(), flags);
+    ImGui::PopID();
+    return is_changed;
+}
+
 bool ValueEditor::call(std::string_view label, Vec3* value, float v_speed, float v_min, float v_max,
                        std::string_view format, Flags flags)
 {
