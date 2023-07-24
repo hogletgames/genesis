@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,56 @@
 
 #pragma once
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
+#include <genesis/core/asserts.h>
+#include <genesis/core/export.h>
 #include <genesis/scene/entity.h>
-#include <genesis/scene/registry.h>
+
+#include <entt/entity/registry.hpp>
+
+#include <functional>
+
+namespace GE::Scene {
+
+class Entity;
+
+class GE_API Registry
+{
+public:
+    using ForeachCallback = std::function<void(const Entity&)>;
+    using EntityHandle = entt::entity;
+
+    Entity create();
+    void destroy(const Entity& entity);
+    void clear();
+
+    template<typename... Args>
+    void eachEntityWith(const ForeachCallback& callback);
+    void eachEntity(const ForeachCallback& callback);
+
+    template<typename... Args>
+    void eachEntityWith(const ForeachCallback& callback) const;
+    void eachEntity(const ForeachCallback& callback) const;
+
+private:
+    Entity toEntity(EntityHandle entity) const;
+
+    mutable entt::registry m_registry;
+};
+
+template<typename... Args>
+void Registry::eachEntityWith(const ForeachCallback& callback)
+{
+    for (auto entity : m_registry.view<Args...>()) {
+        callback(toEntity(entity));
+    }
+}
+
+template<typename... Args>
+void Registry::eachEntityWith(const ForeachCallback& callback) const
+{
+    for (auto entity : m_registry.view<Args...>()) {
+        callback(toEntity(entity));
+    }
+}
+
+} // namespace GE::Scene
