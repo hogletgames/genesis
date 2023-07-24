@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,52 @@
 
 #pragma once
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/entity.h>
+#include <genesis/core/export.h>
 #include <genesis/scene/registry.h>
-#include <genesis/scene/scene.h>
+
+#include <string>
+
+namespace GE::Scene {
+
+class Scene
+{
+public:
+    using ForeachCallback = Registry::ForeachCallback;
+
+    Entity createEntity(std::string_view name);
+    void destroyEntity(const Entity& entity);
+    void clear();
+
+    const Entity& mainCamera() const { return m_main_camera; }
+    void setMainCamera(const Entity& camera) { m_main_camera = camera; }
+
+    const std::string& name() const { return m_name; }
+    void setName(std::string_view name) { m_name = name; }
+
+    template<typename... Args>
+    void forEach(const ForeachCallback& callback);
+    void forEachEntity(const ForeachCallback& callback);
+
+    template<typename... Args>
+    void forEach(const ForeachCallback& callback) const;
+    void forEachEntity(const ForeachCallback& callback) const;
+
+private:
+    std::string m_name;
+    Registry m_registry;
+    Entity m_main_camera;
+};
+
+template<typename... Args>
+void Scene::forEach(const GE::Scene::Scene::ForeachCallback& callback)
+{
+    m_registry.eachEntityWith<Args...>(callback);
+}
+
+template<typename... Args>
+void Scene::forEach(const GE::Scene::Scene::ForeachCallback& callback) const
+{
+    m_registry.eachEntityWith<Args...>(callback);
+}
+
+} // namespace GE::Scene

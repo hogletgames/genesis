@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,11 +30,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "scene.h"
+#include "components/camera_component.h"
+#include "components/tag_component.h"
+#include "components/transform_component.h"
+#include "entity.h"
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/entity.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/scene.h>
+namespace {
+
+constexpr auto DEFAULT_ENTITY_NAME{"Entity"};
+
+} // namespace
+
+namespace GE::Scene {
+
+Entity Scene::createEntity(std::string_view name)
+{
+    auto entity = m_registry.create();
+    entity.add<TagComponent>(!name.empty() ? name.data() : DEFAULT_ENTITY_NAME);
+    entity.add<TransformComponent>();
+
+    return entity;
+}
+
+void Scene::destroyEntity(const Entity& entity)
+{
+    m_registry.destroy(entity);
+}
+
+void Scene::forEachEntity(const Scene::ForeachCallback& callback)
+{
+    m_registry.eachEntity(callback);
+}
+
+void Scene::forEachEntity(const Scene::ForeachCallback& callback) const
+{
+    m_registry.eachEntity(callback);
+}
+
+void Scene::clear()
+{
+    m_registry.clear();
+}
+
+} // namespace GE::Scene
