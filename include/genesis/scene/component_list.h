@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,12 @@
 
 #pragma once
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/component_list.h>
+#include <genesis/core/type_list.h>
 #include <genesis/scene/components.h>
-#include <genesis/scene/entity.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/scene.h>
+
+namespace GE::Scene {
+
+using ComponentList =
+    TypeList<CameraComponent, TagComponent, TransformComponent, SpriteComponent, MaterialComponent>;
+
+} // namespace GE::Scene

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,25 @@
 
 #pragma once
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/component_list.h>
-#include <genesis/scene/components.h>
-#include <genesis/scene/entity.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/scene.h>
+#include <genesis/math/transform.h>
+#include <genesis/math/types.h>
+
+namespace GE::Scene {
+
+struct TransformComponent {
+    Vec3 translation{0.0f, 0.0f, 0.0f};
+    Vec3 rotation{0.0f, 0.0f, 0.0f};
+    Vec3 scale{1.0f, 1.0f, 1.0f};
+
+    static constexpr std::string_view NAME{"Transform"};
+
+    Mat4 transform() const;
+};
+
+inline Mat4 TransformComponent::transform() const
+{
+    return GE::translate(Mat4{1.0f}, translation) * GE::toMat4(Quat{rotation}) *
+           GE::scale(Mat4{1.0f}, scale);
+}
+
+} // namespace GE::Scene
