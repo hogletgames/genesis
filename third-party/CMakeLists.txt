@@ -176,6 +176,11 @@ if (NOT nativefiledialog_POPULATED)
         )
 endif ()
 
+# nlohmann_json
+FetchContent_Declare(nlohmann_json
+    URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
+FetchContent_MakeAvailable(nlohmann_json)
+
 # Vulkan-Loader
 FetchContent_Declare(Vulkan-Loader
     GIT_REPOSITORY https://github.com/hogletgames/Vulkan-Loader.git

@@ -29,6 +29,7 @@
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp) ([MIT](https://github.com/jbeder/yaml-cpp/blob/master/LICENSE))
 - [EnTT](https://github.com/skypjack/entt) ([MIT](https://github.com/skypjack/entt/blob/master/LICENSE))
 - [nativefiledialog](https://github.com/mlabbe/nativefiledialog) ([zlib](https://github.com/mlabbe/nativefiledialog/blob/master/LICENSE))
+- [nlohmann_json](https://github.com/nlohmann/json) ([MIT](https://github.com/nlohmann/json/blob/develop/LICENSE.MIT))
 
 ### To build manually
 
