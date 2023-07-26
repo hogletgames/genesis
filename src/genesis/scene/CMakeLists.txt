@@ -5,6 +5,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/components.h
     ${INCLUDE_DIR}/entity.h
     ${INCLUDE_DIR}/registry.h
+    ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/scene.h
     ${INCLUDE_DIR}/camera/projection_camera.h
     ${INCLUDE_DIR}/camera/view_projection_camera.h
@@ -20,6 +21,7 @@ list(APPEND SCENE_HEADERS
 list(APPEND SCENE_SOURCES
     entity.cpp
     registry.cpp
+    renderer.cpp
     scene.cpp
     camera/projection_camera.cpp
     camera/view_projection_camera.cpp
@@ -37,5 +39,6 @@ ge_add_module(scene
         genesis::math
         yaml-cpp::yaml-cpp
     PRIVATE_DEPS
+        genesis::graphics
         genesis::window
     )

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,12 +32,39 @@
 
 #pragma once
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/component_list.h>
-#include <genesis/scene/components.h>
-#include <genesis/scene/entity.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/renderer.h>
-#include <genesis/scene/scene.h>
+#include <genesis/core/export.h>
+#include <genesis/core/memory.h>
+#include <genesis/math/types.h>
+
+namespace GE {
+class Renderer;
+class UniformBuffer;
+} // namespace GE
+
+namespace GE::Scene {
+
+class Entity;
+class Scene;
+class ViewProjectionCamera;
+
+class GE_API Renderer
+{
+public:
+    Renderer(GE::Renderer* renderer, const ViewProjectionCamera* camera);
+    ~Renderer();
+
+    void render(const Scene& scene);
+
+private:
+    void renderSprite(const Entity& entity);
+
+    void updateViewProjectionUBO();
+
+    GE::Renderer* m_renderer{nullptr};
+    const GE::Scene::ViewProjectionCamera* m_camera{nullptr};
+
+    Scoped<UniformBuffer> m_vp_ubo;
+    Scoped<UniformBuffer> m_translation_ubo;
+};
+
+} // namespace GE::Scene
