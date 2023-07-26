@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,14 +32,46 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/combo_box.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/separator.h>
-#include <genesis/gui/widgets/style_var.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/tree_node.h>
-#include <genesis/gui/widgets/value_editor.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <genesis/core/interface.h>
+#include <genesis/math/types.h>
+
+namespace GE::GUI {
+
+class StyleVar: public NonCopyable
+{
+public:
+    enum Index
+    {
+        ALPHA,
+        DISABLTYLED_ALPHA,
+        WINDOW_PADDING,
+        WINDOW_ROUNDING,
+        WINDOW_BORDER_SIZE,
+        WINDOW_MIN_SIZE,
+        WINDOW_TITLE_ALIGN,
+        CHILD_ROUNDING,
+        CHILD_BORDER_SIZE,
+        POPUP_ROUNDING,
+        POPUP_BORDER_SIZE,
+        FRAME_PADDING,
+        FRAME_ROUNDING,
+        FRAME_BORDER_SIZE,
+        ITEM_SPACING,
+        ITEM_INNER_SPACING,
+        INDENT_SPACING,
+        CELL_PADDING,
+        SCROLLBAR_SIZE,
+        SCROLLBAR_ROUNDING,
+        GRAB_MIN_SIZE,
+        GRAB_ROUNDING,
+        TAB_ROUNDING,
+        BUTTON_TEXT_ALIGN,
+        SELECTABLE_TEXT_ALIGN,
+    };
+
+    StyleVar(Index idx, float value);
+    StyleVar(Index idx, const Vec2& value);
+    ~StyleVar();
+};
+
+} // namespace GE::GUI
