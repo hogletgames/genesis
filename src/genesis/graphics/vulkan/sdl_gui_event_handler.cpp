@@ -36,7 +36,7 @@
 #include "genesis/window/input.h"
 
 #include <SDL.h>
-#include <imgui_impl_sdl.h>
+#include <imgui_impl_sdl2.h>
 
 namespace {
 
