@@ -32,7 +32,9 @@
 
 #pragma once
 
+#include <cctype>
 #include <functional>
+#include <string>
 #include <unordered_map>
 
 // Unused
@@ -98,6 +100,20 @@ Container jointContainers(Container&& first, Args&&... others)
     Container result{std::forward<Container>(first)};
     (result.insert(result.end(), others.begin(), others.end()), ...);
     return result;
+}
+
+inline std::string toUpper(std::string string)
+{
+    std::transform(string.begin(), string.end(), string.begin(),
+                   [](char ch) { return std::toupper(ch); });
+    return string;
+}
+
+inline std::string toLower(std::string string)
+{
+    std::transform(string.begin(), string.end(), string.begin(),
+                   [](char ch) { return std::tolower(ch); });
+    return string;
 }
 
 } // namespace GE

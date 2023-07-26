@@ -35,6 +35,7 @@
 #include "vulkan/graphics_context.h"
 
 #include "genesis/core/enum.h"
+#include "genesis/core/utils.h"
 
 namespace GE {
 
@@ -81,7 +82,7 @@ Graphics::~Graphics()
 
 Graphics::API toRendererAPI(const std::string& api_str)
 {
-    auto api = toEnum<Graphics::API>(api_str);
+    auto api = toEnum<Graphics::API>(toUpper(api_str));
     return api.has_value() ? api.value() : Graphics::API::NONE;
 }
 
