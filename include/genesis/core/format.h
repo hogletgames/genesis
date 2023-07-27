@@ -33,5 +33,6 @@
 #pragma once
 
 #include <fmt/compile.h>
+#include <fmt/ranges.h>
 
 #define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)

@@ -35,7 +35,8 @@
 #include <genesis/core/enum.h>
 #include <genesis/core/export.h>
 
-#include <spdlog/fmt/ostr.h>
+#include <fmt/ranges.h>
+#include <spdlog/fmt/bin_to_hex.h>
 #include <spdlog/spdlog.h>
 
 #include <memory>
@@ -55,6 +56,8 @@
 #define GE_TRACE(...) ::GE::Log::client()->trace(__FILE__, __LINE__, __VA_ARGS__)
 
 namespace GE {
+
+using spdlog::to_hex;
 
 class GE_API Logger
 {
