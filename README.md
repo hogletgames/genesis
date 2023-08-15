@@ -23,6 +23,7 @@
 - [fmt](https://github.com/fmtlib/fmt) ([MIT](https://github.com/fmtlib/fmt/blob/master/LICENSE.rst))
 - [googletest](https://github.com/google/googletest) ([BSD-3](https://github.com/google/googletest/blob/main/LICENSE))
 - [imgui](https://github.com/ocornut/imgui) ([MIT](https://github.com/ocornut/imgui/blob/master/LICENSE.txt))
+- [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo) ([MIT](https://github.com/CedricGuillemet/ImGuizmo/blob/master/LICENSE))
 - [docopt.cpp](https://github.com/docopt/docopt.cpp) ([MIT](https://github.com/docopt/docopt.cpp/blob/master/LICENSE-MIT), [Boost 1.0](https://github.com/docopt/docopt.cpp/blob/master/LICENSE-Boost-1.0))
 - [Boost](https://github.com/boostorg/boost/blob/master/CMakeLists.txt) ([BSL-1.0](https://github.com/boostorg/boost/blob/master/LICENSE_1_0.txt))
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp) ([MIT](https://github.com/jbeder/yaml-cpp/blob/master/LICENSE))

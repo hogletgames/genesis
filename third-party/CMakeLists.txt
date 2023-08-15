@@ -91,6 +91,25 @@ if (NOT imgui_POPULATED)
     target_compile_definitions(imgui_sdl_vulkan_example PRIVATE _DEBUG)
 endif ()
 
+# ImGuizmo
+FetchContent_Declare(ImGuizmo
+    GIT_REPOSITORY https://github.com/hogletgames/ImGuizmo.git
+    GIT_TAG 822be7b44c37dbe98d328739ebe0d5a1ea87ecfc)
+FetchContent_GetProperties(ImGuizmo)
+if (NOT imguizmo_POPULATED)
+    FetchContent_Populate(ImGuizmo)
+
+    add_Library(ImGuizmo STATIC
+        ${imguizmo_SOURCE_DIR}/GraphEditor.cpp
+        ${imguizmo_SOURCE_DIR}/ImCurveEdit.cpp
+        ${imguizmo_SOURCE_DIR}/ImGradient.cpp
+        ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
+        ${imguizmo_SOURCE_DIR}/ImSequencer.cpp
+        )
+    target_link_libraries(ImGuizmo PUBLIC imgui)
+    target_include_directories(ImGuizmo PUBLIC ${imguizmo_SOURCE_DIR})
+endif ()
+
 # stb
 FetchContent_Declare(stb
     GIT_REPOSITORY https://github.com/hogletgames/stb.git
