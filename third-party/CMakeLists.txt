@@ -129,6 +129,34 @@ FetchContent_Declare(entt
     GIT_TAG v3.12.2)
 FetchContent_MakeAvailable(entt)
 
+# nativefiledialog
+FetchContent_Declare(nativefiledialog
+    GIT_REPOSITORY https://github.com/hogletgames/nativefiledialog.git
+    GIT_TAG release_116)
+FetchContent_GetProperties(POPULATED nativefiledialog)
+if (NOT nativefiledialog_POPULATED)
+    FetchContent_Populate(nativefiledialog)
+
+    add_library(nativefiledialog STATIC
+        ${nativefiledialog_SOURCE_DIR}/src/nfd_common.c
+        $<$<PLATFORM_ID:Darwin>:${nativefiledialog_SOURCE_DIR}/src/nfd_cocoa.m>
+        $<$<PLATFORM_ID:Linux>:${nativefiledialog_SOURCE_DIR}/src/nfd_gtk.c>
+        $<$<PLATFORM_ID:Windows>:${nativefiledialog_SOURCE_DIR}/src/nfd_win.cpp>
+        )
+    target_include_directories(nativefiledialog
+        PRIVATE ${nativefiledialog_SOURCE_DIR}/src
+        PUBLIC ${nativefiledialog_SOURCE_DIR}/src/include
+        )
+    if (UNIX AND NOT APPLE)
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(GTK3 REQUIRED IMPORTED_TARGET gtk+-3.0)
+        target_link_libraries(nativefiledialog PRIVATE PkgConfig::GTK3)
+    endif ()
+    target_compile_options(nativefiledialog PRIVATE
+        -Wno-deprecated-declarations
+        )
+endif ()
+
 # Vulkan-Loader
 FetchContent_Declare(Vulkan-Loader
     GIT_REPOSITORY https://github.com/hogletgames/Vulkan-Loader.git
