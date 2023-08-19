@@ -38,6 +38,7 @@
 #include <genesis/gui/widgets/flags.h>
 #include <genesis/gui/widgets/image.h>
 #include <genesis/gui/widgets/input_text.h>
+#include <genesis/gui/widgets/item.h>
 #include <genesis/gui/widgets/main_menu_bar.h>
 #include <genesis/gui/widgets/menu.h>
 #include <genesis/gui/widgets/menu_item.h>

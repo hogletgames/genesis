@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,41 +32,11 @@
 
 #pragma once
 
-#include <genesis/core/utils.h>
-#include <genesis/gui/widgets/flags.h>
-#include <genesis/math/types.h>
+#include <genesis/core/export.h>
 #include <genesis/window/mouse_button_codes.h>
-
-#include <imgui.h>
 
 namespace GE::GUI {
 
-inline ImVec2 toImVec2(const Vec2& vec)
-{
-    return {vec.x, vec.y};
-}
-
-inline Vec2 toVec2(const ImVec2& vec)
-{
-    return {vec.x, vec.y};
-}
-
-inline ImVec4 toImVec4(const Vec4& vec)
-{
-    return {vec.x, vec.y, vec.z, vec.w};
-}
-
-inline ImGuiMouseButton toImGuiMouseButton(MouseButton button)
-{
-    static const std::unordered_map<MouseButton, ImGuiMouseButton> TO_IMGUI = {
-        {MouseButton::LEFT, ImGuiMouseButton_Left},
-        {MouseButton::RIGHT, ImGuiMouseButton_Right},
-        {MouseButton::MIDDLE, ImGuiMouseButton_Middle},
-        {MouseButton::X1, 3},
-        {MouseButton::X2, 4},
-    };
-
-    return getValue(TO_IMGUI, button);
-}
+GE_API bool isItemClicked(MouseButton button = MouseButton::LEFT);
 
 } // namespace GE::GUI

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,43 +30,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
-
-#include <genesis/core/utils.h>
-#include <genesis/gui/widgets/flags.h>
-#include <genesis/math/types.h>
-#include <genesis/window/mouse_button_codes.h>
+#include "item.h"
+#include "private/types.h"
 
 #include <imgui.h>
 
 namespace GE::GUI {
 
-inline ImVec2 toImVec2(const Vec2& vec)
+bool isItemClicked(MouseButton button)
 {
-    return {vec.x, vec.y};
-}
-
-inline Vec2 toVec2(const ImVec2& vec)
-{
-    return {vec.x, vec.y};
-}
-
-inline ImVec4 toImVec4(const Vec4& vec)
-{
-    return {vec.x, vec.y, vec.z, vec.w};
-}
-
-inline ImGuiMouseButton toImGuiMouseButton(MouseButton button)
-{
-    static const std::unordered_map<MouseButton, ImGuiMouseButton> TO_IMGUI = {
-        {MouseButton::LEFT, ImGuiMouseButton_Left},
-        {MouseButton::RIGHT, ImGuiMouseButton_Right},
-        {MouseButton::MIDDLE, ImGuiMouseButton_Middle},
-        {MouseButton::X1, 3},
-        {MouseButton::X2, 4},
-    };
-
-    return getValue(TO_IMGUI, button);
+    return ImGui::IsItemClicked(toImGuiMouseButton(button));
 }
 
 } // namespace GE::GUI
