@@ -32,18 +32,23 @@
 
 #pragma once
 
-#include <genesis/assets/assets_exception.h>
-#include <genesis/assets/iresource.h>
-#include <genesis/assets/mesh_resource.h>
-#include <genesis/assets/pipeline_initializer.h>
-#include <genesis/assets/pipeline_resource.h>
-#include <genesis/assets/registry.h>
-#include <genesis/assets/resource_base.h>
-#include <genesis/assets/resource_deserializer.h>
-#include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
-#include <genesis/assets/resource_serializer.h>
-#include <genesis/assets/resource_traversal.h>
 #include <genesis/assets/resource_visitor.h>
-#include <genesis/assets/texture_resource.h>
-#include <genesis/assets/yaml_convert.h>
+
+namespace GE {
+class Renderer;
+} // namespace GE
+
+namespace GE::Assets {
+
+class PipelineInitializer: public ResourceVisitor
+{
+public:
+    explicit PipelineInitializer(Renderer* renderer);
+
+private:
+    void visit(PipelineResource* resource) override;
+
+    Renderer* m_renderer{nullptr};
+};
+
+} // namespace GE::Assets

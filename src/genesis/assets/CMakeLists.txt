@@ -2,6 +2,7 @@ set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/assets)
 
 list(APPEND ASSETS_SOURCES
     mesh_resource.cpp
+    pipeline_initializer.cpp
     pipeline_resource.cpp
     registry.cpp
     resource_base.cpp
@@ -15,6 +16,7 @@ list(APPEND ASSETS_HEADERS
     ${INCLUDE_DIR}/assets_exception.h
     ${INCLUDE_DIR}/iresource.h
     ${INCLUDE_DIR}/mesh_resource.h
+    ${INCLUDE_DIR}/pipeline_initializer.h
     ${INCLUDE_DIR}/pipeline_resource.h
     ${INCLUDE_DIR}/registry.h
     ${INCLUDE_DIR}/resource_base.h
