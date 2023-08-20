@@ -30,16 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "registry.h"
+#include "iresource.h"
 
-#include <genesis/assets/assets_exception.h>
-#include <genesis/assets/iresource.h>
-#include <genesis/assets/mesh_resource.h>
-#include <genesis/assets/pipeline_resource.h>
-#include <genesis/assets/registry.h>
-#include <genesis/assets/resource_base.h>
-#include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
-#include <genesis/assets/resource_traversal.h>
-#include <genesis/assets/resource_visitor.h>
-#include <genesis/assets/texture_resource.h>
+namespace GE::Assets {
+
+Registry::Registry() = default;
+
+Registry::~Registry() = default;
+
+void Registry::add(Scoped<IResource> resource)
+{
+    auto uuid = resource->id();
+    m_resources.emplace(uuid, std::move(resource));
+}
+
+void Registry::remove(const ResourceID &uuid)
+{
+    m_resources.erase(uuid);
+}
+
+void Registry::visit(const ResourceID &id, ResourceVisitor *visitor)
+{
+    if (auto it = m_resources.find(id); it != m_resources.end()) {
+        it->second->accept(visitor);
+    }
+}
+
+void Registry::visitAll(ResourceVisitor *visitor)
+{
+    for (auto &[_, resource] : m_resources) {
+        resource->accept(visitor);
+    }
+}
+
+Registry::ResourceIDs Registry::ids() const
+{
+    ResourceIDs ids(m_resources.size());
+    std::transform(m_resources.begin(), m_resources.end(), ids.begin(),
+                   [](const auto &resource) { return resource.first; });
+    return ids;
+}
+
+} // namespace GE::Assets
