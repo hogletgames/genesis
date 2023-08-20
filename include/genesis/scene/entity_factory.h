@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,13 +32,32 @@
 
 #pragma once
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/component_list.h>
-#include <genesis/scene/components.h>
-#include <genesis/scene/entity.h>
-#include <genesis/scene/entity_factory.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/renderer.h>
-#include <genesis/scene/scene.h>
+#include <genesis/core/export.h>
+
+#include <string_view>
+
+namespace GE::Assets {
+class Registry;
+} // namespace GE::Assets
+
+namespace GE::Scene {
+
+class Scene;
+class Entity;
+
+class GE_API EntityFactory
+{
+public:
+    EntityFactory(Scene* scene, Assets::Registry* assets);
+
+    Entity createCamera(std::string_view name);
+    Entity createSquare(std::string_view name);
+    Entity createCircle(std::string_view name);
+    Entity createEmptyEntity(std::string_view name);
+
+private:
+    Scene* m_scene{nullptr};
+    Assets::Registry* m_assets{nullptr};
+};
+
+} // namespace GE::Scene

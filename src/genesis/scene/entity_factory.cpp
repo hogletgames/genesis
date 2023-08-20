@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,15 +30,60 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "entity_factory.h"
+#include "components.h"
+#include "scene.h"
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/component_list.h>
-#include <genesis/scene/components.h>
-#include <genesis/scene/entity.h>
-#include <genesis/scene/entity_factory.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/renderer.h>
-#include <genesis/scene/scene.h>
+#include "genesis/assets/registry.h"
+
+namespace GE::Scene {
+
+EntityFactory::EntityFactory(Scene* scene, Assets::Registry* assets)
+    : m_scene{scene}
+    , m_assets{assets}
+{}
+
+Entity EntityFactory::createCamera(std::string_view name)
+{
+    auto entity = m_scene->createEntity(name);
+    entity.add<CameraComponent>();
+    return entity;
+}
+
+Entity EntityFactory::createSquare(std::string_view name)
+{
+    auto entity = m_scene->createEntity(name);
+
+    auto& sprite = entity.add<SpriteComponent>();
+    sprite.setMeshID({"genesis", "meshes", "square"});
+    sprite.setTextureID({"genesis", "textures", "square"});
+    sprite.loadAll(m_assets);
+
+    auto& material = entity.add<MaterialComponent>();
+    material.setMaterialID({"genesis", "materials", "sprite"});
+    material.loadMaterial(m_assets);
+
+    return entity;
+}
+
+Entity EntityFactory::createCircle(std::string_view name)
+{
+    auto entity = m_scene->createEntity(name);
+    auto& sprite = entity.add<SpriteComponent>();
+    sprite.setMeshID({"genesis", "meshes", "square"});
+    sprite.setTextureID({"genesis", "textures", "circle"});
+    sprite.loadAll(m_assets);
+
+    auto& material = entity.add<MaterialComponent>();
+    material.setMaterialID({"genesis", "materials", "sprite"});
+    material.loadMaterial(m_assets);
+
+    return entity;
+}
+
+Entity EntityFactory::createEmptyEntity(std::string_view name)
+{
+    return m_scene->createEntity(name);
+}
+
+} // namespace GE::Scene

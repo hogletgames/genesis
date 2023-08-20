@@ -4,6 +4,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/component_list.h
     ${INCLUDE_DIR}/components.h
     ${INCLUDE_DIR}/entity.h
+    ${INCLUDE_DIR}/entity_factory.h
     ${INCLUDE_DIR}/registry.h
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/scene.h
@@ -20,6 +21,7 @@ list(APPEND SCENE_HEADERS
 
 list(APPEND SCENE_SOURCES
     entity.cpp
+    entity_factory.cpp
     registry.cpp
     renderer.cpp
     scene.cpp
