@@ -38,6 +38,8 @@
 
 #include <gtest/gtest.h>
 
+namespace {
+
 class KeyEventsTest: public testing::Test
 {};
 
@@ -258,4 +260,6 @@ TYPED_TEST(EventDispatcherTest, SuccessfulDispatch)
     EXPECT_FALSE(event.handled());
     EXPECT_TRUE(dispatcher.dispatch(callback));
     EXPECT_TRUE(event.handled());
+}
+
 }
