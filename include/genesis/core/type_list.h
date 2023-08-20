@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,18 +32,25 @@
 
 #pragma once
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/bit.h>
-#include <genesis/core/defer.h>
-#include <genesis/core/enum.h>
-#include <genesis/core/exception.h>
-#include <genesis/core/export.h>
-#include <genesis/core/filesystem.h>
-#include <genesis/core/format.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/timestamp.h>
-#include <genesis/core/type_list.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+#include <boost/mpl/contains.hpp>
+#include <boost/mpl/for_each.hpp>
+#include <boost/mpl/list.hpp>
+
+namespace GE {
+
+template<typename... Types>
+using TypeList = boost::mpl::list<Types...>;
+
+template<typename TL, typename Callback>
+constexpr void forEachType(Callback&& callback)
+{
+    boost::mpl::for_each<TL>(std::forward<Callback>(callback));
+}
+
+template<typename TL, typename T>
+constexpr bool isListContains()
+{
+    return boost::mpl::contains<TL, T>();
+}
+
+} // namespace GE
