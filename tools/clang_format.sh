@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CLANG_FORMAT_BIN=clang-format
+CLANG_FORMAT_BIN="${CLANG_FORMAT_BIN:-clang-format}"
 EXIT_CODE=0
 FIX=false
 
