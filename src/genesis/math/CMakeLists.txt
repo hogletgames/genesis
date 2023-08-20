@@ -9,6 +9,7 @@ list(APPEND MATH_HEADERS
     ${INCLUDE_DIR}/transform.h
     ${INCLUDE_DIR}/trigonometric.h
     ${INCLUDE_DIR}/types.h
+    ${INCLUDE_DIR}/yaml_convert.h
     )
 
 ge_add_module(math
@@ -17,6 +18,7 @@ ge_add_module(math
     PUBLIC_DEPS
         genesis::core
         glm::glm
+        yaml-cpp::yaml-cpp
     PUBLIC_DEF
         GLM_ENABLE_EXPERIMENTAL
         GLM_FORCE_DEPTH_ZERO_TO_ONE
