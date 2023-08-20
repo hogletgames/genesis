@@ -1,21 +1,21 @@
-FROM ubuntu:focal
+FROM ubuntu:focal AS genesis-image
 
 # Arguments
 ARG DEBIAN_FRONTEND="noninteractive" \
     GCC_VER=11 \
-    CLANG_VER=16
+    CLANG_VER=17
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gpg-agent software-properties-common wget && \
-# GCC-11
+# GCC
     apt-add-repository ppa:ubuntu-toolchain-r/test && \
-# Clang-16
+# Clang-tols
     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
     apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-${CLANG_VER} main" && \
 # Essential build tools
     apt-get update && apt-get install -y --no-install-recommends  \
-    gcc-${GCC_VER} g++-${GCC_VER} clang-format-${CLANG_VER} clang-tidy-${CLANG_VER}  \
-    make cmake git patch && \
+    build-essential gcc-${GCC_VER} g++-${GCC_VER} clang-format-${CLANG_VER} clang-tidy-${CLANG_VER} \
+    cmake git patch && \
 # Clean-up atp cache
     rm -rf /var/lib/apt/lists/* && \
 # Configure git
@@ -36,7 +36,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Clean-up atp cache
     rm -rf /var/lib/apt/lists/*
 
-ENV CC="gcc-${GCC_VER}" \
-    CXX="g++-${GCC_VER}" \
-    CLANG_FORMAT_BIN="clang-format-${CLANG_VER}" \
+ENV CLANG_FORMAT_BIN="clang-format-${CLANG_VER}" \
     RUN_CLANG_TIDY_BIN="run-clang-tidy-${CLANG_VER}"

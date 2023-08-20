@@ -64,9 +64,8 @@ namespace GE {
 template<typename Func, typename Type>
 auto toEventHandler(Func&& f, Type* instance)
 {
-    return [&f, instance](const auto& event) {
-        return std::invoke(std::forward<Func>(f), instance, event);
-    };
+    using std::placeholders::_1;
+    return std::bind(std::forward<Func>(f), instance, _1);
 }
 
 template<typename Key, typename Value>
@@ -93,7 +92,7 @@ std::unordered_map<U, T> swapKeyAndValue(const std::unordered_map<T, U>& map)
 }
 
 template<typename Container, typename... Args>
-Container jointContainers(Container&& first, Args&&... others)
+Container jointContainers(Container&& first, const Args&... others)
 {
     Container result{std::forward<Container>(first)};
     (result.insert(result.end(), others.begin(), others.end()), ...);

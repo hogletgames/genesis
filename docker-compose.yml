@@ -1,0 +1,27 @@
+version: "3.6"
+
+services:
+  genesis: &genesis
+    build:
+      target: genesis-image
+      dockerfile: ./Dockerfile
+      context: .
+    image: genesis-image
+    tty: true
+    environment:
+      - CMAKE_OPTIONS="${CMAKE_OPTIONS:-}"
+      - BUILD_DIR="${BUILD_DIR:-build}/docker"
+    volumes:
+      - ${PWD}:${PWD}:rw
+    working_dir: ${PWD}
+    user: "${UID:-0}:${GUD:-0}"
+  build:
+    <<: *genesis
+    command: make -j ${NPROC:-8}
+  clang-format:
+    <<: *genesis
+    command: make clang-format
+  clang-tidy:
+    <<: *genesis
+    command: make clang-tidy
+
