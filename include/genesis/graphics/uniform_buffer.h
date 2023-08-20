@@ -44,6 +44,8 @@ class UniformBuffer: NonCopyable
 public:
     using NativeHandle = void*;
 
+    template<typename T>
+    void setObject(const T& object);
     virtual void setData(size_t size, const void* data) = 0;
 
     virtual NativeHandle nativeHandle() const = 0;
@@ -51,5 +53,11 @@ public:
 
     static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
 };
+
+template<typename T>
+void UniformBuffer::setObject(const T& object)
+{
+    setData(sizeof(T), &object);
+}
 
 } // namespace GE
