@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,43 +30,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "camera.h"
+#pragma once
 
-namespace {
+#include <genesis/scene/camera/projection_camera.h>
 
-float aspectRatio(const GE::Vec2& size)
+namespace GE::Scene {
+
+class GE_API ViewProjectionCamera: public ProjectionCamera
 {
-    if (size.y > 0.0f) {
-        return size.x / size.y;
-    }
+public:
+    ViewProjectionCamera();
 
-    return 1.0f;
-}
+    const Mat4& view() const { return m_view; }
 
-} // namespace
+    void setDistance(float distance);
+    void setRotationAngles(float pitch, float yaw);
+    void setFocalPoint(const Vec3& focal_point);
 
-namespace GE::Examples {
+    float distance() const { return m_distance; }
+    float pitch() const { return m_pitch; }
+    float yaw() const { return m_yaw; }
+    const Vec3& focalPoint() const { return m_focal_point; }
+    Quat orientation() const { return Quat{Vec3{-m_yaw, -m_pitch, 0.0f}}; }
+    Vec3 position() const { return m_focal_point - (forwardDirection() * m_distance); }
 
-Camera::Camera()
-{
-    updateView();
-    updateProjection();
-}
+    Vec3 upDirection() const;
+    Vec3 rightDirection() const;
+    Vec3 forwardDirection() const;
 
-void Camera::setSize(const Vec2& size)
-{
-    m_size = size;
-    updateProjection();
-}
+private:
+    void calculateView();
 
-void Camera::updateView()
-{
-    m_view = glm::lookAt(Vec3{2.0f, 2.0f, 2.0f}, Vec3{0.0f, 0.0f, 0.0f}, Vec3{0.0f, 0.0f, 1.0f});
-}
+    float m_distance{2.0f};
+    float m_yaw{0.0f};
+    float m_pitch{0.0f};
+    Vec3 m_focal_point{0.0f};
+    Mat4 m_view{1.0f};
+};
 
-void Camera::updateProjection()
-{
-    m_proj = glm::perspective(glm::radians(45.0f), aspectRatio(m_size), 0.1f, 10.0f);
-}
-
-} // namespace GE::Examples
+} // namespace GE::Scene

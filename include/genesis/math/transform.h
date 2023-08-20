@@ -32,30 +32,15 @@
 
 #pragma once
 
+#include <genesis/math/types.h>
+
+#include <glm/ext/matrix_transform.hpp>
+
 namespace GE {
 
-template<typename T = int>
-constexpr T bit(T offset)
-{
-    return static_cast<T>(1 << offset);
-}
-
-template<typename T = int>
-constexpr bool checkBits(T flags, T bits)
-{
-    return (flags & bits) == bits;
-}
-
-template<typename T = int>
-constexpr T setBits(T bits, T mask)
-{
-    return static_cast<T>(bits | mask);
-}
-
-template<typename T = int>
-constexpr T clearBits(T bits, T mask)
-{
-    return static_cast<T>(bits & (~mask));
-}
+using glm::inverse;
+using glm::rotate;
+using glm::scale;
+using glm::translate;
 
 } // namespace GE

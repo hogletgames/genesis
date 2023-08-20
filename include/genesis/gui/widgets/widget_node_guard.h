@@ -47,6 +47,7 @@ public:
     {
         if (m_node != nullptr) {
             m_node->begin();
+            m_node->emitSignals();
         }
     }
 
@@ -60,7 +61,7 @@ public:
     template<typename T, typename... Args>
     auto call(Args&&... args) -> std::enable_if_t<std::is_void_v<decltype(T::call(args...))>>
     {
-        if (m_node != nullptr && m_node->isOpened()) {
+        if (isNodeCallable()) {
             T::call(std::forward<Args>(args)...);
         }
     }
@@ -69,16 +70,24 @@ public:
     auto call(Args&&... args)
         -> std::enable_if_t<std::is_same_v<decltype(T::call(args...)), bool>, bool>
     {
-        if (m_node != nullptr && m_node->isOpened()) {
+        if (isNodeCallable()) {
             return T::call(std::forward<Args>(args)...);
         }
 
         return false;
     }
 
+    template<typename Func, typename... Args>
+    void call(Func&& f, Args&&... args)
+    {
+        if (isNodeCallable()) {
+            std::invoke(std::forward<Func>(f), std::forward<Args>(args)...);
+        }
+    }
+
     WidgetNodeGuard subNode(WidgetNode* node)
     {
-        if (m_node->isOpened()) {
+        if (isNodeCallable()) {
             return WidgetNodeGuard{node};
         }
 
@@ -86,6 +95,8 @@ public:
     }
 
 private:
+    bool isNodeCallable() const { return m_node != nullptr && m_node->isOpened(); }
+
     WidgetNode* m_node{nullptr};
 };
 

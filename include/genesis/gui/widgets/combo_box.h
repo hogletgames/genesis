@@ -32,30 +32,55 @@
 
 #pragma once
 
-namespace GE {
+#include <genesis/core/bit.h>
+#include <genesis/gui/widgets/widget_node.h>
 
-template<typename T = int>
-constexpr T bit(T offset)
+#include <boost/signals2/signal.hpp>
+
+#include <string>
+
+namespace GE::GUI {
+
+class GE_API ComboBox: public WidgetNode
 {
-    return static_cast<T>(1 << offset);
-}
+public:
+    using Items = std::vector<std::string_view>;
 
-template<typename T = int>
-constexpr bool checkBits(T flags, T bits)
-{
-    return (flags & bits) == bits;
-}
+    using ItemChangedSignal = boost::signals2::signal<void(std::string_view)>;
 
-template<typename T = int>
-constexpr T setBits(T bits, T mask)
-{
-    return static_cast<T>(bits | mask);
-}
+    enum Flags : int
+    {
+        NONE = 0,
+        POPUP_ALIGN_LEFT = bit(0),
+        HEIGHT_SMALL = bit(1),
+        HEIGHT_REGULAR = bit(2),
+        HEIGHT_LARGE = bit(3),
+        HEIGHT_LARGEST = bit(4),
+        NO_ARROW_BUTTON = bit(5),
+        NO_PREVIEW = bit(5),
+        HEIGHT_MASK = HEIGHT_SMALL | HEIGHT_REGULAR | HEIGHT_LARGE | HEIGHT_LARGEST,
+    };
 
-template<typename T = int>
-constexpr T clearBits(T bits, T mask)
-{
-    return static_cast<T>(bits & (~mask));
-}
+    template<typename Items>
+    ComboBox(std::string_view name, const Items& items, std::string_view current_item,
+             Flags flags = NONE)
+        : ComboBox(name, {items.begin(), items.end()}, current_item, flags)
+    {}
 
-} // namespace GE
+    ComboBox(std::string_view name, Items items, std::string_view current_item, Flags flags = NONE);
+
+    void emitSignals() override;
+
+    std::string_view selectedItem() const { return m_selected_item; }
+
+    ItemChangedSignal* itemChangedSignal() { return &m_item_changed; }
+
+private:
+    Items m_items;
+    std::string_view m_current_item;
+    std::string_view m_selected_item;
+
+    ItemChangedSignal m_item_changed;
+};
+
+} // namespace GE::GUI

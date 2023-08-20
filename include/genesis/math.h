@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2021-2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,4 +32,7 @@
 
 #pragma once
 
+#include <genesis/math/camera.h>
+#include <genesis/math/transform.h>
+#include <genesis/math/trigonometric.h>
 #include <genesis/math/types.h>

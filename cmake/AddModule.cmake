@@ -23,7 +23,7 @@ macro(_ge_parse_add_target_options)
     cmake_parse_arguments(THIS
         ""
         ""
-        "INCLUDE_DIRS;SOURCES;PUBLIC_DEPS;PRIVATE_DEPS"
+        "INCLUDE_DIRS;SOURCES;PUBLIC_DEPS;PRIVATE_DEPS;PUBLIC_DEF;PRIVATE_DEF"
         ${ARGN})
 endmacro()
 
@@ -44,9 +44,14 @@ function(_ge_set_target_options TARGET)
     target_compile_options(${TARGET} PRIVATE ${GE_COMPILE_OPTIONS})
 
     # Definitions
-    target_compile_definitions(${TARGET} PUBLIC
-        $<$<BOOL:${GE_DISABLE_ASSERTS}>:GE_DISABLE_ASSERTS>
-        $<$<BOOL:${GE_DISABLE_DEBUG}>:GE_DISABLE_DEBUG>)
+    target_compile_definitions(${TARGET}
+        PUBLIC
+            ${THIS_PUBLIC_DEF}
+            $<$<BOOL:${GE_DISABLE_ASSERTS}>:GE_DISABLE_ASSERTS>
+            $<$<BOOL:${GE_DISABLE_DEBUG}>:GE_DISABLE_DEBUG>
+        PRIVATE
+            ${THIS_PRIVATE_DEF}
+        )
     _ge_set_target_platform(${TARGET})
 endfunction()
 

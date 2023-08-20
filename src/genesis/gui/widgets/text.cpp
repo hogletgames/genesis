@@ -40,7 +40,7 @@ void Text::call(std::string_view fmt, ...)
 {
     va_list args{};
     va_start(args, fmt);
-    ImGui::Text(fmt.data(), args);
+    ImGui::TextV(fmt.data(), args);
     va_end(args);
 }
 

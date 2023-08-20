@@ -44,6 +44,8 @@ class GE_API ValueEditor
 public:
     using Flags = int;
 
+    static bool call(std::string_view label, Vec2* value, float v_speed = 1.0f, float v_min = 0.0f,
+                     float v_max = 1.0f, std::string_view format = "%.3f", Flags flags = 0);
     static bool call(std::string_view label, Vec3* value, float v_speed = 1.0f, float v_min = 0.0f,
                      float v_max = 1.0f, std::string_view format = "%.3f", Flags flags = 0);
     static bool call(std::string_view label, float* value, float v_speed = 1.0f, float v_min = 0.0f,

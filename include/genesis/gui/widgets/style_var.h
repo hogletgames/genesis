@@ -32,30 +32,46 @@
 
 #pragma once
 
-namespace GE {
+#include <genesis/core/interface.h>
+#include <genesis/math/types.h>
 
-template<typename T = int>
-constexpr T bit(T offset)
+namespace GE::GUI {
+
+class StyleVar: public NonCopyable
 {
-    return static_cast<T>(1 << offset);
-}
+public:
+    enum Index
+    {
+        ALPHA,
+        DISABLTYLED_ALPHA,
+        WINDOW_PADDING,
+        WINDOW_ROUNDING,
+        WINDOW_BORDER_SIZE,
+        WINDOW_MIN_SIZE,
+        WINDOW_TITLE_ALIGN,
+        CHILD_ROUNDING,
+        CHILD_BORDER_SIZE,
+        POPUP_ROUNDING,
+        POPUP_BORDER_SIZE,
+        FRAME_PADDING,
+        FRAME_ROUNDING,
+        FRAME_BORDER_SIZE,
+        ITEM_SPACING,
+        ITEM_INNER_SPACING,
+        INDENT_SPACING,
+        CELL_PADDING,
+        SCROLLBAR_SIZE,
+        SCROLLBAR_ROUNDING,
+        GRAB_MIN_SIZE,
+        GRAB_ROUNDING,
+        TAB_ROUNDING,
+        BUTTON_TEXT_ALIGN,
+        SELECTABLE_TEXT_ALIGN,
+    };
 
-template<typename T = int>
-constexpr bool checkBits(T flags, T bits)
-{
-    return (flags & bits) == bits;
-}
+    StyleVar(Index idx, float value);
+    StyleVar(Index idx, const Vec2& value);
+    ~StyleVar();
+};
 
-template<typename T = int>
-constexpr T setBits(T bits, T mask)
-{
-    return static_cast<T>(bits | mask);
-}
-
-template<typename T = int>
-constexpr T clearBits(T bits, T mask)
-{
-    return static_cast<T>(bits & (~mask));
-}
-
-} // namespace GE
+} // namespace GE::GUI

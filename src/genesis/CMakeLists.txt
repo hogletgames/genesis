@@ -9,7 +9,9 @@ list(APPEND GENESIS_HEADERS
     ${INCLUDE_DIR}/genesis.h
     ${INCLUDE_DIR}/graphics.h
     ${INCLUDE_DIR}/math.h
-    ${INCLUDE_DIR}/window.h)
+    ${INCLUDE_DIR}/scene.h
+    ${INCLUDE_DIR}/window.h
+    )
 
 add_library(genesis ${GE_LIB_TYPE} ${GENESIS_HEADERS})
 target_link_libraries(genesis PUBLIC
@@ -18,7 +20,9 @@ target_link_libraries(genesis PUBLIC
     genesis::graphics
     genesis::gui
     genesis::math
-    genesis::window)
+    genesis::scene
+    genesis::window
+    )
 add_library(genesis::genesis ALIAS genesis)
 
 add_subdirectory(app)
@@ -26,4 +30,5 @@ add_subdirectory(core)
 add_subdirectory(graphics)
 add_subdirectory(gui)
 add_subdirectory(math)
+add_subdirectory(scene)
 add_subdirectory(window)

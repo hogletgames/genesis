@@ -32,33 +32,6 @@
 
 #pragma once
 
-#include <genesis/core/export.h>
-#include <genesis/math/types.h>
-
-namespace GE {
-class Event;
-} // namespace GE
-
-namespace GE::Examples {
-
-class GE_API Camera
-{
-public:
-    Camera();
-
-    Mat4 view() const { return m_view; }
-    Mat4 projection() const { return m_proj; }
-
-    void setSize(const Vec2 &size);
-
-private:
-    void updateView();
-    void updateProjection();
-
-    Mat4 m_view{};
-    Mat4 m_proj{};
-
-    Vec2 m_size{};
-};
-
-} // namespace GE::Examples
+#include <genesis/scene/camera/projection_camera.h>
+#include <genesis/scene/camera/view_projection_camera.h>
+#include <genesis/scene/camera/vp_camera_controller.h>

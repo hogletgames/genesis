@@ -38,11 +38,105 @@
 
 #include "genesis/core.h"
 #include "genesis/gui.h"
+#include "genesis/math.h"
+#include "genesis/scene.h"
 
 namespace {
 
 constexpr auto VIKING_ROOM_MODEL{"examples/sdl2-vulkan/models/viking_room.obj"};
 constexpr auto VIKING_ROOM_TEXTURE{"examples/sandbox/assets/textures/viking_room.png"};
+
+void drawView(GE::GUI::WidgetNodeGuard* node,
+              const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
+{
+    if (float distance = camera->distance();
+        node->call<GE::GUI::ValueEditor>("Distance", &distance, 0.1f, 0.0f, 50.0f)) {
+        camera->setDistance(distance);
+    }
+
+    if (auto focal_point = camera->focalPoint();
+        node->call<GE::GUI::ValueEditor>("Focal point", &focal_point, 0.1f, -10.0f, 10.0f)) {
+        camera->setFocalPoint(focal_point);
+    }
+
+    if (GE::Vec2 angles{GE::degrees(camera->pitch()), GE::degrees(camera->yaw())};
+        node->call<GE::GUI::ValueEditor>("Pitch/Yaw", &angles, 1.0f, -360.0f, 360.0f)) {
+        camera->setRotationAngles(GE::radians(angles.x), GE::radians(angles.y));
+    }
+}
+
+void drawProjectionCombo(GE::GUI::WidgetNodeGuard* node,
+                         const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
+{
+    static const std::vector<std::string> PROJECTIONS = {
+        GE::toString(GE::Scene::ViewProjectionCamera::ORTHOGRAPHIC),
+        GE::toString(GE::Scene::ViewProjectionCamera::PERSPECTIVE),
+    };
+
+    GE::GUI::ComboBox combo{"Projection type", PROJECTIONS, GE::toString(camera->type())};
+    combo.itemChangedSignal()->connect([&camera](std::string_view projection) {
+        camera->setType(GE::Scene::toProjectionType(projection));
+    });
+    node->subNode(&combo);
+}
+
+void drawPerspectiveProjection(GE::GUI::WidgetNodeGuard* node,
+                               const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
+{
+    auto [fov, near, far] = camera->perspectiveOptions();
+    node->call<GE::GUI::ValueEditor>("Field of view", &fov, 0.1f, 0.0f, 180.0f);
+    node->call<GE::GUI::ValueEditor>("Near", &near, 0.1f, 0.0f, 100.0f);
+    node->call<GE::GUI::ValueEditor>("Far", &far, 0.1f, 0.0f, 100.0f);
+
+    camera->setPerspectiveOptions({fov, near, far});
+}
+
+void drawOrthoProjection(GE::GUI::WidgetNodeGuard* node,
+                         const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
+{
+    auto [size, near, far] = camera->orthographicOptions();
+    node->call<GE::GUI::ValueEditor>("Size", &size, 0.1f, 0.0f, 10.0f);
+    node->call<GE::GUI::ValueEditor>("Near", &near, 0.1f, 0.0f, 100.f);
+    node->call<GE::GUI::ValueEditor>("Far", &far, 0.1f, 0.0f, 100.0f);
+
+    camera->setOrthoOptions({size, near, far});
+}
+
+void drawProjectionOptions(GE::GUI::WidgetNodeGuard* node,
+                           const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
+{
+    switch (camera->type()) {
+        case GE::Scene::ViewProjectionCamera::PERSPECTIVE:
+            drawPerspectiveProjection(node, camera);
+            break;
+        case GE::Scene::ViewProjectionCamera::ORTHOGRAPHIC:
+            drawOrthoProjection(node, camera);
+            break;
+    }
+}
+
+void drawReadOnlyOptions(GE::GUI::WidgetNodeGuard* node,
+                         const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
+{
+    node->call<GE::GUI::Text>("Position: %s", GE::toString(camera->position()).c_str());
+    node->call<GE::GUI::Text>("Up direction: %s", GE::toString(camera->upDirection()).c_str());
+    node->call<GE::GUI::Text>("Right direction: %s",
+                              GE::toString(camera->rightDirection()).c_str());
+    node->call<GE::GUI::Text>("Forward direction: %s",
+                              GE::toString(camera->forwardDirection()).c_str());
+}
+
+void drawCameraOptions(GE::GUI::WidgetNodeGuard* parent, GE::Examples::GuiLayerWindow* window)
+{
+    GE::GUI::TreeNode camera_tree{window->name(), GE::GUI::TreeNode::FRAMED};
+    auto node = parent->subNode(&camera_tree);
+    auto camera = window->camera();
+
+    drawView(&node, camera);
+    drawProjectionCombo(&node, camera);
+    drawProjectionOptions(&node, camera);
+    drawReadOnlyOptions(&node, camera);
+}
 
 } // namespace
 
@@ -65,7 +159,21 @@ void GUILayer::onDetached()
     m_gui_windows.clear();
 }
 
-void GUILayer::onUpdate([[maybe_unused]] Timestamp ts) {}
+void GUILayer::onUpdate(Timestamp ts)
+{
+    for (auto& gui_window : m_gui_windows) {
+        gui_window->onUpdate(ts);
+    }
+}
+
+void GUILayer::onEvent(Event* event)
+{
+    BaseLayer::onEvent(event);
+
+    for (auto& gui_window : m_gui_windows) {
+        gui_window->onEvent(event);
+    }
+}
 
 void GUILayer::onRender()
 {
@@ -82,24 +190,9 @@ void GUILayer::drawCheckboxWindow()
     for (auto& gui_window : m_gui_windows) {
         if (node.call<GUI::Checkbox>(gui_window->name(), gui_window->isOpenFlag());
             *gui_window->isOpenFlag()) {
-            drawTransformTreeNode(&node, gui_window.get());
+            drawCameraOptions(&node, gui_window.get());
         }
     }
-}
-
-void GUILayer::drawTransformTreeNode(GUI::WidgetNodeGuard* node_guard, GuiLayerWindow* gui_window)
-{
-    GUI::TreeNode tree_node{gui_window->name(), GUI::TreeNode::FRAMED};
-    auto node = node_guard->subNode(&tree_node);
-    auto rotation_degrees = glm::degrees(*gui_window->objectRotation());
-
-    node.call<GUI::Text>("Transform:");
-    node.call<GUI::ValueEditor>("Translation", gui_window->objectTranslation(), 0.05f, -10.0f,
-                                10.0f);
-    if (node.call<GUI::ValueEditor>("Rotation", &rotation_degrees, 1.0f, -180.0f, 180.0f)) {
-        *gui_window->objectRotation() = glm::radians(rotation_degrees);
-    }
-    node.call<GUI::ValueEditor>("Scale", gui_window->objectScale(), 0.01f, 0.0f, 10.0f);
 }
 
 void GUILayer::drawGuiWindows()

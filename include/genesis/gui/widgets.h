@@ -33,8 +33,10 @@
 #pragma once
 
 #include <genesis/gui/widgets/checkbox.h>
+#include <genesis/gui/widgets/combo_box.h>
 #include <genesis/gui/widgets/image.h>
 #include <genesis/gui/widgets/separator.h>
+#include <genesis/gui/widgets/style_var.h>
 #include <genesis/gui/widgets/text.h>
 #include <genesis/gui/widgets/tree_node.h>
 #include <genesis/gui/widgets/value_editor.h>

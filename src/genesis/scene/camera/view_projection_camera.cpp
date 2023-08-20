@@ -30,32 +30,55 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "camera/view_projection_camera.h"
 
-namespace GE {
+#include "genesis/math/transform.h"
 
-template<typename T = int>
-constexpr T bit(T offset)
+namespace GE::Scene {
+
+ViewProjectionCamera::ViewProjectionCamera()
 {
-    return static_cast<T>(1 << offset);
+    calculateView();
 }
 
-template<typename T = int>
-constexpr bool checkBits(T flags, T bits)
+void ViewProjectionCamera::setDistance(float distance)
 {
-    return (flags & bits) == bits;
+    m_distance = distance;
+    calculateView();
 }
 
-template<typename T = int>
-constexpr T setBits(T bits, T mask)
+void ViewProjectionCamera::setRotationAngles(float pitch, float yaw)
 {
-    return static_cast<T>(bits | mask);
+    m_pitch = pitch;
+    m_yaw = yaw;
+    calculateView();
 }
 
-template<typename T = int>
-constexpr T clearBits(T bits, T mask)
+void ViewProjectionCamera::setFocalPoint(const Vec3& focal_point)
 {
-    return static_cast<T>(bits & (~mask));
+    m_focal_point = focal_point;
+    calculateView();
 }
 
-} // namespace GE
+Vec3 ViewProjectionCamera::upDirection() const
+{
+    return rotate(orientation(), {0.0f, 1.0f, 0.0f});
+}
+
+Vec3 ViewProjectionCamera::rightDirection() const
+{
+    return rotate(orientation(), {1.0f, 0.0f, 0.0f});
+}
+
+Vec3 ViewProjectionCamera::forwardDirection() const
+{
+    return rotate(orientation(), {0.0f, 0.0f, 1.0f});
+}
+
+void ViewProjectionCamera::calculateView()
+{
+    auto transform = translate(Mat4{1.0f}, position());
+    m_view = transpose(transform * toMat4(orientation()));
+}
+
+} // namespace GE::Scene

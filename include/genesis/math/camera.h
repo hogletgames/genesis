@@ -32,30 +32,11 @@
 
 #pragma once
 
+#include <glm/ext/matrix_clip_space.hpp>
+
 namespace GE {
 
-template<typename T = int>
-constexpr T bit(T offset)
-{
-    return static_cast<T>(1 << offset);
-}
-
-template<typename T = int>
-constexpr bool checkBits(T flags, T bits)
-{
-    return (flags & bits) == bits;
-}
-
-template<typename T = int>
-constexpr T setBits(T bits, T mask)
-{
-    return static_cast<T>(bits | mask);
-}
-
-template<typename T = int>
-constexpr T clearBits(T bits, T mask)
-{
-    return static_cast<T>(bits & (~mask));
-}
+using glm::ortho;
+using glm::perspective;
 
 } // namespace GE

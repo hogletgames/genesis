@@ -4,8 +4,10 @@ list(APPEND GUI_SOURCES
     base_layer.cpp
     renderer.cpp
     widgets/checkbox.cpp
+    widgets/combo_box.cpp
     widgets/image.cpp
     widgets/separator.cpp
+    widgets/style_var.cpp
     widgets/text.cpp
     widgets/tree_node.cpp
     widgets/value_editor.cpp
@@ -19,8 +21,10 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/widgets.h
     ${INCLUDE_DIR}/widgets/checkbox.h
+    ${INCLUDE_DIR}/widgets/combo_box.h
     ${INCLUDE_DIR}/widgets/image.h
     ${INCLUDE_DIR}/widgets/separator.h
+    ${INCLUDE_DIR}/widgets/style_var.h
     ${INCLUDE_DIR}/widgets/text.h
     ${INCLUDE_DIR}/widgets/tree_node.h
     ${INCLUDE_DIR}/widgets/value_editor.h
@@ -36,7 +40,9 @@ ge_add_module(gui
         ${INCLUDE_DIR}
         ${INCLUDE_DIR}/widgets
         ${CMAKE_CURRENT_SOURCE_DIR}
-    PUBLIC_DEPS genesis::app
+    PUBLIC_DEPS
+        Boost::signals2
+        genesis::app
     PRIVATE_DEPS
         genesis::graphics
         imgui

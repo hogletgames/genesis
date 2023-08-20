@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,27 +32,31 @@
 
 #pragma once
 
-#include "camera.h"
 #include "drawable/drawable.h"
 
+#include <genesis/core/timestamp.h>
 #include <genesis/graphics/framebuffer.h>
 #include <genesis/gui/widgets.h>
+
+namespace GE::Scene {
+class ViewProjectionCamera;
+class VPCameraController;
+} // namespace GE::Scene
 
 namespace GE::Examples {
 
 class GE_API GuiLayerWindow
 {
 public:
+    ~GuiLayerWindow();
+
+    void onUpdate(Timestamp ts);
+    void onEvent(Event* event);
     void draw();
-    void update();
 
     std::string_view name() const { return m_name; }
     bool* isOpenFlag() { return &m_is_open; }
-    Vec3* objectTranslation() { return &m_translation; }
-    Vec3* objectRotation() { return &m_rotation; }
-    Vec3* objectScale() { return &m_scale; }
-
-    Mat4 transform() const;
+    Shared<Scene::ViewProjectionCamera> camera() const { return m_camera; }
 
     template<typename T, typename... Args>
     static Scoped<GuiLayerWindow> create(const std::string& name, Args&&... args)
@@ -67,16 +71,15 @@ private:
     explicit GuiLayerWindow(std::string name);
 
     bool m_is_open{false};
+    bool m_is_focused{false};
     std::string m_name;
     GUI::Window m_window{m_name, &m_is_open};
 
-    Camera m_camera;
-    Vec3 m_translation{0.0f, 0.0f, 0.0f};
-    Vec3 m_rotation{0.0f, 0.0f, 0.0f};
-    Vec3 m_scale{1.0f, 1.0f, 1.0f};
-
     Scoped<Framebuffer> m_fbo;
     Scoped<Drawable> m_draw_object;
+
+    Shared<Scene::ViewProjectionCamera> m_camera;
+    Scoped<Scene::VPCameraController> m_camera_controller;
 };
 
 } // namespace GE::Examples

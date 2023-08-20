@@ -224,12 +224,13 @@ void Window::onMouseEvent(const SDL_Event& sdl_event)
     switch (sdl_event.type) {
         case SDL_MOUSEMOTION: {
             MouseMovedEvent event{{sdl_event.motion.x, sdl_event.motion.y},
+                                  {sdl_event.motion.xrel, sdl_event.motion.yrel},
                                   sdl_event.motion.windowID};
             emitEvent(&event);
             break;
         }
         case SDL_MOUSEWHEEL: {
-            MouseScrolledEvent event{{sdl_event.wheel.x, sdl_event.wheel.y}};
+            MouseScrolledEvent event{{sdl_event.wheel.preciseX, sdl_event.wheel.preciseY}};
             emitEvent(&event);
             break;
         }

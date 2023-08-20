@@ -30,32 +30,55 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "widgets/combo_box.h"
 
-namespace GE {
+#include <imgui.h>
 
-template<typename T = int>
-constexpr T bit(T offset)
+namespace {
+
+bool beginCombo(std::string_view name, const GE::GUI::ComboBox::Items& items,
+                std::string_view current_item, GE::GUI::ComboBox::Flags flags,
+                std::string_view* selected_item)
 {
-    return static_cast<T>(1 << offset);
+    *selected_item = current_item;
+
+    if (!ImGui::BeginCombo(name.data(), current_item.data(), flags)) {
+        return false;
+    }
+
+    for (std::string_view item : items) {
+        bool is_selected = item == *selected_item;
+
+        if (ImGui::Selectable(item.data(), is_selected)) {
+            *selected_item = item;
+        }
+
+        if (is_selected) {
+            ImGui::SetItemDefaultFocus();
+        }
+    }
+
+    return true;
 }
 
-template<typename T = int>
-constexpr bool checkBits(T flags, T bits)
+} // namespace
+
+namespace GE::GUI {
+
+ComboBox::ComboBox(std::string_view name, Items items, std::string_view current_item, Flags flags)
+    : m_items{std::move(items)}
+    , m_current_item{current_item}
+    , m_selected_item{current_item}
 {
-    return (flags & bits) == bits;
+    setBeginFunc(&beginCombo, name, m_items, m_current_item, flags, &m_selected_item);
+    setEndFunc(&ImGui::EndCombo);
 }
 
-template<typename T = int>
-constexpr T setBits(T bits, T mask)
+void ComboBox::emitSignals()
 {
-    return static_cast<T>(bits | mask);
+    if (m_selected_item != m_current_item) {
+        m_item_changed(m_selected_item);
+    }
 }
 
-template<typename T = int>
-constexpr T clearBits(T bits, T mask)
-{
-    return static_cast<T>(bits & (~mask));
-}
-
-} // namespace GE
+} // namespace GE::GUI
