@@ -32,9 +32,21 @@
 
 #pragma once
 
-#include <genesis/assets/iresource.h>
-#include <genesis/assets/resource_base.h>
-#include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
-#include <genesis/assets/resource_traversal.h>
 #include <genesis/assets/resource_visitor.h>
+
+namespace GE::Assets {
+
+template<typename T>
+class GE_API ResourcePointerVisitor: public ResourceVisitor
+{
+public:
+    void visit(T* resource) override { m_resource = resource; }
+
+    const T* get() const { return m_resource; }
+    T* get() { return m_resource; }
+
+private:
+    T* m_resource{nullptr};
+};
+
+} // namespace GE::Assets

@@ -30,11 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "resource_traversal.h"
+#include "registry.h"
 
-#include <genesis/assets/iresource.h>
-#include <genesis/assets/resource_base.h>
-#include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
-#include <genesis/assets/resource_traversal.h>
-#include <genesis/assets/resource_visitor.h>
+namespace GE::Assets {} // namespace GE::Assets

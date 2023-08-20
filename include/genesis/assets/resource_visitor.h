@@ -32,9 +32,20 @@
 
 #pragma once
 
-#include <genesis/assets/iresource.h>
-#include <genesis/assets/resource_base.h>
-#include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
-#include <genesis/assets/resource_traversal.h>
-#include <genesis/assets/resource_visitor.h>
+#include <genesis/core/interface.h>
+
+namespace GE::Assets {
+
+class MeshResource;
+class PipelineResource;
+class TextureResource;
+
+class GE_API ResourceVisitor: public Interface
+{
+public:
+    virtual void visit([[maybe_unused]] MeshResource* resource){};
+    virtual void visit([[maybe_unused]] PipelineResource* resource){};
+    virtual void visit([[maybe_unused]] TextureResource* resource){};
+};
+
+} // namespace GE::Assets

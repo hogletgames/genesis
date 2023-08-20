@@ -32,9 +32,40 @@
 
 #pragma once
 
-#include <genesis/assets/iresource.h>
-#include <genesis/assets/resource_base.h>
+#include <genesis/assets/registry.h>
 #include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
-#include <genesis/assets/resource_traversal.h>
 #include <genesis/assets/resource_visitor.h>
+
+#include <array>
+
+namespace GE::Assets {
+
+class Registry;
+
+template<size_t RESOURCE_COUNT>
+class GE_API ResourceTraversal: public ResourceVisitor
+{
+public:
+    using ResourceIDs = std::array<ResourceID, RESOURCE_COUNT>;
+
+    ResourceTraversal() = default;
+
+    explicit ResourceTraversal(ResourceIDs ids)
+        : m_resource_ids(std::move(ids))
+    {}
+
+    void traverse(Registry* registry)
+    {
+        for (const auto& id : m_resource_ids) {
+            registry->visit(id, this);
+        }
+    }
+
+    void setResourceIds(ResourceIDs ids) { m_resource_ids = std::move(ids); }
+    const ResourceIDs& resourceIds() const { return m_resource_ids; }
+
+private:
+    ResourceIDs m_resource_ids;
+};
+
+} // namespace GE::Assets
