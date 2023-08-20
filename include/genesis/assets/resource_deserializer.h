@@ -32,17 +32,29 @@
 
 #pragma once
 
-#include <genesis/assets/assets_exception.h>
-#include <genesis/assets/iresource.h>
-#include <genesis/assets/mesh_resource.h>
-#include <genesis/assets/pipeline_resource.h>
-#include <genesis/assets/registry.h>
-#include <genesis/assets/resource_base.h>
-#include <genesis/assets/resource_deserializer.h>
-#include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
-#include <genesis/assets/resource_serializer.h>
-#include <genesis/assets/resource_traversal.h>
-#include <genesis/assets/resource_visitor.h>
-#include <genesis/assets/texture_resource.h>
-#include <genesis/assets/yaml_convert.h>
+#include <genesis/core/export.h>
+
+#include <yaml-cpp/yaml.h>
+
+#include <string>
+
+namespace GE::Assets {
+
+class Registry;
+
+class GE_API ResourceDeserializer
+{
+public:
+    explicit ResourceDeserializer(Registry* registry);
+
+    bool deserialize(const std::string& config_filepath);
+
+private:
+    template<typename T>
+    bool populate(const YAML::Node& node);
+
+    Registry* m_registry{nullptr};
+    YAML::Node m_assets;
+};
+
+} // namespace GE::Assets
