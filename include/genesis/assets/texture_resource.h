@@ -32,13 +32,29 @@
 
 #pragma once
 
-#include <genesis/assets/assets_exception.h>
-#include <genesis/assets/iresource.h>
-#include <genesis/assets/mesh_resource.h>
-#include <genesis/assets/pipeline_resource.h>
 #include <genesis/assets/resource_base.h>
-#include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
-#include <genesis/assets/resource_traversal.h>
-#include <genesis/assets/resource_visitor.h>
-#include <genesis/assets/texture_resource.h>
+#include <genesis/core/memory.h>
+#include <genesis/graphics/texture.h>
+
+#include <string>
+
+namespace GE::Assets {
+
+class GE_API TextureResource: public ResourceBase
+{
+public:
+    TextureResource(const ResourceID& id, std::string filepath);
+
+    void accept(ResourceVisitor* visitor) override;
+
+    const GE::Shared<Texture>& texture() const { return m_texture; }
+    const std::string& filepath() const { return m_filepath; }
+
+    static Scoped<TextureResource> create(const ResourceID& id, const std::string& filepath);
+
+private:
+    std::string m_filepath;
+    GE::Shared<Texture> m_texture;
+};
+
+} // namespace GE::Assets

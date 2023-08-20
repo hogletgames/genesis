@@ -5,6 +5,7 @@ list(APPEND ASSETS_SOURCES
     pipeline_resource.cpp
     resource_base.cpp
     resource_traversal.cpp
+    texture_resource.cpp
     )
 
 list(APPEND ASSETS_HEADERS
@@ -17,6 +18,7 @@ list(APPEND ASSETS_HEADERS
     ${INCLUDE_DIR}/resource_pointer_visitor.h
     ${INCLUDE_DIR}/resource_traversal.h
     ${INCLUDE_DIR}/resource_visitor.h
+    ${INCLUDE_DIR}/texture_resource.h
     )
 
 ge_add_module(assets

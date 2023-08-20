@@ -30,15 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "texture_resource.h"
+#include "assets_exception.h"
+#include "resource_visitor.h"
 
-#include <genesis/assets/assets_exception.h>
-#include <genesis/assets/iresource.h>
-#include <genesis/assets/mesh_resource.h>
-#include <genesis/assets/pipeline_resource.h>
-#include <genesis/assets/resource_base.h>
-#include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
-#include <genesis/assets/resource_traversal.h>
-#include <genesis/assets/resource_visitor.h>
-#include <genesis/assets/texture_resource.h>
+#include "genesis/core/format.h"
+#include "genesis/graphics/texture_loader.h"
+
+namespace GE::Assets {
+
+TextureResource::TextureResource(const ResourceID& id, std::string filepath)
+    : ResourceBase(id)
+    , m_filepath{std::move(filepath)}
+    , m_texture{TextureLoader{m_filepath}.load()}
+{
+    if (!m_texture) {
+        throw Assets::Exception{
+            GE_FMTSTR("Failed to create a texture resource from the file '{}'", m_filepath)};
+    }
+}
+
+void TextureResource::accept(ResourceVisitor* visitor)
+{
+    visitor->visit(this);
+}
+
+Scoped<TextureResource> TextureResource::create(const ResourceID& id, const std::string& filepath)
+{
+    return tryMakeScoped<TextureResource>(id, filepath);
+}
+
+} // namespace GE::Assets
