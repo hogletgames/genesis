@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "registry.h"
+#include "iresource.h"
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+namespace GE::Assets {
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+Registry::Registry() = default;
+
+Registry::~Registry() = default;
+
+void Registry::add(Scoped<IResource> resource)
+{
+    auto uuid = resource->id();
+    m_resources.emplace(uuid, std::move(resource));
+}
+
+void Registry::remove(const ResourceID &uuid)
+{
+    m_resources.erase(uuid);
+}
+
+void Registry::visit(const ResourceID &id, ResourceVisitor *visitor)
+{
+    if (auto it = m_resources.find(id); it != m_resources.end()) {
+        it->second->accept(visitor);
+    }
+}
+
+void Registry::visitAll(ResourceVisitor *visitor)
+{
+    for (auto &[_, resource] : m_resources) {
+        resource->accept(visitor);
+    }
+}
+
+Registry::ResourceIDs Registry::ids() const
+{
+    ResourceIDs ids(m_resources.size());
+    std::transform(m_resources.begin(), m_resources.end(), ids.begin(),
+                   [](const auto &resource) { return resource.first; });
+    return ids;
+}
+
+} // namespace GE::Assets

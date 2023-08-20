@@ -61,6 +61,12 @@ bool Mesh::fromObj(std::string_view filepath)
     return populateBuffers(reader);
 }
 
+void Mesh::setBuffers(Scoped<VertexBuffer> vbo, Scoped<IndexBuffer> ibo)
+{
+    m_vbo = std::move(vbo);
+    m_ibo = std::move(ibo);
+}
+
 void Mesh::draw(GPUCommandQueue* queue) const
 {
     m_vbo->bind(queue);
@@ -83,13 +89,22 @@ bool Mesh::populateBuffers(const tinyobj::ObjReader& reader)
 
     for (const auto& shape : reader.GetShapes()) {
         for (const auto& index : shape.mesh.indices) {
-            vertex_t vertex{};
-            vertex.position = {attrib.vertices[3 * index.vertex_index + 0],
-                               attrib.vertices[3 * index.vertex_index + 1],
-                               attrib.vertices[3 * index.vertex_index + 2]};
-            vertex.color = {0.0f, 1.0f, 0.0f};
-            vertex.tex_coord = {attrib.texcoords[2 * index.texcoord_index + 0],
-                                attrib.texcoords[2 * index.texcoord_index + 1]};
+            vertex_t vertex = {
+                {
+                    attrib.vertices[3 * index.vertex_index + 0],
+                    attrib.vertices[3 * index.vertex_index + 1],
+                    attrib.vertices[3 * index.vertex_index + 2],
+                },
+                {
+                    attrib.colors[3 * index.vertex_index + 0],
+                    attrib.colors[3 * index.vertex_index + 1],
+                    attrib.colors[3 * index.vertex_index + 2],
+                },
+                {
+                    attrib.texcoords[2 * index.texcoord_index + 0],
+                    attrib.texcoords[2 * index.texcoord_index + 1],
+                },
+            };
 
             if (unique_vertices.find(vertex) == unique_vertices.end()) {
                 unique_vertices[vertex] = vertices.size();

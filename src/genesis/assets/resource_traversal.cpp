@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "resource_traversal.h"
+#include "registry.h"
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
-
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+namespace GE::Assets {} // namespace GE::Assets

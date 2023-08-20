@@ -9,6 +9,10 @@ set(FETCHCONTENT_QUIET OFF)
 set(SDL_STATIC ON)
 set(SDL_TEST_ENABLED_BY_DEFAULT OFF)
 set(SPDLOG_FMT_EXTERNAL ON)
+set(YAML_CPP_BUILD_TOOLS OFF)
+set(YAML_BUILD_SHARED_LIBS OFF)
+set(YAML_CPP_INSTALL OFF)
+set(YAML_CPP_FORMAT_SOURCE OFF)
 
 # Vulkan SDK
 set(UPDATE_DEPS ON)
@@ -112,6 +116,12 @@ FetchContent_Declare(boost
     GIT_REPOSITORY https://github.com/boostorg/boost.git
     GIT_TAG boost-1.82.0)
 FetchContent_MakeAvailable(boost)
+
+# yaml-cpp
+FetchContent_Declare(yaml-cpp
+    GIT_REPOSITORY https://github.com/hogletgames/yaml-cpp.git
+    GIT_TAG yaml-cpp-0.7.0)
+FetchContent_MakeAvailable(yaml-cpp)
 
 # Vulkan-Loader
 FetchContent_Declare(Vulkan-Loader

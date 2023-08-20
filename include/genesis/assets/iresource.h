@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,18 @@
 
 #pragma once
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include <genesis/assets/resource_id.h>
+#include <genesis/core/interface.h>
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+namespace GE::Assets {
+
+class ResourceVisitor;
+
+class GE_API IResource: public Interface
+{
+public:
+    virtual const ResourceID& id() const = 0;
+    virtual void accept(ResourceVisitor* visitor) = 0;
+};
+
+} // namespace GE::Assets

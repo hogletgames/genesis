@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,22 @@
 
 #pragma once
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include <genesis/assets/iresource.h>
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+namespace GE::Assets {
+
+class GE_API ResourceBase: public IResource
+{
+public:
+    ResourceBase() = default;
+    explicit ResourceBase(ResourceID id);
+
+    void setId(const ResourceID& id) { m_id = id; }
+
+    const ResourceID& id() const override { return m_id; }
+
+private:
+    ResourceID m_id;
+};
+
+} // namespace GE::Assets

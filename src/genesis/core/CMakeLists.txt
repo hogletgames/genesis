@@ -1,7 +1,9 @@
 set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/core)
 
 list(APPEND CORE_SOURCES
-    log.cpp)
+    filesystem.cpp
+    log.cpp
+    )
 
 list(APPEND CORE_HEADERS
     ${INCLUDE_DIR}/asserts.h
@@ -17,12 +19,15 @@ list(APPEND CORE_HEADERS
     ${INCLUDE_DIR}/log.h
     ${INCLUDE_DIR}/memory.h
     ${INCLUDE_DIR}/timestamp.h
-    ${INCLUDE_DIR}/utils.h)
+    ${INCLUDE_DIR}/utils.h
+    )
 
 ge_add_module(core
     SOURCES ${CORE_SOURCES} ${CORE_HEADERS}
     INCLUDE_DIRS ${INCLUDE_DIR}
     PUBLIC_DEPS
+        Boost::filesystem
         fmt::fmt
         magic_enum::magic_enum
-        spdlog::spdlog)
+        spdlog::spdlog
+    )

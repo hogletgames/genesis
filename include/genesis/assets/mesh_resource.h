@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,29 @@
 
 #pragma once
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include <genesis/assets/resource_base.h>
+#include <genesis/core/memory.h>
+#include <genesis/graphics/mesh.h>
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+#include <string>
+
+namespace GE::Assets {
+
+class GE_API MeshResource: public ResourceBase
+{
+public:
+    MeshResource(const ResourceID& id, std::string filepath);
+
+    void accept(ResourceVisitor* visitor) override;
+
+    const Shared<Mesh>& mesh() const { return m_mesh; }
+    const std::string& filepath() const { return m_filepath; }
+
+    static Scoped<MeshResource> create(const ResourceID& id, const std::string& filepath);
+
+private:
+    std::string m_filepath;
+    Shared<Mesh> m_mesh;
+};
+
+} // namespace GE::Assets

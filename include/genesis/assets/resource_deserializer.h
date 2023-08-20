@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,29 @@
 
 #pragma once
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include <genesis/core/export.h>
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+#include <yaml-cpp/yaml.h>
+
+#include <string>
+
+namespace GE::Assets {
+
+class Registry;
+
+class GE_API ResourceDeserializer
+{
+public:
+    explicit ResourceDeserializer(Registry* registry);
+
+    bool deserialize(const std::string& config_filepath);
+
+private:
+    template<typename T>
+    bool populate(const YAML::Node& node);
+
+    Registry* m_registry{nullptr};
+    YAML::Node m_assets;
+};
+
+} // namespace GE::Assets

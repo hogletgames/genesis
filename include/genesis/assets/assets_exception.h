@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,14 @@
 
 #pragma once
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include <genesis/core/exception.h>
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+namespace GE::Assets {
+
+class Exception: public GE::Exception
+{
+public:
+    using GE::Exception::Exception;
+};
+
+} // namespace GE::Assets

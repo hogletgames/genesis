@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,40 @@
 
 #pragma once
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include <genesis/assets/registry.h>
+#include <genesis/assets/resource_id.h>
+#include <genesis/assets/resource_visitor.h>
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+#include <array>
+
+namespace GE::Assets {
+
+class Registry;
+
+template<size_t RESOURCE_COUNT>
+class GE_API ResourceTraversal: public ResourceVisitor
+{
+public:
+    using ResourceIDs = std::array<ResourceID, RESOURCE_COUNT>;
+
+    ResourceTraversal() = default;
+
+    explicit ResourceTraversal(ResourceIDs ids)
+        : m_resource_ids(std::move(ids))
+    {}
+
+    void traverse(Registry* registry)
+    {
+        for (const auto& id : m_resource_ids) {
+            registry->visit(id, this);
+        }
+    }
+
+    void setResourceIds(ResourceIDs ids) { m_resource_ids = std::move(ids); }
+    const ResourceIDs& resourceIds() const { return m_resource_ids; }
+
+private:
+    ResourceIDs m_resource_ids;
+};
+
+} // namespace GE::Assets

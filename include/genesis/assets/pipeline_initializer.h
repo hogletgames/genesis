@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,23 @@
 
 #pragma once
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include <genesis/assets/resource_visitor.h>
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+namespace GE {
+class Renderer;
+} // namespace GE
+
+namespace GE::Assets {
+
+class PipelineInitializer: public ResourceVisitor
+{
+public:
+    explicit PipelineInitializer(Renderer* renderer);
+
+private:
+    void visit(PipelineResource* resource) override;
+
+    Renderer* m_renderer{nullptr};
+};
+
+} // namespace GE::Assets

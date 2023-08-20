@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,40 @@
 
 #pragma once
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include <genesis/assets/resource_base.h>
+#include <genesis/core/memory.h>
+#include <genesis/graphics/pipeline.h>
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+namespace GE {
+class Renderer;
+} // namespace GE
+
+namespace GE::Assets {
+
+class GE_API PipelineResource: public ResourceBase
+{
+public:
+    PipelineResource(const ResourceID& id, std::string vertex_shader, std::string fragment_shader);
+
+    void accept(ResourceVisitor* visitor) override;
+
+    bool createPipeline(Renderer* renderer);
+
+    const std::string& fragmentShader() const { return m_fragment_shader_path; }
+    const std::string& vertexShader() const { return m_vertex_shader_path; }
+    const Shared<Pipeline>& pipeline() const { return m_pipeline; }
+
+    static Scoped<PipelineResource> create(const ResourceID& id,
+                                           const std::string& vertex_shader_path,
+                                           const std::string& fragment_shader_path);
+
+private:
+    std::string m_vertex_shader_path;
+    std::string m_fragment_shader_path;
+
+    Shared<Shader> m_vertex_shader;
+    Shared<Shader> m_fragment_shader;
+    Shared<Pipeline> m_pipeline;
+};
+
+} // namespace GE::Assets

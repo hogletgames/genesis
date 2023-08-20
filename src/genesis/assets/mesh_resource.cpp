@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "mesh_resource.h"
+#include "assets_exception.h"
+#include "resource_visitor.h"
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include "genesis/core/format.h"
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+namespace GE::Assets {
+
+MeshResource::MeshResource(const ResourceID& id, std::string filepath)
+    : ResourceBase(id)
+    , m_filepath{std::move(filepath)}
+    , m_mesh{makeShared<Mesh>()}
+{
+    if (!m_mesh->fromObj(m_filepath)) {
+        throw Assets::Exception{GE_FMTSTR("Failed to load a mesh from the file '{}'", m_filepath)};
+    }
+}
+
+void MeshResource::accept(ResourceVisitor* visitor)
+{
+    visitor->visit(this);
+}
+
+Scoped<MeshResource> MeshResource::create(const ResourceID& id, const std::string& filepath)
+{
+    return tryMakeScoped<MeshResource>(id, filepath);
+}
+
+} // namespace GE::Assets

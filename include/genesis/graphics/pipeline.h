@@ -34,17 +34,17 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
+#include <genesis/graphics/shader.h>
 
 namespace GE {
 
 class GPUCommandQueue;
-class Shader;
 class Texture;
 class UniformBuffer;
 
 struct pipeline_config_t {
-    Shared<Shader> vertex_shader;
-    Shared<Shader> fragment_shader;
+    Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
+    Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
 };
 
 class Pipeline: public Interface

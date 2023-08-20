@@ -32,7 +32,11 @@
 
 #pragma once
 
+#include <genesis/core/export.h>
+
 #include <fstream>
+#include <iterator>
+#include <string>
 #include <vector>
 
 namespace GE {
@@ -47,5 +51,17 @@ std::vector<T> readFile(const std::string& filepath)
 
     return {};
 }
+
+class GE_API TmpDirGuard
+{
+public:
+    TmpDirGuard();
+    ~TmpDirGuard();
+
+    const std::string& path() const { return m_path; }
+
+private:
+    std::string m_path;
+};
 
 } // namespace GE

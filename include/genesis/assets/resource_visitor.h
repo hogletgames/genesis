@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,20 @@
 
 #pragma once
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include <genesis/core/interface.h>
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+namespace GE::Assets {
+
+class MeshResource;
+class PipelineResource;
+class TextureResource;
+
+class GE_API ResourceVisitor: public Interface
+{
+public:
+    virtual void visit([[maybe_unused]] MeshResource* resource){};
+    virtual void visit([[maybe_unused]] PipelineResource* resource){};
+    virtual void visit([[maybe_unused]] TextureResource* resource){};
+};
+
+} // namespace GE::Assets

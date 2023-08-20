@@ -258,7 +258,7 @@ void Pipeline::bindResource(GPUCommandQueue* queue, const std::string& name,
     auto resource = m_resources->resource(name);
 
     if (!resource.has_value()) {
-        GE_ERR("Failed to bound '{}': there is no such resource");
+        GE_ERR("Failed to bound '{}': there is no such resource", name);
         return;
     }
 

@@ -119,7 +119,7 @@ void Log::shutdown()
 
 Logger::Level toLoggerLevel(const std::string& level_str)
 {
-    auto level = toEnum<Logger::Level>(level_str);
+    auto level = toEnum<Logger::Level>(toUpper(level_str));
     return level.has_value() ? level.value() : Logger::Level::UNKNOWN;
 }
 

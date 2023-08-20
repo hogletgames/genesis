@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,55 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "resource_serializer.h"
+#include "pipeline_resource.h"
+#include "registry.h"
+#include "texture_resource.h"
+#include "yaml_convert.h"
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include "genesis/core/log.h"
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+#include <fstream>
+
+namespace GE::Assets {
+
+ResourceSerializer::ResourceSerializer(Registry *registry)
+    : m_registry{registry}
+{}
+
+void ResourceSerializer::visit(MeshResource *resource)
+{
+    m_assets["resources"]["meshes"].push_back(*resource);
+}
+
+void ResourceSerializer::visit(TextureResource *resource)
+{
+    m_assets["resources"]["textures"].push_back(*resource);
+}
+
+void ResourceSerializer::visit(PipelineResource *resource)
+{
+    m_assets["resources"]["pipelines"].push_back(*resource);
+}
+
+bool ResourceSerializer::serialize(const std::string &config_filepath)
+{
+    m_registry->visitAll(this);
+
+    if (m_assets.IsNull()) {
+        GE_CORE_ERR("Failed to encode an asset registry");
+        return false;
+    }
+
+    std::ofstream fout{config_filepath};
+
+    if (!fout) {
+        GE_CORE_ERR("Failed open an asset config file '{}'", config_filepath);
+        return false;
+    }
+
+    fout << m_assets;
+    return true;
+}
+
+} // namespace GE::Assets

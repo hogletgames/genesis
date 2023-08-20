@@ -52,9 +52,13 @@ public:
     ~Mesh();
 
     bool fromObj(std::string_view filepath);
+    void setBuffers(Scoped<VertexBuffer> vbo, Scoped<IndexBuffer> ibo);
     void destroy();
 
     void draw(GPUCommandQueue* queue) const;
+
+    const Scoped<VertexBuffer>& vertexBuffer() const { return m_vbo; }
+    const Scoped<IndexBuffer>& indexBuffer() const { return m_ibo; }
 
 private:
     bool populateBuffers(const tinyobj::ObjReader& reader);

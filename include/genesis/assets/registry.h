@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,70 @@
 
 #pragma once
 
-#include <fmt/compile.h>
-#include <fmt/ranges.h>
+#include <genesis/assets/resource_id.h>
+#include <genesis/assets/resource_pointer_visitor.h>
+#include <genesis/core/memory.h>
 
-#define GE_FMTSTR(_format, ...) fmt::format(FMT_COMPILE(_format), __VA_ARGS__)
+#include <unordered_map>
+
+namespace GE::Assets {
+
+class ResourceVisitor;
+class IResource;
+
+class GE_API Registry
+{
+public:
+    using ResourceIDs = std::vector<ResourceID>;
+
+    Registry();
+    ~Registry();
+
+    void add(Scoped<IResource> resource);
+    void remove(const ResourceID& uuid);
+
+    template<typename T>
+    const T* get(const ResourceID& id) const;
+    template<typename T>
+    T* get(const ResourceID& id);
+    template<typename T>
+    ResourceIDs getAll();
+
+    void visit(const ResourceID& id, ResourceVisitor* visitor);
+    void visitAll(ResourceVisitor* visitor);
+
+    ResourceIDs ids() const;
+
+private:
+    std::unordered_map<ResourceID, Scoped<IResource>> m_resources;
+};
+
+template<typename T>
+const T* Registry::get(const ResourceID& id) const
+{
+    ResourcePointerVisitor<T> visitor;
+    visit(id, &visitor);
+    return visitor.get();
+}
+
+template<typename T>
+T* Registry::get(const ResourceID& id)
+{
+    ResourcePointerVisitor<T> visitor;
+    visit(id, &visitor);
+    return visitor.get();
+}
+
+template<typename T>
+Registry::ResourceIDs Registry::getAll()
+{
+    struct Visitor: ResourceVisitor {
+        ResourceIDs resources;
+        void visit(T* resource) { resources.push_back(resource->id()); }
+    } visitor;
+
+    visitAll(&visitor);
+    return visitor.resources;
+}
+
+} // namespace GE::Assets
