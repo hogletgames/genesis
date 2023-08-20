@@ -30,13 +30,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "mesh_resource.h"
+#include "assets_exception.h"
+#include "resource_visitor.h"
 
-#include <genesis/assets/assets_exception.h>
-#include <genesis/assets/iresource.h>
-#include <genesis/assets/mesh_resource.h>
-#include <genesis/assets/resource_base.h>
-#include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
-#include <genesis/assets/resource_traversal.h>
-#include <genesis/assets/resource_visitor.h>
+#include "genesis/core/format.h"
+
+namespace GE::Assets {
+
+MeshResource::MeshResource(const ResourceID& id, std::string filepath)
+    : ResourceBase(id)
+    , m_filepath{std::move(filepath)}
+    , m_mesh{makeShared<Mesh>()}
+{
+    if (!m_mesh->fromObj(m_filepath)) {
+        throw Assets::Exception{GE_FMTSTR("Failed to load a mesh from the file '{}'", m_filepath)};
+    }
+}
+
+void MeshResource::accept(ResourceVisitor* visitor)
+{
+    visitor->visit(this);
+}
+
+Scoped<MeshResource> MeshResource::create(const ResourceID& id, const std::string& filepath)
+{
+    return tryMakeScoped<MeshResource>(id, filepath);
+}
+
+} // namespace GE::Assets

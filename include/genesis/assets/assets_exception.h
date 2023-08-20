@@ -32,11 +32,14 @@
 
 #pragma once
 
-#include <genesis/assets/assets_exception.h>
-#include <genesis/assets/iresource.h>
-#include <genesis/assets/mesh_resource.h>
-#include <genesis/assets/resource_base.h>
-#include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
-#include <genesis/assets/resource_traversal.h>
-#include <genesis/assets/resource_visitor.h>
+#include <genesis/core/exception.h>
+
+namespace GE::Assets {
+
+class Exception: public GE::Exception
+{
+public:
+    using GE::Exception::Exception;
+};
+
+} // namespace GE::Assets
