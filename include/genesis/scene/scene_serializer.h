@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,30 @@
 
 #pragma once
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/component_list.h>
-#include <genesis/scene/components.h>
-#include <genesis/scene/entity.h>
-#include <genesis/scene/entity_factory.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/renderer.h>
-#include <genesis/scene/scene.h>
-#include <genesis/scene/scene_deserializer.h>
-#include <genesis/scene/scene_serializer.h>
+#include <genesis/core/export.h>
+
+#include <yaml-cpp/yaml.h>
+
+#include <string>
+
+namespace GE::Scene {
+
+class Entity;
+class Scene;
+
+class GE_API SceneSerializer
+{
+public:
+    explicit SceneSerializer(Scene* scene);
+
+    bool serialize(const std::string& config_filepath);
+
+private:
+    bool serializeScene();
+    YAML::Node serializeEntity(const Entity& entity);
+
+    Scene* m_scene{nullptr};
+    YAML::Node m_serialized_scene;
+};
+
+} // namespace GE::Scene

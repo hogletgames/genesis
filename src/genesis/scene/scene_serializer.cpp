@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,17 +30,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "scene_serializer.h"
+#include "component_list.h"
+#include "components/yaml_convert.h"
+#include "entity.h"
+#include "scene.h"
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/component_list.h>
-#include <genesis/scene/components.h>
-#include <genesis/scene/entity.h>
-#include <genesis/scene/entity_factory.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/renderer.h>
-#include <genesis/scene/scene.h>
-#include <genesis/scene/scene_deserializer.h>
-#include <genesis/scene/scene_serializer.h>
+#include "genesis/core/log.h"
+
+#include <fstream>
+
+namespace GE::Scene {
+
+SceneSerializer::SceneSerializer(Scene *scene)
+    : m_scene{scene}
+{}
+
+bool SceneSerializer::serialize(const std::string &config_filepath)
+{
+    if (!serializeScene()) {
+        GE_CORE_ERR("Failed serialize the scene '{}'", m_scene->name());
+        return false;
+    }
+
+    std::ofstream fout{config_filepath};
+
+    if (!fout) {
+        GE_CORE_ERR("Failed open an asset config file '{}'", config_filepath);
+        return false;
+    }
+
+    fout << m_serialized_scene;
+    return true;
+}
+
+bool SceneSerializer::serializeScene()
+{
+    m_serialized_scene["scene"]["name"] = m_scene->name();
+    auto entities = m_serialized_scene["scene"]["entities"];
+    m_scene->forEachEntity(
+        [this, &entities](const auto &entity) { entities.push_back(serializeEntity(entity)); });
+    return true;
+}
+
+YAML::Node SceneSerializer::serializeEntity(const Entity &entity)
+{
+    YAML::Node serialized_entity;
+    auto components = serialized_entity["entity"]["components"];
+
+    forEachType<ComponentList>([&components, &entity](const auto &component) {
+        using Component = std::decay_t<decltype(component)>;
+
+        if (entity.has<Component>()) {
+            components.push_back(entity.get<Component>());
+        }
+    });
+
+    return serialized_entity;
+}
+
+} // namespace GE::Scene

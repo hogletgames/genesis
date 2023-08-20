@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,42 @@
 
 #pragma once
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/component_list.h>
-#include <genesis/scene/components.h>
-#include <genesis/scene/entity.h>
-#include <genesis/scene/entity_factory.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/renderer.h>
-#include <genesis/scene/scene.h>
-#include <genesis/scene/scene_deserializer.h>
-#include <genesis/scene/scene_serializer.h>
+#include <genesis/core/export.h>
+
+#include <string>
+
+namespace GE::Assets {
+class Registry;
+} // namespace GE::Assets
+
+namespace YAML {
+class Node;
+} // namespace YAML
+
+namespace GE::Scene {
+
+class Entity;
+class Scene;
+
+class GE_API SceneDeserializer
+{
+public:
+    SceneDeserializer(Scene* scene, Assets::Registry* assets);
+
+    bool deserialize(const std::string& config_filepath);
+
+private:
+    bool loadEntities(const YAML::Node& node);
+    bool loadEntity(const YAML::Node& node);
+    bool loadComponent(Entity* entity, const YAML::Node& node);
+    bool loadCameraComponent(Entity* entity, const YAML::Node& node);
+    bool loadMaterialComponent(Entity* entity, const YAML::Node& node);
+    bool loadSpriteComponent(Entity* entity, const YAML::Node& node);
+    bool loadTagComponent(Entity* entity, const YAML::Node& node);
+    bool loadTransformComponent(Entity* entity, const YAML::Node& node);
+
+    Scene* m_scene{nullptr};
+    Assets::Registry* m_assets{nullptr};
+};
+
+} // namespace GE::Scene
