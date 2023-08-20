@@ -33,5 +33,21 @@
 #pragma once
 
 #include <genesis/assets/iresource.h>
-#include <genesis/assets/resource_base.h>
-#include <genesis/assets/resource_id.h>
+
+namespace GE::Assets {
+
+class GE_API ResourceBase: public IResource
+{
+public:
+    ResourceBase() = default;
+    explicit ResourceBase(ResourceID id);
+
+    void setId(const ResourceID& id) { m_id = id; }
+
+    const ResourceID& id() const override { return m_id; }
+
+private:
+    ResourceID m_id;
+};
+
+} // namespace GE::Assets

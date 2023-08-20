@@ -1,9 +1,12 @@
 set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/assets)
 
 list(APPEND ASSETS_SOURCES
+    resource_base.cpp
     )
 
 list(APPEND ASSETS_HEADERS
+    ${INCLUDE_DIR}/iresource.h
+    ${INCLUDE_DIR}/resource_base.h
     ${INCLUDE_DIR}/resource_id.h
     )
 
