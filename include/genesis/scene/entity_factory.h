@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,32 +32,32 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
+#include <genesis/core/export.h>
 
-namespace GE {
+#include <string_view>
 
-class GPUCommandQueue;
+namespace GE::Assets {
+class Registry;
+} // namespace GE::Assets
 
-class UniformBuffer: NonCopyable
+namespace GE::Scene {
+
+class Scene;
+class Entity;
+
+class GE_API EntityFactory
 {
 public:
-    using NativeHandle = void*;
+    EntityFactory(Scene* scene, Assets::Registry* assets);
 
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
+    Entity createCamera(std::string_view name);
+    Entity createSquare(std::string_view name);
+    Entity createCircle(std::string_view name);
+    Entity createEmptyEntity(std::string_view name);
 
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
-
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
+private:
+    Scene* m_scene{nullptr};
+    Assets::Registry* m_assets{nullptr};
 };
 
-template<typename T>
-void UniformBuffer::setObject(const T& object)
-{
-    setData(sizeof(T), &object);
-}
-
-} // namespace GE
+} // namespace GE::Scene

@@ -36,3 +36,4 @@
 #include <genesis/math/transform.h>
 #include <genesis/math/trigonometric.h>
 #include <genesis/math/types.h>
+#include <genesis/math/yaml_convert.h>

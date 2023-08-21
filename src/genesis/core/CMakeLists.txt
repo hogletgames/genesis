@@ -19,6 +19,7 @@ list(APPEND CORE_HEADERS
     ${INCLUDE_DIR}/log.h
     ${INCLUDE_DIR}/memory.h
     ${INCLUDE_DIR}/timestamp.h
+    ${INCLUDE_DIR}/type_list.h
     ${INCLUDE_DIR}/utils.h
     )
 
@@ -27,6 +28,7 @@ ge_add_module(core
     INCLUDE_DIRS ${INCLUDE_DIR}
     PUBLIC_DEPS
         Boost::filesystem
+        Boost::mpl
         fmt::fmt
         magic_enum::magic_enum
         spdlog::spdlog

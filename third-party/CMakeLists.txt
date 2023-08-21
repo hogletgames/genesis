@@ -123,6 +123,12 @@ FetchContent_Declare(yaml-cpp
     GIT_TAG yaml-cpp-0.7.0)
 FetchContent_MakeAvailable(yaml-cpp)
 
+# entt
+FetchContent_Declare(entt
+    GIT_REPOSITORY https://github.com/hogletgames/entt.git
+    GIT_TAG v3.12.2)
+FetchContent_MakeAvailable(entt)
+
 # Vulkan-Loader
 FetchContent_Declare(Vulkan-Loader
     GIT_REPOSITORY https://github.com/hogletgames/Vulkan-Loader.git

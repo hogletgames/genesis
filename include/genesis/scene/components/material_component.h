@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,32 +32,36 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
+#include <genesis/assets/pipeline_resource.h>
+#include <genesis/assets/registry.h>
 
-namespace GE {
+namespace GE::Scene {
 
-class GPUCommandQueue;
+struct MaterialComponent {
+    Shared<Pipeline> material;
 
-class UniformBuffer: NonCopyable
-{
+    static constexpr std::string_view NAME{"Material"};
+
+    bool isValid() const { return material != nullptr; }
+
+    const Assets::ResourceID& materialID() const { return m_material_id; }
+    void setMaterialID(Assets::ResourceID id) { m_material_id = std::move(id); }
+
+    bool loadMaterial(Assets::Registry* assets);
+
 public:
-    using NativeHandle = void*;
-
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
-
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
-
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
+    Assets::ResourceID m_material_id;
 };
 
-template<typename T>
-void UniformBuffer::setObject(const T& object)
+inline bool MaterialComponent::loadMaterial(Assets::Registry* assets)
 {
-    setData(sizeof(T), &object);
+    if (const auto* resource = assets->get<Assets::PipelineResource>(m_material_id);
+        resource != nullptr) {
+        material = resource->pipeline();
+        return true;
+    }
+
+    return false;
 }
 
-} // namespace GE
+} // namespace GE::Scene

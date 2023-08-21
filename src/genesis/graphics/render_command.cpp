@@ -42,6 +42,7 @@ namespace GE {
 
 void RenderCommand::bind(Pipeline *pipeline)
 {
+    m_cmd_queue.setCurrentPipeline(pipeline->nativeHandle());
     pipeline->bind(&m_cmd_queue);
 }
 

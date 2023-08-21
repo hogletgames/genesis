@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,32 +32,42 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
+#include <genesis/core/export.h>
 
-namespace GE {
+#include <string>
 
-class GPUCommandQueue;
+namespace GE::Assets {
+class Registry;
+} // namespace GE::Assets
 
-class UniformBuffer: NonCopyable
+namespace YAML {
+class Node;
+} // namespace YAML
+
+namespace GE::Scene {
+
+class Entity;
+class Scene;
+
+class GE_API SceneDeserializer
 {
 public:
-    using NativeHandle = void*;
+    SceneDeserializer(Scene* scene, Assets::Registry* assets);
 
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
+    bool deserialize(const std::string& config_filepath);
 
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
+private:
+    bool loadEntities(const YAML::Node& node);
+    bool loadEntity(const YAML::Node& node);
+    bool loadComponent(Entity* entity, const YAML::Node& node);
+    bool loadCameraComponent(Entity* entity, const YAML::Node& node);
+    bool loadMaterialComponent(Entity* entity, const YAML::Node& node);
+    bool loadSpriteComponent(Entity* entity, const YAML::Node& node);
+    bool loadTagComponent(Entity* entity, const YAML::Node& node);
+    bool loadTransformComponent(Entity* entity, const YAML::Node& node);
 
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
+    Scene* m_scene{nullptr};
+    Assets::Registry* m_assets{nullptr};
 };
 
-template<typename T>
-void UniformBuffer::setObject(const T& object)
-{
-    setData(sizeof(T), &object);
-}
-
-} // namespace GE
+} // namespace GE::Scene

@@ -34,21 +34,29 @@
 
 namespace GE {
 
+void GPUCommandQueue::setCurrentPipeline(GPUCommandQueue::PipelineHandle handle)
+{
+    m_current_pipeline = handle;
+}
+
 void GPUCommandQueue::enqueue(GPUCommandQueue::DelayedCommand cmd)
 {
-    m_cmd_queue.push_back(std::move(cmd));
+    m_cmd_queue[m_current_pipeline].push_back(std::move(cmd));
 }
 
 void GPUCommandQueue::execCommands(GPUCommandBuffer cmd_buffer) const
 {
-    for (const auto& cmd : m_cmd_queue) {
-        cmd(cmd_buffer);
+    for (const auto& [_, queue] : m_cmd_queue) {
+        for (const auto& cmd : queue) {
+            cmd(cmd_buffer);
+        }
     }
 }
 
 void GPUCommandQueue::clear()
 {
     m_cmd_queue.clear();
+    m_current_pipeline = {};
 }
 
 } // namespace GE

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,32 +32,9 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
-
-namespace GE {
-
-class GPUCommandQueue;
-
-class UniformBuffer: NonCopyable
-{
-public:
-    using NativeHandle = void*;
-
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
-
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
-
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
-};
-
-template<typename T>
-void UniformBuffer::setObject(const T& object)
-{
-    setData(sizeof(T), &object);
-}
-
-} // namespace GE
+#include <genesis/scene/components/camera_component.h>
+#include <genesis/scene/components/material_component.h>
+#include <genesis/scene/components/sprite_component.h>
+#include <genesis/scene/components/tag_component.h>
+#include <genesis/scene/components/transform_component.h>
+#include <genesis/scene/components/yaml_convert.h>

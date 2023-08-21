@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,32 +32,25 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
+#include <genesis/math/transform.h>
+#include <genesis/math/types.h>
 
-namespace GE {
+namespace GE::Scene {
 
-class GPUCommandQueue;
+struct TransformComponent {
+    Vec3 translation{0.0f, 0.0f, 0.0f};
+    Vec3 rotation{0.0f, 0.0f, 0.0f};
+    Vec3 scale{1.0f, 1.0f, 1.0f};
 
-class UniformBuffer: NonCopyable
-{
-public:
-    using NativeHandle = void*;
+    static constexpr std::string_view NAME{"Transform"};
 
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
-
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
-
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
+    Mat4 transform() const;
 };
 
-template<typename T>
-void UniformBuffer::setObject(const T& object)
+inline Mat4 TransformComponent::transform() const
 {
-    setData(sizeof(T), &object);
+    return GE::translate(Mat4{1.0f}, translation) * GE::toMat4(Quat{rotation}) *
+           GE::scale(Mat4{1.0f}, scale);
 }
 
-} // namespace GE
+} // namespace GE::Scene

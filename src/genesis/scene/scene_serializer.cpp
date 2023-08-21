@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "scene_serializer.h"
+#include "component_list.h"
+#include "components/yaml_convert.h"
+#include "entity.h"
+#include "scene.h"
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
+#include "genesis/core/log.h"
 
-namespace GE {
+#include <fstream>
 
-class GPUCommandQueue;
+namespace GE::Scene {
 
-class UniformBuffer: NonCopyable
+SceneSerializer::SceneSerializer(Scene *scene)
+    : m_scene{scene}
+{}
+
+bool SceneSerializer::serialize(const std::string &config_filepath)
 {
-public:
-    using NativeHandle = void*;
+    if (!serializeScene()) {
+        GE_CORE_ERR("Failed serialize the scene '{}'", m_scene->name());
+        return false;
+    }
 
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
+    std::ofstream fout{config_filepath};
 
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
+    if (!fout) {
+        GE_CORE_ERR("Failed open an asset config file '{}'", config_filepath);
+        return false;
+    }
 
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
-};
-
-template<typename T>
-void UniformBuffer::setObject(const T& object)
-{
-    setData(sizeof(T), &object);
+    fout << m_serialized_scene;
+    return true;
 }
 
-} // namespace GE
+bool SceneSerializer::serializeScene()
+{
+    m_serialized_scene["scene"]["name"] = m_scene->name();
+    auto entities = m_serialized_scene["scene"]["entities"];
+    m_scene->forEachEntity(
+        [this, &entities](const auto &entity) { entities.push_back(serializeEntity(entity)); });
+    return true;
+}
+
+YAML::Node SceneSerializer::serializeEntity(const Entity &entity)
+{
+    YAML::Node serialized_entity;
+    auto components = serialized_entity["entity"]["components"];
+
+    forEachType<ComponentList>([&components, &entity](const auto &component) {
+        using Component = std::decay_t<decltype(component)>;
+
+        if (entity.has<Component>()) {
+            components.push_back(entity.get<Component>());
+        }
+    });
+
+    return serialized_entity;
+}
+
+} // namespace GE::Scene

@@ -35,3 +35,12 @@
 #include <genesis/scene/camera/projection_camera.h>
 #include <genesis/scene/camera/view_projection_camera.h>
 #include <genesis/scene/camera/vp_camera_controller.h>
+#include <genesis/scene/component_list.h>
+#include <genesis/scene/components.h>
+#include <genesis/scene/entity.h>
+#include <genesis/scene/entity_factory.h>
+#include <genesis/scene/registry.h>
+#include <genesis/scene/renderer.h>
+#include <genesis/scene/scene.h>
+#include <genesis/scene/scene_deserializer.h>
+#include <genesis/scene/scene_serializer.h>

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "scene.h"
+#include "components/camera_component.h"
+#include "components/tag_component.h"
+#include "components/transform_component.h"
+#include "entity.h"
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
+namespace {
 
-namespace GE {
+constexpr auto DEFAULT_ENTITY_NAME{"Entity"};
 
-class GPUCommandQueue;
+} // namespace
 
-class UniformBuffer: NonCopyable
+namespace GE::Scene {
+
+Entity Scene::createEntity(std::string_view name)
 {
-public:
-    using NativeHandle = void*;
+    auto entity = m_registry.create();
+    entity.add<TagComponent>(!name.empty() ? name.data() : DEFAULT_ENTITY_NAME);
+    entity.add<TransformComponent>();
 
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
-
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
-
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
-};
-
-template<typename T>
-void UniformBuffer::setObject(const T& object)
-{
-    setData(sizeof(T), &object);
+    return entity;
 }
 
-} // namespace GE
+void Scene::destroyEntity(const Entity& entity)
+{
+    m_registry.destroy(entity);
+}
+
+void Scene::forEachEntity(const Scene::ForeachCallback& callback)
+{
+    m_registry.eachEntity(callback);
+}
+
+void Scene::forEachEntity(const Scene::ForeachCallback& callback) const
+{
+    m_registry.eachEntity(callback);
+}
+
+void Scene::clear()
+{
+    m_registry.clear();
+}
+
+} // namespace GE::Scene

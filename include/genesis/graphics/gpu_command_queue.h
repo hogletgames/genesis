@@ -33,9 +33,11 @@
 #pragma once
 
 #include <genesis/core/export.h>
+#include <genesis/graphics/pipeline.h>
 
 #include <deque>
 #include <functional>
+#include <unordered_map>
 
 namespace GE {
 
@@ -45,13 +47,18 @@ class GE_API GPUCommandQueue
 {
 public:
     using DelayedCommand = std::function<void(GPUCommandBuffer)>;
+    using DelayedCommandQueue = std::deque<DelayedCommand>;
+    using PipelineHandle = Pipeline::NativeHandle;
+    using QueueMap = std::unordered_map<PipelineHandle, DelayedCommandQueue>;
 
+    void setCurrentPipeline(PipelineHandle handle);
     void enqueue(DelayedCommand cmd);
     void execCommands(GPUCommandBuffer cmd_buffer) const;
     void clear();
 
 private:
-    std::deque<DelayedCommand> m_cmd_queue;
+    PipelineHandle m_current_pipeline{};
+    QueueMap m_cmd_queue;
 };
 
 } // namespace GE

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,32 +32,39 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
+#include <genesis/core/export.h>
 #include <genesis/core/memory.h>
+#include <genesis/math/types.h>
 
 namespace GE {
+class Renderer;
+class UniformBuffer;
+} // namespace GE
 
-class GPUCommandQueue;
+namespace GE::Scene {
 
-class UniformBuffer: NonCopyable
+class Entity;
+class Scene;
+class ViewProjectionCamera;
+
+class GE_API Renderer
 {
 public:
-    using NativeHandle = void*;
+    Renderer(GE::Renderer* renderer, const ViewProjectionCamera* camera);
+    ~Renderer();
 
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
+    void render(const Scene& scene);
 
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
+private:
+    void renderSprite(const Entity& entity);
 
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
+    void updateViewProjectionUBO();
+
+    GE::Renderer* m_renderer{nullptr};
+    const GE::Scene::ViewProjectionCamera* m_camera{nullptr};
+
+    Scoped<UniformBuffer> m_vp_ubo;
+    Scoped<UniformBuffer> m_translation_ubo;
 };
 
-template<typename T>
-void UniformBuffer::setObject(const T& object)
-{
-    setData(sizeof(T), &object);
-}
-
-} // namespace GE
+} // namespace GE::Scene

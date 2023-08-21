@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,32 +32,30 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
+#include <genesis/core/export.h>
 
-namespace GE {
+#include <yaml-cpp/yaml.h>
 
-class GPUCommandQueue;
+#include <string>
 
-class UniformBuffer: NonCopyable
+namespace GE::Scene {
+
+class Entity;
+class Scene;
+
+class GE_API SceneSerializer
 {
 public:
-    using NativeHandle = void*;
+    explicit SceneSerializer(Scene* scene);
 
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
+    bool serialize(const std::string& config_filepath);
 
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
+private:
+    bool serializeScene();
+    YAML::Node serializeEntity(const Entity& entity);
 
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
+    Scene* m_scene{nullptr};
+    YAML::Node m_serialized_scene;
 };
 
-template<typename T>
-void UniformBuffer::setObject(const T& object)
-{
-    setData(sizeof(T), &object);
-}
-
-} // namespace GE
+} // namespace GE::Scene

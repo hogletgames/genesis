@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,32 +32,25 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
+#include <boost/mpl/contains.hpp>
+#include <boost/mpl/for_each.hpp>
+#include <boost/mpl/list.hpp>
 
 namespace GE {
 
-class GPUCommandQueue;
+template<typename... Types>
+using TypeList = boost::mpl::list<Types...>;
 
-class UniformBuffer: NonCopyable
+template<typename TL, typename Callback>
+constexpr void forEachType(Callback&& callback)
 {
-public:
-    using NativeHandle = void*;
+    boost::mpl::for_each<TL>(std::forward<Callback>(callback));
+}
 
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
-
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
-
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
-};
-
-template<typename T>
-void UniformBuffer::setObject(const T& object)
+template<typename TL, typename T>
+constexpr bool isListContains()
 {
-    setData(sizeof(T), &object);
+    return boost::mpl::contains<TL, T>();
 }
 
 } // namespace GE

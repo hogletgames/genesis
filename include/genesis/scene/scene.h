@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,32 +32,52 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
+#include <genesis/core/export.h>
+#include <genesis/scene/registry.h>
 
-namespace GE {
+#include <string>
 
-class GPUCommandQueue;
+namespace GE::Scene {
 
-class UniformBuffer: NonCopyable
+class Scene
 {
 public:
-    using NativeHandle = void*;
+    using ForeachCallback = Registry::ForeachCallback;
 
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
+    Entity createEntity(std::string_view name);
+    void destroyEntity(const Entity& entity);
+    void clear();
 
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
+    const Entity& mainCamera() const { return m_main_camera; }
+    void setMainCamera(const Entity& camera) { m_main_camera = camera; }
 
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
+    const std::string& name() const { return m_name; }
+    void setName(std::string_view name) { m_name = name; }
+
+    template<typename... Args>
+    void forEach(const ForeachCallback& callback);
+    void forEachEntity(const ForeachCallback& callback);
+
+    template<typename... Args>
+    void forEach(const ForeachCallback& callback) const;
+    void forEachEntity(const ForeachCallback& callback) const;
+
+private:
+    std::string m_name;
+    Registry m_registry;
+    Entity m_main_camera;
 };
 
-template<typename T>
-void UniformBuffer::setObject(const T& object)
+template<typename... Args>
+void Scene::forEach(const GE::Scene::Scene::ForeachCallback& callback)
 {
-    setData(sizeof(T), &object);
+    m_registry.eachEntityWith<Args...>(callback);
 }
 
-} // namespace GE
+template<typename... Args>
+void Scene::forEach(const GE::Scene::Scene::ForeachCallback& callback) const
+{
+    m_registry.eachEntityWith<Args...>(callback);
+}
+
+} // namespace GE::Scene

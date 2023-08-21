@@ -78,6 +78,8 @@ public:
     void bind(GPUCommandQueue* queue, const std::string& name, GE::UniformBuffer* ubo) override;
     void bind(GPUCommandQueue* queue, const std::string& name, GE::Texture* texture) override;
 
+    NativeHandle nativeHandle() const override { return m_pipeline; }
+
     static Vulkan::pipeline_config_t createDefaultConfig(GE::pipeline_config_t base_config);
 
 private:

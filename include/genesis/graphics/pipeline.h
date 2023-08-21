@@ -50,9 +50,13 @@ struct pipeline_config_t {
 class Pipeline: public Interface
 {
 public:
+    using NativeHandle = void*;
+
     virtual void bind(GPUCommandQueue* queue) = 0;
     virtual void bind(GPUCommandQueue* queue, const std::string& name, UniformBuffer* ubo) = 0;
     virtual void bind(GPUCommandQueue* queue, const std::string& name, Texture* texture) = 0;
+
+    virtual NativeHandle nativeHandle() const = 0;
 };
 
 } // namespace GE

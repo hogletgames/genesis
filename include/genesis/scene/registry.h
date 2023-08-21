@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,32 +32,56 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
+#include <genesis/core/asserts.h>
+#include <genesis/core/export.h>
+#include <genesis/scene/entity.h>
 
-namespace GE {
+#include <entt/entity/registry.hpp>
 
-class GPUCommandQueue;
+#include <functional>
 
-class UniformBuffer: NonCopyable
+namespace GE::Scene {
+
+class Entity;
+
+class GE_API Registry
 {
 public:
-    using NativeHandle = void*;
+    using ForeachCallback = std::function<void(const Entity&)>;
+    using EntityHandle = entt::entity;
 
-    template<typename T>
-    void setObject(const T& object);
-    virtual void setData(size_t size, const void* data) = 0;
+    Entity create();
+    void destroy(const Entity& entity);
+    void clear();
 
-    virtual NativeHandle nativeHandle() const = 0;
-    virtual uint32_t size() const = 0;
+    template<typename... Args>
+    void eachEntityWith(const ForeachCallback& callback);
+    void eachEntity(const ForeachCallback& callback);
 
-    static Scoped<UniformBuffer> create(uint32_t size, const void* data = nullptr);
+    template<typename... Args>
+    void eachEntityWith(const ForeachCallback& callback) const;
+    void eachEntity(const ForeachCallback& callback) const;
+
+private:
+    Entity toEntity(EntityHandle entity) const;
+
+    mutable entt::registry m_registry;
 };
 
-template<typename T>
-void UniformBuffer::setObject(const T& object)
+template<typename... Args>
+void Registry::eachEntityWith(const ForeachCallback& callback)
 {
-    setData(sizeof(T), &object);
+    for (auto entity : m_registry.view<Args...>()) {
+        callback(toEntity(entity));
+    }
 }
 
-} // namespace GE
+template<typename... Args>
+void Registry::eachEntityWith(const ForeachCallback& callback) const
+{
+    for (auto entity : m_registry.view<Args...>()) {
+        callback(toEntity(entity));
+    }
+}
+
+} // namespace GE::Scene
