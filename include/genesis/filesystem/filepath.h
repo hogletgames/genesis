@@ -30,46 +30,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "filesystem.h"
-#include "log.h"
+#pragma once
 
-#include <filesystem>
+#include <string>
 
-#include <boost/filesystem.hpp>
+namespace GE::FS {
 
-namespace GE {
-namespace {
+GE_API std::string stem(std::string_view filepath);
 
-std::string tmpDirPath()
-{
-    return boost::filesystem::unique_path().string();
-}
-
-} // namespace
-
-TmpDirGuard::TmpDirGuard()
-    : m_path{tmpDirPath()}
-
-{
-    std::error_code error;
-
-    if (std::filesystem::create_directory(m_path, error); error) {
-        GE_CORE_ERR("Failed to create tmp dir: {}", error.message());
-        m_path.clear();
-    }
-}
-
-TmpDirGuard::~TmpDirGuard()
-{
-    if (m_path.empty()) {
-        return;
-    }
-
-    std::error_code error;
-
-    if (std::filesystem::remove_all(m_path, error); error) {
-        GE_CORE_ERR("Failed to remove tmp dir: {}", error.message());
-    }
-}
-
-} // namespace GE
+} // namespace GE::FS

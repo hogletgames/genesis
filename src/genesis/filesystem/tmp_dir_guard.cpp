@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,38 +30,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "tmp_dir_guard.h"
 
-#include <genesis/core/export.h>
+#include "genesis/core/log.h"
 
-#include <fstream>
-#include <iterator>
-#include <string>
-#include <vector>
+#include <boost/filesystem.hpp>
 
-namespace GE {
+#include <filesystem>
 
-template<typename T>
-std::vector<T> readFile(const std::string& filepath)
+namespace GE::FS {
+namespace {
+
+std::string tmpDirPath()
 {
-    if (auto file = std::ifstream{filepath, std::ios::binary}; file) {
-        file >> std::noskipws;
-        return {std::istream_iterator<T>{file}, std::istream_iterator<T>{}};
-    }
-
-    return {};
+    return boost::filesystem::unique_path().string();
 }
 
-class GE_API TmpDirGuard
+} // namespace
+
+TmpDirGuard::TmpDirGuard()
+    : m_path{tmpDirPath()}
+
 {
-public:
-    TmpDirGuard();
-    ~TmpDirGuard();
+    std::error_code error;
 
-    const std::string& path() const { return m_path; }
+    if (std::filesystem::create_directory(m_path, error); error) {
+        GE_CORE_ERR("Failed to create tmp dir: {}", error.message());
+        m_path.clear();
+    }
+}
 
-private:
-    std::string m_path;
-};
+TmpDirGuard::~TmpDirGuard()
+{
+    if (m_path.empty()) {
+        return;
+    }
 
-} // namespace GE
+    std::error_code error;
+
+    if (std::filesystem::remove_all(m_path, error); error) {
+        GE_CORE_ERR("Failed to remove tmp dir: {}", error.message());
+    }
+}
+
+} // namespace GE::FS

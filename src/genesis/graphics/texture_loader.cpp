@@ -34,8 +34,8 @@
 #include "texture.h"
 
 #include "genesis/core/defer.h"
-#include "genesis/core/filesystem.h"
 #include "genesis/core/log.h"
+#include "genesis/filesystem/file_content.h"
 
 #include <stb_image.h>
 
@@ -160,7 +160,7 @@ TextureLoader::TextureLoader(std::string filepath)
 Scoped<Texture> TextureLoader::load()
 {
     ::stbi_set_flip_vertically_on_load(1);
-    auto file_data = readFile<uint8_t>(m_filepath);
+    auto file_data = FS::readFile<uint8_t>(m_filepath);
 
     if (file_data.empty()) {
         GE_CORE_ERR("Texture '{}' data is empty", m_filepath);
