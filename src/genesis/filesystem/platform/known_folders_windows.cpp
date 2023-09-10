@@ -30,24 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "filepath.h"
+#include "known_folders.h"
 
-#include <genesis/core/export.h>
+#include "genesis/core/environment_variables.h"
 
-#include <filesystem>
-#include <string>
+namespace GE::FS::Platform {
 
-namespace GE::FS {
-
-GE_API std::string stem(std::string_view filepath);
-GE_API std::string parentPath(std::string_view filepath);
-
-template<typename... Args>
-std::string joinPath(std::string_view path, Args&&... args)
+std::string homeDir()
 {
-    std::filesystem::path filepath{path};
-    (filepath.append(std::forward<Args>(args)), ...);
-    return filepath.string();
+    if (auto var = getEnv("HOMEPATH"); var.has_value()) {
+        return std::string(var.value());
+    }
+
+    return {};
 }
 
-} // namespace GE::FS
+std::string tmpDir()
+{
+    if (auto var = getEnv("TEMP"); var.has_value()) {
+        return std::string(var.value());
+    }
+
+    return {};
+}
+
+std::string cacheDir(std::string_view app_name)
+{
+    return joinPath(std::string{getEnv("LOCALAPPDATA")}, app_name, "Cache");
+}
+
+} // namespace GE::FS::Platform

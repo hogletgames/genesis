@@ -32,22 +32,12 @@
 
 #pragma once
 
-#include <genesis/core/export.h>
-
-#include <filesystem>
 #include <string>
 
-namespace GE::FS {
+namespace GE::FS::Platform {
 
-GE_API std::string stem(std::string_view filepath);
-GE_API std::string parentPath(std::string_view filepath);
+std::string homeDir();
+std::string tmpDir();
+std::string cacheDir(std::string_view app_name);
 
-template<typename... Args>
-std::string joinPath(std::string_view path, Args&&... args)
-{
-    std::filesystem::path filepath{path};
-    (filepath.append(std::forward<Args>(args)), ...);
-    return filepath.string();
-}
-
-} // namespace GE::FS
+} // namespace GE::FS::Platform

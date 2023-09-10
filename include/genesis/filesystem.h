@@ -34,4 +34,5 @@
 
 #include <genesis/filesystem/file_content.h>
 #include <genesis/filesystem/filepath.h>
+#include <genesis/filesystem/known_folders.h>
 #include <genesis/filesystem/tmp_dir_guard.h>

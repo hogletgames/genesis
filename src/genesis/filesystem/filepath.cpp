@@ -41,4 +41,9 @@ std::string stem(std::string_view filepath)
     return std::filesystem::path{filepath}.stem();
 }
 
+std::string parentPath(std::string_view filepath)
+{
+    return std::filesystem::path{filepath}.parent_path();
+}
+
 } // namespace GE::FS

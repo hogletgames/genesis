@@ -34,20 +34,12 @@
 
 #include <genesis/core/export.h>
 
-#include <filesystem>
 #include <string>
 
 namespace GE::FS {
 
-GE_API std::string stem(std::string_view filepath);
-GE_API std::string parentPath(std::string_view filepath);
-
-template<typename... Args>
-std::string joinPath(std::string_view path, Args&&... args)
-{
-    std::filesystem::path filepath{path};
-    (filepath.append(std::forward<Args>(args)), ...);
-    return filepath.string();
-}
+GE_API std::string homeDir();
+GE_API std::string tmpDir();
+GE_API std::string cacheDir(std::string_view app_name);
 
 } // namespace GE::FS

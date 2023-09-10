@@ -30,24 +30,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
-
-#include <genesis/core/export.h>
-
-#include <filesystem>
-#include <string>
+#include "known_folders.h"
+#include "platform/known_folders.h"
 
 namespace GE::FS {
 
-GE_API std::string stem(std::string_view filepath);
-GE_API std::string parentPath(std::string_view filepath);
-
-template<typename... Args>
-std::string joinPath(std::string_view path, Args&&... args)
+std::string homeDir()
 {
-    std::filesystem::path filepath{path};
-    (filepath.append(std::forward<Args>(args)), ...);
-    return filepath.string();
+    return Platform::homeDir();
+}
+
+std::string tmpDir()
+{
+    return Platform::tmpDir();
+}
+
+std::string cacheDir(std::string_view app_name)
+{
+    return Platform::cacheDir(app_name);
 }
 
 } // namespace GE::FS
