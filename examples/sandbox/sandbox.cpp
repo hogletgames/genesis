@@ -31,6 +31,7 @@
  */
 
 #include "gui_layer/gui_layer.h"
+#include "imgui_demo_layer.h"
 #include "triangle_layer.h"
 
 #include <genesis/genesis.h>
@@ -49,6 +50,7 @@ constexpr auto USAGE = R"(Sandbox
 Examples:
   - triangle
   - gui
+  - imgui-demo
 
 Usage:
     sandbox (-h|--help)
@@ -89,6 +91,7 @@ GE::Shared<GE::Layer> layerFactory(const std::string& layer)
     static const std::unordered_map<std::string, LayerCreator> TO_LAYER = {
         {"triangle", GE::makeShared<GE::Examples::TriangleLayer>},
         {"gui", GE::makeShared<GE::Examples::GUILayer>},
+        {"imgui-demo", GE::makeShared<GE::Examples::ImGuiDemoLayer>},
     };
 
     if (auto layer_creator = GE::getValue(TO_LAYER, layer); layer_creator) {

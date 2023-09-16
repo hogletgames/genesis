@@ -1,4 +1,5 @@
 list(APPEND SANDBOX_SOURCES
+    imgui_demo_layer.cpp
     sandbox.cpp
     triangle_layer.cpp
     drawable/cube.cpp
@@ -11,6 +12,7 @@ list(APPEND SANDBOX_SOURCES
     )
 
 list(APPEND SANDBOX_HEADERS
+    imgui_demo_layer.h
     triangle_layer.h
     drawable/cube.h
     drawable/drawable.h
@@ -27,4 +29,5 @@ ge_add_executable(sandbox
     PRIVATE_DEPS
         docopt_s
         genesis::genesis
+        imgui
     )
