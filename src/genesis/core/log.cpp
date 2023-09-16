@@ -85,6 +85,11 @@ void Logger::shutdown()
     m_logger_name.clear();
 }
 
+void Logger::addSink(spdlog::sink_ptr sink)
+{
+    m_logger->sinks().push_back(std::move(sink));
+}
+
 void Logger::setLevel(Level level)
 {
     m_level = level;
