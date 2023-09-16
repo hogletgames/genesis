@@ -102,18 +102,4 @@ Container jointContainers(Container&& first, Args&&... others)
     return result;
 }
 
-inline std::string toUpper(std::string string)
-{
-    std::transform(string.begin(), string.end(), string.begin(),
-                   [](char ch) { return std::toupper(ch); });
-    return string;
-}
-
-inline std::string toLower(std::string string)
-{
-    std::transform(string.begin(), string.end(), string.begin(),
-                   [](char ch) { return std::tolower(ch); });
-    return string;
-}
-
 } // namespace GE

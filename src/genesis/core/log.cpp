@@ -32,6 +32,7 @@
 
 #include "log.h"
 #include "asserts.h"
+#include "string_utils.h"
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 
