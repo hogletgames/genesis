@@ -1,12 +1,14 @@
 set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/filesystem)
 
 list(APPEND FS_SOURCES
+    file.cpp
     filepath.cpp
     known_folders.cpp
     tmp_dir_guard.cpp
     )
 
 list(APPEND FS_HEADERS
+    ${INCLUDE_DIR}/file.h
     ${INCLUDE_DIR}/file_content.h
     ${INCLUDE_DIR}/filepath.h
     ${INCLUDE_DIR}/known_folders.h

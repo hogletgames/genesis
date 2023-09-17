@@ -32,8 +32,14 @@
 
 #pragma once
 
-#include <genesis/filesystem/file.h>
-#include <genesis/filesystem/file_content.h>
-#include <genesis/filesystem/filepath.h>
-#include <genesis/filesystem/known_folders.h>
-#include <genesis/filesystem/tmp_dir_guard.h>
+#include <genesis/core/export.h>
+
+#include <string_view>
+
+namespace GE::FS {
+
+GE_API bool exists(std::string_view filepath);
+GE_API bool createDir(std::string_view filepath);
+GE_API bool removeDir(std::string_view filepath);
+
+} // namespace GE::FS

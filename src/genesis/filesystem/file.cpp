@@ -30,10 +30,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "file.h"
 
-#include <genesis/filesystem/file.h>
-#include <genesis/filesystem/file_content.h>
-#include <genesis/filesystem/filepath.h>
-#include <genesis/filesystem/known_folders.h>
-#include <genesis/filesystem/tmp_dir_guard.h>
+#include "genesis/core/log.h"
+
+#include <filesystem>
+
+namespace GE::FS {
+
+bool exists(std::string_view filepath)
+{
+    std::error_code error;
+    return std::filesystem::exists(filepath, error) && !error;
+}
+
+bool createDir(std::string_view filepath)
+{
+    std::error_code error;
+
+    if (std::filesystem::create_directories(filepath, error); error) {
+        GE_CORE_ERR("Failed to create directory '{}': {}", filepath, error.message());
+        return false;
+    }
+
+    return true;
+}
+
+bool removeDir(std::string_view filepath)
+{
+    std::error_code error;
+
+    if (std::filesystem::remove_all(filepath, error); error) {
+        GE_CORE_ERR("Failed to remove directory '{}': {}", filepath, error.message());
+        return false;
+    }
+
+    return true;
+}
+
+} // namespace GE::FS
