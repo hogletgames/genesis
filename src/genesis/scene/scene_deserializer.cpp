@@ -35,6 +35,7 @@
 #include "entity.h"
 #include "scene.h"
 
+#include "genesis/core/log.h"
 #include "genesis/core/utils.h"
 
 #include <yaml-cpp/yaml.h>
@@ -57,9 +58,14 @@ bool SceneDeserializer::deserialize(const std::string &config_filepath)
         return false;
     }
 
-    m_scene->clear();
-    m_scene->setName(node["scene"]["name"].as<std::string>());
-    return loadEntities(node["scene"]["entities"]);
+    try {
+        m_scene->clear();
+        m_scene->setName(node["scene"]["name"].as<std::string>());
+        return loadEntities(node["scene"]["entities"]);
+    } catch (const std::exception &e) {
+        GE_CORE_ERR("Failed to deserialize a scene: {}", e.what());
+        return false;
+    }
 }
 
 bool SceneDeserializer::loadEntities(const YAML::Node &node)
@@ -99,8 +105,19 @@ bool SceneDeserializer::loadComponent(Entity *entity, const YAML::Node &node)
         {TransformComponent::NAME.data(), &SceneDeserializer::loadTransformComponent},
     };
 
-    if (auto loader = getValue(LOADERS, node["type"].as<std::string>())) {
-        return std::invoke(loader, this, entity, node);
+    if (!node["type"].IsDefined()) {
+        GE_CORE_ERR("Failed to load component: 'type' is not defined");
+        return false;
+    }
+
+    auto type = node["type"].as<std::string>();
+
+    if (auto loader = getValue(LOADERS, type); loader) {
+        try {
+            return std::invoke(loader, this, entity, node);
+        } catch (const std::exception &e) {
+            GE_CORE_WARN("Failed to load component '{}': '{}'", type, e.what());
+        }
     }
 
     return false;
