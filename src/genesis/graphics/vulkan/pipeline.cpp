@@ -179,26 +179,30 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     config.multisample_state.alphaToCoverageEnable = VK_FALSE; // Optional
     config.multisample_state.alphaToOneEnable = VK_FALSE;      // Optional
 
-    config.color_blend_attachment.colorWriteMask =
-        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-        VK_COLOR_COMPONENT_A_BIT;
-    config.color_blend_attachment.blendEnable = VK_FALSE;
-    config.color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
-    config.color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-    config.color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;             // Optional
-    config.color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
-    config.color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-    config.color_blend_attachment.alphaBlendOp = VK_BLEND_OP_ADD;             // Optional
+    VkPipelineColorBlendAttachmentState color_blend_attachment{};
+    color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                                            VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    color_blend_attachment.blendEnable = VK_TRUE;
+    color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;
+    color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    color_blend_attachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+    config.color_blend_attachments.resize(config.msaa_samples);
+    std::fill(config.color_blend_attachments.begin(), config.color_blend_attachments.end(),
+              color_blend_attachment);
 
     config.color_blend_state.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     config.color_blend_state.logicOpEnable = VK_FALSE;
-    config.color_blend_state.pAttachments = &config.color_blend_attachment;
-    config.color_blend_state.attachmentCount = 1;
-    config.color_blend_state.logicOp = VK_LOGIC_OP_COPY; // Optional
-    config.color_blend_state.blendConstants[0] = 0.0f;   // Optional
-    config.color_blend_state.blendConstants[1] = 0.0f;   // Optional
-    config.color_blend_state.blendConstants[2] = 0.0f;   // Optional
-    config.color_blend_state.blendConstants[3] = 0.0f;   // Optional
+    config.color_blend_state.logicOp = VK_LOGIC_OP_COPY;
+    config.color_blend_state.attachmentCount = config.color_blend_attachments.size();
+    config.color_blend_state.pAttachments = config.color_blend_attachments.data();
+    config.color_blend_state.blendConstants[0] = 1.0f;
+    config.color_blend_state.blendConstants[1] = 1.0f;
+    config.color_blend_state.blendConstants[2] = 1.0f;
+    config.color_blend_state.blendConstants[3] = 1.0f;
 
     config.depth_stencil_state.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     config.depth_stencil_state.depthTestEnable = VK_TRUE;
