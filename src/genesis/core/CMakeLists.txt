@@ -1,6 +1,7 @@
 set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/core)
 
 list(APPEND CORE_SOURCES
+    environment_variables.cpp
     log.cpp
     )
 
@@ -9,6 +10,7 @@ list(APPEND CORE_HEADERS
     ${INCLUDE_DIR}/bit.h
     ${INCLUDE_DIR}/defer.h
     ${INCLUDE_DIR}/enum.h
+    ${INCLUDE_DIR}/environment_variables.h
     ${INCLUDE_DIR}/exception.h
     ${INCLUDE_DIR}/export.h
     ${INCLUDE_DIR}/format.h

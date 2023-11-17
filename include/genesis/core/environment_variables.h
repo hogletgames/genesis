@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,18 +32,14 @@
 
 #pragma once
 
-#include <genesis/core/asserts.h>
-#include <genesis/core/bit.h>
-#include <genesis/core/defer.h>
-#include <genesis/core/enum.h>
-#include <genesis/core/environment_variables.h>
-#include <genesis/core/exception.h>
 #include <genesis/core/export.h>
-#include <genesis/core/format.h>
-#include <genesis/core/interface.h>
-#include <genesis/core/log.h>
-#include <genesis/core/memory.h>
-#include <genesis/core/timestamp.h>
-#include <genesis/core/type_list.h>
-#include <genesis/core/utils.h>
-#include <genesis/core/version.h>
+
+#include <string_view>
+
+namespace GE {
+
+static constexpr std::string_view GRAPHICS_SEVERITY{"GE_GRAPHICS_SEVERITY"};
+
+GE_API std::string_view getEnv(std::string_view name);
+
+} // namespace GE
