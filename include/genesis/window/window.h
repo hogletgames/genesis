@@ -71,6 +71,7 @@ public:
     virtual Vec2 position() const = 0;
 
     virtual void setVSync(bool enabled) = 0;
+    virtual void setTitle(std::string_view title) = 0;
 
     static Scoped<Window> create(const settings_t& settings, Graphics::API api);
 };
