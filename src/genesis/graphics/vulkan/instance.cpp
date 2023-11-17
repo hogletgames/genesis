@@ -35,15 +35,39 @@
 #include "vulkan_exception.h"
 
 #include "genesis/core/asserts.h"
+#include "genesis/core/environment_variables.h"
+#include "genesis/core/string_utils.h"
 #include "genesis/core/version.h"
 
 #include <SDL_vulkan.h>
 
+namespace GE::Vulkan {
 namespace {
 
-constexpr int VULKAN_SEVERITY{VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-                              VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                              VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT};
+VkDebugUtilsMessageSeverityFlagsEXT toDebugMessageSeverity(std::string_view severity)
+{
+    enum Severity
+    {
+        SEVERITY_ERROR = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+        SEVERITY_WARN = SEVERITY_ERROR | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT,
+        SEVERITY_INFO = SEVERITY_WARN | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT,
+        SEVERITY_VERBOSE = SEVERITY_INFO | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT,
+    };
+
+    static const std::unordered_map<std::string, Severity> TO_SEVERITY = {
+        {"error", SEVERITY_ERROR},
+        {"warning", SEVERITY_WARN},
+        {"info", SEVERITY_INFO},
+        {"verbose", SEVERITY_VERBOSE},
+    };
+
+    return getValue(TO_SEVERITY, toLower(severity), SEVERITY_INFO);
+}
+
+VkDebugUtilsMessageSeverityFlagsEXT debugMessageSeverity()
+{
+    return toDebugMessageSeverity(getEnv(GE::GRAPHICS_SEVERITY));
+}
 
 VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT severity, VkDebugUtilsMessageTypeFlagsEXT type,
@@ -92,8 +116,6 @@ getDebugMsgrCreateInfo(VkDebugUtilsMessageSeverityFlagsEXT severity)
 
 } // namespace
 
-namespace GE::Vulkan {
-
 void Instance::initialize(void* native_window, std::string_view app_name)
 {
     get()->createInstance(native_window, app_name);
@@ -140,7 +162,7 @@ void Instance::createInstance(void* native_window, std::string_view app_name)
 #endif // GE_PLATFORM_APPLE
 
 #ifndef GE_DISABLE_DEBUG
-    auto debug_info = getDebugMsgrCreateInfo(VULKAN_SEVERITY);
+    auto debug_info = getDebugMsgrCreateInfo(debugMessageSeverity());
     std::array<const char*, 1> validation_layers = {"VK_LAYER_KHRONOS_validation"};
 
     instance_info.ppEnabledLayerNames = validation_layers.data();
@@ -156,7 +178,7 @@ void Instance::createInstance(void* native_window, std::string_view app_name)
 void Instance::createDebugUtilsMessenger()
 {
     GE_CORE_INFO("Creating Vulkan Debug Messenger...");
-    auto debug_info = getDebugMsgrCreateInfo(VULKAN_SEVERITY);
+    auto debug_info = getDebugMsgrCreateInfo(debugMessageSeverity());
 
     if (createDebugUtilsMessengerEXT(m_instance, &debug_info, nullptr, &m_debug_utils) !=
         VK_SUCCESS) {
