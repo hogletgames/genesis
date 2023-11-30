@@ -3,6 +3,7 @@ set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/gui)
 list(APPEND GUI_SOURCES
     base_layer.cpp
     renderer.cpp
+    widgets/button.cpp
     widgets/checkbox.cpp
     widgets/combo_box.cpp
     widgets/image.cpp
@@ -20,6 +21,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/event_handler.h
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/widgets.h
+    ${INCLUDE_DIR}/widgets/button.h
     ${INCLUDE_DIR}/widgets/checkbox.h
     ${INCLUDE_DIR}/widgets/combo_box.h
     ${INCLUDE_DIR}/widgets/image.h
