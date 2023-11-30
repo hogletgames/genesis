@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,22 +32,25 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/button.h>
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/combo_box.h>
-#include <genesis/gui/widgets/flags.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/input_text.h>
-#include <genesis/gui/widgets/main_menu_bar.h>
-#include <genesis/gui/widgets/menu.h>
-#include <genesis/gui/widgets/menu_item.h>
-#include <genesis/gui/widgets/popup_context_item.h>
-#include <genesis/gui/widgets/same_line.h>
-#include <genesis/gui/widgets/separator.h>
-#include <genesis/gui/widgets/style_var.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/tree_node.h>
-#include <genesis/gui/widgets/value_editor.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <genesis/core/bit.h>
+
+namespace GE::GUI {
+
+struct PopupFlag {
+    enum Flags
+    {
+        NONE = 0,
+        MOUSE_BUTTON_LEFT = 0,
+        MOUSE_BUTTON_RIGHT = 1,
+        MOUSE_BUTTON_MIDDLE = 2,
+        NO_OPEN_OVER_EXISTING_POPUP = bit(5),
+        NO_OPEN_OVER_ITEMS = bit(6),
+        ANY_POPUP_ID = bit(7),
+        ANY_POPUP_LEVEL = bit(8),
+        ANY_POPUP = ANY_POPUP_ID | ANY_POPUP_LEVEL,
+    };
+};
+
+using PopupFlags = int;
+
+} // namespace GE::GUI
