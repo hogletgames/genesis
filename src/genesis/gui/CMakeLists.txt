@@ -12,6 +12,7 @@ list(APPEND GUI_SOURCES
     widgets/menu.cpp
     widgets/menu_item.cpp
     widgets/popup_context_item.cpp
+    widgets/popup_context_window.cpp
     widgets/same_line.cpp
     widgets/separator.cpp
     widgets/style_var.cpp
@@ -37,6 +38,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/widgets/menu.h
     ${INCLUDE_DIR}/widgets/menu_item.h
     ${INCLUDE_DIR}/widgets/popup_context_item.h
+    ${INCLUDE_DIR}/widgets/popup_context_window.h
     ${INCLUDE_DIR}/widgets/same_line.h
     ${INCLUDE_DIR}/widgets/separator.h
     ${INCLUDE_DIR}/widgets/style_var.h
