@@ -44,6 +44,11 @@ Window::Window(std::string_view title, bool* is_open, Flags flags)
     forceEnd();
 }
 
+Vec2 Window::position() const
+{
+    return toVec2(ImGui::GetWindowPos());
+}
+
 Vec2 Window::size() const
 {
     return toVec2(ImGui::GetWindowSize());
