@@ -32,14 +32,13 @@
 
 #pragma once
 
-#include <genesis/core/export.h>
 #include <genesis/math/types.h>
 
 #include <string_view>
 
 namespace GE::GUI {
 
-class GE_API ValueEditor
+class ValueEditor
 {
 public:
     using Flags = int;
