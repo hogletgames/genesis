@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,38 @@
 
 #pragma once
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
+#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/math/types.h>
+
+namespace GE::GUI {
+
+class GE_API Gizmos
+{
+public:
+    enum Operation : uint8_t
+    {
+        TRANSLATE,
+        ROTATE,
+        SCALE,
+    };
+
+    enum Mode : uint8_t
+    {
+        LOCAL,
+        GLOBAL,
+    };
+
+    Gizmos(const Vec2& window_pos, const Vec2& window_size, bool is_ortho = false);
+
+    void draw(const Mat4& view, const Mat4& projection, Operation operation, Mode mode,
+              Mat4* matrix, float* snap = nullptr);
+
+    bool isOver() const;
+    bool isUsing() const;
+    const Mat4& deltaMatrix() const { return m_matrix_delta; }
+
+private:
+    Mat4 m_matrix_delta{0.0f};
+};
+
+} // namespace GE::GUI

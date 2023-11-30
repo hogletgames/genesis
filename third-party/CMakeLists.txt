@@ -94,7 +94,7 @@ endif ()
 # ImGuizmo
 FetchContent_Declare(ImGuizmo
     GIT_REPOSITORY https://github.com/hogletgames/ImGuizmo.git
-    GIT_TAG 822be7b44c37dbe98d328739ebe0d5a1ea87ecfc)
+    GIT_TAG ba662b119d64f9ab700bb2cd7b2781f9044f5565)
 FetchContent_GetProperties(ImGuizmo)
 if (NOT imguizmo_POPULATED)
     FetchContent_Populate(ImGuizmo)

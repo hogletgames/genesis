@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,11 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "gizmos/math.h"
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
+#include <imgui.h>
+
+#include <ImGuizmo.h>
+
+namespace GE::GUI {
+
+void decompose(const Mat4& matrix, Vec3* translation, Vec3* rotation, Vec3* scale)
+{
+    ImGuizmo::DecomposeMatrixToComponents(value_ptr(matrix), value_ptr(*translation),
+                                          value_ptr(*rotation), value_ptr(*scale));
+}
+
+Mat4 recompose(const Vec3& translation, const Vec3& rotation, const Vec3& scale)
+{
+    Mat4 matrix{1.0f};
+    ImGuizmo::RecomposeMatrixFromComponents(value_ptr(translation), value_ptr(rotation),
+                                            value_ptr(scale), value_ptr(matrix));
+    return matrix;
+}
+
+} // namespace GE::GUI

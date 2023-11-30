@@ -3,6 +3,8 @@ set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/gui)
 list(APPEND GUI_SOURCES
     base_layer.cpp
     renderer.cpp
+    gizmos/gizmos.cpp
+    gizmos/math.cpp
     widgets/button.cpp
     widgets/checkbox.cpp
     widgets/combo_box.cpp
@@ -27,8 +29,11 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/base_layer.h
     ${INCLUDE_DIR}/context.h
     ${INCLUDE_DIR}/event_handler.h
+    ${INCLUDE_DIR}/gizmos.h
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/widgets.h
+    ${INCLUDE_DIR}/gizmos/gizmos.h
+    ${INCLUDE_DIR}/gizmos/math.h
     ${INCLUDE_DIR}/widgets/button.h
     ${INCLUDE_DIR}/widgets/checkbox.h
     ${INCLUDE_DIR}/widgets/combo_box.h
@@ -65,4 +70,5 @@ ge_add_module(gui
     PRIVATE_DEPS
         genesis::graphics
         imgui
+        ImGuizmo
     )

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,12 @@
 
 #pragma once
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
+#include <genesis/core/export.h>
+#include <genesis/math/types.h>
+
+namespace GE::GUI {
+
+GE_API void decompose(const Mat4& matrix, Vec3* translation, Vec3* rotation, Vec3* scale);
+GE_API Mat4 recompose(const Vec3& translation, const Vec3& rotation, const Vec3& scale);
+
+} // namespace GE::GUI
