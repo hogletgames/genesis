@@ -34,11 +34,11 @@
 
 #include <imgui.h>
 
+namespace GE::GUI {
 namespace {
 
-bool beginCombo(std::string_view name, const GE::GUI::ComboBox::Items& items,
-                std::string_view current_item, GE::GUI::ComboBox::Flags flags,
-                std::string_view* selected_item)
+bool beginCombo(std::string_view name, const ComboBox::Items& items, std::string_view current_item,
+                ComboBox::Flags flags, std::string_view* selected_item)
 {
     *selected_item = current_item;
 
@@ -62,8 +62,6 @@ bool beginCombo(std::string_view name, const GE::GUI::ComboBox::Items& items,
 }
 
 } // namespace
-
-namespace GE::GUI {
 
 ComboBox::ComboBox(std::string_view name, Items items, std::string_view current_item, Flags flags)
     : m_items{std::move(items)}

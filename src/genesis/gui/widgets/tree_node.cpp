@@ -31,23 +31,20 @@
  */
 
 #include "tree_node.h"
+#include "genesis/core/defer.h"
 
 #include <imgui.h>
-
-namespace {
-
-bool treeNode(std::string_view label, GE::GUI::TreeNode::Flags flags)
-{
-    return ImGui::TreeNodeEx(label.data(), flags);
-}
-
-} // namespace
 
 namespace GE::GUI {
 
 TreeNode::TreeNode(std::string_view label, Flags flags)
 {
-    setBeginFunc(&treeNode, label, flags);
+    setBeginFunc([label, flags] {
+        ImGui::PushID(label.data());
+        Defer defer{[] { ImGui::PopID(); }};
+        return ImGui::TreeNodeEx(label.data(), flags);
+    });
+
     setEndFunc(&ImGui::TreePop);
 }
 
