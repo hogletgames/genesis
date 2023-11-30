@@ -7,6 +7,7 @@ list(APPEND GUI_SOURCES
     widgets/checkbox.cpp
     widgets/combo_box.cpp
     widgets/image.cpp
+    widgets/input_text.cpp
     widgets/separator.cpp
     widgets/style_var.cpp
     widgets/text.cpp
@@ -25,6 +26,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/widgets/checkbox.h
     ${INCLUDE_DIR}/widgets/combo_box.h
     ${INCLUDE_DIR}/widgets/image.h
+    ${INCLUDE_DIR}/widgets/input_text.h
     ${INCLUDE_DIR}/widgets/separator.h
     ${INCLUDE_DIR}/widgets/style_var.h
     ${INCLUDE_DIR}/widgets/text.h
