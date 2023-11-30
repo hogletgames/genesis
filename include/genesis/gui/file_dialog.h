@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,10 +32,47 @@
 
 #pragma once
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/file_dialog.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
+#include <genesis/core/export.h>
+
+#include <boost/signals2/signal.hpp>
+
+#include <string>
+
+namespace GE::GUI {
+
+class GE_API FileDialog
+{
+public:
+    using SingleResultSignal = boost::signals2::signal<void(std::string_view)>;
+    using MultipleResultsSignal = boost::signals2::signal<void(const std::vector<std::string>&)>;
+    using CancelSingal = boost::signals2::signal<void()>;
+    using ErrorSignal = boost::signals2::signal<void(std::string_view)>;
+
+    enum Type
+    {
+        SINGLE_FILE,
+        MULTIPLE_FILES,
+        SELECT_FOLDER,
+        SAVE_FILE,
+    };
+
+    void showSingleFile(std::string_view default_path, std::string_view filter_list = {});
+    void showMultipleFiles(std::string_view default_path, std::string_view filter_list = {});
+    void showSelectFolder(std::string_view default_path);
+    void showSaveFile(std::string_view default_path, std::string_view filter_list = {});
+
+    SingleResultSignal* singleResultSignal() { return &m_single_result_file; }
+    MultipleResultsSignal* multipleResultsSignal() { return &m_multiple_files_signal; }
+    CancelSingal* cancelSignal() { return &m_cancel_signal; }
+    ErrorSignal* errorSignal() { return &m_error_signal; }
+
+private:
+    void error(std::string_view error);
+
+    SingleResultSignal m_single_result_file;
+    MultipleResultsSignal m_multiple_files_signal;
+    CancelSingal m_cancel_signal;
+    ErrorSignal m_error_signal;
+};
+
+} // namespace GE::GUI

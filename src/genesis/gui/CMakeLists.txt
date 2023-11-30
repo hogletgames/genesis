@@ -2,6 +2,7 @@ set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/gui)
 
 list(APPEND GUI_SOURCES
     base_layer.cpp
+    file_dialog.cpp
     renderer.cpp
     gizmos/gizmos.cpp
     gizmos/math.cpp
@@ -29,6 +30,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/base_layer.h
     ${INCLUDE_DIR}/context.h
     ${INCLUDE_DIR}/event_handler.h
+    ${INCLUDE_DIR}/file_dialog.h
     ${INCLUDE_DIR}/gizmos.h
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/widgets.h
@@ -69,6 +71,7 @@ ge_add_module(gui
         genesis::app
     PRIVATE_DEPS
         genesis::graphics
+        nativefiledialog
         imgui
         ImGuizmo
     )
