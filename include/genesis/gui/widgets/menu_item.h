@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,19 +32,17 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/button.h>
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/combo_box.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/input_text.h>
-#include <genesis/gui/widgets/main_menu_bar.h>
-#include <genesis/gui/widgets/menu.h>
-#include <genesis/gui/widgets/menu_item.h>
-#include <genesis/gui/widgets/separator.h>
-#include <genesis/gui/widgets/style_var.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/tree_node.h>
-#include <genesis/gui/widgets/value_editor.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <string_view>
+
+namespace GE::GUI {
+
+class MenuItem
+{
+public:
+    static bool call(std::string_view label, std::string_view shortcut = {}, bool selected = false,
+                     bool enabled = true);
+    static bool call(std::string_view label, std::string_view shortcut, bool* selected,
+                     bool enabled = true);
+};
+
+} // namespace GE::GUI
