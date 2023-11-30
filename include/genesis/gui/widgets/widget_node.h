@@ -50,7 +50,7 @@ public:
 
     void end()
     {
-        if (m_end != nullptr && (m_is_opened || m_force_end)) {
+        if (m_is_opened || m_force_end) {
             m_end();
         }
     }
@@ -69,9 +69,13 @@ protected:
         m_begin = std::bind(std::forward<Func>(f), std::forward<Args>(args)...);
     }
 
-    void setEndFunc(EndFunc&& f) { m_end = std::forward<EndFunc>(f); }
+    template<typename Func, typename... Args>
+    void setEndFunc(Func&& f, Args&&... args)
+    {
+        m_end = std::bind(std::forward<Func>(f), std::forward<Args>(args)...);
+    }
 
-    void forceEnd() { m_force_end = true; }
+    void setForceEnd() { m_force_end = true; }
 
 private:
     BeginFunc m_begin{nullptr};
