@@ -11,6 +11,7 @@ list(APPEND GUI_SOURCES
     widgets/main_menu_bar.cpp
     widgets/menu.cpp
     widgets/menu_item.cpp
+    widgets/same_line.cpp
     widgets/separator.cpp
     widgets/style_var.cpp
     widgets/text.cpp
@@ -33,6 +34,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/widgets/main_menu_bar.h
     ${INCLUDE_DIR}/widgets/menu.h
     ${INCLUDE_DIR}/widgets/menu_item.h
+    ${INCLUDE_DIR}/widgets/same_line.h
     ${INCLUDE_DIR}/widgets/separator.h
     ${INCLUDE_DIR}/widgets/style_var.h
     ${INCLUDE_DIR}/widgets/text.h

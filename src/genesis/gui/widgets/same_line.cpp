@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "widgets/same_line.h"
 
-#include <genesis/gui/widgets/button.h>
-#include <genesis/gui/widgets/checkbox.h>
-#include <genesis/gui/widgets/combo_box.h>
-#include <genesis/gui/widgets/image.h>
-#include <genesis/gui/widgets/input_text.h>
-#include <genesis/gui/widgets/main_menu_bar.h>
-#include <genesis/gui/widgets/menu.h>
-#include <genesis/gui/widgets/menu_item.h>
-#include <genesis/gui/widgets/same_line.h>
-#include <genesis/gui/widgets/separator.h>
-#include <genesis/gui/widgets/style_var.h>
-#include <genesis/gui/widgets/text.h>
-#include <genesis/gui/widgets/tree_node.h>
-#include <genesis/gui/widgets/value_editor.h>
-#include <genesis/gui/widgets/widget_node.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
-#include <genesis/gui/widgets/window.h>
+#include <imgui.h>
+
+namespace GE::GUI {
+
+void SameLine::call(float offset_from_start_x, float spacing_w)
+{
+    ImGui::SameLine(offset_from_start_x, spacing_w);
+}
+
+} // namespace GE::GUI
