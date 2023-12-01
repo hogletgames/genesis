@@ -42,7 +42,7 @@ namespace GE::GUI {
 class GE_API TreeNode: public WidgetNode
 {
 public:
-    enum Flags : int
+    enum Flag : int
     {
         NONE = 0,
         SELECTED = bit(0),
@@ -62,6 +62,9 @@ public:
         COLLAPSING_HEADER = FRAMED | NO_TREE_PUSH_ON_OPEN | NO_AUTO_OPEN_ON_LOG
     };
 
+    using Flags = int;
+
+    TreeNode() = default;
     explicit TreeNode(std::string_view label, Flags flags = NONE);
 };
 

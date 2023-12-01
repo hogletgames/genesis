@@ -39,9 +39,21 @@ namespace GE::GUI {
 
 Window::Window(std::string_view title, bool* is_open, Flags flags)
 {
-    setBeginFunc(&ImGui::Begin, title.data(), is_open, flags);
+    setBeginFunc([title, is_open, flags] {
+        if (is_open != nullptr && !*is_open) {
+            return false;
+        }
+
+        return ImGui::Begin(title.data(), is_open, flags);
+    });
+
     setEndFunc(&ImGui::End);
-    forceEnd();
+    setForceEnd();
+}
+
+Vec2 Window::position() const
+{
+    return toVec2(ImGui::GetWindowPos());
 }
 
 Vec2 Window::size() const

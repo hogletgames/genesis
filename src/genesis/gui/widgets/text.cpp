@@ -38,10 +38,12 @@ namespace GE::GUI {
 
 void Text::call(std::string_view fmt, ...)
 {
+    ImGui::PushID(fmt.data());
     va_list args{};
     va_start(args, fmt);
     ImGui::TextV(fmt.data(), args);
     va_end(args);
+    ImGui::PopID();
 }
 
 } // namespace GE::GUI

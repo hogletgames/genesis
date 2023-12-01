@@ -55,6 +55,7 @@ public:
 
     void emitSignals() override;
 
+    Vec2 position() const;
     Vec2 size() const;
     Vec2 availableRegion() const;
     float aspectRatio() const;

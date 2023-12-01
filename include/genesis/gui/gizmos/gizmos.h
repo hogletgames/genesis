@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "tree_node.h"
-#include "genesis/core/defer.h"
+#pragma once
 
-#include <imgui.h>
+#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/math/types.h>
 
 namespace GE::GUI {
 
-TreeNode::TreeNode(std::string_view label, Flags flags)
+class GE_API Gizmos
 {
-    setBeginFunc([label, flags] {
-        ImGui::PushID(label.data());
-        Defer defer{[] { ImGui::PopID(); }};
-        return ImGui::TreeNodeEx(label.data(), flags);
-    });
+public:
+    enum Operation : uint8_t
+    {
+        TRANSLATE,
+        ROTATE,
+        SCALE,
+    };
 
-    setEndFunc(&ImGui::TreePop);
-}
+    enum Mode : uint8_t
+    {
+        LOCAL,
+        GLOBAL,
+    };
+
+    Gizmos(const Vec2& window_pos, const Vec2& window_size, bool is_ortho = false);
+
+    void draw(const Mat4& view, const Mat4& projection, Operation operation, Mode mode,
+              Mat4* matrix, float* snap = nullptr);
+
+    bool isOver() const;
+    bool isUsing() const;
+    const Mat4& deltaMatrix() const { return m_matrix_delta; }
+
+private:
+    Mat4 m_matrix_delta{0.0f};
+};
 
 } // namespace GE::GUI

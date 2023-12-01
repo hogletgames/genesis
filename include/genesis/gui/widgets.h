@@ -32,9 +32,19 @@
 
 #pragma once
 
+#include <genesis/gui/widgets/button.h>
 #include <genesis/gui/widgets/checkbox.h>
 #include <genesis/gui/widgets/combo_box.h>
+#include <genesis/gui/widgets/flags.h>
 #include <genesis/gui/widgets/image.h>
+#include <genesis/gui/widgets/input_text.h>
+#include <genesis/gui/widgets/item.h>
+#include <genesis/gui/widgets/main_menu_bar.h>
+#include <genesis/gui/widgets/menu.h>
+#include <genesis/gui/widgets/menu_item.h>
+#include <genesis/gui/widgets/popup_context_item.h>
+#include <genesis/gui/widgets/popup_context_window.h>
+#include <genesis/gui/widgets/same_line.h>
 #include <genesis/gui/widgets/separator.h>
 #include <genesis/gui/widgets/style_var.h>
 #include <genesis/gui/widgets/text.h>

@@ -32,11 +32,9 @@
 
 #pragma once
 
-#include <genesis/core/export.h>
-
 namespace GE::GUI {
 
-class GE_API Separator
+class Separator
 {
 public:
     static void call();

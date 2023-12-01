@@ -94,6 +94,9 @@ public:
         return WidgetNodeGuard{nullptr};
     }
 
+    WidgetNode* node() { return m_node; }
+    bool isOpened() const { return m_node != nullptr && m_node->isOpened(); }
+
 private:
     bool isNodeCallable() const { return m_node != nullptr && m_node->isOpened(); }
 

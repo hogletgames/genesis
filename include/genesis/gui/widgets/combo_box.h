@@ -44,11 +44,11 @@ namespace GE::GUI {
 class GE_API ComboBox: public WidgetNode
 {
 public:
+    using Flags = int;
     using Items = std::vector<std::string_view>;
-
     using ItemChangedSignal = boost::signals2::signal<void(std::string_view)>;
 
-    enum Flags : int
+    enum Flag
     {
         NONE = 0,
         POPUP_ALIGN_LEFT = bit(0),

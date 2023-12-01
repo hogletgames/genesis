@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "tree_node.h"
-#include "genesis/core/defer.h"
+#pragma once
 
-#include <imgui.h>
+#include <genesis/core/bit.h>
 
 namespace GE::GUI {
 
-TreeNode::TreeNode(std::string_view label, Flags flags)
-{
-    setBeginFunc([label, flags] {
-        ImGui::PushID(label.data());
-        Defer defer{[] { ImGui::PopID(); }};
-        return ImGui::TreeNodeEx(label.data(), flags);
-    });
+struct PopupFlag {
+    enum Flags
+    {
+        NONE = 0,
+        MOUSE_BUTTON_LEFT = 0,
+        MOUSE_BUTTON_RIGHT = 1,
+        MOUSE_BUTTON_MIDDLE = 2,
+        NO_OPEN_OVER_EXISTING_POPUP = bit(5),
+        NO_OPEN_OVER_ITEMS = bit(6),
+        ANY_POPUP_ID = bit(7),
+        ANY_POPUP_LEVEL = bit(8),
+        ANY_POPUP = ANY_POPUP_ID | ANY_POPUP_LEVEL,
+    };
+};
 
-    setEndFunc(&ImGui::TreePop);
-}
+using PopupFlags = int;
 
 } // namespace GE::GUI

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "tree_node.h"
-#include "genesis/core/defer.h"
+#include "widgets/menu_item.h"
 
 #include <imgui.h>
 
 namespace GE::GUI {
 
-TreeNode::TreeNode(std::string_view label, Flags flags)
+bool MenuItem::call(std::string_view label, std::string_view shortcut, bool selected, bool enabled)
 {
-    setBeginFunc([label, flags] {
-        ImGui::PushID(label.data());
-        Defer defer{[] { ImGui::PopID(); }};
-        return ImGui::TreeNodeEx(label.data(), flags);
-    });
+    return ImGui::MenuItem(label.data(), shortcut.data(), selected, enabled);
+}
 
-    setEndFunc(&ImGui::TreePop);
+bool MenuItem::call(std::string_view label, std::string_view shortcut, bool* selected, bool enabled)
+{
+    return ImGui::MenuItem(label.data(), shortcut.data(), selected, enabled);
 }
 
 } // namespace GE::GUI

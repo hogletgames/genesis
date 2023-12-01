@@ -2,10 +2,22 @@ set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/gui)
 
 list(APPEND GUI_SOURCES
     base_layer.cpp
+    file_dialog.cpp
     renderer.cpp
+    gizmos/gizmos.cpp
+    gizmos/math.cpp
+    widgets/button.cpp
     widgets/checkbox.cpp
     widgets/combo_box.cpp
     widgets/image.cpp
+    widgets/input_text.cpp
+    widgets/item.cpp
+    widgets/main_menu_bar.cpp
+    widgets/menu.cpp
+    widgets/menu_item.cpp
+    widgets/popup_context_item.cpp
+    widgets/popup_context_window.cpp
+    widgets/same_line.cpp
     widgets/separator.cpp
     widgets/style_var.cpp
     widgets/text.cpp
@@ -18,11 +30,25 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/base_layer.h
     ${INCLUDE_DIR}/context.h
     ${INCLUDE_DIR}/event_handler.h
+    ${INCLUDE_DIR}/file_dialog.h
+    ${INCLUDE_DIR}/gizmos.h
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/widgets.h
+    ${INCLUDE_DIR}/gizmos/gizmos.h
+    ${INCLUDE_DIR}/gizmos/math.h
+    ${INCLUDE_DIR}/widgets/button.h
     ${INCLUDE_DIR}/widgets/checkbox.h
     ${INCLUDE_DIR}/widgets/combo_box.h
+    ${INCLUDE_DIR}/widgets/flags.h
     ${INCLUDE_DIR}/widgets/image.h
+    ${INCLUDE_DIR}/widgets/input_text.h
+    ${INCLUDE_DIR}/widgets/item.h
+    ${INCLUDE_DIR}/widgets/main_menu_bar.h
+    ${INCLUDE_DIR}/widgets/menu.h
+    ${INCLUDE_DIR}/widgets/menu_item.h
+    ${INCLUDE_DIR}/widgets/popup_context_item.h
+    ${INCLUDE_DIR}/widgets/popup_context_window.h
+    ${INCLUDE_DIR}/widgets/same_line.h
     ${INCLUDE_DIR}/widgets/separator.h
     ${INCLUDE_DIR}/widgets/style_var.h
     ${INCLUDE_DIR}/widgets/text.h
@@ -45,5 +71,7 @@ ge_add_module(gui
         genesis::app
     PRIVATE_DEPS
         genesis::graphics
+        nativefiledialog
         imgui
+        ImGuizmo
     )

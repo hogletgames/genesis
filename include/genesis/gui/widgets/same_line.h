@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "tree_node.h"
-#include "genesis/core/defer.h"
-
-#include <imgui.h>
+#pragma once
 
 namespace GE::GUI {
 
-TreeNode::TreeNode(std::string_view label, Flags flags)
+class SameLine
 {
-    setBeginFunc([label, flags] {
-        ImGui::PushID(label.data());
-        Defer defer{[] { ImGui::PopID(); }};
-        return ImGui::TreeNodeEx(label.data(), flags);
-    });
-
-    setEndFunc(&ImGui::TreePop);
-}
+public:
+    static void call(float offset_from_start_x = 0.0f, float spacing_w = -1.0f);
+};
 
 } // namespace GE::GUI

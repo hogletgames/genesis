@@ -32,7 +32,10 @@
 
 #pragma once
 
+#include <genesis/core/utils.h>
+#include <genesis/gui/widgets/flags.h>
 #include <genesis/math/types.h>
+#include <genesis/window/mouse_button_codes.h>
 
 #include <imgui.h>
 
@@ -51,6 +54,19 @@ inline Vec2 toVec2(const ImVec2& vec)
 inline ImVec4 toImVec4(const Vec4& vec)
 {
     return {vec.x, vec.y, vec.z, vec.w};
+}
+
+inline ImGuiMouseButton toImGuiMouseButton(MouseButton button)
+{
+    static const std::unordered_map<MouseButton, ImGuiMouseButton> TO_IMGUI = {
+        {MouseButton::LEFT, ImGuiMouseButton_Left},
+        {MouseButton::RIGHT, ImGuiMouseButton_Right},
+        {MouseButton::MIDDLE, ImGuiMouseButton_Middle},
+        {MouseButton::X1, 3},
+        {MouseButton::X2, 4},
+    };
+
+    return getValue(TO_IMGUI, button);
 }
 
 } // namespace GE::GUI

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
-project(genesis VERSION 0.0.0 LANGUAGES CXX)
+project(genesis VERSION 0.0.0 LANGUAGES C CXX)
 
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "Build type is empty, configuring as 'Release'")

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,63 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "tree_node.h"
-#include "genesis/core/defer.h"
+#include "gizmos/gizmos.h"
+
+#include "genesis/core/utils.h"
 
 #include <imgui.h>
 
+#include <ImGuizmo.h>
+
 namespace GE::GUI {
+namespace {
 
-TreeNode::TreeNode(std::string_view label, Flags flags)
+ImGuizmo::OPERATION toImGuizmo(Gizmos::Operation operation)
 {
-    setBeginFunc([label, flags] {
-        ImGui::PushID(label.data());
-        Defer defer{[] { ImGui::PopID(); }};
-        return ImGui::TreeNodeEx(label.data(), flags);
-    });
+    static const std::unordered_map<Gizmos::Operation, ImGuizmo::OPERATION> TO_IM_GUIZMO = {
+        {Gizmos::Operation::TRANSLATE, ImGuizmo::TRANSLATE},
+        {Gizmos::Operation::ROTATE, ImGuizmo::ROTATE},
+        {Gizmos::Operation::SCALE, ImGuizmo::SCALE},
+    };
 
-    setEndFunc(&ImGui::TreePop);
+    return getValue(TO_IM_GUIZMO, operation);
+}
+
+ImGuizmo::MODE toImGuizmo(Gizmos::Mode mode)
+{
+    static const std::unordered_map<Gizmos::Mode, ImGuizmo::MODE> TO_IM_GUIZMO = {
+        {Gizmos::Mode::LOCAL, ImGuizmo::LOCAL},
+        {Gizmos::Mode::GLOBAL, ImGuizmo::WORLD},
+    };
+
+    return getValue(TO_IM_GUIZMO, mode);
+}
+
+} // namespace
+
+Gizmos::Gizmos(const Vec2& window_pos, const Vec2& window_size, bool is_ortho)
+{
+    ImGuizmo::BeginFrame();
+    ImGuizmo::SetOrthographic(is_ortho);
+    ImGuizmo::SetDrawlist();
+    ImGuizmo::SetRect(window_pos.x, window_pos.y, window_size.x, window_size.y);
+}
+
+void Gizmos::draw(const Mat4& view, const Mat4& projection, Operation operation, Mode mode,
+                  Mat4* matrix, float* snap)
+{
+    ImGuizmo::Manipulate(value_ptr(view), value_ptr(projection), toImGuizmo(operation),
+                         toImGuizmo(mode), value_ptr(*matrix), value_ptr(m_matrix_delta), snap);
+}
+
+bool Gizmos::isOver() const
+{
+    return ImGuizmo::IsOver();
+}
+
+bool Gizmos::isUsing() const
+{
+    return ImGuizmo::IsUsing();
 }
 
 } // namespace GE::GUI

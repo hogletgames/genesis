@@ -37,13 +37,14 @@
 
 #include <imgui.h>
 
+namespace GE::GUI {
 namespace {
 
-ImGuiStyleVar toImGui(GE::GUI::StyleVar::Index idx)
+ImGuiStyleVar toImGui(StyleVar::Index idx)
 {
-    using Index = GE::GUI::StyleVar::Index;
+    using Index = StyleVar::Index;
 
-    std::unordered_map<Index, ImGuiStyleVar> TO_IMGUI = {
+    static const std::unordered_map<Index, ImGuiStyleVar> TO_IMGUI = {
         {Index::ALPHA, ImGuiStyleVar_Alpha},
         {Index::DISABLTYLED_ALPHA, ImGuiStyleVar_DisabledAlpha},
         {Index::WINDOW_PADDING, ImGuiStyleVar_WindowPadding},
@@ -71,12 +72,10 @@ ImGuiStyleVar toImGui(GE::GUI::StyleVar::Index idx)
         {Index::SELECTABLE_TEXT_ALIGN, ImGuiStyleVar_SelectableTextAlign},
     };
 
-    return GE::getValue(TO_IMGUI, idx);
+    return getValue(TO_IMGUI, idx);
 }
 
 } // namespace
-
-namespace GE::GUI {
 
 StyleVar::StyleVar(Index idx, float value)
 {

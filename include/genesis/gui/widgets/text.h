@@ -32,13 +32,11 @@
 
 #pragma once
 
-#include <genesis/core/export.h>
-
 #include <string_view>
 
 namespace GE::GUI {
 
-class GE_API Text
+class Text
 {
 public:
     static void call(std::string_view fmt, ...);

@@ -32,13 +32,11 @@
 
 #pragma once
 
-#include <genesis/core/export.h>
-
 #include <string_view>
 
 namespace GE::GUI {
 
-class GE_API Checkbox
+class Checkbox
 {
 public:
     static bool call(std::string_view title, bool* value);

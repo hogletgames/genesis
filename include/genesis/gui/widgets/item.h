@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "tree_node.h"
-#include "genesis/core/defer.h"
+#pragma once
 
-#include <imgui.h>
+#include <genesis/core/export.h>
+#include <genesis/window/mouse_button_codes.h>
 
 namespace GE::GUI {
 
-TreeNode::TreeNode(std::string_view label, Flags flags)
-{
-    setBeginFunc([label, flags] {
-        ImGui::PushID(label.data());
-        Defer defer{[] { ImGui::PopID(); }};
-        return ImGui::TreeNodeEx(label.data(), flags);
-    });
-
-    setEndFunc(&ImGui::TreePop);
-}
+GE_API bool isItemClicked(MouseButton button = MouseButton::LEFT);
 
 } // namespace GE::GUI

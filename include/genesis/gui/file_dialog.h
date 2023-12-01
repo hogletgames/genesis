@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,49 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "tree_node.h"
-#include "genesis/core/defer.h"
+#pragma once
 
-#include <imgui.h>
+#include <genesis/core/export.h>
+
+#include <boost/signals2/signal.hpp>
+
+#include <string>
 
 namespace GE::GUI {
 
-TreeNode::TreeNode(std::string_view label, Flags flags)
+class GE_API FileDialog
 {
-    setBeginFunc([label, flags] {
-        ImGui::PushID(label.data());
-        Defer defer{[] { ImGui::PopID(); }};
-        return ImGui::TreeNodeEx(label.data(), flags);
-    });
+public:
+    using SingleResultSignal = boost::signals2::signal<void(std::string_view)>;
+    using MultipleResultsSignal = boost::signals2::signal<void(const std::vector<std::string>&)>;
+    using CancelSingal = boost::signals2::signal<void()>;
+    using ErrorSignal = boost::signals2::signal<void(std::string_view)>;
 
-    setEndFunc(&ImGui::TreePop);
-}
+    enum Type
+    {
+        SINGLE_FILE,
+        MULTIPLE_FILES,
+        SELECT_FOLDER,
+        SAVE_FILE,
+    };
+
+    void showSingleFile(std::string_view default_path, std::string_view filter_list = {});
+    void showMultipleFiles(std::string_view default_path, std::string_view filter_list = {});
+    void showSelectFolder(std::string_view default_path);
+    void showSaveFile(std::string_view default_path, std::string_view filter_list = {});
+
+    SingleResultSignal* singleResultSignal() { return &m_single_result_file; }
+    MultipleResultsSignal* multipleResultsSignal() { return &m_multiple_files_signal; }
+    CancelSingal* cancelSignal() { return &m_cancel_signal; }
+    ErrorSignal* errorSignal() { return &m_error_signal; }
+
+private:
+    void error(std::string_view error);
+
+    SingleResultSignal m_single_result_file;
+    MultipleResultsSignal m_multiple_files_signal;
+    CancelSingal m_cancel_signal;
+    ErrorSignal m_error_signal;
+};
 
 } // namespace GE::GUI

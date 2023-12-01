@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "tree_node.h"
-#include "genesis/core/defer.h"
+#pragma once
 
-#include <imgui.h>
+#include <genesis/core/bit.h>
+#include <genesis/math/types.h>
+
+#include <string>
 
 namespace GE::GUI {
 
-TreeNode::TreeNode(std::string_view label, Flags flags)
+class InputText
 {
-    setBeginFunc([label, flags] {
-        ImGui::PushID(label.data());
-        Defer defer{[] { ImGui::PopID(); }};
-        return ImGui::TreeNodeEx(label.data(), flags);
-    });
+public:
+    enum Flags
+    {
+        NONE = 0,
+        CHARS_DECIMAL = bit(0),
+        CHARS_HEXADECIMAL = bit(1),
+        CHARS_UPPERCASE = bit(2),
+        CHARS_NO_BLANK = bit(3),
+        AUTO_SELECT_ALL = bit(4),
+        ENTER_RETURNS_TRUE = bit(5),
+        CALLBACK_COMPLETION = bit(6),
+        CALLBACK_HISTORY = bit(7),
+        CALLBACK_ALWAYS = bit(8),
+        CALLBACK_CHAR_FILTER = bit(9),
+        ALLOW_TAB_INPUT = bit(10),
+        CTRL_ENTER_FOR_NEW_LINE = bit(11),
+        NO_HORIZONTAL_SCROLL = bit(12),
+        ALWAYS_OVERWRITE = bit(13),
+        READ_ONLY = bit(14),
+        PASSWORD = bit(15),
+        NO_UNDOREDO = bit(16),
+        CHARS_SCIENTIFIC = bit(17),
+        CALLBACK_RESIZE = bit(18),
+        CALLBACK_EDIT = bit(19),
+        ESCAPE_CLEARS_ALL = bit(20),
+    };
 
-    setEndFunc(&ImGui::TreePop);
-}
+    static bool call(std::string_view label, std::string* output, Flags flags = NONE);
+};
+
+class InputTextMultiline
+{
+public:
+    static void call(std::string* text, const Vec2& widget_size);
+};
 
 } // namespace GE::GUI

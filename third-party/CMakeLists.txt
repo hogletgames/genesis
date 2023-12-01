@@ -91,6 +91,25 @@ if (NOT imgui_POPULATED)
     target_compile_definitions(imgui_sdl_vulkan_example PRIVATE _DEBUG)
 endif ()
 
+# ImGuizmo
+FetchContent_Declare(ImGuizmo
+    GIT_REPOSITORY https://github.com/hogletgames/ImGuizmo.git
+    GIT_TAG ba662b119d64f9ab700bb2cd7b2781f9044f5565)
+FetchContent_GetProperties(ImGuizmo)
+if (NOT imguizmo_POPULATED)
+    FetchContent_Populate(ImGuizmo)
+
+    add_Library(ImGuizmo STATIC
+        ${imguizmo_SOURCE_DIR}/GraphEditor.cpp
+        ${imguizmo_SOURCE_DIR}/ImCurveEdit.cpp
+        ${imguizmo_SOURCE_DIR}/ImGradient.cpp
+        ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
+        ${imguizmo_SOURCE_DIR}/ImSequencer.cpp
+        )
+    target_link_libraries(ImGuizmo PUBLIC imgui)
+    target_include_directories(ImGuizmo PUBLIC ${imguizmo_SOURCE_DIR})
+endif ()
+
 # stb
 FetchContent_Declare(stb
     GIT_REPOSITORY https://github.com/hogletgames/stb.git
@@ -128,6 +147,34 @@ FetchContent_Declare(entt
     GIT_REPOSITORY https://github.com/hogletgames/entt.git
     GIT_TAG v3.12.2)
 FetchContent_MakeAvailable(entt)
+
+# nativefiledialog
+FetchContent_Declare(nativefiledialog
+    GIT_REPOSITORY https://github.com/hogletgames/nativefiledialog.git
+    GIT_TAG release_116)
+FetchContent_GetProperties(POPULATED nativefiledialog)
+if (NOT nativefiledialog_POPULATED)
+    FetchContent_Populate(nativefiledialog)
+
+    add_library(nativefiledialog STATIC
+        ${nativefiledialog_SOURCE_DIR}/src/nfd_common.c
+        $<$<PLATFORM_ID:Darwin>:${nativefiledialog_SOURCE_DIR}/src/nfd_cocoa.m>
+        $<$<PLATFORM_ID:Linux>:${nativefiledialog_SOURCE_DIR}/src/nfd_gtk.c>
+        $<$<PLATFORM_ID:Windows>:${nativefiledialog_SOURCE_DIR}/src/nfd_win.cpp>
+        )
+    target_include_directories(nativefiledialog
+        PRIVATE ${nativefiledialog_SOURCE_DIR}/src
+        PUBLIC ${nativefiledialog_SOURCE_DIR}/src/include
+        )
+    if (UNIX AND NOT APPLE)
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(GTK3 REQUIRED IMPORTED_TARGET gtk+-3.0)
+        target_link_libraries(nativefiledialog PRIVATE PkgConfig::GTK3)
+    endif ()
+    target_compile_options(nativefiledialog PRIVATE
+        -Wno-deprecated-declarations
+        )
+endif ()
 
 # Vulkan-Loader
 FetchContent_Declare(Vulkan-Loader

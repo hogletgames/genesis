@@ -35,5 +35,7 @@
 #include <genesis/gui/base_layer.h>
 #include <genesis/gui/context.h>
 #include <genesis/gui/event_handler.h>
+#include <genesis/gui/file_dialog.h>
+#include <genesis/gui/gizmos.h>
 #include <genesis/gui/renderer.h>
 #include <genesis/gui/widgets.h>

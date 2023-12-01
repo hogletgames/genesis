@@ -32,12 +32,11 @@
 
 #pragma once
 
-#include <genesis/core/export.h>
 #include <genesis/math/types.h>
 
 namespace GE::GUI {
 
-class GE_API Image
+class Image
 {
 public:
     using NativeID = void*;

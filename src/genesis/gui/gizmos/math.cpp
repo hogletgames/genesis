@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "tree_node.h"
-#include "genesis/core/defer.h"
+#include "gizmos/math.h"
 
 #include <imgui.h>
 
+#include <ImGuizmo.h>
+
 namespace GE::GUI {
 
-TreeNode::TreeNode(std::string_view label, Flags flags)
+void decompose(const Mat4& matrix, Vec3* translation, Vec3* rotation, Vec3* scale)
 {
-    setBeginFunc([label, flags] {
-        ImGui::PushID(label.data());
-        Defer defer{[] { ImGui::PopID(); }};
-        return ImGui::TreeNodeEx(label.data(), flags);
-    });
+    ImGuizmo::DecomposeMatrixToComponents(value_ptr(matrix), value_ptr(*translation),
+                                          value_ptr(*rotation), value_ptr(*scale));
+}
 
-    setEndFunc(&ImGui::TreePop);
+Mat4 recompose(const Vec3& translation, const Vec3& rotation, const Vec3& scale)
+{
+    Mat4 matrix{1.0f};
+    ImGuizmo::RecomposeMatrixFromComponents(value_ptr(translation), value_ptr(rotation),
+                                            value_ptr(scale), value_ptr(matrix));
+    return matrix;
 }
 
 } // namespace GE::GUI
