@@ -49,19 +49,14 @@ constexpr auto VIKING_ROOM_TEXTURE{"examples/sandbox/assets/textures/viking_room
 void drawView(GE::GUI::WidgetNodeGuard* node,
               const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
-    if (float distance = camera->distance();
-        node->call<GE::GUI::ValueEditor>("Distance", &distance, 0.1f, 0.0f, 50.0f)) {
-        camera->setDistance(distance);
+    if (auto position = camera->position();
+        node->call<GE::GUI::ValueEditor>("Position", &position, 1.0f, -100.0f, 100.0f)) {
+        camera->setPosition(position);
     }
 
-    if (auto focal_point = camera->focalPoint();
-        node->call<GE::GUI::ValueEditor>("Focal point", &focal_point, 0.1f, -10.0f, 10.0f)) {
-        camera->setFocalPoint(focal_point);
-    }
-
-    if (GE::Vec2 angles{GE::degrees(camera->pitch()), GE::degrees(camera->yaw())};
-        node->call<GE::GUI::ValueEditor>("Pitch/Yaw", &angles, 1.0f, -360.0f, 360.0f)) {
-        camera->setRotationAngles(GE::radians(angles.x), GE::radians(angles.y));
+    if (auto rotation = GE::degrees(camera->rotation());
+        node->call<GE::GUI::ValueEditor>("Rotation", &rotation, 1.0f, -360.0f, 360.0f)) {
+        camera->setRotation(GE::radians(rotation));
     }
 }
 
@@ -118,12 +113,7 @@ void drawProjectionOptions(GE::GUI::WidgetNodeGuard* node,
 void drawReadOnlyOptions(GE::GUI::WidgetNodeGuard* node,
                          const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
-    node->call<GE::GUI::Text>("Position: %s", GE::toString(camera->position()).c_str());
-    node->call<GE::GUI::Text>("Up direction: %s", GE::toString(camera->upDirection()).c_str());
-    node->call<GE::GUI::Text>("Right direction: %s",
-                              GE::toString(camera->rightDirection()).c_str());
-    node->call<GE::GUI::Text>("Forward direction: %s",
-                              GE::toString(camera->forwardDirection()).c_str());
+    node->call<GE::GUI::Text>("Direction: %s", GE::toString(camera->direction()).c_str());
 }
 
 void drawCameraOptions(GE::GUI::WidgetNodeGuard* parent, GE::Examples::GuiLayerWindow* window)

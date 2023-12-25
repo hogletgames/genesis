@@ -62,16 +62,8 @@ public:
     enum Mode : uint8_t
     {
         MODE_NONE = 0,
-        MODE_ENABLED_BIT = bit(0),
-        MODE_PAN_BIT = bit(1),
-        MODE_ROTATE_BIT = bit(2),
-        MODE_ZOOM_BIT = bit(3),
-        MODE_SCROLL_ZOOM_BIT = bit(4),
-
-        MODE_PAN_FLAGS = MODE_ENABLED_BIT | MODE_PAN_BIT,
-        MODE_ROTATE_FLAGS = MODE_ENABLED_BIT | MODE_ROTATE_BIT,
-        MODE_ZOOM_FLAGS = MODE_ENABLED_BIT | MODE_ZOOM_BIT,
-        MODE_SCROLL_ZOOM_FLAGS = MODE_SCROLL_ZOOM_BIT,
+        MODE_ROTATE_BIT = bit(1),
+        MODE_SCROLL_ZOOM_BIT = bit(2),
     };
 
     explicit VPCameraController(VPCameraPtr camera);
@@ -83,12 +75,11 @@ public:
     void setCamera(VPCameraPtr camera);
     void setViewport(const Vec2& viewport);
 
+    VPCameraPtr& camera() { return m_camera; }
     const VPCameraPtr& camera() const { return m_camera; }
     Mode mode() const { return m_mode; }
 
 private:
-    bool onKeyPressed(const KeyPressedEvent& event);
-    bool onKeyReleased(const KeyReleasedEvent& event);
     bool onMouseButtonPressed(const MouseButtonPressedEvent& event);
     bool onMouseButtonReleased(const MouseButtonReleasedEvent& event);
     bool onMouseMoved(const MouseMovedEvent& event);
@@ -96,10 +87,6 @@ private:
 
     void rotate();
     void zoom(float delta);
-    void pan();
-
-    float zoomSpeed() const;
-    Vec2 panSpeed() const;
 
     VPCameraPtr m_camera;
     Mode m_mode{MODE_NONE};

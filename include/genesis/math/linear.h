@@ -32,34 +32,12 @@
 
 #pragma once
 
-#include <genesis/math/types.h>
-#include <genesis/scene/camera/projection_camera.h>
+#include <glm/glm.hpp>
 
-namespace GE::Scene {
+namespace GE {
 
-class GE_API ViewProjectionCamera: public ProjectionCamera
-{
-public:
-    ViewProjectionCamera();
+using glm::inverse;
+using glm::normalize;
+using glm::transpose;
 
-    const Mat4& view() const { return m_view; }
-    Mat4 viewProjection() const { return projection() * m_view; }
-
-    void setPosition(const Vec3& position);
-    void setRotation(const Vec3& rotation);
-    void rotate(const Vec3& rotation);
-
-    const Vec3& position() const { return m_position; }
-    const Vec3& rotation() const { return m_rotation; }
-    Vec3 direction() const;
-
-private:
-    void calculateView();
-
-    Vec3 m_position{0.0f, 0.0f, 2.0f};
-    Vec3 m_rotation{0.0f, 0.0f, 0.0f};
-
-    Mat4 m_view{1.0f};
-};
-
-} // namespace GE::Scene
+} // namespace GE

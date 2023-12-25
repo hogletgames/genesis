@@ -35,10 +35,10 @@
 #include <genesis/math/types.h>
 
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 namespace GE {
 
-using glm::inverse;
 using glm::rotate;
 using glm::scale;
 using glm::translate;

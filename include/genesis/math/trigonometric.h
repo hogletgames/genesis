@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <glm/gtc/quaternion.hpp>
 #include <glm/trigonometric.hpp>
 
 namespace GE {
