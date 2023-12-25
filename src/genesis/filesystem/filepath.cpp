@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,60 +30,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "graphics.h"
-#include "graphics_context.h"
-#include "vulkan/graphics_context.h"
+#include "filepath.h"
 
-#include "genesis/core/enum.h"
-#include "genesis/core/string_utils.h"
+#include <filesystem>
 
-namespace GE {
+namespace GE::FS {
 
-bool Graphics::initialize(const Graphics::settings_t& settings, void* window)
+std::string stem(std::string_view filepath)
 {
-    GE_CORE_INFO("Initializing Graphics, API: {}", toString(settings.api));
-    auto& context = get()->m_context;
-
-    switch (settings.api) {
-        case Graphics::API::VULKAN: context = tryMakeScoped<Vulkan::GraphicsContext>();
-        case Graphics::API::NONE:
-        default: break;
-    }
-
-    GraphicsContext::config_t context_config{};
-    context_config.window = window;
-    context_config.app_name = settings.app_name;
-    context_config.msaa_samples = settings.msaa_samples;
-
-    if (!context || !context->initialize(context_config)) {
-        GE_CORE_ERR("Failed to create Graphics Context");
-        return false;
-    }
-
-    get()->m_api = settings.api;
-    return true;
+    return std::filesystem::path{filepath}.stem();
 }
 
-void Graphics::shutdown()
+std::string parentPath(std::string_view filepath)
 {
-    if (context() == nullptr) {
-        return;
-    }
-
-    get()->m_context->shutdown();
-    get()->m_context.reset();
-    get()->m_api = API::NONE;
+    return std::filesystem::path{filepath}.parent_path();
 }
 
-Graphics::~Graphics()
-{
-    shutdown();
-}
-
-Graphics::API toRendererAPI(const std::string& api_str)
-{
-    auto api = toEnum<Graphics::API>(toUpper(api_str));
-    return api.has_value() ? api.value() : Graphics::API::NONE;
-}
-
-} // namespace GE
+} // namespace GE::FS

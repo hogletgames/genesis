@@ -32,8 +32,8 @@
 
 #include "shader_precompiler.h"
 
-#include "genesis/core/filesystem.h"
 #include "genesis/core/log.h"
+#include "genesis/filesystem/file_content.h"
 
 #include <shaderc/shaderc.hpp>
 
@@ -54,7 +54,7 @@ std::optional<shaderc_shader_kind> toShaderKind(GE::Shader::Type type)
 
 std::string readShaderCode(const std::string &filepath)
 {
-    if (auto file = GE::readFile<char>(filepath); !file.empty()) {
+    if (auto file = GE::FS::readFile<char>(filepath); !file.empty()) {
         return {file.begin(), file.end()};
     }
 

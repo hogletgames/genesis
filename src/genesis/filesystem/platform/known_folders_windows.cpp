@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,60 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "graphics.h"
-#include "graphics_context.h"
-#include "vulkan/graphics_context.h"
+#include "filepath.h"
+#include "known_folders.h"
 
-#include "genesis/core/enum.h"
-#include "genesis/core/string_utils.h"
+#include "genesis/core/environment_variables.h"
 
-namespace GE {
+namespace GE::FS::Platform {
 
-bool Graphics::initialize(const Graphics::settings_t& settings, void* window)
+std::string homeDir()
 {
-    GE_CORE_INFO("Initializing Graphics, API: {}", toString(settings.api));
-    auto& context = get()->m_context;
-
-    switch (settings.api) {
-        case Graphics::API::VULKAN: context = tryMakeScoped<Vulkan::GraphicsContext>();
-        case Graphics::API::NONE:
-        default: break;
+    if (auto var = getEnv("HOMEPATH"); var.has_value()) {
+        return std::string(var.value());
     }
 
-    GraphicsContext::config_t context_config{};
-    context_config.window = window;
-    context_config.app_name = settings.app_name;
-    context_config.msaa_samples = settings.msaa_samples;
+    return {};
+}
 
-    if (!context || !context->initialize(context_config)) {
-        GE_CORE_ERR("Failed to create Graphics Context");
-        return false;
+std::string tmpDir()
+{
+    if (auto var = getEnv("TEMP"); var.has_value()) {
+        return std::string(var.value());
     }
 
-    get()->m_api = settings.api;
-    return true;
+    return {};
 }
 
-void Graphics::shutdown()
+std::string cacheDir(std::string_view app_name)
 {
-    if (context() == nullptr) {
-        return;
-    }
-
-    get()->m_context->shutdown();
-    get()->m_context.reset();
-    get()->m_api = API::NONE;
+    return joinPath(std::string{getEnv("LOCALAPPDATA")}, app_name, "Cache");
 }
 
-Graphics::~Graphics()
-{
-    shutdown();
-}
-
-Graphics::API toRendererAPI(const std::string& api_str)
-{
-    auto api = toEnum<Graphics::API>(toUpper(api_str));
-    return api.has_value() ? api.value() : Graphics::API::NONE;
-}
-
-} // namespace GE
+} // namespace GE::FS::Platform

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,60 +30,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "graphics.h"
-#include "graphics_context.h"
-#include "vulkan/graphics_context.h"
+#include "file.h"
 
-#include "genesis/core/enum.h"
-#include "genesis/core/string_utils.h"
+#include "genesis/core/log.h"
 
-namespace GE {
+#include <filesystem>
 
-bool Graphics::initialize(const Graphics::settings_t& settings, void* window)
+namespace GE::FS {
+
+bool exists(std::string_view filepath)
 {
-    GE_CORE_INFO("Initializing Graphics, API: {}", toString(settings.api));
-    auto& context = get()->m_context;
+    std::error_code error;
+    return std::filesystem::exists(filepath, error) && !error;
+}
 
-    switch (settings.api) {
-        case Graphics::API::VULKAN: context = tryMakeScoped<Vulkan::GraphicsContext>();
-        case Graphics::API::NONE:
-        default: break;
-    }
+bool createDir(std::string_view filepath)
+{
+    std::error_code error;
 
-    GraphicsContext::config_t context_config{};
-    context_config.window = window;
-    context_config.app_name = settings.app_name;
-    context_config.msaa_samples = settings.msaa_samples;
-
-    if (!context || !context->initialize(context_config)) {
-        GE_CORE_ERR("Failed to create Graphics Context");
+    if (std::filesystem::create_directories(filepath, error); error) {
+        GE_CORE_ERR("Failed to create directory '{}': {}", filepath, error.message());
         return false;
     }
 
-    get()->m_api = settings.api;
     return true;
 }
 
-void Graphics::shutdown()
+bool removeDir(std::string_view filepath)
 {
-    if (context() == nullptr) {
-        return;
+    std::error_code error;
+
+    if (std::filesystem::remove_all(filepath, error); error) {
+        GE_CORE_ERR("Failed to remove directory '{}': {}", filepath, error.message());
+        return false;
     }
 
-    get()->m_context->shutdown();
-    get()->m_context.reset();
-    get()->m_api = API::NONE;
+    return true;
 }
 
-Graphics::~Graphics()
-{
-    shutdown();
-}
-
-Graphics::API toRendererAPI(const std::string& api_str)
-{
-    auto api = toEnum<Graphics::API>(toUpper(api_str));
-    return api.has_value() ? api.value() : Graphics::API::NONE;
-}
-
-} // namespace GE
+} // namespace GE::FS

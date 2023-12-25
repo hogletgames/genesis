@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,60 +30,52 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "graphics.h"
-#include "graphics_context.h"
-#include "vulkan/graphics_context.h"
+#pragma once
 
-#include "genesis/core/enum.h"
-#include "genesis/core/string_utils.h"
+#include <cstddef>
+#include <cstring>
+#include <string>
 
 namespace GE {
 
-bool Graphics::initialize(const Graphics::settings_t& settings, void* window)
+template<typename ForwardIt>
+std::string joinString(ForwardIt begin, ForwardIt end, std::string_view delimiter = {})
 {
-    GE_CORE_INFO("Initializing Graphics, API: {}", toString(settings.api));
-    auto& context = get()->m_context;
+    std::string result;
+    auto it = begin;
 
-    switch (settings.api) {
-        case Graphics::API::VULKAN: context = tryMakeScoped<Vulkan::GraphicsContext>();
-        case Graphics::API::NONE:
-        default: break;
+    if (it != end) {
+        result += std::string{*it};
+        ++it;
     }
 
-    GraphicsContext::config_t context_config{};
-    context_config.window = window;
-    context_config.app_name = settings.app_name;
-    context_config.msaa_samples = settings.msaa_samples;
-
-    if (!context || !context->initialize(context_config)) {
-        GE_CORE_ERR("Failed to create Graphics Context");
-        return false;
+    for (; it != end; ++it) {
+        result += std::string{delimiter} + std::string{*it};
     }
 
-    get()->m_api = settings.api;
-    return true;
+    return result;
 }
 
-void Graphics::shutdown()
+inline std::string toUpper(std::string_view string)
 {
-    if (context() == nullptr) {
-        return;
-    }
+    std::string result;
+    result.resize(string.size());
 
-    get()->m_context->shutdown();
-    get()->m_context.reset();
-    get()->m_api = API::NONE;
+    std::transform(string.begin(), string.end(), result.begin(),
+                   [](char ch) { return std::toupper(ch); });
+
+    return result;
 }
 
-Graphics::~Graphics()
+inline std::string toLower(std::string_view string)
 {
-    shutdown();
-}
+    std::string result;
+    result.resize(string.size());
 
-Graphics::API toRendererAPI(const std::string& api_str)
-{
-    auto api = toEnum<Graphics::API>(toUpper(api_str));
-    return api.has_value() ? api.value() : Graphics::API::NONE;
+    std::transform(string.begin(), string.end(), result.begin(),
+                   [](char ch) { return std::tolower(ch); });
+
+    return result;
 }
 
 } // namespace GE

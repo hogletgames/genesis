@@ -6,6 +6,7 @@ list(APPEND GENESIS_HEADERS
     ${INCLUDE_DIR}/app.h
     ${INCLUDE_DIR}/assets.h
     ${INCLUDE_DIR}/core.h
+    ${INCLUDE_DIR}/filesystem.h
     ${INCLUDE_DIR}/gui.h
     ${INCLUDE_DIR}/genesis.h
     ${INCLUDE_DIR}/graphics.h
@@ -19,6 +20,7 @@ target_link_libraries(genesis PUBLIC
     genesis::app
     genesis::assets
     genesis::core
+    genesis::filesystem
     genesis::graphics
     genesis::gui
     genesis::math
@@ -30,6 +32,7 @@ add_library(genesis::genesis ALIAS genesis)
 add_subdirectory(app)
 add_subdirectory(assets)
 add_subdirectory(core)
+add_subdirectory(filesystem)
 add_subdirectory(graphics)
 add_subdirectory(gui)
 add_subdirectory(math)

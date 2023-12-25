@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,36 +32,12 @@
 
 #pragma once
 
-#include <genesis/core/export.h>
-
-#include <fstream>
-#include <iterator>
 #include <string>
-#include <vector>
 
-namespace GE {
+namespace GE::FS::Platform {
 
-template<typename T>
-std::vector<T> readFile(const std::string& filepath)
-{
-    if (auto file = std::ifstream{filepath, std::ios::binary}; file) {
-        file >> std::noskipws;
-        return {std::istream_iterator<T>{file}, std::istream_iterator<T>{}};
-    }
+std::string homeDir();
+std::string tmpDir();
+std::string cacheDir(std::string_view app_name);
 
-    return {};
-}
-
-class GE_API TmpDirGuard
-{
-public:
-    TmpDirGuard();
-    ~TmpDirGuard();
-
-    const std::string& path() const { return m_path; }
-
-private:
-    std::string m_path;
-};
-
-} // namespace GE
+} // namespace GE::FS::Platform
