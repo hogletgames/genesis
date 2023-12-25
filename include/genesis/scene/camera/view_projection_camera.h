@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <genesis/math/types.h>
 #include <genesis/scene/camera/projection_camera.h>
 
 namespace GE::Scene {
@@ -42,29 +43,22 @@ public:
     ViewProjectionCamera();
 
     const Mat4& view() const { return m_view; }
+    Mat4 viewProjection() const { return projection() * m_view; }
 
-    void setDistance(float distance);
-    void setRotationAngles(float pitch, float yaw);
-    void setFocalPoint(const Vec3& focal_point);
+    void setPosition(const Vec3& position);
+    void setRotation(const Vec3& rotation);
+    void rotate(const Vec3& rotation);
 
-    float distance() const { return m_distance; }
-    float pitch() const { return m_pitch; }
-    float yaw() const { return m_yaw; }
-    const Vec3& focalPoint() const { return m_focal_point; }
-    Quat orientation() const { return Quat{Vec3{-m_yaw, -m_pitch, 0.0f}}; }
-    Vec3 position() const { return m_focal_point - (forwardDirection() * m_distance); }
-
-    Vec3 upDirection() const;
-    Vec3 rightDirection() const;
-    Vec3 forwardDirection() const;
+    const Vec3& position() const { return m_position; }
+    const Vec3& rotation() const { return m_rotation; }
+    Vec3 direction() const;
 
 private:
     void calculateView();
 
-    float m_distance{2.0f};
-    float m_yaw{0.0f};
-    float m_pitch{0.0f};
-    Vec3 m_focal_point{0.0f};
+    Vec3 m_position{0.0f, 0.0f, 2.0f};
+    Vec3 m_rotation{0.0f, 0.0f, 0.0f};
+
     Mat4 m_view{1.0f};
 };
 

@@ -32,53 +32,52 @@
 
 #include "camera/view_projection_camera.h"
 
+#include "genesis/math/linear.h"
 #include "genesis/math/transform.h"
 
 namespace GE::Scene {
+namespace {
+
+template<typename T>
+constexpr T sqr(T value)
+{
+    return value * value;
+}
+
+} // namespace
 
 ViewProjectionCamera::ViewProjectionCamera()
 {
     calculateView();
 }
 
-void ViewProjectionCamera::setDistance(float distance)
+void ViewProjectionCamera::setPosition(const Vec3& position)
 {
-    m_distance = distance;
+    m_position = position;
     calculateView();
 }
 
-void ViewProjectionCamera::setRotationAngles(float pitch, float yaw)
+void ViewProjectionCamera::setRotation(const Vec3& rotation)
 {
-    m_pitch = pitch;
-    m_yaw = yaw;
+    m_rotation = rotation;
     calculateView();
 }
 
-void ViewProjectionCamera::setFocalPoint(const Vec3& focal_point)
+void ViewProjectionCamera::rotate(const Vec3& rotation)
 {
-    m_focal_point = focal_point;
+    m_rotation += rotation;
     calculateView();
 }
 
-Vec3 ViewProjectionCamera::upDirection() const
+Vec3 ViewProjectionCamera::direction() const
 {
-    return rotate(orientation(), {0.0f, 1.0f, 0.0f});
-}
-
-Vec3 ViewProjectionCamera::rightDirection() const
-{
-    return rotate(orientation(), {1.0f, 0.0f, 0.0f});
-}
-
-Vec3 ViewProjectionCamera::forwardDirection() const
-{
-    return rotate(orientation(), {0.0f, 0.0f, 1.0f});
+    static constexpr Vec3 FORWARD_DIRECTION{0.0f, 0.0f, -1.0f};
+    return normalize(Quat{m_rotation} * FORWARD_DIRECTION);
 }
 
 void ViewProjectionCamera::calculateView()
 {
-    auto transform = translate(Mat4{1.0f}, position());
-    m_view = transpose(transform * toMat4(orientation()));
+    m_view = transpose(toMat4(Quat{m_rotation})) * translate(Mat4{1.0f}, -m_position);
 }
 
 } // namespace GE::Scene

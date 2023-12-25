@@ -34,6 +34,7 @@
 #include "camera/view_projection_camera.h"
 
 #include "genesis/core/utils.h"
+#include "genesis/math/trigonometric.h"
 #include "genesis/window/events/event_dispatcher.h"
 #include "genesis/window/events/key_events.h"
 #include "genesis/window/events/mouse_events.h"
@@ -45,39 +46,10 @@ GE::Scene::VPCameraController::Mode toCameraControlModeBit(GE::MouseButton mouse
     using CameraMode = GE::Scene::VPCameraController::Mode;
 
     static const std::unordered_map<GE::MouseButton, CameraMode> TO_MODE = {
-        {GE::MouseButton::LEFT, CameraMode::MODE_ROTATE_BIT},
-        {GE::MouseButton::RIGHT, CameraMode::MODE_ZOOM_BIT},
-        {GE::MouseButton::MIDDLE, CameraMode::MODE_PAN_BIT},
+        {GE::MouseButton::RIGHT, CameraMode::MODE_ROTATE_BIT},
     };
 
     return getValue(TO_MODE, mouse_button, CameraMode::MODE_NONE);
-}
-
-GE::Scene::VPCameraController::Mode toCameraControlModeBit(GE::KeyCode code)
-{
-    using CameraMode = GE::Scene::VPCameraController::Mode;
-
-    static const std::unordered_map<GE::KeyCode, CameraMode> TO_MODE = {
-        {GE::KeyCode::LALT, CameraMode::MODE_ENABLED_BIT},
-        {GE::KeyCode::RALT, CameraMode::MODE_ENABLED_BIT},
-        {GE::KeyCode::LSUPER, CameraMode::MODE_PAN_BIT},
-        {GE::KeyCode::RSUPER, CameraMode::MODE_PAN_BIT},
-    };
-
-    return getValue(TO_MODE, code, CameraMode::MODE_NONE);
-}
-
-float panSpeedFactor(float viewport)
-{
-    static constexpr float PAN_MAX{2400.f};
-    static constexpr float PAN_COORD_FACTOR{1e-3};
-
-    static constexpr float A{0.0366f};
-    static constexpr float B{0.1778f};
-    static constexpr float C{0.2021f};
-
-    float x = std::min(viewport, PAN_MAX) * PAN_COORD_FACTOR;
-    return A * (x * x) - B * x + C;
 }
 
 } // namespace
@@ -92,16 +64,10 @@ VPCameraController::~VPCameraController() = default;
 
 void VPCameraController::onUpdate([[maybe_unused]] Timestamp ts)
 {
-    static constexpr float MOUSE_SCROLL_FACTOR{0.1f};
-
-    if (checkBits(m_mode, MODE_PAN_FLAGS)) {
-        pan();
-    } else if (checkBits(m_mode, MODE_ROTATE_FLAGS)) {
+    if (checkBits(m_mode, MODE_ROTATE_BIT)) {
         rotate();
-    } else if (checkBits(m_mode, MODE_ZOOM_FLAGS)) {
+    } else if (checkBits(m_mode, MODE_SCROLL_ZOOM_BIT)) {
         zoom(m_mouse_offset.y);
-    } else if (checkBits(m_mode, MODE_SCROLL_ZOOM_FLAGS)) {
-        zoom(m_mouse_offset.y * MOUSE_SCROLL_FACTOR);
         m_mode = clearBits(m_mode, MODE_SCROLL_ZOOM_BIT);
     }
 
@@ -111,8 +77,6 @@ void VPCameraController::onUpdate([[maybe_unused]] Timestamp ts)
 void VPCameraController::onEvent(Event* event)
 {
     EventDispatcher dispatcher{event};
-    dispatcher.dispatch<KeyPressedEvent>(toEventHandler(&VPCameraController::onKeyPressed, this));
-    dispatcher.dispatch<KeyReleasedEvent>(toEventHandler(&VPCameraController::onKeyReleased, this));
     dispatcher.dispatch<MouseButtonPressedEvent>(
         toEventHandler(&VPCameraController::onMouseButtonPressed, this));
     dispatcher.dispatch<MouseButtonReleasedEvent>(
@@ -130,18 +94,6 @@ void VPCameraController::setCamera(VPCameraPtr camera)
 void VPCameraController::setViewport(const Vec2& viewport)
 {
     m_camera->setViewport(viewport);
-}
-
-bool VPCameraController::onKeyPressed(const KeyPressedEvent& event)
-{
-    m_mode = setBits(m_mode, toCameraControlModeBit(event.getCode()));
-    return false;
-}
-
-bool VPCameraController::onKeyReleased(const KeyReleasedEvent& event)
-{
-    m_mode = clearBits(m_mode, toCameraControlModeBit(event.getCode()));
-    return false;
 }
 
 bool VPCameraController::onMouseButtonPressed(const MouseButtonPressedEvent& event)
@@ -171,53 +123,18 @@ bool VPCameraController::onMouseScrolled(const MouseScrolledEvent& event)
 
 void VPCameraController::rotate()
 {
-    static constexpr float MOUSE_ROTATION_SPEED{0.05f};
+    static constexpr float MOUSE_ROTATION_SPEED{0.2f};
 
-    float sign = m_camera->upDirection().y < 0.0f ? -1.0f : 1.0f;
-    float pitch = m_camera->pitch() + (m_mouse_offset.x * MOUSE_ROTATION_SPEED);
-    float yaw = m_camera->yaw() + (sign * m_mouse_offset.y * MOUSE_ROTATION_SPEED);
-
-    m_camera->setRotationAngles(pitch, yaw);
+    Vec3 rotation{m_mouse_offset.y, m_mouse_offset.x, 0.0f};
+    m_camera->rotate(radians(rotation * MOUSE_ROTATION_SPEED));
 }
 
 void VPCameraController::zoom(float delta)
 {
-    float distance = m_camera->distance() - (delta * zoomSpeed());
-
-    if (distance < 1.0f) {
-        m_camera->setFocalPoint(m_camera->focalPoint() + m_camera->forwardDirection());
-        distance = 1.0f;
-    }
-
-    m_camera->setDistance(distance);
-}
-
-void VPCameraController::pan()
-{
-    auto speed = panSpeed();
-    auto focal_point = m_camera->focalPoint();
-    float distance = m_camera->distance();
-
-    focal_point += m_camera->rightDirection() * m_mouse_offset.x * speed.x * distance;
-    focal_point += -m_camera->upDirection() * m_mouse_offset.y * speed.y * distance;
-    m_camera->setFocalPoint(focal_point);
-}
-
-float VPCameraController::zoomSpeed() const
-{
     static constexpr float ZOOM_DISTANCE_FACTOR{0.2f};
-    static constexpr float DISTANCE_MIN{0.0f};
-    static constexpr float MOUSE_SPEED_MAX{100.0f};
 
-    float distance = std::max(m_camera->distance() * ZOOM_DISTANCE_FACTOR, DISTANCE_MIN);
-    float speed = std::min(distance * distance, MOUSE_SPEED_MAX);
-    return speed;
-}
-
-Vec2 VPCameraController::panSpeed() const
-{
-    const auto& viewport = m_camera->viewport();
-    return {panSpeedFactor(viewport.x), panSpeedFactor(viewport.y)};
+    auto new_position = m_camera->position() + m_camera->direction() * delta * ZOOM_DISTANCE_FACTOR;
+    m_camera->setPosition(new_position);
 }
 
 } // namespace GE::Scene
