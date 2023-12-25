@@ -83,7 +83,7 @@ void ProjectionCamera::setPerspectiveOptions(const perspective_options_t& option
 
 void ProjectionCamera::setViewport(const Vec2& viewport)
 {
-    GE_ASSERT(viewport.length() > 0.0f, "Incorrect viewport: {}", toString(viewport));
+    GE_CORE_ASSERT(viewport.length() > 0.0f, "Incorrect viewport: {}", toString(viewport));
     m_viewport = viewport;
     calculateProjection();
 }
@@ -105,7 +105,7 @@ void ProjectionCamera::calculateOrthoProjection()
     float bottom = -m_ortho_options.size * 0.5f;
     float top = m_ortho_options.size * 0.5f;
 
-    m_projection = ortho(left, right, bottom, top);
+    m_projection = ortho(left, right, bottom, top, m_ortho_options.near, m_ortho_options.far);
 }
 
 void ProjectionCamera::calculatePerspectiveProjection()
