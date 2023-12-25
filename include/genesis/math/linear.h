@@ -32,15 +32,12 @@
 
 #pragma once
 
-#include <genesis/math/types.h>
-
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/gtx/rotate_vector.hpp>
+#include <glm/glm.hpp>
 
 namespace GE {
 
-using glm::rotate;
-using glm::scale;
-using glm::translate;
+using glm::inverse;
+using glm::normalize;
+using glm::transpose;
 
 } // namespace GE

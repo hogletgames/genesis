@@ -36,6 +36,7 @@
 
 namespace GE {
 
+using glm::lookAt;
 using glm::ortho;
 using glm::perspective;
 

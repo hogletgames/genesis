@@ -40,10 +40,14 @@
 
 namespace GE {
 
+template<size_t len, typename T>
+using Vec = glm::vec<len, T>;
 using Vec2 = glm::vec2;
 using Vec3 = glm::vec3;
 using Vec4 = glm::vec4;
 
+template<size_t columns, size_t rows, typename T>
+using Mat = glm::mat<columns, rows, T>;
 using Mat4 = glm::mat4;
 
 using Quat = glm::quat;
