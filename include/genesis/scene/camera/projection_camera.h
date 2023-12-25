@@ -53,7 +53,7 @@ public:
 
         static constexpr float SIZE_DEFAULT{2.0f};
         static constexpr float NEAR_DEFAULT{-1.0f};
-        static constexpr float FAR_DEFAULT{1.0f};
+        static constexpr float FAR_DEFAULT{10.0f};
     };
 
     struct perspective_options_t {
@@ -61,9 +61,9 @@ public:
         float near{NEAR_DEFAULT};
         float far{FAR_DEFAULT};
 
-        static constexpr float FOV_DEFAULT{45.0f};
+        static constexpr float FOV_DEFAULT{60.0f};
         static constexpr float NEAR_DEFAULT{0.1f};
-        static constexpr float FAR_DEFAULT{1000.0f};
+        static constexpr float FAR_DEFAULT{100.0f};
     };
 
     ProjectionCamera();
