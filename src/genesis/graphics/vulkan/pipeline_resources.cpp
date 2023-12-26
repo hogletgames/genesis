@@ -87,6 +87,10 @@ PipelineResources::PipelineResources(Shared<Device> device,
     , m_descriptor_pool{pipeline_config.descriptor_pool}
 {
     createDescriptorSetLayouts(pipeline_config);
+    updatePushConstants(VK_SHADER_STAGE_VERTEX_BIT, pipeline_config.vertex_shader->pushConstants());
+    updatePushConstants(VK_SHADER_STAGE_FRAGMENT_BIT,
+                        pipeline_config.fragment_shader->pushConstants());
+    createPushConstantRanges();
 }
 
 PipelineResources::~PipelineResources()
@@ -100,12 +104,23 @@ std::optional<resource_descriptor_t> PipelineResources::resource(const std::stri
         return it->second;
     }
 
+    GE_CORE_ERR("Failed to find pipeline resource: {}", name);
     return {};
 }
 
 VkDescriptorSet PipelineResources::descriptorSet(uint32_t set) const
 {
     return m_descriptor_pool->allocateDescriptorSet(m_descriptor_set_layouts[set]);
+}
+
+const push_constant_t* PipelineResources::pushConstant(const std::string& name) const
+{
+    if (auto it = m_push_constants.find(name); it != m_push_constants.end()) {
+        return &it->second;
+    }
+
+    GE_CORE_ERR("Failed to find push constant: {}", name);
+    return nullptr;
 }
 
 void PipelineResources::createDescriptorSetLayouts(const Vulkan::pipeline_config_t& pipeline_config)
@@ -148,6 +163,40 @@ PipelineResources::createSetLayoutBindings(const Resources& descriptor_resources
     }
 
     return bindings;
+}
+
+void PipelineResources::updatePushConstants(VkShaderStageFlagBits shader_stage,
+                                            const PushConstants& push_constants)
+{
+    for (const auto& push_constant : push_constants) {
+        const auto& name = push_constant.name;
+
+        if (m_push_constants.find(name) == m_push_constants.end()) {
+            m_push_constants[name] = push_constant;
+        }
+
+        m_push_constants[name].pipeline_stages |= shader_stage;
+    }
+}
+
+void PipelineResources::createPushConstantRanges()
+{
+    std::unordered_map<VkShaderStageFlags, std::pair<uint32_t, uint32_t>> range_offsets;
+
+    for (const auto& [_, push_constant] : m_push_constants) {
+        auto& [offset, size] = range_offsets[push_constant.pipeline_stages];
+        offset = std::min(offset, push_constant.offset);
+        size = std::max(size, push_constant.offset + push_constant.size);
+    }
+
+    for (const auto& [stages, offsets] : range_offsets) {
+        VkPushConstantRange range{};
+        range.stageFlags = stages;
+        range.offset = offsets.first;
+        range.size = offsets.second;
+
+        m_push_constant_ranges.push_back(range);
+    }
 }
 
 void PipelineResources::destroyVkHandles()
