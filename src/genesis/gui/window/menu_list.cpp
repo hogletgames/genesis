@@ -30,11 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "window/menu_list.h"
 
-#include <genesis/gui/window/imenu.h>
-#include <genesis/gui/window/iwindow.h>
-#include <genesis/gui/window/menu_base.h>
-#include <genesis/gui/window/menu_list.h>
-#include <genesis/gui/window/modal_windows.h>
-#include <genesis/gui/window/window_base.h>
+namespace GE::GUI {
+
+void MenuList::onUpdate(Timestamp ts)
+{
+    for (auto& menu : m_menus) {
+        menu->onUpdate(ts);
+    }
+}
+
+void MenuList::onEvent(Event* event)
+{
+    for (auto& menu : m_menus) {
+        menu->onEvent(event);
+    }
+}
+
+void MenuList::onRender(WidgetNodeGuard* node)
+{
+    for (auto& menu : m_menus) {
+        menu->onRender(node);
+    }
+}
+
+void MenuList::appendMenu(Shared<IMenu> menu)
+{
+    m_menus.push_back(std::move(menu));
+}
+
+} // namespace GE::GUI

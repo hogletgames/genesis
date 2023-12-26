@@ -24,6 +24,7 @@ list(APPEND GUI_SOURCES
     widgets/tree_node.cpp
     widgets/value_editor.cpp
     widgets/window.cpp
+    window/menu_list.cpp
     window/modal_windows.cpp
     )
 

@@ -32,9 +32,24 @@
 
 #pragma once
 
+#include <genesis/core/memory.h>
 #include <genesis/gui/window/imenu.h>
-#include <genesis/gui/window/iwindow.h>
-#include <genesis/gui/window/menu_base.h>
-#include <genesis/gui/window/menu_list.h>
-#include <genesis/gui/window/modal_windows.h>
-#include <genesis/gui/window/window_base.h>
+
+#include <vector>
+
+namespace GE::GUI {
+
+class GE_API MenuList: public IMenu
+{
+public:
+    void onUpdate(Timestamp ts) override;
+    void onEvent(Event* event) override;
+    void onRender(WidgetNodeGuard* node) override;
+
+    void appendMenu(Shared<IMenu> menu);
+
+private:
+    std::vector<Shared<IMenu>> m_menus;
+};
+
+} // namespace GE::GUI
