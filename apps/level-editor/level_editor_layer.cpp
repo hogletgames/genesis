@@ -31,78 +31,33 @@
  */
 
 #include "level_editor_layer.h"
-#include "options.h"
 
-#include <genesis/genesis.h>
+namespace LE {
 
-#include <docopt.h>
-
-#include <iostream>
-
-namespace {
-
-constexpr auto USAGE = R"(Level Editor
-
-Usage:
-    level_editor -c <config-file>
-    level_editor (-h | --help)
-
-Options:
-    -h, --help           Show this help.
-    -c, --config <path>  The path to a config file.
-)";
-
-struct args_t {
-    bool show_help{false};
-    std::string config;
-};
-
-std::optional<args_t> parseArgs(int argc, char** argv)
+void LevelEditorLayer::onAttached()
 {
-    std::map<std::string, docopt::value> parsed_args;
-    args_t args{};
-
-    try {
-        parsed_args = docopt::docopt_parse(USAGE, {argv + 1, argv + argc}, true, false);
-        args.config = parsed_args["--config"].asString();
-    } catch (const docopt::DocoptExitHelp& e) {
-        args.show_help = true;
-    } catch (const std::exception& e) {
-        std::cerr << "Failed to parse arguments: '" << e.what() << "'" << std::endl;
-        return {};
-    }
-
-    return args;
+    m_editor.initialize();
 }
 
-GE::Shared<GE::Layer> makeLevelEditorLayer()
+void LevelEditorLayer::onDetached()
 {
-    return GE::makeShared<LE::LevelEditorLayer>();
+    m_editor.shutdown();
 }
 
-} // namespace
-
-int main(int argc, char** argv)
+void LevelEditorLayer::onUpdate(GE::Timestamp ts)
 {
-    auto args = parseArgs(argc, argv);
-
-    if (!args.has_value()) {
-        std::cerr << USAGE << std::endl;
-        return EXIT_FAILURE;
-    }
-
-    if (args->show_help) {
-        std::cout << USAGE << std::endl;
-        return EXIT_SUCCESS;
-    }
-
-    auto app_settings = LE::Options::load(args->config);
-
-    if (!app_settings.has_value() || !GE::Application::initialize(app_settings.value())) {
-        return EXIT_FAILURE;
-    }
-
-    GE::Application::attachLayer(makeLevelEditorLayer());
-    GE::Application::run();
-    return EXIT_SUCCESS;
+    m_editor.onUpdate(ts);
 }
+
+void LevelEditorLayer::onEvent(GE::Event *event)
+{
+    BaseLayer::onEvent(event);
+    m_editor.onEvent(event);
+}
+
+void LevelEditorLayer::onRender()
+{
+    m_editor.onRender();
+}
+
+} // namespace LE

@@ -1,5 +1,9 @@
 list(APPEND LEVEL_EDITOR_SOURCES
+    level_editor.cpp
+    level_editor_context.cpp
+    level_editor_layer.cpp
     main.cpp
+    options.cpp
     gui/level_editor_gui.cpp
     gui/main_menu/assets_menu.cpp
     gui/main_menu/menu_bar.cpp
@@ -23,6 +27,11 @@ list(APPEND LEVEL_EDITOR_SOURCES
     )
 
 list(APPEND LEVEL_EDITOR_HEADERS
+    application_info.h
+    level_editor.h
+    level_editor_layer.h
+    level_editor_context.h
+    options.h
     settings.h
     gui/level_editor_gui.h
     gui/main_menu.h
