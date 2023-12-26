@@ -99,6 +99,31 @@ GE::resource_descriptor_t toResourceDescriptors(const spirv_cross::Compiler& com
     };
 }
 
+std::string toPushConstantName(const spirv_cross::Resource& resource, std::string_view member_name)
+{
+    std::string name{resource.name};
+
+    if (!name.empty()) {
+        name += '.';
+    }
+
+    return name + std::string{member_name};
+}
+
+GE::push_constant_t toPushConstant(const spirv_cross::Compiler& compiler,
+                                   const spirv_cross::Resource& push_constant_buffer,
+                                   uint32_t member_index)
+{
+    const auto& buffer_type = compiler.get_type(push_constant_buffer.base_type_id);
+    const auto& member_name = compiler.get_member_name(buffer_type.self, member_index);
+
+    return {
+        toPushConstantName(push_constant_buffer, member_name),
+        compiler.type_struct_member_offset(buffer_type, member_index),
+        static_cast<uint32_t>(compiler.get_declared_struct_member_size(buffer_type, member_index)),
+    };
+}
+
 } // namespace
 
 namespace GE {
@@ -164,6 +189,27 @@ ResourceDescriptors ShaderReflection::resourceDescriptors() const
     fill_descriptors(resources.uniform_buffers, DescType::UNIFORM_BUFFER);
     fill_descriptors(resources.sampled_images, DescType::COMBINED_IMAGE_SAMPLER);
     return descriptors;
+}
+
+PushConstants ShaderReflection::pushConstants() const
+{
+    if (!m_pimpl) {
+        return {};
+    }
+
+    PushConstants push_constants;
+    const auto& compiler = m_pimpl->compiler;
+    const auto& resources = compiler.get_shader_resources();
+
+    for (const auto& push_constant_buffer : resources.push_constant_buffers) {
+        const auto& buffer_type = compiler.get_type(push_constant_buffer.base_type_id);
+
+        for (size_t i = 0; i < buffer_type.member_types.size(); i++) {
+            push_constants.push_back(toPushConstant(compiler, push_constant_buffer, i));
+        }
+    }
+
+    return push_constants;
 }
 
 } // namespace GE
