@@ -55,12 +55,25 @@ struct GE_API resource_descriptor_t {
     uint32_t count{0};
 };
 
-inline bool operator==(const resource_descriptor_t& lhs, const resource_descriptor_t& rhs)
+struct GE_API push_constant_t {
+    std::string name;
+    uint32_t offset{0};
+    uint32_t size{0};
+    uint32_t pipeline_stages{0};
+};
+
+constexpr bool operator==(const resource_descriptor_t& lhs, const resource_descriptor_t& rhs)
 {
     return std::tie(lhs.name, lhs.type, lhs.set, lhs.binding, lhs.count) ==
            std::tie(rhs.name, rhs.type, rhs.set, rhs.binding, rhs.count);
 }
 
+constexpr bool operator==(const push_constant_t& lhs, const push_constant_t& rhs)
+{
+    return std::tie(lhs.name, lhs.offset, lhs.size) == std::tie(rhs.name, rhs.offset, rhs.size);
+}
+
 using ResourceDescriptors = std::vector<resource_descriptor_t>;
+using PushConstants = std::vector<push_constant_t>;
 
 } // namespace GE
