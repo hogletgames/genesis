@@ -1,6 +1,5 @@
 list(APPEND LEVEL_EDITOR_SOURCES
     level_editor.cpp
-    level_editor_context.cpp
     level_editor_layer.cpp
     main.cpp
     options.cpp

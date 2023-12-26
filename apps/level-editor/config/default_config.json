@@ -1,0 +1,16 @@
+{
+  "log": {
+    "core_log_level": "Trace",
+    "client_log_level": "Trace"
+  },
+  "window": {
+    "title": "Level Editor",
+    "size": {"x": 1280.0, "y": 720.0},
+    "vsync": true
+  },
+  "graphics": {
+    "api": "Vulkan",
+    "app_name": "Level Editor",
+    "msaa_samples": 4
+  }
+}
