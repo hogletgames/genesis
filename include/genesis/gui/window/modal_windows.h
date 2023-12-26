@@ -32,8 +32,39 @@
 
 #pragma once
 
-#include <genesis/gui/window/imenu.h>
-#include <genesis/gui/window/iwindow.h>
-#include <genesis/gui/window/menu_base.h>
-#include <genesis/gui/window/modal_windows.h>
+#include <genesis/core/format.h>
+#include <genesis/core/memory.h>
 #include <genesis/gui/window/window_base.h>
+
+#include <list>
+#include <string>
+
+namespace GE::GUI {
+
+class GE_API ModalWindows
+{
+public:
+    template<typename T, typename... Args>
+    T* open(const std::string& name, Args&&... args);
+
+    void onUpdate(Timestamp ts);
+    void onEvent(Event* event);
+    void onRender();
+
+private:
+    std::list<Scoped<WindowBase>> m_modals;
+    int m_id{0};
+};
+
+template<typename T, typename... Args>
+T* ModalWindows::open(const std::string& name, Args&&... args)
+{
+    auto unique_name = GE_FMTSTR("{}##{}", name, m_id++);
+    auto window = makeScoped<T>(unique_name, std::forward<Args>(args)...);
+    auto* modal = window.get();
+
+    m_modals.push_back(std::move(window));
+    return modal;
+}
+
+} // namespace GE::GUI

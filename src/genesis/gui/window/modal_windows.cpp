@@ -30,10 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "window/modal_windows.h"
 
-#include <genesis/gui/window/imenu.h>
-#include <genesis/gui/window/iwindow.h>
-#include <genesis/gui/window/menu_base.h>
-#include <genesis/gui/window/modal_windows.h>
-#include <genesis/gui/window/window_base.h>
+namespace GE::GUI {
+
+void ModalWindows::onUpdate(Timestamp ts)
+{
+    for (auto& modal : m_modals) {
+        modal->onUpdate(ts);
+    }
+}
+
+void ModalWindows::onEvent(Event* event)
+{
+    for (auto& modal : m_modals) {
+        modal->onEvent(event);
+    }
+}
+
+void ModalWindows::onRender()
+{
+    for (auto it = m_modals.begin(); it != m_modals.end();) {
+        auto* modal = it->get();
+
+        if (modal->onRender(); !modal->isOpen()) {
+            it = m_modals.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+} // namespace GE::GUI

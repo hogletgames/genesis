@@ -24,6 +24,7 @@ list(APPEND GUI_SOURCES
     widgets/tree_node.cpp
     widgets/value_editor.cpp
     widgets/window.cpp
+    window/modal_windows.cpp
     )
 
 list(APPEND GUI_HEADERS
@@ -61,6 +62,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/window/imenu.h
     ${INCLUDE_DIR}/window/iwindow.h
     ${INCLUDE_DIR}/window/menu_base.h
+    ${INCLUDE_DIR}/window/modal_windows.h
     ${INCLUDE_DIR}/window/window_base.h
     private/types.h
     )
