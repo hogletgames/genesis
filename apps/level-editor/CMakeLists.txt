@@ -16,9 +16,14 @@ list(APPEND LEVEL_EDITOR_SOURCES
     gui/windows/add_mesh_resource_window.cpp
     gui/windows/add_pipeline_resources_window.cpp
     gui/windows/add_texture_resource_window.cpp
+    settings/project_settings.cpp
+    settings/settings.cpp
+    settings/settings_deserializer.cpp
+    settings/settings_serializer.cpp
     )
 
 list(APPEND LEVEL_EDITOR_HEADERS
+    settings.h
     gui/level_editor_gui.h
     gui/main_menu.h
     gui/modals.h
@@ -39,6 +44,11 @@ list(APPEND LEVEL_EDITOR_HEADERS
     gui/windows/add_mesh_resource_window.h
     gui/windows/add_pipeline_resources_window.h
     gui/windows/add_texture_resource_window.h
+    settings/project_settings.h
+    settings/settings.h
+    settings/settings_deserializer.h
+    settings/settings_serializer.h
+    settings/yaml_convert.h
     )
 
 ge_add_executable(level_editor
