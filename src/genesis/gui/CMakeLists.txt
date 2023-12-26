@@ -34,6 +34,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/gizmos.h
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/widgets.h
+    ${INCLUDE_DIR}/window.h
     ${INCLUDE_DIR}/gizmos/gizmos.h
     ${INCLUDE_DIR}/gizmos/math.h
     ${INCLUDE_DIR}/widgets/button.h
@@ -57,6 +58,8 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/widgets/widget_node.h
     ${INCLUDE_DIR}/widgets/widget_node_guard.h
     ${INCLUDE_DIR}/widgets/window.h
+    ${INCLUDE_DIR}/window/imenu.h
+    ${INCLUDE_DIR}/window/iwindow.h
     private/types.h
     )
 

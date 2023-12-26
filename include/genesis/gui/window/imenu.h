@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,23 @@
 
 #pragma once
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/file_dialog.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
-#include <genesis/gui/window.h>
+#include <genesis/core/interface.h>
+#include <genesis/core/timestamp.h>
+
+namespace GE {
+class Event;
+} // namespace GE
+
+namespace GE::GUI {
+
+class WidgetNodeGuard;
+
+class GE_API IMenu: public Interface
+{
+public:
+    virtual void onUpdate(Timestamp ts) = 0;
+    virtual void onEvent(Event* event) = 0;
+    virtual void onRender(WidgetNodeGuard* bar_node) = 0;
+};
+
+} // namespace GE::GUI
