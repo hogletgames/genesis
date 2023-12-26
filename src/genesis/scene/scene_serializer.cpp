@@ -56,7 +56,7 @@ bool SceneSerializer::serialize(const std::string &config_filepath)
     std::ofstream fout{config_filepath};
 
     if (!fout) {
-        GE_CORE_ERR("Failed open an asset config file '{}'", config_filepath);
+        GE_CORE_ERR("Failed open scene config file '{}'", config_filepath);
         return false;
     }
 

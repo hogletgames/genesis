@@ -51,10 +51,12 @@ SceneDeserializer::SceneDeserializer(Scene *scene, Assets::Registry *assets)
 
 bool SceneDeserializer::deserialize(const std::string &config_filepath)
 {
-    auto node = YAML::LoadFile(config_filepath);
+    YAML::Node node;
 
-    if (node.IsNull()) {
-        GE_CORE_ERR("Failed to load a scene config file from the '{}'", config_filepath);
+    try {
+        node = YAML::LoadFile(config_filepath);
+    } catch (const std::exception &e) {
+        GE_CORE_ERR("Failed to load a scene config file '{}': '{}'", config_filepath, e.what());
         return false;
     }
 
@@ -98,7 +100,7 @@ bool SceneDeserializer::loadComponent(Entity *entity, const YAML::Node &node)
     using Loader = bool (SceneDeserializer::*)(Entity *, const YAML::Node &);
 
     static const std::unordered_map<std::string, Loader> LOADERS = {
-        {MaterialComponent::NAME.data(), &SceneDeserializer::loadCameraComponent},
+        {CameraComponent::NAME.data(), &SceneDeserializer::loadCameraComponent},
         {MaterialComponent::NAME.data(), &SceneDeserializer::loadMaterialComponent},
         {SpriteComponent::NAME.data(), &SceneDeserializer::loadSpriteComponent},
         {TagComponent::NAME.data(), &SceneDeserializer::loadTagComponent},
