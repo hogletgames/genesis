@@ -34,9 +34,13 @@
 
 namespace GE {
 
-void GPUCommandQueue::setCurrentPipeline(GPUCommandQueue::PipelineHandle handle)
+void GPUCommandQueue::setCurrentPipeline(Pipeline* pipeline)
 {
-    m_current_pipeline = handle;
+    m_current_pipeline = pipeline->nativeHandle();
+
+    if (m_cmd_queue.find(m_current_pipeline) == m_cmd_queue.end()) {
+        pipeline->bind(this);
+    }
 }
 
 void GPUCommandQueue::enqueue(GPUCommandQueue::DelayedCommand cmd)
