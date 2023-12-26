@@ -66,6 +66,7 @@ public:
     Vec2 position() const override;
 
     void setVSync(bool enabled) override;
+    void setTitle(std::string_view title) override;
 
 private:
     void emitEvent(Event* event);

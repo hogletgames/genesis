@@ -1,0 +1,13 @@
+resources:
+  textures:
+    - id: {package: genesis, group: textures, name: square}
+      filepath: apps/level-editor/assets/textures/square.png
+    - id: {package: genesis, group: textures, name: circle}
+      filepath: apps/level-editor/assets/textures/circle.png
+  pipelines:
+    - id: {package: genesis, group: materials, name: sprite}
+      vertex_shader: apps/level-editor/assets/materials/sprite.vert
+      fragment_shader: apps/level-editor/assets/materials/sprite.frag
+  meshes:
+    - id: {package: genesis, group: meshes, name: square}
+      filepath: apps/level-editor/assets/meshes/square.obj

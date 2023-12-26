@@ -50,17 +50,16 @@ class ViewProjectionCamera;
 class GE_API Renderer
 {
 public:
-    Renderer(GE::Renderer* renderer, const ViewProjectionCamera* camera);
+    explicit Renderer(const ViewProjectionCamera* camera);
     ~Renderer();
 
-    void render(const Scene& scene);
+    void render(GE::Renderer* renderer, const Scene& scene);
 
 private:
-    void renderSprite(const Entity& entity);
+    void renderSprite(GE::Renderer* renderer, const Entity& entity);
 
     void updateViewProjectionUBO();
 
-    GE::Renderer* m_renderer{nullptr};
     const GE::Scene::ViewProjectionCamera* m_camera{nullptr};
 
     Scoped<UniformBuffer> m_vp_ubo;

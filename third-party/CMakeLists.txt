@@ -61,7 +61,7 @@ FetchContent_MakeAvailable(spdlog)
 # imgui
 FetchContent_Declare(imgui
     GIT_REPOSITORY https://github.com/hogletgames/imgui.git
-    GIT_TAG d822c65317ba881798bed8fce9ffba267d27dada
+    GIT_TAG v1.90-docking
     PATCH_COMMAND ${GE_APPLY_PATCH} ${DEPS_DIR}/imgui-src ${GE_PATCHES_DIR}/imgui)
 FetchContent_GetProperties(imgui)
 if (NOT imgui_POPULATED)
@@ -76,7 +76,7 @@ if (NOT imgui_POPULATED)
     target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
 
     add_library(imgui-vulkan STATIC
-        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
         ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp)
     target_link_libraries(imgui-vulkan PUBLIC
         imgui
@@ -86,7 +86,7 @@ if (NOT imgui_POPULATED)
         )
     target_include_directories(imgui-vulkan PUBLIC ${imgui_SOURCE_DIR}/backends)
 
-    add_executable(imgui_sdl_vulkan_example ${imgui_SOURCE_DIR}/examples/example_sdl_vulkan/main.cpp)
+    add_executable(imgui_sdl_vulkan_example ${imgui_SOURCE_DIR}/examples/example_sdl2_vulkan/main.cpp)
     target_link_libraries(imgui_sdl_vulkan_example PRIVATE imgui-vulkan)
     target_compile_definitions(imgui_sdl_vulkan_example PRIVATE _DEBUG)
 endif ()
@@ -175,6 +175,11 @@ if (NOT nativefiledialog_POPULATED)
         -Wno-deprecated-declarations
         )
 endif ()
+
+# nlohmann_json
+FetchContent_Declare(nlohmann_json
+    URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
+FetchContent_MakeAvailable(nlohmann_json)
 
 # Vulkan-Loader
 FetchContent_Declare(Vulkan-Loader

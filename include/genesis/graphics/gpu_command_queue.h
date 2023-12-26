@@ -51,7 +51,7 @@ public:
     using PipelineHandle = Pipeline::NativeHandle;
     using QueueMap = std::unordered_map<PipelineHandle, DelayedCommandQueue>;
 
-    void setCurrentPipeline(PipelineHandle handle);
+    void setCurrentPipeline(Pipeline* pipeline);
     void enqueue(DelayedCommand cmd);
     void execCommands(GPUCommandBuffer cmd_buffer) const;
     void clear();

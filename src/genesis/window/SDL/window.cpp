@@ -179,6 +179,11 @@ Vec2 Window::position() const
 
 void Window::setVSync([[maybe_unused]] bool enabled) {}
 
+void Window::setTitle(std::string_view title)
+{
+    SDL_SetWindowTitle(m_window, title.data());
+}
+
 void Window::emitEvent(Event* event)
 {
     for (auto* listener : m_event_listeners) {

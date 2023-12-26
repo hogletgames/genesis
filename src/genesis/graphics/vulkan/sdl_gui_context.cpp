@@ -37,7 +37,6 @@
 #include "instance.h"
 #include "renderers/window_renderer.h"
 #include "sdl_gui_event_handler.h"
-#include "single_command.h"
 #include "swap_chain.h"
 #include "texture.h"
 #include "utils.h"
@@ -47,7 +46,7 @@
 #include "genesis/graphics/graphics.h"
 #include "genesis/window/key_codes.h"
 
-#include <imgui_impl_sdl.h>
+#include <imgui_impl_sdl2.h>
 #include <imgui_impl_vulkan.h>
 
 namespace {
@@ -137,14 +136,7 @@ GUIContext::GUIContext(void *window, Shared<Device> device, WindowRenderer *wind
         throw Vulkan::Exception{"Failed to initialize GUI Vulkan backend"};
     }
 
-    // Load fonts
-    {
-        SingleCommand cmd(m_device);
-        ImGui_ImplVulkan_CreateFontsTexture(cmd.buffer());
-    }
-
-    ImGui_ImplVulkan_DestroyFontUploadObjects();
-
+    ImGui_ImplVulkan_CreateFontsTexture();
     mapKeys();
 }
 

@@ -76,6 +76,8 @@ public:
     bool initialize(std::string name);
     void shutdown();
 
+    void addSink(spdlog::sink_ptr sink);
+
     void setLevel(Level level);
     Level getLevel() const { return m_level; }
 
