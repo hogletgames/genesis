@@ -40,6 +40,7 @@
 
 #include <unordered_set>
 
+namespace GE::Vulkan {
 namespace {
 
 std::string toString(VkPhysicalDevice physical_device)
@@ -55,7 +56,7 @@ std::string toString(const std::vector<VkPhysicalDevice> &physical_devices)
 
     for (size_t i{0}; i < physical_devices.size(); i++) {
         const auto &device = physical_devices[i];
-        string += GE_FMTSTR("- Name: {}", ::toString(device));
+        string += GE_FMTSTR("- Name: {}", toString(device));
         string += i != physical_devices.size() - 1 ? "\n" : "";
     }
 
@@ -103,9 +104,24 @@ uint8_t getMaxMSAA(VkSampleCountFlags device_count)
     return static_cast<uint8_t>(VK_SAMPLE_COUNT_1_BIT);
 }
 
-} // namespace
+void appendMandatoryDeviceExtensions(VkPhysicalDevice physical_device,
+                                     std::vector<const char *> *ext)
+{
+    static const std::unordered_set<std::string_view> mandatory_ext = {
+        "VK_KHR_portability_subset",
+    };
 
-namespace GE::Vulkan {
+    auto device_extensions = vulkanGet<VkExtensionProperties>(
+        ::vkEnumerateDeviceExtensionProperties, physical_device, nullptr);
+
+    for (const auto &device_ext : device_extensions) {
+        if (auto it = mandatory_ext.find(device_ext.extensionName); it != mandatory_ext.end()) {
+            ext->push_back(it->data());
+        }
+    }
+}
+
+} // namespace
 
 Device::Device(VkSurfaceKHR surface)
     : m_surface{surface}
@@ -157,12 +173,13 @@ void Device::pickPhysicalDevice()
     VkInstance instance = Instance::instance();
     auto devices = vulkanGet<VkPhysicalDevice>(::vkEnumeratePhysicalDevices, instance);
 
-    GE_CORE_INFO("Physical Device List: \n{}", ::toString(devices));
+    GE_CORE_INFO("Physical Device List: \n{}", toString(devices));
 
     for (const auto &device : devices) {
         if (isPhysicalDeviceSuitable(device)) {
-            GE_CORE_INFO("Picked Physical Device: {}", ::toString(device));
+            GE_CORE_INFO("Picked Physical Device: {}", toString(device));
             m_physical_device = device;
+            appendMandatoryDeviceExtensions(m_physical_device, &m_extensions);
             return;
         }
     }
