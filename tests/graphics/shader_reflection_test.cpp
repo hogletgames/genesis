@@ -36,10 +36,39 @@
 
 #include <gtest/gtest.h>
 
+namespace GE {
+
+void PrintTo(const push_constant_t& pc, std::ostream* os)
+{
+    *os << "{name: " << pc.name << ", offset: " << pc.offset << ", size: " << pc.size << ", "
+        << "pipeline_stages: " << pc.pipeline_stages << "}";
+}
+
+void PrintTo(const PushConstants& push_constants, std::ostream* os)
+{
+    *os << "[";
+
+    auto it = push_constants.begin();
+
+    if (it != push_constants.end()) {
+        PrintTo(*it, os);
+    }
+
+    for (++it; it != push_constants.end(); ++it) {
+        *os << ", ";
+        PrintTo(*it, os);
+    }
+
+    *os << "]";
+}
+
+} // namespace GE
+
 namespace {
 
 constexpr auto INPUT_LAYOUT_SHADER = "tests/graphics/data/input_layout_test.vert";
 constexpr auto BIND_DESC_SHADER = "tests/graphics/data/binding_description_test.vert";
+constexpr auto PUSH_CONST_SHADER = "tests/graphics/data/push_constants_test.vert";
 
 class ShaderInputLayoutTest: public testing::Test
 {
@@ -79,7 +108,7 @@ protected:
 class ShaderBindingDescriptionTest: public testing::Test
 {
 protected:
-    GE::ResourceDescriptors fillExpectedBindDesc()
+    GE::ResourceDescriptors fillExpectedBindDesc() const
     {
         using Desc = GE::resource_descriptor_t;
 
@@ -95,7 +124,23 @@ protected:
     GE::ResourceDescriptors expected_binding_descriptions{fillExpectedBindDesc()};
 };
 
-TEST_F(ShaderInputLayoutTest, ShaderLayoutTest)
+class ShaderPushConstantsTest: public testing::Test
+{
+protected:
+    GE::PushConstants expectedPushConstants()
+    {
+        return {
+            {"pc.bool_type", 0, 4, 0},   {"pc.int_type", 4, 4, 0},     {"pc.uint_type", 8, 4, 0},
+            {"pc.float_type", 12, 4, 0}, {"pc.double_type", 16, 8, 0}, {"pc.vec3_type", 32, 12, 0},
+            {"pc.mat4_type", 48, 64, 0},
+        };
+    }
+
+    GE::ShaderReflection shader_reflection{
+        GE::ShaderPrecompiler::compileFromFile(GE::Shader::Type::VERTEX, PUSH_CONST_SHADER)};
+};
+
+TEST_F(ShaderInputLayoutTest, InputLayoutTest)
 {
     const auto& shader_layout = shader_reflection.inputLayout();
     ASSERT_FALSE(shader_layout.attributes().empty());
@@ -103,10 +148,16 @@ TEST_F(ShaderInputLayoutTest, ShaderLayoutTest)
     ASSERT_EQ(expected_layout.stride(), shader_layout.stride());
 }
 
-TEST_F(ShaderBindingDescriptionTest, ShaderLayoutTest)
+TEST_F(ShaderBindingDescriptionTest, BindingDescriptionTest)
 {
     const auto& shader_bind_desc = shader_reflection.resourceDescriptors();
     ASSERT_EQ(shader_bind_desc, expected_binding_descriptions);
+}
+
+TEST_F(ShaderPushConstantsTest, PushConstantsTest)
+{
+    const auto& push_constants = shader_reflection.pushConstants();
+    ASSERT_EQ(push_constants, expectedPushConstants());
 }
 
 } // namespace
