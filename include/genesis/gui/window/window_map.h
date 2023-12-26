@@ -32,10 +32,46 @@
 
 #pragma once
 
-#include <genesis/gui/window/imenu.h>
+#include <genesis/core/memory.h>
 #include <genesis/gui/window/iwindow.h>
-#include <genesis/gui/window/menu_base.h>
-#include <genesis/gui/window/menu_list.h>
-#include <genesis/gui/window/modal_windows.h>
-#include <genesis/gui/window/window_base.h>
-#include <genesis/gui/window/window_map.h>
+
+namespace GE::GUI {
+
+class GE_API WindowMap
+{
+public:
+    using WindowPtr = Scoped<IWindow>;
+    using WindowsMap = std::unordered_map<std::string_view, WindowPtr>;
+    using Iterator = WindowsMap::iterator;
+    using ConstIterator = WindowsMap::const_iterator;
+
+    void onUpdate(Timestamp ts);
+    void onEvent(Event* event);
+    void onRender();
+
+    void insert(WindowPtr window);
+    template<typename... Args>
+    void insertWindows(Args&&... windows);
+    void remove(std::string_view name);
+    IWindow* get(std::string_view name);
+    const IWindow* get(std::string_view name) const;
+
+    void openWindow(std::string_view name);
+    void closeWindow(std::string_view name);
+
+    Iterator begin() { return m_windows.begin(); }
+    Iterator end() { return m_windows.end(); }
+    ConstIterator cbegin() const { return m_windows.cbegin(); }
+    ConstIterator cend() const { return m_windows.cend(); }
+
+private:
+    WindowsMap m_windows;
+};
+
+template<typename... Args>
+void WindowMap::insertWindows(Args&&... windows)
+{
+    (insert(std::move(windows)), ...);
+}
+
+} // namespace GE::GUI

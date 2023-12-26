@@ -26,6 +26,7 @@ list(APPEND GUI_SOURCES
     widgets/window.cpp
     window/menu_list.cpp
     window/modal_windows.cpp
+    window/window_map.cpp
     )
 
 list(APPEND GUI_HEADERS
@@ -63,8 +64,10 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/window/imenu.h
     ${INCLUDE_DIR}/window/iwindow.h
     ${INCLUDE_DIR}/window/menu_base.h
+    ${INCLUDE_DIR}/window/menu_list.h
     ${INCLUDE_DIR}/window/modal_windows.h
     ${INCLUDE_DIR}/window/window_base.h
+    ${INCLUDE_DIR}/window/window_map.h
     private/types.h
     )
 
