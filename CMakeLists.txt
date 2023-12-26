@@ -9,6 +9,7 @@ endif ()
 # CMake options
 option(GE_STATIC "Build static library" OFF)
 option(GE_DISABLE_ASSERTS "Disable asserts" OFF)
+option(GE_BUILD_APPS "Build applications" OFF)
 option(GE_BUILD_EXAMPLES "Build examples" OFF)
 option(GE_BUILD_TESTS "Build tests" OFF)
 
@@ -32,6 +33,7 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Build static library: ${GE_STATIC}")
 message(STATUS "Disable debug output: ${GE_DISABLE_DEBUG}")
 message(STATUS "Disable asserts: ${GE_DISABLE_ASSERTS}")
+message(STATUS "Build applications: ${GE_BUILD_APPS}")
 message(STATUS "Build examples: ${GE_BUILD_EXAMPLES}")
 message(STATUS "Build tests: ${GE_BUILD_TESTS}")
 
@@ -43,6 +45,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Subdirectories
 add_subdirectory(src)
 add_subdirectory(third-party)
+
+if (GE_BUILD_APPS)
+    add_subdirectory(apps)
+endif ()
 
 if (GE_BUILD_EXAMPLES)
     add_subdirectory(examples)

@@ -41,6 +41,7 @@ jobs:
     env:
       BUILD_TYPE: ${{ matrix.build-type }}
       DISABLE_ASSERTS: ${{ matrix.disable-asserts }}
+      BUILD_APPS: ON
       BUILD_EXAMPLES: ON
       BUILD_TESTS: ON
     steps:
@@ -64,6 +65,9 @@ jobs:
     strategy:
       matrix:
         build-type: [Release, Debug]
+    env:
+      BUILD_APPS: ON
+      BUILD_EXAMPLES: ON
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
