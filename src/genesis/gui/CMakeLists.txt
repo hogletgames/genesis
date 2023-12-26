@@ -60,6 +60,8 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/widgets/window.h
     ${INCLUDE_DIR}/window/imenu.h
     ${INCLUDE_DIR}/window/iwindow.h
+    ${INCLUDE_DIR}/window/menu_base.h
+    ${INCLUDE_DIR}/window/window_base.h
     private/types.h
     )
 

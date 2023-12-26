@@ -33,6 +33,14 @@
 #pragma once
 
 #include <genesis/gui/window/imenu.h>
-#include <genesis/gui/window/iwindow.h>
-#include <genesis/gui/window/menu_base.h>
-#include <genesis/gui/window/window_base.h>
+
+namespace GE::GUI {
+
+class GE_API MenuBase: public IMenu
+{
+public:
+    void onUpdate([[maybe_unused]] Timestamp ts) override{};
+    void onEvent([[maybe_unused]] Event* event) override{};
+};
+
+} // namespace GE::GUI

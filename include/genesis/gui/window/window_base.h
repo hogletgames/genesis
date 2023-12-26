@@ -32,7 +32,37 @@
 
 #pragma once
 
-#include <genesis/gui/window/imenu.h>
+#include <genesis/gui/widgets/window.h>
 #include <genesis/gui/window/iwindow.h>
-#include <genesis/gui/window/menu_base.h>
-#include <genesis/gui/window/window_base.h>
+
+#include <string>
+
+namespace GE::GUI {
+
+class GE_API WindowBase: public IWindow
+{
+public:
+    explicit WindowBase(std::string name)
+        : m_name{std::move(name)}
+        , m_window{m_name, &m_is_open}
+    {}
+
+    void onUpdate([[maybe_unused]] Timestamp ts) override {}
+    void onEvent([[maybe_unused]] Event *event) override {}
+
+    void open() override { m_is_open = true; }
+    void close() override { m_is_open = false; }
+    void setIsOpen(bool is_open) override { m_is_open = is_open; }
+
+    std::string_view name() const override { return m_name; }
+    bool isOpen() const override { return m_is_open; }
+
+private:
+    std::string m_name;
+    bool m_is_open{false};
+
+protected:
+    Window m_window;
+};
+
+} // namespace GE::GUI
