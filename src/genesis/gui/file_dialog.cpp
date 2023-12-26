@@ -120,4 +120,52 @@ void FileDialog::error(std::string_view error)
     m_error_signal(error);
 }
 
+std::string openSingleFile(std::string_view filters)
+{
+    std::string path;
+
+    FileDialog dialog;
+    dialog.singleResultSignal()->connect(
+        [&path](std::string_view output_path) { path = std::string{output_path}; });
+    dialog.showSingleFile(std::string_view{}, filters);
+
+    return path;
+}
+
+std::vector<std::string> openMultipleFile(std::string_view filters)
+{
+    std::vector<std::string> paths;
+
+    FileDialog dialog;
+    dialog.multipleResultsSignal()->connect(
+        [&paths](const std::vector<std::string>& output_paths) { paths = output_paths; });
+    dialog.showSingleFile(std::string_view{}, filters);
+
+    return paths;
+}
+
+std::string openFolder(std::string_view filters)
+{
+    std::string path;
+
+    FileDialog dialog;
+    dialog.singleResultSignal()->connect(
+        [&path](std::string_view output_path) { path = std::string{output_path}; });
+    dialog.showSingleFile(std::string_view{}, filters);
+
+    return path;
+}
+
+std::string saveFile(std::string_view filters)
+{
+    std::string path;
+
+    FileDialog dialog;
+    dialog.singleResultSignal()->connect(
+        [&path](std::string_view output_path) { path = std::string{output_path}; });
+    dialog.showSaveFile(std::string_view{}, filters);
+
+    return path;
+}
+
 } // namespace GE::GUI

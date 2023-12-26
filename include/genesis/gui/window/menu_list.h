@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,24 @@
 
 #pragma once
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/file_dialog.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
-#include <genesis/gui/window.h>
+#include <genesis/core/memory.h>
+#include <genesis/gui/window/imenu.h>
+
+#include <vector>
+
+namespace GE::GUI {
+
+class GE_API MenuList: public IMenu
+{
+public:
+    void onUpdate(Timestamp ts) override;
+    void onEvent(Event* event) override;
+    void onRender(WidgetNodeGuard* node) override;
+
+    void appendMenu(Shared<IMenu> menu);
+
+private:
+    std::vector<Shared<IMenu>> m_menus;
+};
+
+} // namespace GE::GUI

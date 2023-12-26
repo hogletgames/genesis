@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "window/menu_list.h"
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/file_dialog.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
-#include <genesis/gui/window.h>
+namespace GE::GUI {
+
+void MenuList::onUpdate(Timestamp ts)
+{
+    for (auto& menu : m_menus) {
+        menu->onUpdate(ts);
+    }
+}
+
+void MenuList::onEvent(Event* event)
+{
+    for (auto& menu : m_menus) {
+        menu->onEvent(event);
+    }
+}
+
+void MenuList::onRender(WidgetNodeGuard* node)
+{
+    for (auto& menu : m_menus) {
+        menu->onRender(node);
+    }
+}
+
+void MenuList::appendMenu(Shared<IMenu> menu)
+{
+    m_menus.push_back(std::move(menu));
+}
+
+} // namespace GE::GUI

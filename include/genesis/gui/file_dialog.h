@@ -37,6 +37,7 @@
 #include <boost/signals2/signal.hpp>
 
 #include <string>
+#include <vector>
 
 namespace GE::GUI {
 
@@ -74,5 +75,10 @@ private:
     CancelSingal m_cancel_signal;
     ErrorSignal m_error_signal;
 };
+
+GE_API std::string openSingleFile(std::string_view filters);
+GE_API std::vector<std::string> openMultipleFile(std::string_view filters);
+GE_API std::string openFolder(std::string_view filters);
+GE_API std::string saveFile(std::string_view filters);
 
 } // namespace GE::GUI

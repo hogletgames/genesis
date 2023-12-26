@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,10 @@
 
 #pragma once
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/file_dialog.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
-#include <genesis/gui/window.h>
+#include <genesis/gui/window/imenu.h>
+#include <genesis/gui/window/iwindow.h>
+#include <genesis/gui/window/menu_base.h>
+#include <genesis/gui/window/menu_list.h>
+#include <genesis/gui/window/modal_windows.h>
+#include <genesis/gui/window/window_base.h>
+#include <genesis/gui/window/window_map.h>

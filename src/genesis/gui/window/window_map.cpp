@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,78 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "window/window_map.h"
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/file_dialog.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
-#include <genesis/gui/window.h>
+namespace GE::GUI {
+
+void WindowMap::onRender()
+{
+    for (auto& [_, window] : m_windows) {
+        if (window->isOpen()) {
+            window->onRender();
+        }
+    }
+}
+
+void WindowMap::onUpdate(Timestamp ts)
+{
+    for (auto& [_, window] : m_windows) {
+        if (window->isOpen()) {
+            window->onUpdate(ts);
+        }
+    }
+}
+
+void WindowMap::onEvent(Event* event)
+{
+    for (auto& [_, window] : m_windows) {
+        if (window->isOpen()) {
+            window->onEvent(event);
+        }
+    }
+}
+
+void WindowMap::insert(WindowPtr window)
+{
+    auto name{window->name()};
+    m_windows[name] = std::move(window);
+}
+
+void WindowMap::remove(std::string_view name)
+{
+    m_windows.erase(name);
+}
+
+IWindow* WindowMap::get(std::string_view name)
+{
+    if (auto it = m_windows.find(name); it != m_windows.end()) {
+        return it->second.get();
+    }
+
+    return nullptr;
+}
+
+const IWindow* WindowMap::get(std::string_view name) const
+{
+    if (auto it = m_windows.find(name); it != m_windows.end()) {
+        return it->second.get();
+    }
+
+    return nullptr;
+}
+
+void WindowMap::openWindow(std::string_view name)
+{
+    if (auto it = m_windows.find(name); it != m_windows.end()) {
+        it->second->open();
+    }
+}
+
+void WindowMap::closeWindow(std::string_view name)
+{
+    if (auto it = m_windows.find(name); it != m_windows.end()) {
+        it->second->close();
+    }
+}
+
+} // namespace GE::GUI

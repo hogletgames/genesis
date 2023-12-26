@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,15 @@
 
 #pragma once
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/file_dialog.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
-#include <genesis/gui/window.h>
+#include <genesis/gui/window/imenu.h>
+
+namespace GE::GUI {
+
+class GE_API MenuBase: public IMenu
+{
+public:
+    void onUpdate([[maybe_unused]] Timestamp ts) override{};
+    void onEvent([[maybe_unused]] Event* event) override{};
+};
+
+} // namespace GE::GUI

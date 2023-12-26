@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "window/modal_windows.h"
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/file_dialog.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
-#include <genesis/gui/window.h>
+namespace GE::GUI {
+
+void ModalWindows::onUpdate(Timestamp ts)
+{
+    for (auto& modal : m_modals) {
+        modal->onUpdate(ts);
+    }
+}
+
+void ModalWindows::onEvent(Event* event)
+{
+    for (auto& modal : m_modals) {
+        modal->onEvent(event);
+    }
+}
+
+void ModalWindows::onRender()
+{
+    for (auto it = m_modals.begin(); it != m_modals.end();) {
+        auto* modal = it->get();
+
+        if (modal->onRender(); !modal->isOpen()) {
+            it = m_modals.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+} // namespace GE::GUI

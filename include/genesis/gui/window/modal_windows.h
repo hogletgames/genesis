@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,39 @@
 
 #pragma once
 
-#include <genesis/gui/base_layer.h>
-#include <genesis/gui/context.h>
-#include <genesis/gui/event_handler.h>
-#include <genesis/gui/file_dialog.h>
-#include <genesis/gui/gizmos.h>
-#include <genesis/gui/renderer.h>
-#include <genesis/gui/widgets.h>
-#include <genesis/gui/window.h>
+#include <genesis/core/format.h>
+#include <genesis/core/memory.h>
+#include <genesis/gui/window/window_base.h>
+
+#include <list>
+#include <string>
+
+namespace GE::GUI {
+
+class GE_API ModalWindows
+{
+public:
+    template<typename T, typename... Args>
+    T* open(const std::string& name, Args&&... args);
+
+    void onUpdate(Timestamp ts);
+    void onEvent(Event* event);
+    void onRender();
+
+private:
+    std::list<Scoped<WindowBase>> m_modals;
+    int m_id{0};
+};
+
+template<typename T, typename... Args>
+T* ModalWindows::open(const std::string& name, Args&&... args)
+{
+    auto unique_name = GE_FMTSTR("{}##{}", name, m_id++);
+    auto window = makeScoped<T>(unique_name, std::forward<Args>(args)...);
+    auto* modal = window.get();
+
+    m_modals.push_back(std::move(window));
+    return modal;
+}
+
+} // namespace GE::GUI

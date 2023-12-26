@@ -24,6 +24,9 @@ list(APPEND GUI_SOURCES
     widgets/tree_node.cpp
     widgets/value_editor.cpp
     widgets/window.cpp
+    window/menu_list.cpp
+    window/modal_windows.cpp
+    window/window_map.cpp
     )
 
 list(APPEND GUI_HEADERS
@@ -34,6 +37,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/gizmos.h
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/widgets.h
+    ${INCLUDE_DIR}/window.h
     ${INCLUDE_DIR}/gizmos/gizmos.h
     ${INCLUDE_DIR}/gizmos/math.h
     ${INCLUDE_DIR}/widgets/button.h
@@ -57,6 +61,13 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/widgets/widget_node.h
     ${INCLUDE_DIR}/widgets/widget_node_guard.h
     ${INCLUDE_DIR}/widgets/window.h
+    ${INCLUDE_DIR}/window/imenu.h
+    ${INCLUDE_DIR}/window/iwindow.h
+    ${INCLUDE_DIR}/window/menu_base.h
+    ${INCLUDE_DIR}/window/menu_list.h
+    ${INCLUDE_DIR}/window/modal_windows.h
+    ${INCLUDE_DIR}/window/window_base.h
+    ${INCLUDE_DIR}/window/window_map.h
     private/types.h
     )
 
