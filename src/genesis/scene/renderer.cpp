@@ -69,27 +69,22 @@ bool isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
 
 } // namespace
 
-Renderer::Renderer(GE::Renderer* renderer, const ViewProjectionCamera* camera)
-    : m_renderer{renderer}
-    , m_camera{camera}
+Renderer::Renderer(const ViewProjectionCamera* camera)
+    : m_camera{camera}
     , m_vp_ubo{UniformBuffer::create(sizeof(vp_t))}
     , m_translation_ubo{UniformBuffer::create(sizeof(Mat4))}
 {}
 
 Renderer::~Renderer() = default;
 
-void Renderer::render(const Scene& scene)
+void Renderer::render(GE::Renderer* renderer, const Scene& scene)
 {
-    m_renderer->beginFrame();
-
     updateViewProjectionUBO();
     scene.forEach<MaterialComponent, SpriteComponent>(
-        [this](const auto& entity) { renderSprite(entity); });
-
-    m_renderer->endFrame();
+        [this, renderer](const auto& entity) { renderSprite(renderer, entity); });
 }
 
-void Renderer::renderSprite(const GE::Scene::Entity& entity)
+void Renderer::renderSprite(GE::Renderer* renderer, const GE::Scene::Entity& entity)
 {
     std::string_view entity_tag = entity.get<TagComponent>().tag;
 
@@ -106,7 +101,7 @@ void Renderer::renderSprite(const GE::Scene::Entity& entity)
 
     auto mvp = m_camera->viewProjection() * entity.get<TransformComponent>().transform();
 
-    auto* cmd = m_renderer->command();
+    auto* cmd = renderer->command();
     cmd->bind(pipeline);
     cmd->bind(pipeline, "u_Sprite", texture);
     cmd->pushConstant(pipeline, "pc.mvp", mvp);
