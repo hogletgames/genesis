@@ -40,6 +40,7 @@
 #include <vector>
 
 namespace GE {
+struct push_constant_t;
 class Shader;
 } // namespace GE
 
@@ -78,6 +79,14 @@ public:
     void bind(GPUCommandQueue* queue, const std::string& name, GE::UniformBuffer* ubo) override;
     void bind(GPUCommandQueue* queue, const std::string& name, GE::Texture* texture) override;
 
+    void pushConstant(GPUCommandQueue* queue, const std::string& name, bool value) override;
+    void pushConstant(GPUCommandQueue* queue, const std::string& name, int32_t value) override;
+    void pushConstant(GPUCommandQueue* queue, const std::string& name, uint32_t value) override;
+    void pushConstant(GPUCommandQueue* queue, const std::string& name, float value) override;
+    void pushConstant(GPUCommandQueue* queue, const std::string& name, double value) override;
+    void pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec3& value) override;
+    void pushConstant(GPUCommandQueue* queue, const std::string& name, const Mat4& value) override;
+
     NativeHandle nativeHandle() const override { return m_pipeline; }
 
     static Vulkan::pipeline_config_t createDefaultConfig(GE::pipeline_config_t base_config);
@@ -88,6 +97,11 @@ private:
 
     void bindResource(GPUCommandQueue* queue, const std::string& name,
                       VkWriteDescriptorSet* write_descriptor_set);
+
+    template<typename T>
+    void pushConstantIfValid(GPUCommandQueue* queue, const std::string& name, T value);
+    template<typename T>
+    void pushConstantCmd(GPUCommandQueue* queue, const push_constant_t& push_constant, T value);
 
     void destroyVkHandles();
 
