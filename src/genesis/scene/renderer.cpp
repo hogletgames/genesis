@@ -104,14 +104,12 @@ void Renderer::renderSprite(const GE::Scene::Entity& entity)
         return;
     }
 
-    const auto& transform = entity.get<TransformComponent>();
-    m_translation_ubo->setObject(transform.transform());
+    auto mvp = m_camera->viewProjection() * entity.get<TransformComponent>().transform();
 
     auto* cmd = m_renderer->command();
     cmd->bind(pipeline);
     cmd->bind(pipeline, "u_Sprite", texture);
-    cmd->bind(pipeline, "u_Translation", m_translation_ubo.get());
-    cmd->bind(pipeline, "u_ViewProjection", m_vp_ubo.get());
+    cmd->pushConstant(pipeline, "pc.mvp", mvp);
     cmd->draw(*mesh);
 }
 
