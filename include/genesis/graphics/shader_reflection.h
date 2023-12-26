@@ -48,6 +48,7 @@ public:
 
     ShaderInputLayout inputLayout() const;
     ResourceDescriptors resourceDescriptors() const;
+    PushConstants pushConstants() const;
 
 private:
     struct Impl;

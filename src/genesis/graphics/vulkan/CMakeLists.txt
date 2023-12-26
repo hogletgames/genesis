@@ -51,6 +51,7 @@ list(APPEND GRAPHICS_VULKAN_HEADERS
     sdl_gui_context.h
     sdl_gui_event_handler.h
     shader.h
+    shader_data_type_size.h
     single_command.h
     swap_chain.h
     texture.h

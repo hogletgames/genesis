@@ -38,19 +38,30 @@
 #include "input_stage_descriptions.h"
 #include "pipeline_resources.h"
 #include "shader.h"
+#include "shader_data_type_size.h"
 #include "texture.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/log.h"
 #include "genesis/graphics/gpu_command_queue.h"
 
+namespace GE::Vulkan {
 namespace {
 
 constexpr auto SHADER_ENTRYPOINT = "main";
 
-} // namespace
+bool isPushConstantValid(const push_constant_t& push_constant, uint32_t expected_size)
+{
+    if (push_constant.size != expected_size) {
+        GE_CORE_ERR("Push constant size mismatch: expected {}, got {}", expected_size,
+                    push_constant.size);
+        return false;
+    }
 
-namespace GE::Vulkan {
+    return true;
+}
+
+} // namespace
 
 Pipeline::Pipeline(Shared<Device> device, const Vulkan::pipeline_config_t& config)
     : m_device{std::move(device)}
@@ -99,6 +110,41 @@ void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, GE::Texture
     bindResource(queue, name, &write_descriptor_set);
 }
 
+void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, bool value)
+{
+    pushConstantIfValid(queue, name, value);
+}
+
+void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, int32_t value)
+{
+    pushConstantIfValid(queue, name, value);
+}
+
+void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, uint32_t value)
+{
+    pushConstantIfValid(queue, name, value);
+}
+
+void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, float value)
+{
+    pushConstantIfValid(queue, name, value);
+}
+
+void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, double value)
+{
+    pushConstantIfValid(queue, name, value);
+}
+
+void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec3& value)
+{
+    pushConstantIfValid(queue, name, value);
+}
+
+void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, const Mat4& value)
+{
+    pushConstantIfValid(queue, name, value);
+}
+
 Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t base_config)
 {
     Vulkan::pipeline_config_t config{std::move(base_config)};
@@ -133,26 +179,30 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     config.multisample_state.alphaToCoverageEnable = VK_FALSE; // Optional
     config.multisample_state.alphaToOneEnable = VK_FALSE;      // Optional
 
-    config.color_blend_attachment.colorWriteMask =
-        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-        VK_COLOR_COMPONENT_A_BIT;
-    config.color_blend_attachment.blendEnable = VK_FALSE;
-    config.color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
-    config.color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-    config.color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;             // Optional
-    config.color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
-    config.color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-    config.color_blend_attachment.alphaBlendOp = VK_BLEND_OP_ADD;             // Optional
+    VkPipelineColorBlendAttachmentState color_blend_attachment{};
+    color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                                            VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    color_blend_attachment.blendEnable = VK_TRUE;
+    color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;
+    color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    color_blend_attachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+    config.color_blend_attachments.resize(config.msaa_samples);
+    std::fill(config.color_blend_attachments.begin(), config.color_blend_attachments.end(),
+              color_blend_attachment);
 
     config.color_blend_state.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     config.color_blend_state.logicOpEnable = VK_FALSE;
-    config.color_blend_state.pAttachments = &config.color_blend_attachment;
-    config.color_blend_state.attachmentCount = 1;
-    config.color_blend_state.logicOp = VK_LOGIC_OP_COPY; // Optional
-    config.color_blend_state.blendConstants[0] = 0.0f;   // Optional
-    config.color_blend_state.blendConstants[1] = 0.0f;   // Optional
-    config.color_blend_state.blendConstants[2] = 0.0f;   // Optional
-    config.color_blend_state.blendConstants[3] = 0.0f;   // Optional
+    config.color_blend_state.logicOp = VK_LOGIC_OP_COPY;
+    config.color_blend_state.attachmentCount = config.color_blend_attachments.size();
+    config.color_blend_state.pAttachments = config.color_blend_attachments.data();
+    config.color_blend_state.blendConstants[0] = 1.0f;
+    config.color_blend_state.blendConstants[1] = 1.0f;
+    config.color_blend_state.blendConstants[2] = 1.0f;
+    config.color_blend_state.blendConstants[3] = 1.0f;
 
     config.depth_stencil_state.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     config.depth_stencil_state.depthTestEnable = VK_TRUE;
@@ -178,15 +228,19 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
 void Pipeline::createPipelineLayout()
 {
     const auto& descriptor_set_layouts = m_resources->descriptorSetLayouts();
+    const auto& push_constant_ranges = m_resources->pushConstantRanges();
 
     VkPipelineLayoutCreateInfo pipeline_layout_info{};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipeline_layout_info.pPushConstantRanges = nullptr;
-    pipeline_layout_info.pushConstantRangeCount = 0;
 
     if (!descriptor_set_layouts.empty()) {
         pipeline_layout_info.setLayoutCount = descriptor_set_layouts.size();
         pipeline_layout_info.pSetLayouts = descriptor_set_layouts.data();
+    }
+
+    if (!push_constant_ranges.empty()) {
+        pipeline_layout_info.pushConstantRangeCount = push_constant_ranges.size();
+        pipeline_layout_info.pPushConstantRanges = push_constant_ranges.data();
     }
 
     if (vkCreatePipelineLayout(m_device->device(), &pipeline_layout_info, nullptr,
@@ -275,6 +329,55 @@ void Pipeline::bindResource(GPUCommandQueue* queue, const std::string& name,
     queue->enqueue([this, set = resource->set, descriptor_set](void* cmd) {
         vkCmdBindDescriptorSets(cmdBuffer(cmd), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout,
                                 set, 1, &descriptor_set, 0, nullptr);
+    });
+}
+
+template<typename T>
+void Pipeline::pushConstantIfValid(GPUCommandQueue* queue, const std::string& name, T value)
+{
+    if (const auto* push_constant = m_resources->pushConstant(name);
+        push_constant != nullptr && isPushConstantValid(*push_constant, DATA_TYPE_SIZE<T>)) {
+        pushConstantCmd(queue, *push_constant, value);
+    }
+}
+
+template<typename T>
+void Pipeline::pushConstantCmd(GPUCommandQueue* queue, const push_constant_t& push_constant,
+                               T value)
+{
+    queue->enqueue([this, &push_constant, value](void* cmd_buffer) {
+        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
+                           push_constant.offset, push_constant.size, &value);
+    });
+}
+
+template<>
+void Pipeline::pushConstantCmd<bool>(GPUCommandQueue* queue, const push_constant_t& push_constant,
+                                     bool value)
+{
+    queue->enqueue([this, &push_constant, vk_value = value ? VK_TRUE : VK_FALSE](void* cmd_buffer) {
+        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
+                           push_constant.offset, push_constant.size, &vk_value);
+    });
+}
+
+template<>
+void Pipeline::pushConstantCmd<const Vec3&>(GPUCommandQueue* queue,
+                                            const push_constant_t& push_constant, const Vec3& value)
+{
+    queue->enqueue([this, &push_constant, &value](void* cmd_buffer) {
+        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
+                           push_constant.offset, push_constant.size, value_ptr(value));
+    });
+}
+
+template<>
+void Pipeline::pushConstantCmd<const Mat4&>(GPUCommandQueue* queue,
+                                            const push_constant_t& push_constant, const Mat4& value)
+{
+    queue->enqueue([this, &push_constant, &value](void* cmd_buffer) {
+        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
+                           push_constant.offset, push_constant.size, value_ptr(value));
     });
 }
 

@@ -84,6 +84,7 @@ bool Shader::compileFromFileOrSource(const std::string& filepath, const std::str
     ShaderReflection reflection{shader_cache};
     m_input_layout = reflection.inputLayout();
     m_resource_descriptors = reflection.resourceDescriptors();
+    m_push_constants = reflection.pushConstants();
     return true;
 }
 

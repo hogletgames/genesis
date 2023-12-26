@@ -58,6 +58,8 @@ public:
         return m_resource_descriptors;
     }
 
+    const PushConstants &pushConstants() const override { return m_push_constants; }
+
 private:
     bool compileFromFileOrSource(const std::string &filepath, const std::string &source_code);
     bool createShaderModule(const std::vector<uint32_t> &shader_code);
@@ -67,6 +69,7 @@ private:
     VkShaderModule m_shader_module{VK_NULL_HANDLE};
     ShaderInputLayout m_input_layout;
     ResourceDescriptors m_resource_descriptors;
+    PushConstants m_push_constants;
 };
 
 inline VkShaderModule toVkShaderModule(const GE::Shader &shader)

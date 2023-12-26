@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,42 +32,50 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-#include <genesis/core/memory.h>
-#include <genesis/graphics/shader.h>
 #include <genesis/math/types.h>
 
-namespace GE {
+namespace GE::Vulkan {
 
-class GPUCommandQueue;
-class Texture;
-class UniformBuffer;
+template<typename T>
+struct data_type_traits;
 
-struct pipeline_config_t {
-    Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
-    Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
+template<>
+struct data_type_traits<bool> {
+    static constexpr size_t SIZE{4};
 };
 
-class Pipeline: public Interface
-{
-public:
-    using NativeHandle = void*;
-
-    virtual void bind(GPUCommandQueue* queue) = 0;
-    virtual void bind(GPUCommandQueue* queue, const std::string& name, UniformBuffer* ubo) = 0;
-    virtual void bind(GPUCommandQueue* queue, const std::string& name, Texture* texture) = 0;
-
-    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, bool value) = 0;
-    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, int32_t value) = 0;
-    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, uint32_t value) = 0;
-    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, float value) = 0;
-    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, double value) = 0;
-    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
-                              const Vec3& value) = 0;
-    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
-                              const Mat4& value) = 0;
-
-    virtual NativeHandle nativeHandle() const = 0;
+template<>
+struct data_type_traits<int32_t> {
+    static constexpr size_t SIZE{4};
 };
 
-} // namespace GE
+template<>
+struct data_type_traits<uint32_t> {
+    static constexpr size_t SIZE{4};
+};
+
+template<>
+struct data_type_traits<float> {
+    static constexpr size_t SIZE{4};
+};
+
+template<>
+struct data_type_traits<double> {
+    static constexpr size_t SIZE{8};
+};
+
+template<>
+struct data_type_traits<Vec3> {
+    static constexpr size_t SIZE{data_type_traits<Vec3::value_type>::SIZE * Vec3::length()};
+};
+
+template<>
+struct data_type_traits<Mat4> {
+    static constexpr size_t SIZE{data_type_traits<Mat4::value_type>::SIZE * Mat4::length() *
+                                 Mat4::length()};
+};
+
+template<typename T>
+static constexpr size_t DATA_TYPE_SIZE{data_type_traits<T>::SIZE};
+
+} // namespace GE::Vulkan

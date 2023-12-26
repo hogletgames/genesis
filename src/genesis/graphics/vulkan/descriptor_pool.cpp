@@ -99,7 +99,7 @@ VkDescriptorSet DescriptorPool::allocateDescriptorSet(VkDescriptorSetLayout layo
     }
 
     if (allocateDescriptorSet(pool, layout, &set) != VK_SUCCESS) {
-        throw Vulkan::Exception("Failed to allocate Decriptor Set");
+        throw Vulkan::Exception("Failed to allocate Descriptor Set");
     }
 
     return set;

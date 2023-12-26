@@ -52,6 +52,7 @@ class PipelineResources
 {
 public:
     using DescriptorSetLayouts = std::vector<VkDescriptorSetLayout>;
+    using PushConstantRanges = std::vector<VkPushConstantRange>;
     using ResourcesPerState = std::pair<GE::ResourceDescriptors, VkShaderStageFlags>;
     using Resources = std::vector<ResourcesPerState>;
 
@@ -67,19 +68,27 @@ public:
         return m_descriptor_set_layouts.at(set);
     }
 
+    const push_constant_t* pushConstant(const std::string& name) const;
+    const PushConstantRanges& pushConstantRanges() const { return m_push_constant_ranges; }
+
 private:
     using BindingVector = std::vector<VkDescriptorSetLayoutBinding>;
     using SetLayoutBindings = std::vector<BindingVector>;
 
     void createDescriptorSetLayouts(const Vulkan::pipeline_config_t& pipeline_config);
     SetLayoutBindings createSetLayoutBindings(const Resources& descriptor_resources);
+    void updatePushConstants(VkShaderStageFlagBits shader_stage,
+                             const PushConstants& push_constants);
+    void createPushConstantRanges();
 
     void destroyVkHandles();
 
     Shared<Device> m_device;
     Shared<DescriptorPool> m_descriptor_pool;
     DescriptorSetLayouts m_descriptor_set_layouts;
+    PushConstantRanges m_push_constant_ranges;
     std::unordered_map<std::string, resource_descriptor_t> m_resources;
+    std::unordered_map<std::string, push_constant_t> m_push_constants;
 };
 
 constexpr VkDescriptorType toVkDescriptorType(resource_descriptor_t::Type type)

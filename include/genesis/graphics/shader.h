@@ -58,6 +58,7 @@ public:
     virtual void* nativeHandle() const = 0;
     virtual const ShaderInputLayout& inputLayout() const = 0;
     virtual const ResourceDescriptors& resourceDescriptors() const = 0;
+    virtual const PushConstants& pushConstants() const = 0;
 
     static Scoped<Shader> create(Type type);
 };
