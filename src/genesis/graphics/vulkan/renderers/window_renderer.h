@@ -60,6 +60,9 @@ public:
     WindowRenderer(Shared<Device> device, const config_t& config);
     ~WindowRenderer();
 
+    void transitImageLayoutBeforeRendering(VkCommandBuffer cmd) override;
+    void transitImageLayoutAfterRendering(VkCommandBuffer cmd) override;
+
     bool beginFrame(ClearMode clear_mode) override;
     void endFrame() override;
     void swapBuffers() override;
@@ -74,18 +77,23 @@ public:
     uint8_t MSAASamples() const { return m_msaa_samples; }
 
 private:
-    std::vector<VkAttachmentDescription> createAttachmentDescriptions();
-    void createRenderPasses();
     void createSwapChain();
+    void createRenderingAttachments();
 
     VkCommandBuffer cmdBuffer() const override;
-    VkFramebuffer currentFramebuffer() const override;
     VkExtent2D extent() const override;
     VkViewport viewport() const override;
+
+    const std::vector<VkRenderingAttachmentInfo>&
+    colorRenderingAttachments(ClearMode clear_mode) override;
+    const VkRenderingAttachmentInfo& depthRenderingAttachment(ClearMode clear_mode) override;
 
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
     Vec2 m_window_size{0.0f, 0.0f};
     uint8_t m_msaa_samples{1};
+
+    std::vector<VkRenderingAttachmentInfo> m_color_rendering_attachments;
+    VkRenderingAttachmentInfo m_depth_rendering_attachment{};
 
     bool m_is_framebuffer_resized{false};
     Scoped<SwapChain> m_swap_chain;

@@ -112,7 +112,6 @@ Scoped<WindowRenderer> GraphicsContext::createWindowRenderer(const config_t& ren
     WindowRenderer::config_t config{};
     config.surface = m_surface;
     config.window_size = getWindowSize(renderer_config.window);
-    config.window_size = getWindowSize(renderer_config.window);
     config.msaa_samples = renderer_config.msaa_samples;
     return makeScoped<WindowRenderer>(m_device, config);
 }

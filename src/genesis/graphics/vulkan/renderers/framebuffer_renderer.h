@@ -54,18 +54,21 @@ public:
     Scoped<GE::Pipeline> createPipeline(const pipeline_config_t &config) override;
 
 private:
-    void createClearValues();
-    void createRenderPasses();
     void createSyncObjects();
     void destroyVkHandles();
 
     bool submit();
-    void depthImagePipelineBarrier();
+
+    void transitImageLayoutBeforeRendering(VkCommandBuffer cmd) override;
+    void transitImageLayoutAfterRendering(VkCommandBuffer cmd) override;
 
     VkCommandBuffer cmdBuffer() const override;
-    VkFramebuffer currentFramebuffer() const override;
     VkExtent2D extent() const override;
     VkViewport viewport() const override;
+
+    const std::vector<VkRenderingAttachmentInfo> &
+    colorRenderingAttachments(ClearMode clear_mode) override;
+    const VkRenderingAttachmentInfo &depthRenderingAttachment(ClearMode clear_mode) override;
 
     Vulkan::Framebuffer *m_framebuffer{nullptr};
     VkFence m_in_flight_fence{VK_NULL_HANDLE};

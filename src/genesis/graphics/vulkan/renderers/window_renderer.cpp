@@ -33,10 +33,11 @@
 #include "window_renderer.h"
 #include "descriptor_pool.h"
 #include "device.h"
+#include "image.h"
 #include "pipeline.h"
+#include "pipeline_barrier.h"
 #include "swap_chain.h"
 #include "utils.h"
-#include "vulkan_exception.h"
 
 #include "genesis/core/enum.h"
 #include "genesis/core/log.h"
@@ -67,11 +68,9 @@ WindowRenderer::WindowRenderer(Shared<Device> device, const config_t& config)
     , m_window_size{config.window_size}
     , m_msaa_samples{config.msaa_samples}
 {
-    m_clear_values = {{}, toVkClearDepthStencilValue(1.0f)};
-
-    createRenderPasses();
     createSwapChain();
     createCommandBuffers(m_swap_chain->imageCount());
+    createRenderingAttachments();
 }
 
 WindowRenderer::~WindowRenderer() = default;
@@ -90,7 +89,7 @@ bool WindowRenderer::beginFrame(ClearMode clear_mode)
         return false;
     }
 
-    if (!beginRenderPass(clear_mode)) {
+    if (!beginRendering(clear_mode)) {
         return false;
     }
 
@@ -100,10 +99,10 @@ bool WindowRenderer::beginFrame(ClearMode clear_mode)
 
 void WindowRenderer::endFrame()
 {
-    VkCommandBuffer* cmd = &m_cmd_buffers[m_swap_chain->currentImage()];
+    VkCommandBuffer* cmd = &m_cmd_buffers[m_swap_chain->currentImageIndex()];
     m_render_command.submit(*cmd);
 
-    if (!endRenderPass()) {
+    if (!endRendering()) {
         return;
     }
 
@@ -149,89 +148,88 @@ bool WindowRenderer::onWindowResized(const WindowResizedEvent& event)
     return false;
 }
 
-std::vector<VkAttachmentDescription> WindowRenderer::createAttachmentDescriptions()
-{
-    VkFormat color_format =
-        SwapChain::chooseSurfaceFormat(m_device->swapChainDetails().formats).format;
-    VkFormat depth_format = SwapChain::choseDepthFormat(m_device.get());
-
-    VkAttachmentDescription color_attachment{};
-    color_attachment.format = color_format;
-    color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-    VkAttachmentDescription depth_attachment{};
-    depth_attachment.format = depth_format;
-    depth_attachment.samples = toVkSampleCountFlag(m_msaa_samples);
-    depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-    if (m_msaa_samples == 1) {
-        return {color_attachment, depth_attachment};
-    }
-
-    VkAttachmentDescription color_attachment_resolve{};
-    color_attachment_resolve.format = color_format;
-    color_attachment_resolve.samples = toVkSampleCountFlag(m_msaa_samples);
-    color_attachment_resolve.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    color_attachment_resolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    color_attachment_resolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    color_attachment_resolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    color_attachment_resolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    color_attachment_resolve.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-    return {color_attachment_resolve, depth_attachment, color_attachment};
-}
-
-void WindowRenderer::createRenderPasses()
-{
-    auto descriptions = createAttachmentDescriptions();
-    bool is_multisampled = m_msaa_samples > 1;
-
-    descriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    descriptions[1].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    m_render_passes[CLEAR_NONE] = createRenderPass(descriptions, is_multisampled);
-
-    descriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    descriptions[1].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    m_render_passes[CLEAR_COLOR] = createRenderPass(descriptions, is_multisampled);
-
-    descriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    descriptions[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    m_render_passes[CLEAR_DEPTH] = createRenderPass(descriptions, is_multisampled);
-
-    descriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    descriptions[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    m_render_passes[CLEAR_ALL] = createRenderPass(descriptions, is_multisampled);
-}
-
 void WindowRenderer::createSwapChain()
 {
     SwapChain::options_t options{};
     options.surface = m_surface;
-    options.render_pass = m_render_passes[CLEAR_ALL];
     options.window_size = m_window_size;
     options.msaa_samples = m_msaa_samples;
     m_swap_chain = makeScoped<SwapChain>(m_device, options);
 }
 
-VkCommandBuffer WindowRenderer::cmdBuffer() const
+void WindowRenderer::createRenderingAttachments()
 {
-    return m_cmd_buffers[m_swap_chain->currentImage()];
+    VkRenderingAttachmentInfoKHR color_attachment{};
+    color_attachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
+    color_attachment.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    color_attachment.clearValue = toVkClearColorValue({0.0f, 0.0f, 0.0f, 1.0f});
+
+    if (m_msaa_samples > 1) {
+        color_attachment.resolveMode = VK_RESOLVE_MODE_AVERAGE_BIT;
+        color_attachment.resolveImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    }
+
+    VkRenderingAttachmentInfo depth_attachment{};
+    depth_attachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
+    depth_attachment.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    depth_attachment.clearValue = toVkClearDepthStencilValue(1.0f);
+
+    m_color_rendering_attachments = {color_attachment};
+    m_depth_rendering_attachment = depth_attachment;
 }
 
-VkFramebuffer WindowRenderer::currentFramebuffer() const
+void WindowRenderer::transitImageLayoutBeforeRendering(VkCommandBuffer cmd)
 {
-    return m_swap_chain->currentFramebuffer();
+    VkImageMemoryBarrier barrier{};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.srcAccessMask = VK_ACCESS_NONE;
+    barrier.dstAccessMask =
+        VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    barrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = m_swap_chain->currentImage();
+    barrier.subresourceRange.aspectMask = toVkAspect(m_swap_chain->colorFormat());
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount = 1;
+
+    PipelineBarrier::submit(cmd, {barrier}, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+                            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+}
+
+void WindowRenderer::transitImageLayoutAfterRendering(VkCommandBuffer cmd)
+{
+    std::vector<VkImageMemoryBarrier> barriers;
+
+    VkImageMemoryBarrier barrier{};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_NONE;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = m_swap_chain->currentImage();
+    barrier.subresourceRange.aspectMask = toVkAspect(m_swap_chain->colorFormat());
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount = 1;
+
+    PipelineBarrier::submit(cmd, {barrier}, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
+}
+
+VkCommandBuffer WindowRenderer::cmdBuffer() const
+{
+    return m_cmd_buffers[m_swap_chain->currentImageIndex()];
 }
 
 VkExtent2D WindowRenderer::extent() const
@@ -242,6 +240,36 @@ VkExtent2D WindowRenderer::extent() const
 VkViewport WindowRenderer::viewport() const
 {
     return toFlippedVkViewport(m_swap_chain->extent());
+}
+
+const std::vector<VkRenderingAttachmentInfo>&
+WindowRenderer::colorRenderingAttachments(ClearMode clear_mode)
+{
+    bool should_clear = clear_mode == CLEAR_COLOR || clear_mode == CLEAR_ALL;
+    auto& color_attachment = m_color_rendering_attachments[0];
+
+    if (m_msaa_samples > 1) {
+        color_attachment.imageView = m_swap_chain->colorMSAAImage()->view();
+        color_attachment.resolveImageView = m_swap_chain->currentImageView();
+        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    } else {
+        color_attachment.imageView = m_swap_chain->currentImageView();
+        color_attachment.loadOp = should_clear ? VK_ATTACHMENT_LOAD_OP_CLEAR
+                                               : VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    }
+
+    return m_color_rendering_attachments;
+}
+
+const VkRenderingAttachmentInfo& WindowRenderer::depthRenderingAttachment(ClearMode clear_mode)
+{
+    bool should_clear = clear_mode == CLEAR_DEPTH || clear_mode == CLEAR_ALL;
+
+    m_depth_rendering_attachment.imageView = m_swap_chain->depthImage()->view();
+    m_depth_rendering_attachment.loadOp = should_clear ? VK_ATTACHMENT_LOAD_OP_CLEAR
+                                                       : VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+
+    return m_depth_rendering_attachment;
 }
 
 } // namespace GE::Vulkan
