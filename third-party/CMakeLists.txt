@@ -193,8 +193,7 @@ ge_restore_build_type()
 # glslang
 FetchContent_Declare(glslang
     GIT_REPOSITORY https://github.com/hogletgames/glslang.git
-    GIT_TAG vulkan-sdk-1.3.268.0
-    PATCH_COMMAND ${GE_APPLY_PATCH} ${DEPS_DIR}/glslang-src ${GE_PATCHES_DIR}/glslang)
+    GIT_TAG vulkan-sdk-1.3.268.0)
 FetchContent_MakeAvailable(glslang)
 
 # SPIRV-Headers
