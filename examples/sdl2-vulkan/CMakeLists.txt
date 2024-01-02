@@ -8,5 +8,5 @@ ge_add_executable(sdl2_vulkan_example
         stb-image
         tinyobjloader
         Vulkan::Headers
-        Vulkan::Vulkan
+        Vulkan::Loader
     )

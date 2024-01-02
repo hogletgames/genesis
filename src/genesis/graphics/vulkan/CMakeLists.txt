@@ -69,7 +69,7 @@ ge_add_module(graphics-vulkan
         genesis::math
         genesis::window
         Vulkan::Headers
-        Vulkan::Vulkan
+        Vulkan::Loader
     PRIVATE_DEPS
         imgui-vulkan
         SDL2::SDL2-static

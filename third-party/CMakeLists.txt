@@ -83,7 +83,7 @@ if (NOT imgui_POPULATED)
         imgui
         SDL2-static
         Vulkan::Headers
-        Vulkan::Vulkan
+        Vulkan::Loader
         )
     target_include_directories(imgui-vulkan PUBLIC ${imgui_SOURCE_DIR}/backends)
 
