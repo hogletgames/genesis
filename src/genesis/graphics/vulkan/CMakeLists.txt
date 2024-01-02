@@ -77,7 +77,3 @@ ge_add_module(graphics-vulkan
         spirv-cross-cpp
         stb-image
     )
-
-if (NOT GE_DISABLE_DEBUG)
-    add_dependencies(genesis-graphics-vulkan VkLayer_khronos_validation)
-endif ()

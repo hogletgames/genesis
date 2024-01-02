@@ -18,6 +18,7 @@ set(YAML_CPP_FORMAT_SOURCE OFF)
 set(UPDATE_DEPS ON)
 set(ENABLE_CTEST OFF)
 set(SHADERC_SKIP_TESTS ON)
+set(ALLOW_EXTERNAL_SPIRV_TOOLS ON)
 
 # Variables
 set(DEPS_DIR ${FETCHCONTENT_BASE_DIR})
@@ -184,7 +185,7 @@ FetchContent_MakeAvailable(nlohmann_json)
 # Vulkan-Loader
 FetchContent_Declare(Vulkan-Loader
     GIT_REPOSITORY https://github.com/hogletgames/Vulkan-Loader.git
-    GIT_TAG sdk-1.3.236.0)
+    GIT_TAG vulkan-sdk-1.3.268.0)
 ge_change_build_type(Release)
 FetchContent_MakeAvailable(Vulkan-Loader)
 ge_restore_build_type()
@@ -192,33 +193,33 @@ ge_restore_build_type()
 # glslang
 FetchContent_Declare(glslang
     GIT_REPOSITORY https://github.com/hogletgames/glslang.git
-    GIT_TAG sdk-1.3.236.0
+    GIT_TAG vulkan-sdk-1.3.268.0
     PATCH_COMMAND ${GE_APPLY_PATCH} ${DEPS_DIR}/glslang-src ${GE_PATCHES_DIR}/glslang)
 FetchContent_MakeAvailable(glslang)
 
 # SPIRV-Headers
 FetchContent_Declare(SPIRV-Headers
     GIT_REPOSITORY https://github.com/hogletgames/SPIRV-Headers.git
-    GIT_TAG sdk-1.3.236.0)
+    GIT_TAG vulkan-sdk-1.3.268.0)
 FetchContent_MakeAvailable(SPIRV-Headers)
 
 # SPIRV-Tools
 FetchContent_Declare(SPIRV-Tools
     GIT_REPOSITORY https://github.com/hogletgames/SPIRV-Tools.git
-    GIT_TAG sdk-1.3.236.0)
+    GIT_TAG vulkan-sdk-1.3.268.0)
 FetchContent_MakeAvailable(SPIRV-Tools)
 target_compile_options(SPIRV-Tools-opt PRIVATE $<$<CONFIG:USAN>:-fno-sanitize=vptr>)
 
 # SPIRV-Cross
 FetchContent_Declare(SPIRV-Cross
     GIT_REPOSITORY https://github.com/hogletgames/SPIRV-Cross.git
-    GIT_TAG sdk-1.3.236.0)
+    GIT_TAG vulkan-sdk-1.3.268.0)
 FetchContent_MakeAvailable(SPIRV-Cross)
 
 # Vulkan-ValidationLayers
 FetchContent_Declare(Vulkan-ValidationLayers
     GIT_REPOSITORY https://github.com/hogletgames/Vulkan-ValidationLayers.git
-    GIT_TAG sdk-1.3.236.0)
+    GIT_TAG vulkan-sdk-1.3.268.0)
 ge_change_build_type(Release)
 FetchContent_MakeAvailable(Vulkan-ValidationLayers)
 ge_restore_build_type()
@@ -226,14 +227,13 @@ ge_restore_build_type()
 # shaderc
 FetchContent_Declare(shaderc
     GIT_REPOSITORY https://github.com/hogletgames/shaderc.git
-    GIT_TAG v2022.4)
+    GIT_TAG v2023.7)
 FetchContent_MakeAvailable(shaderc)
-target_compile_options(shaderc_util PRIVATE $<$<CONFIG:USAN>:-fno-sanitize=vptr>)
 
 # Vulkan-Headers
 FetchContent_Declare(Vulkan-Headers
     GIT_REPOSITORY https://github.com/hogletgames/Vulkan-Headers.git
-    GIT_TAG sdk-1.3.236.0)
+    GIT_TAG vulkan-sdk-1.3.268.0)
 FetchContent_MakeAvailable(Vulkan-Headers)
 
 # Apple dependencies
@@ -241,7 +241,7 @@ if (APPLE)
     # MoltenVK
     FetchContent_Declare(MoltenVK
         GIT_REPOSITORY https://github.com/hogletgames/MoltenVK.git
-        GIT_TAG v1.2.1)
+        GIT_TAG v1.2.6)
     if (NOT MoltenVK_POPULATED)
         FetchContent_Populate(MoltenVK)
         ExternalProject_Add(libMoltenVK
@@ -264,5 +264,5 @@ if (GE_BUILD_TESTS)
 endif ()
 
 if (NOT GE_DISABLE_DEBUG)
-    add_dependencies(vulkan VkLayer_khronos_validation)
+    add_dependencies(vulkan vvl)
 endif ()
