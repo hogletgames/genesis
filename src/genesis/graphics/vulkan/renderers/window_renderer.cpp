@@ -128,7 +128,8 @@ Scoped<GE::Pipeline> WindowRenderer::createPipeline(const GE::pipeline_config_t&
 {
     auto vulkan_config = Vulkan::Pipeline::createDefaultConfig(config);
     vulkan_config.pipeline_cache = m_pipeline_cache;
-    vulkan_config.render_pass = m_render_passes[CLEAR_ALL];
+    vulkan_config.color_formats = {m_swap_chain->colorFormat()};
+    vulkan_config.depth_format = m_swap_chain->depthFormat();
     vulkan_config.front_face = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     vulkan_config.msaa_samples = toVkSampleCountFlag(m_msaa_samples);
     vulkan_config.descriptor_pool = m_descriptor_pool;

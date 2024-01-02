@@ -212,7 +212,6 @@ void Framebuffer::createFramebuffer()
 {
     VkFramebufferCreateInfo create_info{};
     create_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-    create_info.renderPass = m_renderer->renderPass(Renderer::CLEAR_ALL);
     create_info.attachmentCount = m_image_views.size();
     create_info.pAttachments = m_image_views.data();
     create_info.width = static_cast<uint32_t>(m_config.size.x);

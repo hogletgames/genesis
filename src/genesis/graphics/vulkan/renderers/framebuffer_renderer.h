@@ -53,8 +53,6 @@ public:
 
     Scoped<GE::Pipeline> createPipeline(const pipeline_config_t &config) override;
 
-    VkRenderPass renderPass(ClearMode clear_mode) const { return m_render_passes[clear_mode]; }
-
 private:
     void createClearValues();
     void createRenderPasses();

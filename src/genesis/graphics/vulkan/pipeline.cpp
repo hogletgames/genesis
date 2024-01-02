@@ -282,8 +282,15 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     config.rasterization_state.frontFace = config.front_face;
     config.multisample_state.rasterizationSamples = config.msaa_samples;
 
+    VkPipelineRenderingCreateInfo rendering_info{};
+    rendering_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
+    rendering_info.colorAttachmentCount = config.color_formats.size();
+    rendering_info.pColorAttachmentFormats = config.color_formats.data();
+    rendering_info.depthAttachmentFormat = config.depth_format;
+
     VkGraphicsPipelineCreateInfo pipeline_info{};
     pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipeline_info.pNext = &rendering_info;
     pipeline_info.pStages = shader_stages.data();
     pipeline_info.stageCount = shader_stages.size();
     pipeline_info.pVertexInputState = &vertex_input_state;
@@ -295,8 +302,6 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     pipeline_info.pColorBlendState = &config.color_blend_state;
     pipeline_info.pDynamicState = &config.dynamic_state;
     pipeline_info.layout = m_pipeline_layout;
-    pipeline_info.renderPass = config.render_pass;
-    pipeline_info.subpass = config.subpass;
     pipeline_info.basePipelineHandle = VK_NULL_HANDLE; // Optional
     pipeline_info.basePipelineIndex = -1;              // Optional
 

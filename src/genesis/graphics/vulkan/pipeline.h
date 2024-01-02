@@ -52,8 +52,8 @@ class PipelineResources;
 
 struct pipeline_config_t: GE::pipeline_config_t {
     VkPipelineCache pipeline_cache{VK_NULL_HANDLE};
-    VkRenderPass render_pass{VK_NULL_HANDLE};
-    uint32_t subpass{0};
+    std::vector<VkFormat> color_formats{VK_FORMAT_UNDEFINED};
+    VkFormat depth_format{VK_FORMAT_UNDEFINED};
     VkFrontFace front_face{VK_FRONT_FACE_COUNTER_CLOCKWISE};
     VkSampleCountFlagBits msaa_samples{VK_SAMPLE_COUNT_1_BIT};
     Shared<DescriptorPool> descriptor_pool{};

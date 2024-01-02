@@ -206,9 +206,20 @@ void FramebufferRenderer::swapBuffers()
 
 Scoped<GE::Pipeline> FramebufferRenderer::createPipeline(const GE::pipeline_config_t& config)
 {
+    auto color_formats = [](GE::Framebuffer* framebuffer) {
+        std::vector<VkFormat> formats;
+
+        for (uint32_t i{0}; i < framebuffer->colorAttachmentCount(); i++) {
+            formats.emplace_back(toVkFormat(framebuffer->colorTexture(i).format()));
+        }
+
+        return formats;
+    };
+
     auto vulkan_config = Vulkan::Pipeline::createDefaultConfig(config);
     vulkan_config.pipeline_cache = m_pipeline_cache;
-    vulkan_config.render_pass = m_render_passes[CLEAR_ALL];
+    vulkan_config.color_formats = color_formats(m_framebuffer);
+    vulkan_config.depth_format = toVkFormat(m_framebuffer->depthTexture().format());
     vulkan_config.front_face = VK_FRONT_FACE_CLOCKWISE;
     vulkan_config.msaa_samples = toVkSampleCountFlag(m_framebuffer->MSAASamples());
     vulkan_config.descriptor_pool = m_descriptor_pool;

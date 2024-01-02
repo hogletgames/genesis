@@ -71,8 +71,6 @@ public:
 
     SwapChain* swapChain() const { return m_swap_chain.get(); }
 
-    VkRenderPass renderPass(ClearMode clear_mode) const { return m_render_passes[clear_mode]; }
-
     uint8_t MSAASamples() const { return m_msaa_samples; }
 
 private:
