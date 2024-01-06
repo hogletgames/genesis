@@ -69,7 +69,7 @@ ge_add_module(graphics-vulkan
         genesis::math
         genesis::window
         Vulkan::Headers
-        Vulkan::Vulkan
+        Vulkan::Loader
     PRIVATE_DEPS
         imgui-vulkan
         SDL2::SDL2-static
@@ -77,7 +77,3 @@ ge_add_module(graphics-vulkan
         spirv-cross-cpp
         stb-image
     )
-
-if (NOT GE_DISABLE_DEBUG)
-    add_dependencies(genesis-graphics-vulkan VkLayer_khronos_validation)
-endif ()

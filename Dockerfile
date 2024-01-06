@@ -1,10 +1,31 @@
-FROM ubuntu:focal
+# CMake build image
+FROM ubuntu:focal AS cmake-builder
+
+# Install build tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential ca-certificates git libssl-dev \
+# Clean-up atp cache
+    && rm -rf /var/lib/apt/lists/*
+
+# Build and install CMake
+RUN git clone --depth 1 --branch v3.17.4 https://github.com/Kitware/CMake /tmp/cmake \
+    && mkdir -p /tmp/cmake/build && cd /tmp/cmake/build \
+    && ../bootstrap --parallel=$(nproc) --prefix=/opt/cmake \
+    && make -j$(nproc) && make install \
+    && rm -rf /tmp/cmake
+
+# Genesis image
+FROM ubuntu:focal AS genesis-image
 
 # Arguments
 ARG DEBIAN_FRONTEND="noninteractive" \
     GCC_VER=11 \
     CLANG_VER=16
 
+# Install cmake
+COPY --from=cmake-builder /opt/cmake/ /usr/local/
+
+# Instal essential packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
         gpg-agent software-properties-common wget \
 # GCC
@@ -14,8 +35,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-${CLANG_VER} main" \
 # Essential build tools
     && apt-get update && apt-get install -y --no-install-recommends  \
-        gcc-${GCC_VER} g++-${GCC_VER} clang-format-${CLANG_VER} clang-tidy-${CLANG_VER} \
-        make cmake git patch libgtk-3-dev \
+        build-essential gcc-${GCC_VER} g++-${GCC_VER} \
+        clang-format-${CLANG_VER} clang-tidy-${CLANG_VER} \
+        make git patch libgtk-3-dev \
 # Clean-up atp cache
     && rm -rf /var/lib/apt/lists/* \
 # Configure git
