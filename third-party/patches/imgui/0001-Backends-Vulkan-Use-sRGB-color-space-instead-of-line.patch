@@ -1,25 +1,17 @@
-From 0a987bdb4b427160b90936242748b6efeefacb30 Mon Sep 17 00:00:00 2001
+From 6cc64d1d92d4fb5d055820f5cfbfed08ae555328 Mon Sep 17 00:00:00 2001
 From: Dmitry Shilnenkov <dmitry.shilnenkov@gmail.com>
-Date: Tue, 26 Dec 2023 11:55:56 +0200
+Date: Mon, 19 Feb 2024 21:00:21 +0200
 Subject: [PATCH] Backends: Vulkan: Use sRGB color space instead of linear
 
 ---
- backends/imgui_impl_vulkan.cpp | 31 ++++++++++++++++++-------------
- 1 file changed, 18 insertions(+), 13 deletions(-)
+ backends/imgui_impl_vulkan.cpp | 28 +++++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 11 deletions(-)
 
 diff --git a/backends/imgui_impl_vulkan.cpp b/backends/imgui_impl_vulkan.cpp
-index fd76d099..96905295 100644
+index e7f7c8d82..bb477418a 100644
 --- a/backends/imgui_impl_vulkan.cpp
 +++ b/backends/imgui_impl_vulkan.cpp
-@@ -72,7 +72,6 @@
- //  2018-02-16: Misc: Obsoleted the io.RenderDrawListsFn callback, ImGui_ImplVulkan_Render() calls ImGui_ImplVulkan_RenderDrawData() itself.
- //  2018-02-06: Misc: Removed call to ImGui::Shutdown() which is not available from 1.60 WIP, user needs to call CreateContext/DestroyContext themselves.
- //  2017-05-15: Vulkan: Fix scissor offset being negative. Fix new Vulkan validation warnings. Set required depth member for buffer image copy.
--//  2016-11-13: Vulkan: Fix validation layer warnings and errors and redeclare gl_PerVertex.
- //  2016-10-18: Vulkan: Add location decorators & change to use structs as in/out in glsl, update embedded spv (produced with glslangValidator -x). Null the released resources.
- //  2016-08-27: Vulkan: Fix Vulkan example for use when a depth buffer is active.
- 
-@@ -335,14 +334,18 @@ static uint32_t __glsl_shader_vert_spv[] =
+@@ -344,14 +344,18 @@ static uint32_t __glsl_shader_vert_spv[] =
  layout(location = 0) out vec4 fColor;
  layout(set=0, binding=0) uniform sampler2D sTexture;
  layout(location = 0) in struct { vec4 Color; vec2 UV; } In;
@@ -40,7 +32,7 @@ index fd76d099..96905295 100644
      0x00000001,0x4c534c47,0x6474732e,0x3035342e,0x00000000,0x0003000e,0x00000000,0x00000001,
      0x0007000f,0x00000004,0x00000004,0x6e69616d,0x00000000,0x00000009,0x0000000d,0x00030010,
      0x00000004,0x00000007,0x00030003,0x00000002,0x000001c2,0x00040005,0x00000004,0x6e69616d,
-@@ -360,13 +363,15 @@ static uint32_t __glsl_shader_frag_spv[] =
+@@ -369,13 +373,15 @@ static uint32_t __glsl_shader_frag_spv[] =
      0x00000007,0x00090019,0x00000013,0x00000006,0x00000001,0x00000000,0x00000000,0x00000000,
      0x00000001,0x00000000,0x0003001b,0x00000014,0x00000013,0x00040020,0x00000015,0x00000000,
      0x00000014,0x0004003b,0x00000015,0x00000016,0x00000000,0x0004002b,0x0000000e,0x00000018,
@@ -63,7 +55,7 @@ index fd76d099..96905295 100644
  };
  
  //-----------------------------------------------------------------------------
-@@ -679,7 +684,7 @@ bool ImGui_ImplVulkan_CreateFontsTexture()
+@@ -694,7 +700,7 @@ bool ImGui_ImplVulkan_CreateFontsTexture()
          VkImageCreateInfo info = {};
          info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
          info.imageType = VK_IMAGE_TYPE_2D;
@@ -72,7 +64,7 @@ index fd76d099..96905295 100644
          info.extent.width = width;
          info.extent.height = height;
          info.extent.depth = 1;
-@@ -710,7 +715,7 @@ bool ImGui_ImplVulkan_CreateFontsTexture()
+@@ -725,7 +731,7 @@ bool ImGui_ImplVulkan_CreateFontsTexture()
          info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
          info.image = bd->FontImage;
          info.viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -81,15 +73,6 @@ index fd76d099..96905295 100644
          info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
          info.subresourceRange.levelCount = 1;
          info.subresourceRange.layerCount = 1;
-@@ -1655,7 +1660,7 @@ static void ImGui_ImplVulkan_CreateWindow(ImGuiViewport* viewport)
-     // Select Surface Format
-     const VkFormat requestSurfaceImageFormat[] = {
- #if defined(IMGUI_IMPL_VULKAN_HAS_DYNAMIC_RENDERING)
--        v->UseDynamicRendering && v->ColorAttachmentFormat ? v->ColorAttachmentFormat : VK_FORMAT_B8G8R8A8_UNORM,
-+        v->UseDynamicRendering && v->ColorAttachmentFormat ? v->ColorAttachmentFormat : VK_FORMAT_B8G8R8A8_SRGB,
- #endif
-         VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_B8G8R8_UNORM, VK_FORMAT_R8G8B8_UNORM };
-     const VkColorSpaceKHR requestSurfaceColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
 -- 
 2.39.3 (Apple Git-145)
 

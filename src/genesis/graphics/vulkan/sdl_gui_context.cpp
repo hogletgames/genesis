@@ -113,10 +113,10 @@ GUIContext::GUIContext(void *window, Shared<Device> device, WindowRenderer *wind
         throw Vulkan::Exception{"Failed to initialize SDL2 for Vulkan"};
     }
 
+    createDescriptorPool();
+
     auto *swap_chain = window_renderer->swapChain();
     VkRenderPass render_pass = window_renderer->renderPass(Renderer::CLEAR_ALL);
-
-    createDescriptorPool();
 
     ImGui_ImplVulkan_InitInfo init_info{};
     init_info.Instance = Instance::instance();
@@ -124,15 +124,13 @@ GUIContext::GUIContext(void *window, Shared<Device> device, WindowRenderer *wind
     init_info.Device = m_device->device();
     init_info.QueueFamily = m_device->queueIndices().graphics_family.value();
     init_info.Queue = m_device->graphicsQueue();
-    init_info.PipelineCache = nullptr;
     init_info.DescriptorPool = m_descriptor_pool;
-    init_info.Allocator = nullptr;
+    init_info.RenderPass = render_pass;
     init_info.MinImageCount = swap_chain->minImageCount();
     init_info.ImageCount = swap_chain->imageCount();
     init_info.MSAASamples = toVkSampleCountFlag(window_renderer->MSAASamples());
-    init_info.CheckVkResultFn = nullptr;
 
-    if (!ImGui_ImplVulkan_Init(&init_info, render_pass)) {
+    if (!ImGui_ImplVulkan_Init(&init_info)) {
         throw Vulkan::Exception{"Failed to initialize GUI Vulkan backend"};
     }
 

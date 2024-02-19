@@ -62,7 +62,7 @@ FetchContent_MakeAvailable(spdlog)
 # imgui
 FetchContent_Declare(imgui
     GIT_REPOSITORY https://github.com/hogletgames/imgui.git
-    GIT_TAG v1.90-docking
+    GIT_TAG v1.90.4-docking
     PATCH_COMMAND ${GE_APPLY_PATCH} ${DEPS_DIR}/imgui-src ${GE_PATCHES_DIR}/imgui)
 FetchContent_GetProperties(imgui)
 if (NOT imgui_POPULATED)
