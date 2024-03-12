@@ -1,6 +1,8 @@
 include(FetchContent)
 include(ExternalProject)
 
+cmake_host_system_information(RESULT GE_NPROC QUERY NUMBER_OF_LOGICAL_CORES)
+
 # CMake options
 set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
 set(FETCHCONTENT_QUIET OFF)
@@ -240,14 +242,14 @@ if (APPLE)
     # MoltenVK
     FetchContent_Declare(MoltenVK
         GIT_REPOSITORY https://github.com/hogletgames/MoltenVK.git
-        GIT_TAG v1.2.6)
+        GIT_TAG v1.2.8-rc1)
     if (NOT MoltenVK_POPULATED)
         FetchContent_Populate(MoltenVK)
         ExternalProject_Add(libMoltenVK
             SOURCE_DIR ${moltenvk_SOURCE_DIR}
             BUILD_IN_SOURCE ON
-            CONFIGURE_COMMAND ./fetchDependencies --macos
-            BUILD_COMMAND make macos
+            CONFIGURE_COMMAND ./fetchDependencies -v --macos
+            BUILD_COMMAND make -j${GE_NPROC} macos
             INSTALL_COMMAND "")
         add_dependencies(vulkan libMoltenVK)
     endif()
