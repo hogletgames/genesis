@@ -32,36 +32,19 @@
 
 #pragma once
 
-#include <genesis/core/export.h>
-#include <genesis/core/memory.h>
-#include <genesis/scene/renderer/irenderer.h>
-
-namespace GE {
-class UniformBuffer;
-} // namespace GE
+#include <genesis/scene/renderer/renderer_base.h>
 
 namespace GE::Scene {
 
-class Entity;
-class ViewProjectionCamera;
-
-class GE_API PlainRenderer: public GE::Scene::IRenderer
+class GE_API PlainRenderer: public RendererBase
 {
 public:
-    explicit PlainRenderer(const ViewProjectionCamera* camera);
-    ~PlainRenderer();
+    using RendererBase::RendererBase;
 
-    void render(GE::Renderer* renderer, const Scene& scene) override;
+    void render(const Scene& scene) override;
+    std::string_view type() const override { return TYPE; }
 
-private:
-    void renderSprite(GE::Renderer* renderer, const Entity& entity);
-
-    void updateViewProjectionUBO();
-
-    const GE::Scene::ViewProjectionCamera* m_camera{nullptr};
-
-    Scoped<UniformBuffer> m_vp_ubo;
-    Scoped<UniformBuffer> m_translation_ubo;
+    static constexpr std::string_view TYPE = "Plain Scene Renderer";
 };
 
 } // namespace GE::Scene

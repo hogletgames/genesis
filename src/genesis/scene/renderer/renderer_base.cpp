@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,24 +30,62 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer/plain_renderer.h"
+#include "renderer/renderer_base.h"
+#include "camera/view_projection_camera.h"
 #include "components.h"
-#include "scene.h"
+#include "entity.h"
 
+#include "genesis/core/log.h"
+#include "genesis/graphics/render_command.h"
 #include "genesis/graphics/renderer.h"
 
 namespace GE::Scene {
 
-void PlainRenderer::render(const Scene& scene)
+RendererBase::RendererBase(GE::Renderer* renderer, const ViewProjectionCamera* camera)
+    : m_renderer{renderer}
+    , m_camera{camera}
+{}
+
+void RendererBase::renderEntity(GE::Renderer* renderer, Pipeline* pipeline, const Entity& entity)
 {
-    m_renderer->beginFrame();
+    std::string_view entity_tag = entity.get<TagComponent>().tag;
 
-    scene.forEach<MaterialComponent, SpriteComponent>([this](const auto& entity) {
-        auto* pipeline = entity.template get<MaterialComponent>().material.get();
-        renderEntity(m_renderer, pipeline, entity);
-    });
+    const auto& sprite = entity.get<SpriteComponent>();
+    auto* texture = sprite.texture.get();
+    auto* mesh = sprite.mesh.get();
 
-    m_renderer->endFrame();
+    if (!isValid(entity_tag, pipeline, texture, mesh)) {
+        return;
+    }
+
+    auto mvp = m_camera->viewProjection() * entity.get<TransformComponent>().transform();
+
+    auto* cmd = renderer->command();
+    cmd->bind(pipeline);
+    cmd->bind(pipeline, "u_Sprite", *texture);
+    cmd->pushConstant(pipeline, "pc.mvp", mvp);
+    cmd->draw(*mesh);
+}
+
+bool RendererBase::isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
+                           Mesh* mesh) const
+{
+    if (material == nullptr) {
+        GE_CORE_ERR("A pipeline for an entity '{}' is null", entity_name);
+        return false;
+    }
+
+    if (texture == nullptr) {
+        GE_CORE_ERR("A texture for an entity '{}' is null", entity_name);
+        return false;
+    }
+
+    if (mesh == nullptr) {
+        GE_CORE_ERR("A mesh for an entity '{}' is null", entity_name);
+        return false;
+    }
+
+    return true;
 }
 
 } // namespace GE::Scene

@@ -69,8 +69,8 @@ bool LevelEditor::initialize()
         return false;
     }
 
-    m_scene_renderer =
-        GE::makeScoped<GE::Scene::PlainRenderer>(m_ctx.cameraController()->camera().get());
+    createSceneRenderer();
+
     m_gui = GE::makeScoped<LevelEditorGUI>(&m_ctx);
     connectSignals();
     initializeProject();
@@ -94,12 +94,9 @@ void LevelEditor::onEvent(GE::Event* event)
 
 void LevelEditor::onRender()
 {
-    auto* renderer = m_ctx.sceneFbo()->renderer();
-    auto* scene = m_ctx.scene();
-
     updateParameters();
 
-    m_scene_renderer->render(renderer, *scene);
+    m_ctx.sceneRenderer()->render(*m_ctx.scene());
     m_gui->onRender();
 }
 
@@ -112,6 +109,14 @@ bool LevelEditor::createFramebuffer()
 
     m_ctx.sceneFbo() = GE::Framebuffer::create(model_fbo_config);
     return m_ctx.sceneFbo() != nullptr;
+}
+
+void LevelEditor::createSceneRenderer()
+{
+    auto* renderer = m_ctx.sceneFbo()->renderer();
+    const auto* camera = m_ctx.cameraController()->camera().get();
+
+    m_ctx.sceneRenderer() = GE::makeScoped<GE::Scene::PlainRenderer>(renderer, camera);
 }
 
 void LevelEditor::connectSignals()

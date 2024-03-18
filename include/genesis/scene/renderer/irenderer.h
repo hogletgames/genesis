@@ -34,6 +34,8 @@
 
 #include <genesis/core/interface.h>
 
+#include <string_view>
+
 namespace GE {
 class Renderer;
 } // namespace GE
@@ -45,7 +47,8 @@ class Scene;
 class GE_API IRenderer: public Interface
 {
 public:
-    virtual void render(GE::Renderer* renderer, const Scene& scene) = 0;
+    virtual void render(const Scene& scene) = 0;
+    virtual std::string_view type() const = 0;
 };
 
 } // namespace GE::Scene

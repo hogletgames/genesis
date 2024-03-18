@@ -21,6 +21,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/components/yaml_convert.h
     ${INCLUDE_DIR}/renderer/irenderer.h
     ${INCLUDE_DIR}/renderer/plain_renderer.h
+    ${INCLUDE_DIR}/renderer/renderer_base.h
     )
 
 list(APPEND SCENE_SOURCES
@@ -34,6 +35,7 @@ list(APPEND SCENE_SOURCES
     camera/view_projection_camera.cpp
     camera/vp_camera_controller.cpp
     renderer/plain_renderer.cpp
+    renderer/renderer_base.cpp
     )
 
 ge_add_module(scene

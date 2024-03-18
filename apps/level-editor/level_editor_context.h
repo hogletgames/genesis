@@ -38,6 +38,7 @@
 #include <genesis/core/memory.h>
 #include <genesis/scene/camera/view_projection_camera.h>
 #include <genesis/scene/camera/vp_camera_controller.h>
+#include <genesis/scene/renderer.h>
 #include <genesis/scene/scene.h>
 
 namespace GE {
@@ -51,6 +52,7 @@ class GE_API LevelEditorContext
 public:
     Settings* settings() { return m_settings.get(); }
     GE::Scoped<GE::Framebuffer>& sceneFbo() { return m_scene_fbo; }
+    GE::Scoped<GE::Scene::IRenderer>& sceneRenderer() { return m_scene_renderer; }
     GE::Assets::Registry* assets() { return &m_assets; }
     GE::Scene::Scene* scene() { return &m_scene; }
     GE::Scene::VPCameraController* cameraController() { return &m_camera_controller; }
@@ -61,6 +63,7 @@ public:
 private:
     GE::Scoped<Settings> m_settings{GE::makeScoped<Settings>()};
     GE::Scoped<GE::Framebuffer> m_scene_fbo;
+    GE::Scoped<GE::Scene::IRenderer> m_scene_renderer;
     GE::Assets::Registry m_assets;
     GE::Scene::Scene m_scene;
     GE::Shared<GE::Scene::ViewProjectionCamera> m_camera{
