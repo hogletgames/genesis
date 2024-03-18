@@ -116,7 +116,7 @@ void LevelEditor::createSceneRenderer()
     auto* renderer = m_ctx.sceneFbo()->renderer();
     const auto* camera = m_ctx.cameraController()->camera().get();
 
-    m_ctx.sceneRenderer() = GE::makeScoped<GE::Scene::PlainRenderer>(renderer, camera);
+    m_ctx.sceneRenderer() = GE::makeScoped<GE::Scene::WeightedBlendedOITRenderer>(renderer, camera);
 }
 
 void LevelEditor::connectSignals()

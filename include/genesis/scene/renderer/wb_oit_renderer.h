@@ -32,7 +32,46 @@
 
 #pragma once
 
-#include <genesis/scene/renderer/irenderer.h>
-#include <genesis/scene/renderer/plain_renderer.h>
+#include <genesis/core/memory.h>
+#include <genesis/math/types.h>
 #include <genesis/scene/renderer/renderer_base.h>
-#include <genesis/scene/renderer/wb_oit_renderer.h>
+
+namespace GE {
+class Framebuffer;
+} // namespace GE
+
+namespace GE::Assets {
+class Registry;
+} // namespace GE::Assets
+
+namespace GE::Scene {
+
+class Entity;
+
+class WeightedBlendedOITRenderer: public RendererBase
+{
+public:
+    explicit WeightedBlendedOITRenderer(GE::Renderer* renderer, const ViewProjectionCamera* camera);
+
+    void render(const Scene& scene) override;
+    std::string_view type() const override { return TYPE; }
+
+    static constexpr std::string_view TYPE = "Weighted-Blended OIT Scene Renderer";
+
+private:
+    void recreateWbOitFramebuffer(const Vec2& size);
+    void createOpaqueColorPipeline(GE::Renderer* renderer);
+    void createAccumulationPipeline(GE::Renderer* renderer);
+    void createComposingPipeline(GE::Renderer* renderer);
+
+    void renderOpaqueEntities(GE::Renderer* renderer, const Scene& scene);
+    void renderTransparentEntities(GE::Renderer* renderer, const Scene& scene);
+    void composeScene(GE::Renderer* renderer);
+
+    Scoped<Framebuffer> m_wb_oit_fbo;
+    Shared<Pipeline> m_color_pipeline;
+    Shared<Pipeline> m_accumulation_pipeline;
+    Shared<Pipeline> m_composing_pipeline;
+};
+
+} // namespace GE::Scene
