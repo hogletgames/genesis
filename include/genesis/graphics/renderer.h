@@ -34,6 +34,7 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/graphics/render_command.h>
+#include <genesis/math/types.h>
 
 namespace GE {
 
@@ -59,6 +60,7 @@ public:
 
     virtual void onEvent(Event* event) = 0;
 
+    virtual Vec2 size() const = 0;
     virtual RenderCommand* command() = 0;
 
     virtual Scoped<Pipeline> createPipeline(const pipeline_config_t& config) = 0;
