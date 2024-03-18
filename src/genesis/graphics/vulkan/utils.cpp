@@ -31,14 +31,41 @@
  */
 
 #include "utils.h"
+#include "instance.h"
 
-#include "genesis/core/utils.h"
+#include "genesis/core/asserts.h"
+
+#define GET_INSTANCE_PROC_ADDR(func_name) getInstanceProcAddr<PFN_##func_name>(#func_name)
 
 namespace GE::Vulkan {
+namespace {
+
+template<typename Func>
+Func getInstanceProcAddr(std::string_view func_name)
+{
+    auto func =
+        reinterpret_cast<Func>(vkGetInstanceProcAddr(Instance::instance(), func_name.data()));
+    GE_CORE_ASSERT(func != nullptr, "Failed to load function: {}", func_name);
+    return func;
+}
+
+} // namespace
 
 VkSampleCountFlagBits toVkSampleCountFlag(uint8_t sample_count)
 {
     return static_cast<VkSampleCountFlagBits>(sample_count);
+}
+
+void cmdBeginRendering(VkCommandBuffer cmd_buffer, const VkRenderingInfo* rendering_info)
+{
+    static auto begin_rendering = GET_INSTANCE_PROC_ADDR(vkCmdBeginRenderingKHR);
+    begin_rendering(cmd_buffer, rendering_info);
+}
+
+void cmdEndRendering(VkCommandBuffer cmd_buffer)
+{
+    static auto end_rendering = GET_INSTANCE_PROC_ADDR(vkCmdEndRenderingKHR);
+    end_rendering(cmd_buffer);
 }
 
 } // namespace GE::Vulkan

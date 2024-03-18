@@ -62,32 +62,34 @@ public:
     uint32_t colorAttachmentCount() const override;
     bool hasDepthAttachment() const override;
 
-    const std::vector<VkAttachmentDescription>& attachments() const { return m_attachments; }
-
-    VkFramebuffer framebuffer() const { return m_framebuffer; }
+    const std::vector<VkRenderingAttachmentInfo>&
+    colorRenderingAttachments(Renderer::ClearMode clear_mode);
+    const VkRenderingAttachmentInfo& depthRenderingAttachment(Renderer::ClearMode clear_mode);
 
 private:
-    void createResources(const fb_attachment_t& attachment_config);
     void createMSAAResources(const fb_attachment_t& attachment_config);
     void createAttachments();
-    void createFramebuffer();
 
-    void destroyVkHandles();
+    VkRenderingAttachmentInfo
+    createColorRenderingAttachment(const Scoped<Vulkan::Texture>& texture);
+    VkRenderingAttachmentInfo
+    createDepthRenderingAttachment(const Scoped<Vulkan::Texture>& texture);
     Scoped<Vulkan::Texture> createTexture(TextureType type, TextureFormat format);
     Scoped<Image> createMSAAImage(TextureType type, TextureFormat format);
+
+    void clearResources();
 
     Shared<Device> m_device;
     Scoped<FramebufferRenderer> m_renderer;
     config_t m_config;
 
-    VkFramebuffer m_framebuffer{VK_NULL_HANDLE};
-    std::vector<VkAttachmentDescription> m_attachments;
-    std::vector<VkImageView> m_image_views;
     std::vector<Scoped<Vulkan::Texture>> m_color_textures;
     std::vector<Scoped<Image>> m_color_msaa_images;
+    std::vector<VkRenderingAttachmentInfo> m_color_rendering_attachments;
+
     Scoped<Vulkan::Texture> m_depth_texture;
     Scoped<Image> m_depth_msaa_image;
-    uint32_t m_color_attachment_count{0};
+    VkRenderingAttachmentInfo m_depth_rendering_attachment{};
 };
 
 } // namespace GE::Vulkan

@@ -94,4 +94,7 @@ std::vector<T> vulkanGet(Func&& f, Args&&... args)
 
 VkSampleCountFlagBits toVkSampleCountFlag(uint8_t sample_count);
 
+void cmdBeginRendering(VkCommandBuffer cmd_buffer, const VkRenderingInfo* rendering_info);
+void cmdEndRendering(VkCommandBuffer cmd_buffer);
+
 } // namespace GE::Vulkan

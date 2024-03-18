@@ -71,7 +71,7 @@ void mapKeys()
     io.KeyMap[ImGuiKey_Space] = cast_key(GE::KeyCode::SPACE);
     io.KeyMap[ImGuiKey_Enter] = cast_key(GE::KeyCode::RETURN);
     io.KeyMap[ImGuiKey_Escape] = cast_key(GE::KeyCode::ESCAPE);
-    io.KeyMap[ImGuiKey_KeyPadEnter] = cast_key(GE::KeyCode::KP_ENTER);
+    io.KeyMap[ImGuiKey_KeypadEnter] = cast_key(GE::KeyCode::KP_ENTER);
     io.KeyMap[ImGuiKey_A] = cast_key(GE::KeyCode::A);
     io.KeyMap[ImGuiKey_C] = cast_key(GE::KeyCode::C);
     io.KeyMap[ImGuiKey_V] = cast_key(GE::KeyCode::V);
@@ -113,10 +113,17 @@ GUIContext::GUIContext(void *window, Shared<Device> device, WindowRenderer *wind
         throw Vulkan::Exception{"Failed to initialize SDL2 for Vulkan"};
     }
 
-    auto *swap_chain = window_renderer->swapChain();
-    VkRenderPass render_pass = window_renderer->renderPass(Renderer::CLEAR_ALL);
-
     createDescriptorPool();
+
+    auto *swap_chain = window_renderer->swapChain();
+
+    std::array<VkFormat, 1> color_formats{swap_chain->colorFormat()};
+
+    VkPipelineRenderingCreateInfo rendering_info{};
+    rendering_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
+    rendering_info.colorAttachmentCount = color_formats.size();
+    rendering_info.pColorAttachmentFormats = color_formats.data();
+    rendering_info.depthAttachmentFormat = swap_chain->depthFormat();
 
     ImGui_ImplVulkan_InitInfo init_info{};
     init_info.Instance = Instance::instance();
@@ -124,15 +131,14 @@ GUIContext::GUIContext(void *window, Shared<Device> device, WindowRenderer *wind
     init_info.Device = m_device->device();
     init_info.QueueFamily = m_device->queueIndices().graphics_family.value();
     init_info.Queue = m_device->graphicsQueue();
-    init_info.PipelineCache = nullptr;
     init_info.DescriptorPool = m_descriptor_pool;
-    init_info.Allocator = nullptr;
     init_info.MinImageCount = swap_chain->minImageCount();
     init_info.ImageCount = swap_chain->imageCount();
     init_info.MSAASamples = toVkSampleCountFlag(window_renderer->MSAASamples());
-    init_info.CheckVkResultFn = nullptr;
+    init_info.UseDynamicRendering = true;
+    init_info.PipelineRenderingCreateInfo = rendering_info;
 
-    if (!ImGui_ImplVulkan_Init(&init_info, render_pass)) {
+    if (!ImGui_ImplVulkan_Init(&init_info)) {
         throw Vulkan::Exception{"Failed to initialize GUI Vulkan backend"};
     }
 

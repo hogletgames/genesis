@@ -72,7 +72,6 @@ namespace GE::Vulkan {
 SwapChain::SwapChain(Shared<Vulkan::Device> device, const options_t& options)
     : m_device{std::move(device)}
     , m_surface{options.surface}
-    , m_render_pass{options.render_pass}
     , m_msaa_samples{options.msaa_samples}
 {
     createSwapChainWithResources(VK_NULL_HANDLE, options.window_size);
@@ -190,11 +189,10 @@ void SwapChain::createSwapChainWithResources(VkSwapchainKHR old_swap_chain, cons
     createImageViews();
 
     if (m_msaa_samples > 1) {
-        createColorResources();
+        createColorMSAAImage();
     }
 
-    createDepthResources();
-    createFramebuffers();
+    createDepthImage();
 }
 
 void SwapChain::createSwapChain(VkSwapchainKHR old_swap_chain, const Vec2& window_size)
@@ -253,7 +251,7 @@ void SwapChain::createImageViews()
     }
 }
 
-void SwapChain::createColorResources()
+void SwapChain::createColorMSAAImage()
 {
     image_config_t config{};
     config.extent.width = m_extent.width;
@@ -266,10 +264,10 @@ void SwapChain::createColorResources()
     config.memory_properties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     config.aspect_mask = VK_IMAGE_ASPECT_COLOR_BIT;
 
-    m_color_image = makeScoped<Image>(m_device, config);
+    m_color_msaa_image = makeScoped<Image>(m_device, config);
 }
 
-void SwapChain::createDepthResources()
+void SwapChain::createDepthImage()
 {
     image_config_t config{};
     config.extent.width = m_extent.width;
@@ -283,29 +281,6 @@ void SwapChain::createDepthResources()
     config.aspect_mask = VK_IMAGE_ASPECT_DEPTH_BIT;
 
     m_depth_image = makeScoped<Image>(m_device, config);
-}
-
-void SwapChain::createFramebuffers()
-{
-    m_framebuffers.resize(m_swap_chain_image_views.size());
-
-    for (size_t i = 0; i < m_swap_chain_image_views.size(); i++) {
-        auto attachments = getFramebufferAttachments(i);
-
-        VkFramebufferCreateInfo framebuffer_info{};
-        framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebuffer_info.renderPass = m_render_pass;
-        framebuffer_info.attachmentCount = attachments.size();
-        framebuffer_info.pAttachments = attachments.data();
-        framebuffer_info.width = m_extent.width;
-        framebuffer_info.height = m_extent.height;
-        framebuffer_info.layers = 1;
-
-        if (vkCreateFramebuffer(m_device->device(), &framebuffer_info, nullptr,
-                                &m_framebuffers[i]) != VK_SUCCESS) {
-            throw Vulkan::Exception{"Failed to create Framebuffer"};
-        }
-    }
 }
 
 void SwapChain::createSyncObjects()
@@ -340,31 +315,15 @@ void SwapChain::createSyncObjects()
     }
 }
 
-std::vector<VkImageView> SwapChain::getFramebufferAttachments(uint32_t image_idx)
-{
-    if (m_color_image != nullptr) {
-        return {
-            m_color_image->view(),
-            m_depth_image->view(),
-            m_swap_chain_image_views[image_idx],
-        };
-    }
-
-    return {m_swap_chain_image_views[image_idx], m_depth_image->view()};
-}
-
 void SwapChain::destroySwapChainResources()
 {
     for (size_t i{0}; i < m_swap_chain_images.size(); i++) {
         vkDestroyImageView(m_device->device(), m_swap_chain_image_views[i], nullptr);
         m_swap_chain_image_views[i] = VK_NULL_HANDLE;
-
-        vkDestroyFramebuffer(m_device->device(), m_framebuffers[i], nullptr);
-        m_framebuffers[i] = VK_NULL_HANDLE;
     }
 
     m_depth_image.reset();
-    m_color_image.reset();
+    m_color_msaa_image.reset();
 }
 
 void SwapChain::destroySyncObjectHandles()

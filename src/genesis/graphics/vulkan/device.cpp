@@ -126,7 +126,11 @@ void appendMandatoryDeviceExtensions(VkPhysicalDevice physical_device,
 Device::Device(VkSurfaceKHR surface)
     : m_surface{surface}
 {
-    m_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_MAINTENANCE1_EXTENSION_NAME};
+    m_extensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+        VK_KHR_MAINTENANCE1_EXTENSION_NAME,
+        VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
+    };
 
     pickPhysicalDevice();
     createLogicalDevice();
@@ -213,8 +217,13 @@ void Device::createLogicalDevice()
     device_features.samplerAnisotropy = VK_TRUE;
     device_features.sampleRateShading = VK_TRUE;
 
+    VkPhysicalDeviceDynamicRenderingFeatures dynamic_rendering_features{};
+    dynamic_rendering_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES;
+    dynamic_rendering_features.dynamicRendering = VK_TRUE;
+
     VkDeviceCreateInfo create_info{};
     create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    create_info.pNext = &dynamic_rendering_features;
     create_info.pQueueCreateInfos = queue_create_infos.data();
     create_info.queueCreateInfoCount = queue_create_infos.size();
     create_info.pEnabledFeatures = &device_features;

@@ -37,37 +37,36 @@
 #include "single_command.h"
 #include "vulkan_exception.h"
 
-using GE::Vulkan::PipelineBarrier;
-
+namespace GE::Vulkan {
 namespace {
 
-inline constexpr int32_t divideBlit(int32_t value)
+constexpr int32_t divideBlit(int32_t value)
 {
     return value > 1 ? value / 2 : 1;
 }
 
-inline constexpr int32_t divideMip(int32_t value)
+constexpr int32_t divideMip(int32_t value)
 {
     return value > 1 ? value / 2 : value;
 }
 
-inline constexpr VkOffset3D toVkOffset3D(const VkExtent3D &extent)
+constexpr VkOffset3D toVkOffset3D(const VkExtent3D &extent)
 {
     return {static_cast<int32_t>(extent.width), static_cast<int32_t>(extent.height),
             static_cast<int32_t>(extent.depth)};
 }
 
-inline constexpr VkOffset3D toVkBlitDstOffset(const VkOffset3D &offset)
+constexpr VkOffset3D toVkBlitDstOffset(const VkOffset3D &offset)
 {
     return {divideBlit(offset.x), divideBlit(offset.y), divideBlit(offset.z)};
 }
 
-inline constexpr VkOffset3D toNextMipOffset(const VkOffset3D &offset)
+constexpr VkOffset3D toNextMipOffset(const VkOffset3D &offset)
 {
     return {divideMip(offset.x), divideMip(offset.y), divideMip(offset.z)};
 }
 
-bool isLinearFilterSupported(const GE::Vulkan::Device &device, VkFormat format)
+bool isLinearFilterSupported(const Device &device, VkFormat format)
 {
     VkFormatProperties format_properties{};
     vkGetPhysicalDeviceFormatProperties(device.physicalDevice(), format, &format_properties);
@@ -80,10 +79,10 @@ void generateMipLevel(VkCommandBuffer cmd, VkImage image, VkImageMemoryBarrier *
                       const VkOffset3D &mip_offset, uint32_t mip_level)
 {
     barrier->subresourceRange.baseMipLevel = mip_level - 1;
-    barrier->oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-    barrier->newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
     barrier->srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     barrier->dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    barrier->oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    barrier->newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 
     PipelineBarrier::submit(cmd, {*barrier}, VK_PIPELINE_STAGE_TRANSFER_BIT,
                             VK_PIPELINE_STAGE_TRANSFER_BIT);
@@ -105,18 +104,16 @@ void generateMipLevel(VkCommandBuffer cmd, VkImage image, VkImageMemoryBarrier *
     vkCmdBlitImage(cmd, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image,
                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_LINEAR);
 
-    barrier->oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-    barrier->newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     barrier->srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
     barrier->dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    barrier->oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+    barrier->newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
     PipelineBarrier::submit(cmd, {*barrier}, VK_PIPELINE_STAGE_TRANSFER_BIT,
                             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 }
 
 } // namespace
-
-namespace GE::Vulkan {
 
 Image::Image(Shared<Device> device, const image_config_t &config)
     : m_device{std::move(device)}
@@ -142,15 +139,24 @@ void Image::copyFrom(const StagingBuffer &buffer, const std::vector<VkBufferImag
     createMipmaps();
 };
 
-memory_barrier_config_t Image::memoryBarrierConfig() const
+VkImageMemoryBarrier Image::imageMemoryBarrier() const
 {
-    memory_barrier_config_t config{};
-    config.image = m_image;
-    config.image_format = m_format;
-    config.level_count = m_mip_levels;
-    config.layer_count = m_layers;
+    VkImageMemoryBarrier barrier{};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.srcAccessMask = VK_ACCESS_NONE;
+    barrier.dstAccessMask = VK_ACCESS_NONE;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    barrier.newLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = m_image;
+    barrier.subresourceRange.aspectMask = toVkAspect(m_format);
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = m_mip_levels;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount = m_layers;
 
-    return config;
+    return barrier;
 }
 
 void Image::createImage(const image_config_t &config)
@@ -242,12 +248,11 @@ uint32_t Image::getMemoryType(uint32_t type_filter, VkMemoryPropertyFlags proper
 
 void Image::transitionImageLayout()
 {
-    auto barrier_config = memoryBarrierConfig();
-    barrier_config.old_layout = VK_IMAGE_LAYOUT_UNDEFINED;
-    barrier_config.new_layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    auto barrier = imageMemoryBarrier();
+    barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 
     SingleCommand cmd{m_device, SingleCommand::QUEUE_TRANSFER};
-    auto barrier = MemoryBarrier::createImageMemoryBarrier(barrier_config);
     PipelineBarrier::submit(cmd.buffer(), {barrier}, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
                             VK_PIPELINE_STAGE_TRANSFER_BIT);
 }
@@ -265,12 +270,11 @@ void Image::createMipmaps()
         throw Vulkan::Exception("Image doesn't support linear blitting");
     }
 
-    auto barrier_config = memoryBarrierConfig();
-    barrier_config.level_count = 1;
-
     SingleCommand cmd{m_device, SingleCommand::QUEUE_COMPUTE};
-    auto barrier = MemoryBarrier::createImageMemoryBarrier(barrier_config);
     VkOffset3D mip_offset = toVkOffset3D(m_extent);
+
+    auto barrier = imageMemoryBarrier();
+    barrier.subresourceRange.levelCount = 1;
 
     for (uint32_t i{1}; i < m_mip_levels; i++) {
         generateMipLevel(cmd.buffer(), m_image, &barrier, mip_offset, i);
@@ -278,10 +282,10 @@ void Image::createMipmaps()
     }
 
     barrier.subresourceRange.baseMipLevel = m_mip_levels - 1;
-    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
     PipelineBarrier::submit(cmd.buffer(), {barrier}, VK_PIPELINE_STAGE_TRANSFER_BIT,
                             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);

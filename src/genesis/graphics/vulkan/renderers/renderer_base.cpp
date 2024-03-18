@@ -34,71 +34,8 @@
 #include "descriptor_pool.h"
 #include "device.h"
 #include "texture.h"
+#include "utils.h"
 #include "vulkan_exception.h"
-
-namespace {
-
-class AttachmentRefBuilder
-{
-public:
-    using AttachmentDescriptions = std::vector<VkAttachmentDescription>;
-    using AttachmentRefs = std::vector<VkAttachmentReference>;
-
-    explicit AttachmentRefBuilder(const AttachmentDescriptions& attachments,
-                                  bool is_multisampled = false)
-        : m_is_multisampled{is_multisampled}
-    {
-        for (uint32_t i{0}; i < attachments.size(); i++) {
-            addRef(attachments[i], i);
-        }
-    }
-
-    const AttachmentRefs& color() const { return m_color_refs; }
-    const AttachmentRefs& colorResolve() const { return m_color_resolve_refs; }
-    const AttachmentRefs& depth() const { return m_depth_refs; }
-
-private:
-    void addRef(const VkAttachmentDescription& attachment, uint32_t index)
-    {
-        VkAttachmentReference ref{};
-        ref.attachment = index;
-
-        if (isColor(attachment)) {
-            ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-            addColorRef(ref, isResolveAttachment(attachment));
-        } else {
-            ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-            m_depth_refs.push_back(ref);
-        }
-    }
-
-    void addColorRef(const VkAttachmentReference& ref, bool is_resolve_attachment)
-    {
-        if (is_resolve_attachment) {
-            m_color_resolve_refs.push_back(ref);
-        } else {
-            m_color_refs.push_back(ref);
-        }
-    }
-
-    bool isColor(const VkAttachmentDescription& attachment) const
-    {
-        return GE::isColorFormat(GE::Vulkan::toTextureFormat(attachment.format));
-    }
-
-    bool isResolveAttachment(const VkAttachmentDescription& attachment) const
-    {
-        return m_is_multisampled && attachment.samples == VK_SAMPLE_COUNT_1_BIT;
-    }
-
-    bool m_is_multisampled{false};
-
-    AttachmentRefs m_color_refs;
-    AttachmentRefs m_color_resolve_refs;
-    AttachmentRefs m_depth_refs;
-};
-
-} // namespace
 
 namespace GE::Vulkan {
 
@@ -113,56 +50,6 @@ RendererBase::RendererBase(Shared<Device> device)
 RendererBase::~RendererBase()
 {
     destroyVkHandles();
-}
-
-VkRenderPass
-RendererBase::createRenderPass(const std::vector<VkAttachmentDescription>& descriptions,
-                               bool is_multisampled)
-{
-    AttachmentRefBuilder attachment_builder{descriptions, is_multisampled};
-
-    VkSubpassDescription subpass{};
-    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpass.colorAttachmentCount = attachment_builder.color().size();
-    subpass.pColorAttachments = attachment_builder.color().data();
-    subpass.pResolveAttachments = attachment_builder.colorResolve().data();
-    subpass.pDepthStencilAttachment = attachment_builder.depth().data();
-
-    std::array<VkSubpassDependency, 2> dependencies{};
-
-    dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-    dependencies[0].dstSubpass = 0;
-    dependencies[0].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dependencies[0].srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
-    dependencies[1].srcSubpass = 0;
-    dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-    dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
-    VkRenderPassCreateInfo render_pass_info{};
-    render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    render_pass_info.attachmentCount = descriptions.size();
-    render_pass_info.pAttachments = descriptions.data();
-    render_pass_info.subpassCount = 1;
-    render_pass_info.pSubpasses = &subpass;
-    render_pass_info.dependencyCount = dependencies.size();
-    render_pass_info.pDependencies = dependencies.data();
-
-    VkRenderPass render_pass{};
-
-    if (vkCreateRenderPass(m_device->device(), &render_pass_info, nullptr, &render_pass) !=
-        VK_SUCCESS) {
-        throw Vulkan::Exception{"Failed to create Render Pass"};
-    }
-
-    return render_pass;
 }
 
 void RendererBase::createCommandPool()
@@ -216,15 +103,10 @@ void RendererBase::destroyVkHandles()
     m_command_pool = VK_NULL_HANDLE;
     m_cmd_buffers.clear();
 
-    for (auto* render_pass : m_render_passes) {
-        vkDestroyRenderPass(m_device->device(), render_pass, nullptr);
-        render_pass = VK_NULL_HANDLE;
-    }
-
     m_device.reset();
 }
 
-bool RendererBase::beginRenderPass(ClearMode clear_mode)
+bool RendererBase::beginRendering(ClearMode clear_mode)
 {
     VkCommandBuffer cmd = cmdBuffer();
 
@@ -237,16 +119,20 @@ bool RendererBase::beginRenderPass(ClearMode clear_mode)
         return false;
     }
 
-    VkRenderPassBeginInfo render_pass_info{};
-    render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    render_pass_info.renderPass = m_render_passes[clear_mode];
-    render_pass_info.framebuffer = currentFramebuffer();
-    render_pass_info.renderArea.offset = {0, 0};
-    render_pass_info.renderArea.extent = extent();
-    render_pass_info.clearValueCount = m_clear_values.size();
-    render_pass_info.pClearValues = m_clear_values.data();
+    transitImageLayoutBeforeRendering(cmd);
 
-    vkCmdBeginRenderPass(cmd, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+    const auto& colorAttachments = colorRenderingAttachments(clear_mode);
+    const auto& depthAttachment = depthRenderingAttachment(clear_mode);
+
+    VkRenderingInfoKHR rendering_info{};
+    rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO;
+    rendering_info.renderArea = {{0, 0}, extent()};
+    rendering_info.layerCount = 1;
+    rendering_info.colorAttachmentCount = colorAttachments.size();
+    rendering_info.pColorAttachments = colorAttachments.data();
+    rendering_info.pDepthAttachment = &depthAttachment;
+
+    cmdBeginRendering(cmd, &rendering_info);
     return true;
 }
 
@@ -261,13 +147,15 @@ void RendererBase::updateDynamicState()
     vkCmdSetScissor(cmd, 0, 1, &scissor);
 }
 
-bool RendererBase::endRenderPass()
+bool RendererBase::endRendering()
 {
     VkCommandBuffer cmd = cmdBuffer();
-    vkCmdEndRenderPass(cmd);
+
+    cmdEndRendering(cmd);
+    transitImageLayoutAfterRendering(cmd);
 
     if (vkEndCommandBuffer(cmd) != VK_SUCCESS) {
-        GE_CORE_ERR("Failed to end Render Pass");
+        GE_CORE_ERR("Failed to end Command Buffer");
         return false;
     }
 

@@ -1,26 +1,29 @@
-From c7a62ec411b81f949ac39ee9cd11e0c371014ba7 Mon Sep 17 00:00:00 2001
+From 2db63e57c5041839aacd81a6c4c8cfb7a1930790 Mon Sep 17 00:00:00 2001
 From: Dmitry Shilnenkov <dmitry.shilnenkov@gmail.com>
-Date: Sun, 3 Oct 2021 17:51:57 +0300
+Date: Mon, 19 Feb 2024 21:18:14 +0200
 Subject: [PATCH] Backends: Vulkan: Create separate pipeline for each viewport
 
 ---
- backends/imgui_impl_vulkan.cpp | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ backends/imgui_impl_vulkan.cpp | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/backends/imgui_impl_vulkan.cpp b/backends/imgui_impl_vulkan.cpp
-index 3e790ead..d385157d 100644
+index e7f7c8d82..631aa89b5 100644
 --- a/backends/imgui_impl_vulkan.cpp
 +++ b/backends/imgui_impl_vulkan.cpp
-@@ -1399,7 +1399,8 @@ void ImGui_ImplVulkanH_CreateWindowSwapChain(VkPhysicalDevice physical_device, V
+@@ -1531,9 +1531,10 @@ void ImGui_ImplVulkanH_CreateWindowSwapChain(VkPhysicalDevice physical_device, V
+         err = vkCreateRenderPass(device, &info, allocator, &wd->RenderPass);
+         check_vk_result(err);
  
-         // We do not create a pipeline by default as this is also used by examples' main.cpp,
+-        // We do not create a pipeline by default as this is also used by examples' main.cpp,
          // but secondary viewport in multi-viewport mode may want to create one with:
--        //ImGui_ImplVulkan_CreatePipeline(device, allocator, VK_NULL_HANDLE, wd->RenderPass, VK_SAMPLE_COUNT_1_BIT, &wd->Pipeline, bd->Subpass);
+-        //ImGui_ImplVulkan_CreatePipeline(device, allocator, VK_NULL_HANDLE, wd->RenderPass, VK_SAMPLE_COUNT_1_BIT, &wd->Pipeline, v->Subpass);
 +        ImGui_ImplVulkan_Data* bd = ImGui_ImplVulkan_GetBackendData();
-+        ImGui_ImplVulkan_CreatePipeline(device, allocator, VK_NULL_HANDLE, wd->RenderPass, VK_SAMPLE_COUNT_1_BIT, &wd->Pipeline, bd->Subpass);
++        ImGui_ImplVulkan_InitInfo* v = &bd->VulkanInitInfo;
++        ImGui_ImplVulkan_CreatePipeline(v->Device, v->Allocator, v->PipelineCache, v->RenderPass, v->MSAASamples, &bd->Pipeline, v->Subpass);
      }
  
      // Create The Image Views
 -- 
-2.33.0
+2.39.3 (Apple Git-145)
 

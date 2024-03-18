@@ -54,29 +54,31 @@ public:
 protected:
     explicit RendererBase(Shared<Device> device);
 
-    VkRenderPass createRenderPass(const std::vector<VkAttachmentDescription>& descriptions,
-                                  bool is_multisampled = false);
     void createCommandPool();
     void createCommandBuffers(uint32_t count);
     void createPipelineCache();
 
-    bool beginRenderPass(ClearMode clear_mode);
+    bool beginRendering(ClearMode clear_mode);
     void updateDynamicState();
-    bool endRenderPass();
+    bool endRendering();
+
+    virtual void transitImageLayoutBeforeRendering(VkCommandBuffer cmd) = 0;
+    virtual void transitImageLayoutAfterRendering(VkCommandBuffer cmd) = 0;
 
     virtual VkCommandBuffer cmdBuffer() const = 0;
-    virtual VkFramebuffer currentFramebuffer() const = 0;
     virtual VkExtent2D extent() const = 0;
     virtual VkViewport viewport() const = 0;
+
+    virtual const std::vector<VkRenderingAttachmentInfo>&
+    colorRenderingAttachments(ClearMode clear_mode) = 0;
+    virtual const VkRenderingAttachmentInfo& depthRenderingAttachment(ClearMode clear_mode) = 0;
 
     Shared<Device> m_device;
 
     VkPipelineCache m_pipeline_cache{VK_NULL_HANDLE};
     VkCommandPool m_command_pool{VK_NULL_HANDLE};
     Shared<DescriptorPool> m_descriptor_pool;
-    std::array<VkRenderPass, 4> m_render_passes{VK_NULL_HANDLE};
     std::vector<VkCommandBuffer> m_cmd_buffers;
-    std::vector<VkClearValue> m_clear_values;
 
     RenderCommand m_render_command;
 
