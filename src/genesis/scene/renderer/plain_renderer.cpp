@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#include "renderer/plain_renderer.h"
 #include "camera/view_projection_camera.h"
 #include "components.h"
 #include "entity.h"
@@ -69,22 +69,26 @@ bool isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
 
 } // namespace
 
-Renderer::Renderer(const ViewProjectionCamera* camera)
+PlainRenderer::PlainRenderer(const ViewProjectionCamera* camera)
     : m_camera{camera}
     , m_vp_ubo{UniformBuffer::create(sizeof(vp_t))}
     , m_translation_ubo{UniformBuffer::create(sizeof(Mat4))}
 {}
 
-Renderer::~Renderer() = default;
+PlainRenderer::~PlainRenderer() = default;
 
-void Renderer::render(GE::Renderer* renderer, const Scene& scene)
+void PlainRenderer::render(GE::Renderer* renderer, const Scene& scene)
 {
+    renderer->beginFrame();
+
     updateViewProjectionUBO();
     scene.forEach<MaterialComponent, SpriteComponent>(
         [this, renderer](const auto& entity) { renderSprite(renderer, entity); });
+
+    renderer->endFrame();
 }
 
-void Renderer::renderSprite(GE::Renderer* renderer, const GE::Scene::Entity& entity)
+void PlainRenderer::renderSprite(GE::Renderer* renderer, const GE::Scene::Entity& entity)
 {
     std::string_view entity_tag = entity.get<TagComponent>().tag;
 
@@ -108,7 +112,7 @@ void Renderer::renderSprite(GE::Renderer* renderer, const GE::Scene::Entity& ent
     cmd->draw(*mesh);
 }
 
-void Renderer::updateViewProjectionUBO()
+void PlainRenderer::updateViewProjectionUBO()
 {
     m_vp_ubo->setObject(vp_t{m_camera->view(), m_camera->projection()});
 }

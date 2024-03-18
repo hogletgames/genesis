@@ -70,7 +70,7 @@ bool LevelEditor::initialize()
     }
 
     m_scene_renderer =
-        GE::makeScoped<GE::Scene::Renderer>(m_ctx.cameraController()->camera().get());
+        GE::makeScoped<GE::Scene::PlainRenderer>(m_ctx.cameraController()->camera().get());
     m_gui = GE::makeScoped<LevelEditorGUI>(&m_ctx);
     connectSignals();
     initializeProject();
@@ -99,10 +99,7 @@ void LevelEditor::onRender()
 
     updateParameters();
 
-    renderer->beginFrame();
     m_scene_renderer->render(renderer, *scene);
-    renderer->endFrame();
-
     m_gui->onRender();
 }
 
