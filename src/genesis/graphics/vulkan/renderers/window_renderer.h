@@ -72,8 +72,8 @@ public:
     void onEvent(Event* event) override;
     bool onWindowResized(const WindowResizedEvent& event);
 
+    Vec2 size() const override { return m_window_size; }
     SwapChain* swapChain() const { return m_swap_chain.get(); }
-
     uint8_t MSAASamples() const { return m_msaa_samples; }
 
 private:

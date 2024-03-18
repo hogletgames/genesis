@@ -101,6 +101,11 @@ void FramebufferRenderer::swapBuffers()
     m_descriptor_pool->reset();
 }
 
+Vec2 FramebufferRenderer::size() const
+{
+    return m_framebuffer->size();
+}
+
 Scoped<GE::Pipeline> FramebufferRenderer::createPipeline(const GE::pipeline_config_t& config)
 {
     auto color_formats = [](GE::Framebuffer* framebuffer) {

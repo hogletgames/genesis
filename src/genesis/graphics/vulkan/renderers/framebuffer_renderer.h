@@ -51,6 +51,8 @@ public:
 
     void onEvent([[maybe_unused]] Event *event) override{};
 
+    Vec2 size() const override;
+
     Scoped<GE::Pipeline> createPipeline(const pipeline_config_t &config) override;
 
 private:
