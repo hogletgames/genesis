@@ -33,5 +33,31 @@
 #pragma once
 
 #include <genesis/scene/renderer/irenderer.h>
-#include <genesis/scene/renderer/plain_renderer.h>
-#include <genesis/scene/renderer/renderer_base.h>
+
+#include <string>
+
+namespace GE {
+class Mesh;
+class Pipeline;
+class Texture;
+} // namespace GE
+
+namespace GE::Scene {
+
+class Entity;
+class ViewProjectionCamera;
+
+class RendererBase: public IRenderer
+{
+protected:
+    explicit RendererBase(const ViewProjectionCamera* camera);
+
+    void renderSprite(GE::Renderer* renderer, const Entity& entity);
+
+    bool isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
+                 Mesh* mesh) const;
+
+    const ViewProjectionCamera* m_camera{nullptr};
+};
+
+} // namespace GE::Scene
