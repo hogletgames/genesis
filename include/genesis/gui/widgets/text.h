@@ -42,4 +42,9 @@ public:
     static void call(std::string_view fmt, ...);
 };
 
+constexpr std::string_view toString(bool value)
+{
+    return value ? "true" : "false";
+}
+
 } // namespace GE::GUI

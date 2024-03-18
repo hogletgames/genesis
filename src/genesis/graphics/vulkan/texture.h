@@ -50,6 +50,7 @@ public:
     NativeID nativeID() const override;
     const Vec2& size() const override { return m_size; }
     TextureFormat format() const override { return m_format; }
+    bool isOpaque() const override { return m_is_opaque; }
     const Scoped<Image>& image() const { return m_image; }
     VkSampler sampler() const { return m_sampler; }
 
@@ -62,6 +63,7 @@ protected:
     Scoped<Image> m_image;
     Vec2 m_size{0.0f, 0.0f};
     TextureFormat m_format{TextureFormat::UNKNOWN};
+    bool m_is_opaque{true};
     VkSampler m_sampler{VK_NULL_HANDLE};
 
     mutable VkDescriptorSet m_descriptor_set{VK_NULL_HANDLE};

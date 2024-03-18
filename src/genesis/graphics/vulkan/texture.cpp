@@ -174,6 +174,7 @@ Texture::Texture(Shared<Device> device, const texture_config_t& config)
     : m_device{std::move(device)}
     , m_size{config.width, config.height}
     , m_format{config.format}
+    , m_is_opaque(config.is_opaque)
 {
     createImage(config);
     createSampler(config);
