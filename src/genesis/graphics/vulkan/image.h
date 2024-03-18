@@ -67,7 +67,7 @@ public:
 
     void copyFrom(const StagingBuffer& buffer, const std::vector<VkBufferImageCopy>& regions);
 
-    memory_barrier_config_t memoryBarrierConfig() const;
+    VkImageMemoryBarrier imageMemoryBarrier() const;
 
     VkImage image() const { return m_image; }
     VkImageView view() const { return m_image_view; }

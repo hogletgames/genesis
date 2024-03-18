@@ -37,31 +37,25 @@
 
 namespace GE::Vulkan {
 
-class Image;
-
-struct memory_barrier_config_t {
-    VkImage image{VK_NULL_HANDLE};
-    VkFormat image_format{VK_FORMAT_UNDEFINED};
-    uint32_t level_count{0};
-    uint32_t layer_count{0};
-
-    VkImageLayout old_layout{VK_IMAGE_LAYOUT_UNDEFINED};
-    VkImageLayout new_layout{VK_IMAGE_LAYOUT_UNDEFINED};
-    uint32_t base_mip_level{0};
-    uint32_t base_array_layer{0};
-};
-
-class MemoryBarrier
-{
-public:
-    static VkImageMemoryBarrier createImageMemoryBarrier(const memory_barrier_config_t& config);
-};
-
 class PipelineBarrier
 {
 public:
     static void submit(VkCommandBuffer cmd, const std::vector<VkImageMemoryBarrier>& barriers,
                        VkPipelineStageFlagBits src_stage, VkPipelineStageFlagBits dst_stage);
 };
+
+constexpr VkImageAspectFlags toVkAspect(VkFormat format)
+{
+    switch (format) {
+        case VK_FORMAT_D16_UNORM:
+        case VK_FORMAT_D32_SFLOAT: return VK_IMAGE_ASPECT_DEPTH_BIT;
+        case VK_FORMAT_S8_UINT: return VK_IMAGE_ASPECT_STENCIL_BIT;
+        case VK_FORMAT_D16_UNORM_S8_UINT:
+        case VK_FORMAT_D24_UNORM_S8_UINT:
+        case VK_FORMAT_D32_SFLOAT_S8_UINT:
+            return VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+        default: return VK_IMAGE_ASPECT_COLOR_BIT;
+    }
+}
 
 } // namespace GE::Vulkan

@@ -256,12 +256,13 @@ void Texture::destroyVkHandles()
 
 void Texture::colorImageBarrier()
 {
-    auto barrier_config = m_image->memoryBarrierConfig();
-    barrier_config.old_layout = VK_IMAGE_LAYOUT_UNDEFINED;
-    barrier_config.new_layout = VK_IMAGE_LAYOUT_GENERAL;
-
-    auto barrier = MemoryBarrier::createImageMemoryBarrier(barrier_config);
     SingleCommand cmd{m_device};
+
+    auto barrier = m_image->imageMemoryBarrier();
+    barrier.srcAccessMask = VK_ACCESS_NONE;
+    barrier.dstAccessMask = VK_ACCESS_NONE;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
 
     PipelineBarrier::submit(cmd.buffer(), {barrier}, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
                             VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
