@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2024, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,5 +32,36 @@
 
 #pragma once
 
+#include <genesis/core/export.h>
+#include <genesis/core/memory.h>
 #include <genesis/scene/renderer/irenderer.h>
-#include <genesis/scene/renderer/plain_renderer.h>
+
+namespace GE {
+class UniformBuffer;
+} // namespace GE
+
+namespace GE::Scene {
+
+class Entity;
+class ViewProjectionCamera;
+
+class GE_API PlainRenderer: public GE::Scene::IRenderer
+{
+public:
+    explicit PlainRenderer(const ViewProjectionCamera* camera);
+    ~PlainRenderer();
+
+    void render(GE::Renderer* renderer, const Scene& scene) override;
+
+private:
+    void renderSprite(GE::Renderer* renderer, const Entity& entity);
+
+    void updateViewProjectionUBO();
+
+    const GE::Scene::ViewProjectionCamera* m_camera{nullptr};
+
+    Scoped<UniformBuffer> m_vp_ubo;
+    Scoped<UniformBuffer> m_translation_ubo;
+};
+
+} // namespace GE::Scene

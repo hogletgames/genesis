@@ -32,5 +32,20 @@
 
 #pragma once
 
-#include <genesis/scene/renderer/irenderer.h>
-#include <genesis/scene/renderer/plain_renderer.h>
+#include <genesis/core/interface.h>
+
+namespace GE {
+class Renderer;
+} // namespace GE
+
+namespace GE::Scene {
+
+class Scene;
+
+class GE_API IRenderer: public Interface
+{
+public:
+    virtual void render(GE::Renderer* renderer, const Scene& scene) = 0;
+};
+
+} // namespace GE::Scene
