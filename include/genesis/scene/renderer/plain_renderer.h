@@ -39,9 +39,9 @@ namespace GE::Scene {
 class GE_API PlainRenderer: public RendererBase
 {
 public:
-    explicit PlainRenderer(const ViewProjectionCamera* camera);
+    using RendererBase::RendererBase;
 
-    void render(GE::Renderer* renderer, const Scene& scene) override;
+    void render(const Scene& scene) override;
 };
 
 } // namespace GE::Scene

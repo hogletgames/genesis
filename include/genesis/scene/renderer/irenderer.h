@@ -45,7 +45,7 @@ class Scene;
 class GE_API IRenderer: public Interface
 {
 public:
-    virtual void render(GE::Renderer* renderer, const Scene& scene) = 0;
+    virtual void render(const Scene& scene) = 0;
 };
 
 } // namespace GE::Scene

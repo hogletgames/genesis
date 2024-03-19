@@ -38,18 +38,14 @@
 
 namespace GE::Scene {
 
-PlainRenderer::PlainRenderer(const ViewProjectionCamera* camera)
-    : RendererBase{camera}
-{}
-
-void PlainRenderer::render(GE::Renderer* renderer, const Scene& scene)
+void PlainRenderer::render(const Scene& scene)
 {
-    renderer->beginFrame();
+    m_renderer->beginFrame();
 
     scene.forEach<MaterialComponent, SpriteComponent>(
-        [this, renderer](const auto& entity) { renderSprite(renderer, entity); });
+        [this](const auto& entity) { renderSprite(m_renderer, entity); });
 
-    renderer->endFrame();
+    m_renderer->endFrame();
 }
 
 } // namespace GE::Scene

@@ -41,8 +41,9 @@
 
 namespace GE::Scene {
 
-RendererBase::RendererBase(const ViewProjectionCamera* camera)
-    : m_camera(camera)
+RendererBase::RendererBase(GE::Renderer* renderer, const ViewProjectionCamera* camera)
+    : m_renderer{renderer}
+    , m_camera{camera}
 {}
 
 void RendererBase::renderSprite(GE::Renderer* renderer, const Entity& entity)

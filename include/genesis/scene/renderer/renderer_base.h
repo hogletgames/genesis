@@ -50,13 +50,14 @@ class ViewProjectionCamera;
 class RendererBase: public IRenderer
 {
 protected:
-    explicit RendererBase(const ViewProjectionCamera* camera);
+    RendererBase(GE::Renderer* renderer, const ViewProjectionCamera* camera);
 
     void renderSprite(GE::Renderer* renderer, const Entity& entity);
 
     bool isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
                  Mesh* mesh) const;
 
+    GE::Renderer* m_renderer{nullptr};
     const ViewProjectionCamera* m_camera{nullptr};
 };
 

@@ -42,6 +42,7 @@
 #include "genesis/graphics.h"
 #include "genesis/gui.h"
 #include "genesis/scene.h"
+#include "genesis/scene/renderer/wb_oit_renderer.h"
 
 using namespace GE::GUI;
 
@@ -69,8 +70,10 @@ bool LevelEditor::initialize()
         return false;
     }
 
-    m_scene_renderer =
-        GE::makeScoped<GE::Scene::PlainRenderer>(m_ctx.cameraController()->camera().get());
+    auto* renderer = m_ctx.sceneFbo()->renderer();
+    auto* camera = m_ctx.cameraController()->camera().get();
+    m_scene_renderer = GE::makeScoped<GE::Scene::WeightedBlendedOITRenderer>(renderer, camera);
+
     m_gui = GE::makeScoped<LevelEditorGUI>(&m_ctx);
     connectSignals();
     initializeProject();
@@ -94,12 +97,9 @@ void LevelEditor::onEvent(GE::Event* event)
 
 void LevelEditor::onRender()
 {
-    auto* renderer = m_ctx.sceneFbo()->renderer();
-    auto* scene = m_ctx.scene();
-
     updateParameters();
 
-    m_scene_renderer->render(renderer, *scene);
+    m_scene_renderer->render(*m_ctx.scene());
     m_gui->onRender();
 }
 

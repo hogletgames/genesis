@@ -32,10 +32,8 @@
 
 #pragma once
 
-#include
-#include "genesis/math/types.h"
-
 #include <genesis/core/memory.h>
+#include <genesis/math/types.h>
 #include <genesis/scene/renderer/renderer_base.h>
 
 namespace GE {
@@ -53,22 +51,24 @@ class Entity;
 class WeightedBlendedOITRenderer: public RendererBase
 {
 public:
-    WeightedBlendedOITRenderer(const ViewProjectionCamera* camera, Assets::Registry* registry);
+    explicit WeightedBlendedOITRenderer(GE::Renderer* renderer, const ViewProjectionCamera* camera);
 
-    void render(GE::Renderer* renderer, const Scene& scene) override;
+    void render(const Scene& scene) override;
 
 private:
     void recreateAccumulationFramebuffer(const Vec2& size);
+    void createAccumulationPipeline(GE::Renderer* renderer);
+    void createComposingPipeline(GE::Renderer* renderer);
 
-    void renderOpaqueEntities(GE::Renderer* renderer, const Scene& scene);
     void renderTransparentEntities(const Scene& scene);
-    void composeScene(GE::Renderer* renderer, const Scene& scene);
+    void renderOpaqueEntities(const Scene& scene);
+    void composeScene();
 
-    void renderTransparentSprite(GE::Renderer* renderer, const Entity& entity);
+    void renderTransparentSprite(const Entity& entity);
 
     Scoped<Framebuffer> m_accumulation_fbo;
     Shared<Pipeline> m_accumulation_pipeline;
-    Shared<Pipeline> m_compose_pipeline;
+    Shared<Pipeline> m_composing_pipeline;
 };
 
 } // namespace GE::Scene

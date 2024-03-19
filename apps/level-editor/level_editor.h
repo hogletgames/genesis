@@ -86,7 +86,7 @@ private:
 
     LevelEditorContext m_ctx;
     GE::Scoped<LevelEditorGUI> m_gui;
-    GE::Scoped<GE::Scene::PlainRenderer> m_scene_renderer;
+    GE::Scoped<GE::Scene::IRenderer> m_scene_renderer;
 
     GE::Vec2 m_viewport{1.0f, 1.0f};
 };
