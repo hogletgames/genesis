@@ -135,6 +135,11 @@ void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, dou
     pushConstantIfValid(queue, name, value);
 }
 
+void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec2& value)
+{
+    pushConstantIfValid(queue, name, value);
+}
+
 void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec3& value)
 {
     pushConstantIfValid(queue, name, value);
