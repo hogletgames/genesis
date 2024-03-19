@@ -56,8 +56,8 @@ public:
     void bind(Pipeline* pipeline);
     void bind(VertexBuffer* buffer);
     void bind(IndexBuffer* buffer);
-    void bind(Pipeline* pipeline, const std::string& resource_name, UniformBuffer* buffer);
-    void bind(Pipeline* pipeline, const std::string& resource_name, Texture* texture);
+    void bind(Pipeline* pipeline, const std::string& resource_name, const UniformBuffer& buffer);
+    void bind(Pipeline* pipeline, const std::string& resource_name, const Texture& texture);
     template<typename T>
     void pushConstant(Pipeline* pipeline, const std::string& name, const T& value);
 

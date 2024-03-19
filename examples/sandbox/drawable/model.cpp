@@ -56,7 +56,7 @@ Model::Model(Renderer* renderer, std::string_view model, std::string_view textur
 void Model::draw(Renderer* renderer, const mvp_t& mvp)
 {
     bind(renderer, mvp);
-    renderer->command()->bind(m_pipeline.get(), "u_Texture", m_texture.get());
+    renderer->command()->bind(m_pipeline.get(), "u_Texture", *m_texture);
     renderer->command()->draw(m_mesh);
 }
 

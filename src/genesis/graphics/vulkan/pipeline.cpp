@@ -83,11 +83,11 @@ void Pipeline::bind(GPUCommandQueue* queue)
     });
 }
 
-void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, GE::UniformBuffer* ubo)
+void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, const GE::UniformBuffer& ubo)
 {
     VkDescriptorBufferInfo info{};
-    info.buffer = toVkBuffer(ubo->nativeHandle());
-    info.range = ubo->size();
+    info.buffer = toVkBuffer(ubo.nativeHandle());
+    info.range = ubo.size();
 
     VkWriteDescriptorSet write_descriptor_set{};
     write_descriptor_set.pBufferInfo = &info;
@@ -95,9 +95,9 @@ void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, GE::Uniform
     bindResource(queue, name, &write_descriptor_set);
 }
 
-void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, GE::Texture* texture)
+void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, const GE::Texture& texture)
 {
-    auto* vk_texture = toVulkan(texture);
+    const auto* vk_texture = toVulkan(texture);
 
     VkDescriptorImageInfo info{};
     info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
