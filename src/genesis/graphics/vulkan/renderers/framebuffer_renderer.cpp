@@ -89,14 +89,13 @@ bool FramebufferRenderer::beginFrame(Renderer::ClearMode clear_mode)
 
 void FramebufferRenderer::endFrame()
 {
-    VkCommandBuffer cmd = cmdBuffer();
-    m_render_command.submit(cmd);
-
-    endRendering() && submit();
+    m_render_command.submit(cmdBuffer());
+    endRendering();
 }
 
 void FramebufferRenderer::swapBuffers()
 {
+    submit();
     vkWaitForFences(m_device->device(), 1, &m_in_flight_fence, VK_TRUE,
                     std::numeric_limits<uint64_t>::max());
     m_descriptor_pool->reset();
