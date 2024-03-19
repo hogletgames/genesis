@@ -83,6 +83,7 @@ public:
     void pushConstant(GPUCommandQueue* queue, const std::string& name, uint32_t value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, float value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, double value) override;
+    void pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec2& value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec3& value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, const Mat4& value) override;
 
