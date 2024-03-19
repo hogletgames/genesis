@@ -105,13 +105,14 @@ void WindowRenderer::endFrame()
     if (!endRendering()) {
         return;
     }
-
-    m_swap_chain->submitCommandBuffer(cmd);
-    m_descriptor_pool->reset();
 }
 
 void WindowRenderer::swapBuffers()
 {
+    VkCommandBuffer* cmd = &m_cmd_buffers[m_swap_chain->currentImageIndex()];
+    m_swap_chain->submitCommandBuffer(cmd);
+    m_descriptor_pool->reset();
+
     auto present_result = m_swap_chain->presentImage();
 
     if (present_result == VK_ERROR_OUT_OF_DATE_KHR || present_result == VK_SUBOPTIMAL_KHR ||
