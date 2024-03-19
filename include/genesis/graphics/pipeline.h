@@ -46,6 +46,7 @@ class UniformBuffer;
 struct pipeline_config_t {
     Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
     Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
+    bool enable_blending{true};
 };
 
 class Pipeline: public Interface
