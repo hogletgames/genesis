@@ -62,8 +62,6 @@ struct pipeline_config_t: GE::pipeline_config_t {
     VkPipelineInputAssemblyStateCreateInfo input_assembly_state{};
     VkPipelineRasterizationStateCreateInfo rasterization_state{};
     VkPipelineMultisampleStateCreateInfo multisample_state{};
-    std::vector<VkPipelineColorBlendAttachmentState> color_blend_attachments{};
-    VkPipelineColorBlendStateCreateInfo color_blend_state{};
     VkPipelineDepthStencilStateCreateInfo depth_stencil_state{};
     std::vector<VkDynamicState> dynamic_state_list{};
     VkPipelineDynamicStateCreateInfo dynamic_state{};

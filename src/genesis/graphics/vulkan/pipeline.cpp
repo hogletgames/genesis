@@ -179,31 +179,6 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     config.multisample_state.alphaToCoverageEnable = VK_FALSE; // Optional
     config.multisample_state.alphaToOneEnable = VK_FALSE;      // Optional
 
-    VkPipelineColorBlendAttachmentState color_blend_attachment{};
-    color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                                            VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-    color_blend_attachment.blendEnable = VK_TRUE;
-    color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-    color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-    color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;
-    color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-    color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-    color_blend_attachment.alphaBlendOp = VK_BLEND_OP_ADD;
-
-    config.color_blend_attachments.resize(config.msaa_samples);
-    std::fill(config.color_blend_attachments.begin(), config.color_blend_attachments.end(),
-              color_blend_attachment);
-
-    config.color_blend_state.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    config.color_blend_state.logicOpEnable = VK_FALSE;
-    config.color_blend_state.logicOp = VK_LOGIC_OP_COPY;
-    config.color_blend_state.attachmentCount = config.color_blend_attachments.size();
-    config.color_blend_state.pAttachments = config.color_blend_attachments.data();
-    config.color_blend_state.blendConstants[0] = 1.0f;
-    config.color_blend_state.blendConstants[1] = 1.0f;
-    config.color_blend_state.blendConstants[2] = 1.0f;
-    config.color_blend_state.blendConstants[3] = 1.0f;
-
     config.depth_stencil_state.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     config.depth_stencil_state.depthTestEnable = VK_TRUE;
     config.depth_stencil_state.depthWriteEnable = VK_TRUE;
@@ -282,6 +257,33 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     config.rasterization_state.frontFace = config.front_face;
     config.multisample_state.rasterizationSamples = config.msaa_samples;
 
+    VkPipelineColorBlendAttachmentState color_blend_attachment{};
+    color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                                            VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    color_blend_attachment.blendEnable = config.enable_blending ? VK_TRUE : VK_FALSE;
+    color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;
+    color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    color_blend_attachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+    std::vector<VkPipelineColorBlendAttachmentState> color_blend_attachments(
+        config.color_formats.size());
+    std::fill(color_blend_attachments.begin(), color_blend_attachments.end(),
+              color_blend_attachment);
+
+    VkPipelineColorBlendStateCreateInfo color_blend_state{};
+    color_blend_state.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    color_blend_state.logicOpEnable = VK_FALSE;
+    color_blend_state.logicOp = VK_LOGIC_OP_COPY;
+    color_blend_state.attachmentCount = color_blend_attachments.size();
+    color_blend_state.pAttachments = color_blend_attachments.data();
+    color_blend_state.blendConstants[0] = 1.0f;
+    color_blend_state.blendConstants[1] = 1.0f;
+    color_blend_state.blendConstants[2] = 1.0f;
+    color_blend_state.blendConstants[3] = 1.0f;
+
     VkPipelineRenderingCreateInfo rendering_info{};
     rendering_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
     rendering_info.colorAttachmentCount = config.color_formats.size();
@@ -299,7 +301,7 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     pipeline_info.pRasterizationState = &config.rasterization_state;
     pipeline_info.pMultisampleState = &config.multisample_state;
     pipeline_info.pDepthStencilState = &config.depth_stencil_state;
-    pipeline_info.pColorBlendState = &config.color_blend_state;
+    pipeline_info.pColorBlendState = &color_blend_state;
     pipeline_info.pDynamicState = &config.dynamic_state;
     pipeline_info.layout = m_pipeline_layout;
     pipeline_info.basePipelineHandle = VK_NULL_HANDLE; // Optional
