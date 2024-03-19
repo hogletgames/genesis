@@ -75,7 +75,7 @@ ShaderCache ShaderPrecompiler::compileFromFile(Shader::Type shader_type,
 ShaderCache ShaderPrecompiler::compileFromSource(Shader::Type shader_type,
                                                  const std::string &source_code)
 {
-    return compileShader(shader_type, source_code, {});
+    return compileShader(shader_type, source_code, "<no-filename>");
 }
 
 ShaderCache ShaderPrecompiler::compileShader(Shader::Type type, const std::string &source_code,
