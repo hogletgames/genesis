@@ -63,7 +63,7 @@ void Drawable::bind(Renderer *renderer, const mvp_t &mvp)
     m_mpv->setData(sizeof(mvp_t), &mvp);
 
     renderer->command()->bind(m_pipeline.get());
-    renderer->command()->bind(m_pipeline.get(), "MVP", m_mpv.get());
+    renderer->command()->bind(m_pipeline.get(), "MVP", *m_mpv);
 }
 
 } // namespace GE::Examples

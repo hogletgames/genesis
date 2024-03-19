@@ -55,8 +55,9 @@ public:
     using NativeHandle = void*;
 
     virtual void bind(GPUCommandQueue* queue) = 0;
-    virtual void bind(GPUCommandQueue* queue, const std::string& name, UniformBuffer* ubo) = 0;
-    virtual void bind(GPUCommandQueue* queue, const std::string& name, Texture* texture) = 0;
+    virtual void bind(GPUCommandQueue* queue, const std::string& name,
+                      const UniformBuffer& ubo) = 0;
+    virtual void bind(GPUCommandQueue* queue, const std::string& name, const Texture& texture) = 0;
 
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, bool value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, int32_t value) = 0;

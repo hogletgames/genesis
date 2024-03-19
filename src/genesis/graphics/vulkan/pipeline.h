@@ -74,8 +74,9 @@ public:
     ~Pipeline();
 
     void bind(GPUCommandQueue* queue) override;
-    void bind(GPUCommandQueue* queue, const std::string& name, GE::UniformBuffer* ubo) override;
-    void bind(GPUCommandQueue* queue, const std::string& name, GE::Texture* texture) override;
+    void bind(GPUCommandQueue* queue, const std::string& name,
+              const GE::UniformBuffer& ubo) override;
+    void bind(GPUCommandQueue* queue, const std::string& name, const GE::Texture& texture) override;
 
     void pushConstant(GPUCommandQueue* queue, const std::string& name, bool value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, int32_t value) override;

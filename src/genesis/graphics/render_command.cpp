@@ -56,12 +56,13 @@ void RenderCommand::bind(IndexBuffer *buffer)
 }
 
 void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name,
-                         UniformBuffer *buffer)
+                         const UniformBuffer &buffer)
 {
     pipeline->bind(&m_cmd_queue, resource_name, buffer);
 }
 
-void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name, Texture *texture)
+void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name,
+                         const Texture &texture)
 {
     pipeline->bind(&m_cmd_queue, resource_name, texture);
 }
