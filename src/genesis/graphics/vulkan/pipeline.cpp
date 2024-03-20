@@ -79,7 +79,8 @@ Pipeline::~Pipeline()
 void Pipeline::bind(GPUCommandQueue* queue)
 {
     queue->enqueue([this](void* cmd_buffer) {
-        vkCmdBindPipeline(cmdBuffer(cmd_buffer), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
+        vkCmdBindPipeline(toVkCommandBuffer(cmd_buffer), VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          m_pipeline);
     });
 }
 
@@ -339,8 +340,8 @@ void Pipeline::bindResource(GPUCommandQueue* queue, const std::string& name,
     vkUpdateDescriptorSets(m_device->device(), 1, write_descriptor_set, 0, nullptr);
 
     queue->enqueue([this, set = resource->set, descriptor_set](void* cmd) {
-        vkCmdBindDescriptorSets(cmdBuffer(cmd), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout,
-                                set, 1, &descriptor_set, 0, nullptr);
+        vkCmdBindDescriptorSets(toVkCommandBuffer(cmd), VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                m_pipeline_layout, set, 1, &descriptor_set, 0, nullptr);
     });
 }
 
@@ -358,8 +359,9 @@ void Pipeline::pushConstantCmd(GPUCommandQueue* queue, const push_constant_t& pu
                                T value)
 {
     queue->enqueue([this, &push_constant, value](void* cmd_buffer) {
-        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
-                           push_constant.offset, push_constant.size, &value);
+        vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
+                           push_constant.pipeline_stages, push_constant.offset, push_constant.size,
+                           &value);
     });
 }
 
@@ -368,8 +370,9 @@ void Pipeline::pushConstantCmd<bool>(GPUCommandQueue* queue, const push_constant
                                      bool value)
 {
     queue->enqueue([this, &push_constant, vk_value = value ? VK_TRUE : VK_FALSE](void* cmd_buffer) {
-        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
-                           push_constant.offset, push_constant.size, &vk_value);
+        vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
+                           push_constant.pipeline_stages, push_constant.offset, push_constant.size,
+                           &vk_value);
     });
 }
 
@@ -378,8 +381,9 @@ void Pipeline::pushConstantCmd<const Vec3&>(GPUCommandQueue* queue,
                                             const push_constant_t& push_constant, const Vec3& value)
 {
     queue->enqueue([this, &push_constant, &value](void* cmd_buffer) {
-        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
-                           push_constant.offset, push_constant.size, value_ptr(value));
+        vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
+                           push_constant.pipeline_stages, push_constant.offset, push_constant.size,
+                           value_ptr(value));
     });
 }
 
@@ -388,8 +392,9 @@ void Pipeline::pushConstantCmd<const Mat4&>(GPUCommandQueue* queue,
                                             const push_constant_t& push_constant, const Mat4& value)
 {
     queue->enqueue([this, &push_constant, &value](void* cmd_buffer) {
-        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
-                           push_constant.offset, push_constant.size, value_ptr(value));
+        vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
+                           push_constant.pipeline_stages, push_constant.offset, push_constant.size,
+                           value_ptr(value));
     });
 }
 
