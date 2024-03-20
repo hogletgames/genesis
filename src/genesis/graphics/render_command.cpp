@@ -34,11 +34,16 @@
 #include "index_buffer.h"
 #include "mesh.h"
 #include "pipeline.h"
+#include "renderer.h"
 #include "vertex_buffer.h"
 
 #include "genesis/gui/context.h"
 
 namespace GE {
+
+RenderCommand::RenderCommand(Renderer *renderer)
+    : m_renderer{renderer}
+{}
 
 void RenderCommand::bind(Pipeline *pipeline)
 {
@@ -88,6 +93,12 @@ void RenderCommand::draw(VertexBuffer *vbo, IndexBuffer *ibo)
 void RenderCommand::draw(GUI::Context *gui_layer)
 {
     gui_layer->draw(&m_cmd_queue);
+}
+
+void RenderCommand::draw(uint32_t vertex_count, uint32_t instance_count, uint32_t first_vertex,
+                         uint32_t first_instance)
+{
+    m_renderer->draw(&m_cmd_queue, vertex_count, instance_count, first_vertex, first_instance);
 }
 
 void RenderCommand::submit(GPUCommandBuffer cmd)
