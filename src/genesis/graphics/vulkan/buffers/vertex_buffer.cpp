@@ -56,19 +56,20 @@ void VertexBuffer::bind(GPUCommandQueue *queue) const
 {
     queue->enqueue([this](void *cmd) {
         constexpr VkDeviceSize offsets{0};
-        vkCmdBindVertexBuffers(cmdBuffer(cmd), 0, 1, &m_buffer, &offsets);
+        vkCmdBindVertexBuffers(toVkCommandBuffer(cmd), 0, 1, &m_buffer, &offsets);
     });
 }
 
 void VertexBuffer::draw(GPUCommandQueue *queue, uint32_t vertex_count) const
 {
-    queue->enqueue([vertex_count](void *cmd) { vkCmdDraw(cmdBuffer(cmd), vertex_count, 1, 0, 0); });
+    queue->enqueue(
+        [vertex_count](void *cmd) { vkCmdDraw(toVkCommandBuffer(cmd), vertex_count, 1, 0, 0); });
 }
 
 void VertexBuffer::draw(GPUCommandQueue *queue, GE::IndexBuffer *ibo) const
 {
     queue->enqueue(
-        [ibo](void *cmd) { vkCmdDrawIndexed(cmdBuffer(cmd), ibo->count(), 1, 0, 0, 0); });
+        [ibo](void *cmd) { vkCmdDrawIndexed(toVkCommandBuffer(cmd), ibo->count(), 1, 0, 0, 0); });
 }
 
 void VertexBuffer::setVertices(const void *vertices, uint32_t size)

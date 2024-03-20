@@ -181,8 +181,9 @@ void GUIContext::end()
 
 void GUIContext::draw(GPUCommandQueue *queue)
 {
-    queue->enqueue(
-        [](void *cmd) { ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmdBuffer(cmd)); });
+    queue->enqueue([](void *cmd) {
+        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), toVkCommandBuffer(cmd));
+    });
 }
 
 GUI::EventHandler *GUIContext::eventHandler()
