@@ -242,16 +242,21 @@ if (APPLE)
     # MoltenVK
     FetchContent_Declare(MoltenVK
         GIT_REPOSITORY https://github.com/hogletgames/MoltenVK.git
-        GIT_TAG v1.2.8-rc1)
-    if (NOT MoltenVK_POPULATED)
+        GIT_TAG v1.2.8)
+    FetchContent_GetProperties(MoltenVK)
+    if (NOT moltenvk_POPULATED)
         FetchContent_Populate(MoltenVK)
-        ExternalProject_Add(libMoltenVK
-            SOURCE_DIR ${moltenvk_SOURCE_DIR}
-            BUILD_IN_SOURCE ON
-            CONFIGURE_COMMAND ./fetchDependencies -v --macos
-            BUILD_COMMAND make -j${GE_NPROC} macos
-            INSTALL_COMMAND "")
-        add_dependencies(vulkan libMoltenVK)
+
+        set(MOLTENVK_ICD ${moltenvk_SOURCE_DIR}/Package/Latest/MoltenVK/dynamic/dylib/macOS/MoltenVK_icd.json)
+        add_custom_command(OUTPUT ${MOLTENVK_ICD}
+            COMMAND ./fetchDependencies -v --macos
+            COMMAND make -j${GE_NPROC} macos
+            WORKING_DIRECTORY ${moltenvk_SOURCE_DIR}
+            BYPRODUCTS ${MOLTENVK_ICD}
+            VERBATIM)
+
+        add_custom_target(MoltenVkIcd DEPENDS ${MOLTENVK_ICD})
+        add_dependencies(vulkan MoltenVkIcd)
     endif()
 endif ()
 
