@@ -34,6 +34,7 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
+#include <genesis/graphics/blending.h>
 #include <genesis/graphics/shader.h>
 #include <genesis/math/types.h>
 
@@ -46,7 +47,7 @@ class UniformBuffer;
 struct pipeline_config_t {
     Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
     Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
-    bool enable_blending{true};
+    blending_t blending{};
 };
 
 class Pipeline: public Interface

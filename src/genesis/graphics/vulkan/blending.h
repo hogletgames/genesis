@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,23 +33,12 @@
 #pragma once
 
 #include <genesis/graphics/blending.h>
-#include <genesis/graphics/framebuffer.h>
-#include <genesis/graphics/gpu_command_queue.h>
-#include <genesis/graphics/graphics.h>
-#include <genesis/graphics/graphics_context.h>
-#include <genesis/graphics/graphics_factory.h>
-#include <genesis/graphics/index_buffer.h>
-#include <genesis/graphics/mesh.h>
-#include <genesis/graphics/pipeline.h>
-#include <genesis/graphics/render_command.h>
-#include <genesis/graphics/renderer.h>
-#include <genesis/graphics/shader.h>
-#include <genesis/graphics/shader_input_layout.h>
-#include <genesis/graphics/shader_precompiler.h>
-#include <genesis/graphics/shader_reflection.h>
-#include <genesis/graphics/shader_resource_descriptors.h>
-#include <genesis/graphics/texture.h>
-#include <genesis/graphics/texture_loader.h>
-#include <genesis/graphics/uniform_buffer.h>
-#include <genesis/graphics/vertex.h>
-#include <genesis/graphics/vertex_buffer.h>
+
+#include <vulkan/vulkan.h>
+
+namespace GE::Vulkan {
+
+GE_API VkBlendFactor toVkBlendFactor(BlendFactor factor);
+GE_API VkBlendOp toVkBlendOp(BlendOp op);
+
+} // namespace GE::Vulkan

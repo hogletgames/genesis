@@ -18,6 +18,7 @@ list(APPEND GRAPHICS_SOURCES
     )
 
 list(APPEND GRAPHICS_HEADERS
+    ${INCLUDE_DIR}/blending.h
     ${INCLUDE_DIR}/framebuffer.h
     ${INCLUDE_DIR}/gpu_command_queue.h
     ${INCLUDE_DIR}/graphics.h

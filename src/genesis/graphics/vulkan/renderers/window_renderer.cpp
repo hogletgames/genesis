@@ -101,17 +101,13 @@ void WindowRenderer::endFrame()
 {
     VkCommandBuffer* cmd = &m_cmd_buffers[m_swap_chain->currentImageIndex()];
     m_render_command.submit(*cmd);
-
-    if (!endRendering()) {
-        return;
-    }
+    endRendering();
 }
 
 void WindowRenderer::swapBuffers()
 {
     VkCommandBuffer* cmd = &m_cmd_buffers[m_swap_chain->currentImageIndex()];
     m_swap_chain->submitCommandBuffer(cmd);
-    m_descriptor_pool->reset();
 
     auto present_result = m_swap_chain->presentImage();
 
@@ -122,6 +118,8 @@ void WindowRenderer::swapBuffers()
     } else if (present_result != VK_SUCCESS) {
         GE_CORE_ERR("Failed to present Swap Chain Image");
     }
+
+    m_descriptor_pool->reset();
 }
 
 Scoped<GE::Pipeline> WindowRenderer::createPipeline(const GE::pipeline_config_t& config)

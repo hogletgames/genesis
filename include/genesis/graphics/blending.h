@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,24 +32,45 @@
 
 #pragma once
 
-#include <genesis/graphics/blending.h>
-#include <genesis/graphics/framebuffer.h>
-#include <genesis/graphics/gpu_command_queue.h>
-#include <genesis/graphics/graphics.h>
-#include <genesis/graphics/graphics_context.h>
-#include <genesis/graphics/graphics_factory.h>
-#include <genesis/graphics/index_buffer.h>
-#include <genesis/graphics/mesh.h>
-#include <genesis/graphics/pipeline.h>
-#include <genesis/graphics/render_command.h>
-#include <genesis/graphics/renderer.h>
-#include <genesis/graphics/shader.h>
-#include <genesis/graphics/shader_input_layout.h>
-#include <genesis/graphics/shader_precompiler.h>
-#include <genesis/graphics/shader_reflection.h>
-#include <genesis/graphics/shader_resource_descriptors.h>
-#include <genesis/graphics/texture.h>
-#include <genesis/graphics/texture_loader.h>
-#include <genesis/graphics/uniform_buffer.h>
-#include <genesis/graphics/vertex.h>
-#include <genesis/graphics/vertex_buffer.h>
+#include <genesis/core/export.h>
+
+#include <cstdint>
+
+enum class BlendFactor : uint8_t
+{
+    ZERO,
+    ONE,
+    SRC_COLOR,
+    ONE_MINUS_SRC_COLOR,
+    DST_COLOR,
+    ONE_MINUS_DST_COLOR,
+    SRC_ALPHA,
+    ONE_MINUS_SRC_ALPHA,
+    DST_ALPHA,
+    ONE_MINUS_DST_ALPHA,
+    CONSTANT_COLOR,
+    ONE_MINUS_CONSTANT_COLOR,
+    CONSTANT_ALPHA,
+    ONE_MINUS_CONSTANT_ALPHA
+};
+
+enum class BlendOp : uint8_t
+{
+    ADD,
+    SUBTRACT,
+    REVERSE_SUBTRACT,
+    MIN,
+    MAX
+};
+
+struct GE_API blending_t {
+    bool enabled{true};
+
+    BlendFactor src_color_factor{BlendFactor::SRC_ALPHA};
+    BlendFactor dst_color_factor{BlendFactor::ONE_MINUS_SRC_ALPHA};
+    BlendOp color_op{BlendOp::ADD};
+
+    BlendFactor src_alpha_factor{BlendFactor::SRC_ALPHA};
+    BlendFactor dst_alpha_factor{BlendFactor::ONE_MINUS_SRC_ALPHA};
+    BlendOp alpha_op{BlendOp::ADD};
+};
