@@ -102,6 +102,9 @@ void Framebuffer::createMSAAResources(const fb_attachment_t& attachment_config)
 void Framebuffer::createAttachments()
 {
     for (const auto& attachment : m_config.attachments) {
+        GE_CORE_ASSERT(attachment.type != fb_attachment_t::Type::UNKNOWN,
+                       "Unknown attachment type");
+
         if (m_config.msaa_samples > 1) {
             createMSAAResources(attachment);
         }
@@ -110,12 +113,17 @@ void Framebuffer::createAttachments()
 
         if (attachment.type == fb_attachment_t::Type::COLOR) {
             m_color_rendering_attachments.push_back(createColorRenderingAttachment(texture));
+            m_color_rendering_attachments.back().clearValue =
+                toVkClearColorValue(attachment.clear_color);
             m_color_textures.push_back(std::move(texture));
         } else {
             GE_CORE_ASSERT(!m_depth_texture, "Framebuffer must have only one depth "
                                              "attachment");
             m_depth_rendering_attachment = createDepthRenderingAttachment(texture);
+            m_depth_rendering_attachment.clearValue =
+                toVkClearDepthStencilValue(attachment.clear_depth);
             m_depth_texture = std::move(texture);
+            m_clear_depth = attachment.clear_depth;
         }
     }
 }
@@ -128,7 +136,6 @@ Framebuffer::createColorRenderingAttachment(const Scoped<Vulkan::Texture>& textu
     attachment.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    attachment.clearValue = toVkClearColorValue(m_config.clear_color);
 
     if (m_config.msaa_samples > 1) {
         attachment.imageView = m_color_msaa_images.back()->view();
@@ -150,7 +157,6 @@ Framebuffer::createDepthRenderingAttachment(const Scoped<Vulkan::Texture>& textu
     attachment.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
     attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    attachment.clearValue = toVkClearDepthStencilValue(m_config.clear_depth);
 
     if (m_config.msaa_samples > 1) {
         attachment.imageView = m_depth_msaa_image->view();
@@ -202,7 +208,7 @@ Scoped<Image> Framebuffer::createMSAAImage(TextureType type, TextureFormat forma
     return makeScoped<Image>(m_device, config);
 }
 
-const Vulkan::Texture& Framebuffer::colorTexture(size_t i) const
+const Vulkan::Texture& Framebuffer::colorTexture(uint32_t i) const
 {
     return *m_color_textures[i];
 }

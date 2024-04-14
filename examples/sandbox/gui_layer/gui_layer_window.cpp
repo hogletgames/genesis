@@ -86,7 +86,7 @@ GuiLayerWindow::GuiLayerWindow(std::string name)
     , m_camera_controller{makeScoped<Scene::VPCameraController>(m_camera)}
 {
     Framebuffer::config_t model_fbo_config{};
-    model_fbo_config.clear_color = {0.3f, 0.3f, 0.3f, 1.0f};
+    model_fbo_config.attachments[0].clear_color = {0.3f, 0.3f, 0.3f, 1.0f};
     model_fbo_config.size = {720.0f, 480.0f};
     model_fbo_config.msaa_samples = GE::Graphics::limits().max_msaa;
 
