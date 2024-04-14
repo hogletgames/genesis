@@ -92,6 +92,11 @@ std::vector<T> vulkanGet(Func&& f, Args&&... args)
     return data;
 }
 
+constexpr VkBool32 toVkBool(bool value)
+{
+    return value ? VK_TRUE : VK_FALSE;
+}
+
 VkSampleCountFlagBits toVkSampleCountFlag(uint8_t sample_count);
 
 void cmdBeginRendering(VkCommandBuffer cmd_buffer, const VkRenderingInfo* rendering_info);

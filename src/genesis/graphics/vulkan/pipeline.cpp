@@ -41,8 +41,10 @@
 #include "shader.h"
 #include "shader_data_type_size.h"
 #include "texture.h"
+#include "utils.h"
 #include "vulkan_exception.h"
 
+#include "genesis/core/asserts.h"
 #include "genesis/core/log.h"
 #include "genesis/graphics/gpu_command_queue.h"
 
@@ -50,6 +52,43 @@ namespace GE::Vulkan {
 namespace {
 
 constexpr auto SHADER_ENTRYPOINT = "main";
+
+VkPipelineColorBlendAttachmentState
+toVkPipelineColorBlendAttachmentState(const blending_t& blending)
+{
+    VkPipelineColorBlendAttachmentState color_blend_attachment{};
+    color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                                            VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    color_blend_attachment.blendEnable = toVkBool(blending.enabled);
+    color_blend_attachment.srcColorBlendFactor = toVkBlendFactor(blending.src_color_factor);
+    color_blend_attachment.dstColorBlendFactor = toVkBlendFactor(blending.dst_color_factor);
+    color_blend_attachment.colorBlendOp = toVkBlendOp(blending.color_op);
+    color_blend_attachment.srcAlphaBlendFactor = toVkBlendFactor(blending.src_alpha_factor);
+    color_blend_attachment.dstAlphaBlendFactor = toVkBlendFactor(blending.dst_alpha_factor);
+    color_blend_attachment.alphaBlendOp = toVkBlendOp(blending.alpha_op);
+
+    return color_blend_attachment;
+}
+
+std::vector<VkPipelineColorBlendAttachmentState>
+toColorBlendAttacmentStates(const pipeline_config_t::BlendingCondig& blending, uint32_t count)
+{
+    std::vector<VkPipelineColorBlendAttachmentState> color_blend_attachments(count);
+
+    if (std::holds_alternative<blending_t>(blending)) {
+        std::fill(color_blend_attachments.begin(), color_blend_attachments.end(),
+                  toVkPipelineColorBlendAttachmentState(std::get<blending_t>(blending)));
+    } else {
+        const auto& blendings = std::get<std::vector<blending_t>>(blending);
+        GE_CORE_ASSERT(blendings.size() == count, "Invalid blending config count '{} != {}'",
+                       blendings.size(), count);
+
+        std::transform(blendings.cbegin(), blendings.cend(), color_blend_attachments.begin(),
+                       &toVkPipelineColorBlendAttachmentState);
+    }
+
+    return color_blend_attachments;
+}
 
 bool isPushConstantValid(const push_constant_t& push_constant, uint32_t expected_size)
 {
@@ -99,7 +138,7 @@ void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, const GE::U
 
 void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, const GE::Texture& texture)
 {
-    const auto* vk_texture = toVulkan(texture);
+    const auto* vk_texture = toVulan(texture);
 
     VkDescriptorImageInfo info{};
     info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -266,21 +305,8 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     config.rasterization_state.frontFace = config.front_face;
     config.multisample_state.rasterizationSamples = config.msaa_samples;
 
-    VkPipelineColorBlendAttachmentState color_blend_attachment{};
-    color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                                            VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-    color_blend_attachment.blendEnable = config.blending.enabled ? VK_TRUE : VK_FALSE;
-    color_blend_attachment.srcColorBlendFactor = toVkBlendFactor(config.blending.src_color_factor);
-    color_blend_attachment.dstColorBlendFactor = toVkBlendFactor(config.blending.dst_color_factor);
-    color_blend_attachment.colorBlendOp = toVkBlendOp(config.blending.color_op);
-    color_blend_attachment.srcAlphaBlendFactor = toVkBlendFactor(config.blending.src_alpha_factor);
-    color_blend_attachment.dstAlphaBlendFactor = toVkBlendFactor(config.blending.dst_alpha_factor);
-    color_blend_attachment.alphaBlendOp = toVkBlendOp(config.blending.alpha_op);
-
-    std::vector<VkPipelineColorBlendAttachmentState> color_blend_attachments(
-        config.color_formats.size());
-    std::fill(color_blend_attachments.begin(), color_blend_attachments.end(),
-              color_blend_attachment);
+    auto color_blend_attachments =
+        toColorBlendAttacmentStates(config.blending, config.color_formats.size());
 
     VkPipelineColorBlendStateCreateInfo color_blend_state{};
     color_blend_state.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;

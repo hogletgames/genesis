@@ -38,6 +38,9 @@
 #include <genesis/graphics/shader.h>
 #include <genesis/math/types.h>
 
+#include <variant>
+#include <vector>
+
 namespace GE {
 
 class GPUCommandQueue;
@@ -45,9 +48,11 @@ class Texture;
 class UniformBuffer;
 
 struct pipeline_config_t {
+    using BlendingCondig = std::variant<blending_t, std::vector<blending_t>>;
+
     Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
     Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
-    blending_t blending{};
+    BlendingCondig blending{blending_t{}};
 };
 
 class Pipeline: public Interface
