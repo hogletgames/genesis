@@ -260,7 +260,8 @@ WindowRenderer::colorRenderingAttachments(ClearMode clear_mode)
     return m_color_rendering_attachments;
 }
 
-const VkRenderingAttachmentInfo& WindowRenderer::depthRenderingAttachment(ClearMode clear_mode)
+std::optional<VkRenderingAttachmentInfo>
+WindowRenderer::depthRenderingAttachment(ClearMode clear_mode)
 {
     bool should_clear = clear_mode == CLEAR_DEPTH || clear_mode == CLEAR_ALL;
 

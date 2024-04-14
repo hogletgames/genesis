@@ -131,7 +131,10 @@ bool RendererBase::beginRendering(ClearMode clear_mode)
     rendering_info.layerCount = 1;
     rendering_info.colorAttachmentCount = colorAttachments.size();
     rendering_info.pColorAttachments = colorAttachments.data();
-    rendering_info.pDepthAttachment = &depthAttachment;
+
+    if (depthAttachment.has_value()) {
+        rendering_info.pDepthAttachment = &depthAttachment.value();
+    }
 
     cmdBeginRendering(cmd, &rendering_info);
     return true;

@@ -74,7 +74,8 @@ protected:
 
     virtual const std::vector<VkRenderingAttachmentInfo>&
     colorRenderingAttachments(ClearMode clear_mode) = 0;
-    virtual const VkRenderingAttachmentInfo& depthRenderingAttachment(ClearMode clear_mode) = 0;
+    virtual std::optional<VkRenderingAttachmentInfo>
+    depthRenderingAttachment(ClearMode clear_mode) = 0;
 
     Shared<Device> m_device;
 

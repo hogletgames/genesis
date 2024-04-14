@@ -86,7 +86,8 @@ private:
 
     const std::vector<VkRenderingAttachmentInfo>&
     colorRenderingAttachments(ClearMode clear_mode) override;
-    const VkRenderingAttachmentInfo& depthRenderingAttachment(ClearMode clear_mode) override;
+    std::optional<VkRenderingAttachmentInfo>
+    depthRenderingAttachment(ClearMode clear_mode) override;
 
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
     Vec2 m_window_size{0.0f, 0.0f};

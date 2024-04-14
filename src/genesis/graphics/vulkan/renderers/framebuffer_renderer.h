@@ -70,7 +70,8 @@ private:
 
     const std::vector<VkRenderingAttachmentInfo> &
     colorRenderingAttachments(ClearMode clear_mode) override;
-    const VkRenderingAttachmentInfo &depthRenderingAttachment(ClearMode clear_mode) override;
+    std::optional<VkRenderingAttachmentInfo>
+    depthRenderingAttachment(ClearMode clear_mode) override;
 
     Vulkan::Framebuffer *m_framebuffer{nullptr};
     VkFence m_in_flight_fence{VK_NULL_HANDLE};

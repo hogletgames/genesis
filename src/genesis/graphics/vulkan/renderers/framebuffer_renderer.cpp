@@ -264,9 +264,14 @@ FramebufferRenderer::colorRenderingAttachments(ClearMode clear_mode)
     return m_framebuffer->colorRenderingAttachments(clear_mode);
 }
 
-const VkRenderingAttachmentInfo& FramebufferRenderer::depthRenderingAttachment(ClearMode clear_mode)
+std::optional<VkRenderingAttachmentInfo>
+FramebufferRenderer::depthRenderingAttachment(ClearMode clear_mode)
 {
-    return m_framebuffer->depthRenderingAttachment(clear_mode);
+    if (m_framebuffer->hasDepthAttachment()) {
+        return m_framebuffer->depthRenderingAttachment(clear_mode);
+    }
+
+    return {};
 }
 
 } // namespace GE::Vulkan
