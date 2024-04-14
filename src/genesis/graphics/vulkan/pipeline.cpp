@@ -256,10 +256,12 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
 
     VkPipelineVertexInputStateCreateInfo vertex_input_state{};
     vertex_input_state.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertex_input_state.vertexBindingDescriptionCount = 1;
-    vertex_input_state.pVertexBindingDescriptions = &binding_description;
-    vertex_input_state.vertexAttributeDescriptionCount = attribute_descriptions.size();
-    vertex_input_state.pVertexAttributeDescriptions = attribute_descriptions.data();
+    if (!attribute_descriptions.empty()) {
+        vertex_input_state.vertexBindingDescriptionCount = 1;
+        vertex_input_state.pVertexBindingDescriptions = &binding_description;
+        vertex_input_state.vertexAttributeDescriptionCount = attribute_descriptions.size();
+        vertex_input_state.pVertexAttributeDescriptions = attribute_descriptions.data();
+    }
 
     config.rasterization_state.frontFace = config.front_face;
     config.multisample_state.rasterizationSamples = config.msaa_samples;
@@ -326,7 +328,7 @@ void Pipeline::bindResource(GPUCommandQueue* queue, const std::string& name,
     auto resource = m_resources->resource(name);
 
     if (!resource.has_value()) {
-        GE_ERR("Failed to bound '{}': there is no such resource", name);
+        GE_CORE_ERR("Failed to bind '{}': there is no such resource", name);
         return;
     }
 
