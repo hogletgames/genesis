@@ -108,9 +108,23 @@ std::optional<resource_descriptor_t> PipelineResources::resource(const std::stri
     return {};
 }
 
-VkDescriptorSet PipelineResources::descriptorSet(uint32_t set) const
+VkDescriptorSet PipelineResources::descriptorSet(const resource_descriptor_t& set_descriptor)
 {
-    return m_descriptor_pool->allocateDescriptorSet(m_descriptor_set_layouts[set]);
+    auto* set_layout = m_descriptor_set_layouts[set_descriptor.set];
+    uint32_t binding = set_descriptor.binding;
+
+    // This is a hack to reuse descriptor sets created for multi-binded resources. That
+    // way. we still create a separate descriptor set for each resources unless there are many
+    // bindings within the descriptor set. This hack only works when the resources are bound in
+    // order starting from the binding = 0.
+
+    try {
+        return m_descriptor_pool->allocateDescriptorSet(set_layout, binding > 0);
+    } catch (const GE::Exception& e) {
+        GE_CORE_ERR("Failed to allocate '{}' descriptor set for: '{}'", set_descriptor.name,
+                    e.what());
+        return VK_NULL_HANDLE;
+    }
 }
 
 const push_constant_t* PipelineResources::pushConstant(const std::string& name) const

@@ -332,7 +332,11 @@ void Pipeline::bindResource(GPUCommandQueue* queue, const std::string& name,
         return;
     }
 
-    auto* descriptor_set = m_resources->descriptorSet(resource->set);
+    auto* descriptor_set = m_resources->descriptorSet(resource.value());
+    if (descriptor_set == VK_NULL_HANDLE) {
+        GE_CORE_ERR("Failed to allocate Descriptor Set for '{}'", name);
+        return;
+    }
 
     write_descriptor_set->sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     write_descriptor_set->dstSet = descriptor_set;

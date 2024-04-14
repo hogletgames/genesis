@@ -60,7 +60,7 @@ public:
     ~PipelineResources();
 
     std::optional<resource_descriptor_t> resource(const std::string& name) const;
-    VkDescriptorSet descriptorSet(uint32_t set) const;
+    VkDescriptorSet descriptorSet(const resource_descriptor_t& set_descriptor);
     const DescriptorSetLayouts& descriptorSetLayouts() const { return m_descriptor_set_layouts; }
 
     VkDescriptorSetLayout descriptorSetLayout(uint32_t set) const
