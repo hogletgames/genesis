@@ -53,6 +53,8 @@ struct pipeline_config_t {
     Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
     Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
     BlendingCondig blending{blending_t{}};
+    bool depth_test_enable{true};
+    bool depth_write_enable{true};
 };
 
 class Pipeline: public Interface

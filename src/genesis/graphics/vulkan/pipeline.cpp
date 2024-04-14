@@ -138,7 +138,7 @@ void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, const GE::U
 
 void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, const GE::Texture& texture)
 {
-    const auto* vk_texture = toVulan(texture);
+    const auto* vk_texture = toVulkan(texture);
 
     VkDescriptorImageInfo info{};
     info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -226,8 +226,8 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     config.multisample_state.alphaToOneEnable = VK_FALSE;      // Optional
 
     config.depth_stencil_state.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    config.depth_stencil_state.depthTestEnable = VK_TRUE;
-    config.depth_stencil_state.depthWriteEnable = VK_TRUE;
+    config.depth_stencil_state.depthTestEnable = toVkBool(config.depth_test_enable);
+    config.depth_stencil_state.depthWriteEnable = toVkBool(config.depth_write_enable);
     config.depth_stencil_state.depthCompareOp = VK_COMPARE_OP_LESS;
     config.depth_stencil_state.depthBoundsTestEnable = VK_FALSE;
     config.depth_stencil_state.stencilTestEnable = VK_FALSE;
@@ -402,7 +402,7 @@ template<>
 void Pipeline::pushConstantCmd<bool>(GPUCommandQueue* queue, const push_constant_t& push_constant,
                                      bool value)
 {
-    queue->enqueue([this, &push_constant, vk_value = value ? VK_TRUE : VK_FALSE](void* cmd_buffer) {
+    queue->enqueue([this, &push_constant, vk_value = toVkBool(value)](void* cmd_buffer) {
         vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
                            push_constant.pipeline_stages, push_constant.offset, push_constant.size,
                            &vk_value);
