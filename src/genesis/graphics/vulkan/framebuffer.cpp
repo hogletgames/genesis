@@ -156,7 +156,7 @@ Framebuffer::createDepthRenderingAttachment(const Scoped<Vulkan::Texture>& textu
     attachment.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO;
     attachment.imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
     attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 
     if (m_config.msaa_samples > 1) {
         attachment.imageView = m_depth_msaa_image->view();
@@ -236,7 +236,7 @@ Framebuffer::colorRenderingAttachments(Renderer::ClearMode clear_mode)
     for (uint32_t i{0}; i < m_color_rendering_attachments.size(); i++) {
         auto& color_attachment = m_color_rendering_attachments[i];
         color_attachment.loadOp = should_clear ? VK_ATTACHMENT_LOAD_OP_CLEAR
-                                               : VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+                                               : VK_ATTACHMENT_LOAD_OP_LOAD;
     }
 
     return m_color_rendering_attachments;
@@ -247,7 +247,7 @@ Framebuffer::depthRenderingAttachment(Renderer::ClearMode clear_mode)
 {
     bool should_clear = clear_mode == Renderer::CLEAR_DEPTH || clear_mode == Renderer::CLEAR_ALL;
     m_depth_rendering_attachment.loadOp = should_clear ? VK_ATTACHMENT_LOAD_OP_CLEAR
-                                                       : VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+                                                       : VK_ATTACHMENT_LOAD_OP_LOAD;
     return m_depth_rendering_attachment;
 }
 
