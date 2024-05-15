@@ -47,7 +47,7 @@ RenderCommand::RenderCommand(Renderer *renderer)
 
 void RenderCommand::bind(Pipeline *pipeline)
 {
-    m_cmd_queue.setCurrentPipeline(pipeline);
+    pipeline->bind(&m_cmd_queue);
 }
 
 void RenderCommand::bind(VertexBuffer *buffer)
