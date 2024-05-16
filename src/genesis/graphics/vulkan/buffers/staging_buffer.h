@@ -32,19 +32,32 @@
 
 #pragma once
 
+#include <genesis/graphics/staging_buffer.h>
+
 #include "buffer_base.h"
 
 namespace GE::Vulkan {
 
-class StagingBuffer: public BufferBase
+class StagingBuffer: public GE::StagingBuffer, BufferBase
 {
 public:
+    explicit StagingBuffer(Shared<Device> device);
     StagingBuffer(Shared<Device> device, uint32_t size, const void* data);
+
+    void copyFrom(const GE::Texture& texture) override;
+
+    NativeHandle nativeHandle() const override { return m_buffer; }
+    void* data() override;
+    uint32_t size() const override { return m_size; }
 
     void copyTo(BufferBase* dest, uint32_t offset);
 
 private:
     void copyData(uint32_t size, const void* data, uint32_t offset);
+
+    void clearStagingBuffer();
+
+    void* m_mapped_memory{nullptr};
 };
 
 } // namespace GE::Vulkan

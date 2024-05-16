@@ -93,20 +93,6 @@ void RendererBase::createPipelineCache()
     }
 }
 
-void RendererBase::destroyVkHandles()
-{
-    m_device->waitIdle();
-
-    vkDestroyPipelineCache(m_device->device(), m_pipeline_cache, nullptr);
-    m_pipeline_cache = VK_NULL_HANDLE;
-
-    vkDestroyCommandPool(m_device->device(), m_command_pool, nullptr);
-    m_command_pool = VK_NULL_HANDLE;
-    m_cmd_buffers.clear();
-
-    m_device.reset();
-}
-
 bool RendererBase::beginRendering(ClearMode clear_mode)
 {
     VkCommandBuffer cmd = cmdBuffer();
@@ -173,6 +159,38 @@ void RendererBase::draw(GPUCommandQueue* queue, uint32_t vertex_count, uint32_t 
         vkCmdDraw(toVkCommandBuffer(cmd), vertex_count, instance_count, first_vertex,
                   first_instance);
     });
+}
+
+void RendererBase::destroyVkHandles()
+{
+    m_device->waitIdle();
+
+    vkDestroyPipelineCache(m_device->device(), m_pipeline_cache, nullptr);
+    m_pipeline_cache = VK_NULL_HANDLE;
+
+    vkDestroyCommandPool(m_device->device(), m_command_pool, nullptr);
+    m_command_pool = VK_NULL_HANDLE;
+    m_cmd_buffers.clear();
+
+    m_device.reset();
+}
+
+VkClearValue toVkClearColorValue(const GE::ClearColorType& clear_color)
+{
+    VkClearColorValue vk_clear_color{};
+
+    if (std::holds_alternative<Vec4>(clear_color)) {
+        const auto& value = std::get<Vec4>(clear_color);
+        std::copy_n(value_ptr(value), Vec4::length(), vk_clear_color.float32);
+    } else if (std::holds_alternative<IVec4>(clear_color)) {
+        const auto& value = std::get<IVec4>(clear_color);
+        std::copy_n(value_ptr(value), IVec4::length(), vk_clear_color.int32);
+    } else if (std::holds_alternative<UVec4>(clear_color)) {
+        const auto& value = std::get<UVec4>(clear_color);
+        std::copy_n(value_ptr(value), UVec4::length(), vk_clear_color.uint32);
+    }
+
+    return VkClearValue{vk_clear_color};
 }
 
 } // namespace GE::Vulkan

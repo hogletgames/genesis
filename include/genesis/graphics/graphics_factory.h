@@ -42,6 +42,7 @@ namespace GE {
 class IndexBuffer;
 class VertexBuffer;
 class Texture;
+class StagingBuffer;
 class UniformBuffer;
 
 struct texture_config_t;
@@ -54,6 +55,7 @@ public:
     virtual Scoped<IndexBuffer> createIndexBuffer(const uint32_t* indices,
                                                   uint32_t count) const = 0;
     virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size, const void* vertices) const = 0;
+    virtual Scoped<StagingBuffer> createStagingBuffer() const = 0;
     virtual Scoped<UniformBuffer> createUniformBuffer(uint32_t size, const void* data) const = 0;
 
     virtual Scoped<Shader> createShader(Shader::Type type) = 0;

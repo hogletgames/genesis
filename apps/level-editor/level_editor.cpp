@@ -97,17 +97,24 @@ void LevelEditor::onRender()
     updateParameters();
 
     m_ctx.sceneRenderer()->render(*m_ctx.scene());
+    m_ctx.entityPicker()->onRender();
     m_gui->onRender();
 }
 
 bool LevelEditor::createFramebuffer()
 {
-    GE::Framebuffer::config_t model_fbo_config{};
-    model_fbo_config.attachments[0].clear_color = {0.3f, 0.3f, 0.3f, 1.0f};
-    model_fbo_config.size = {720.0f, 480.0f};
-    model_fbo_config.msaa_samples = GE::Graphics::limits().max_msaa;
+    GE::Framebuffer::config_t fbo_config{};
+    fbo_config.size = {720.0f, 480.0f};
+    fbo_config.msaa_samples = GE::Graphics::limits().max_msaa;
+    fbo_config.attachments = {
+        // Color attachment
+        {GE::fb_attachment_t::Type::COLOR, GE::TextureType::TEXTURE_2D, GE::TextureFormat::SRGBA8,
+         GE::Vec4{0.3f, 0.3f, 0.3f, 1.0f}},
+        // Depth attachment
+        {GE::fb_attachment_t::Type::DEPTH, GE::TextureType::TEXTURE_2D, GE::TextureFormat::D32F},
+    };
 
-    m_ctx.sceneFbo() = GE::Framebuffer::create(model_fbo_config);
+    m_ctx.sceneFbo() = GE::Framebuffer::create(fbo_config);
     return m_ctx.sceneFbo() != nullptr;
 }
 
@@ -156,6 +163,7 @@ void LevelEditor::updateParameters()
     if (m_ctx.sceneFbo()->size() != m_viewport) {
         m_ctx.sceneFbo()->resize(m_viewport);
         m_ctx.cameraController()->camera()->setViewport(m_viewport);
+        m_ctx.entityPicker()->onViewportUpdate(m_viewport);
     }
 }
 

@@ -134,9 +134,15 @@ Image::~Image()
 
 void Image::copyFrom(const StagingBuffer &buffer, const std::vector<VkBufferImageCopy> &regions)
 {
-    transitionImageLayout();
+    transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     copyToImage(buffer, regions);
     createMipmaps();
+}
+
+void Image::copyTo(const StagingBuffer &buffer)
+{
+    transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    copyFromImage(buffer);
 };
 
 VkImageMemoryBarrier Image::imageMemoryBarrier() const
@@ -246,11 +252,12 @@ uint32_t Image::getMemoryType(uint32_t type_filter, VkMemoryPropertyFlags proper
     throw Vulkan::Exception{"Failed to find suitable memory type"};
 }
 
-void Image::transitionImageLayout()
+void Image::transitionImageLayout(VkImageLayout new_layout)
 {
     auto barrier = imageMemoryBarrier();
     barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    barrier.newLayout = new_layout;
+    barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
     SingleCommand cmd{m_device, SingleCommand::QUEUE_TRANSFER};
     PipelineBarrier::submit(cmd.buffer(), {barrier}, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
@@ -260,8 +267,26 @@ void Image::transitionImageLayout()
 void Image::copyToImage(const StagingBuffer &buffer, const std::vector<VkBufferImageCopy> &regions)
 {
     SingleCommand cmd{m_device, SingleCommand::QUEUE_TRANSFER};
-    vkCmdCopyBufferToImage(cmd.buffer(), buffer.buffer(), m_image,
+    vkCmdCopyBufferToImage(cmd.buffer(), toVkBuffer(buffer.nativeHandle()), m_image,
                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.size(), regions.data());
+}
+
+void Image::copyFromImage(const StagingBuffer &buffer)
+{
+    VkBufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = 1;
+    region.imageOffset = {0, 0, 0};
+    region.imageExtent = m_extent;
+
+    SingleCommand cmd{m_device, SingleCommand::QUEUE_TRANSFER};
+    vkCmdCopyImageToBuffer(cmd.buffer(), m_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                           toVkBuffer(buffer.nativeHandle()), 1, &region);
 }
 
 void Image::createMipmaps()

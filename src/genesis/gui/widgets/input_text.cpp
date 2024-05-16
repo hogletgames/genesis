@@ -58,11 +58,13 @@ bool InputText::call(std::string_view label, std::string* output, Flags flags)
     return true;
 }
 
-void InputTextMultiline::call(std::string* text, const Vec2& widget_size)
+void InputTextMultiline::call(std::string* text, [[maybe_unused]] const Vec2& widget_size)
 {
     ImGui::PushID(text->c_str());
-    ImGui::InputTextMultiline("##text", text->data(), text->size(), toImVec2(widget_size),
+    ImGui::InputTextMultiline("##text", text->data(), text->size(),
+                              ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16),
                               ImGuiInputTextFlags_ReadOnly);
+    ImGui::SetScrollHereY(1.0f);
     ImGui::PopID();
 }
 

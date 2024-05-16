@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,48 +32,48 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/core/export.h>
+#include <genesis/core/memory.h>
 #include <genesis/math/types.h>
 
-#include <boost/signals2/signal.hpp>
+namespace GE {
+class Framebuffer;
+class Pipeline;
+class StagingBuffer;
+class Texture;
+} // namespace GE
 
-#include <string_view>
+namespace GE::Scene {
 
-namespace GE::GUI {
+class Entity;
+class Scene;
+class ViewProjectionCamera;
 
-class GE_API Window: public WidgetNode
+class GE_API EntityPicker
 {
 public:
-    using Flags = int;
+    EntityPicker(Scene* scene, const ViewProjectionCamera* camera);
+    ~EntityPicker();
 
-    using SizeSignal = boost::signals2::signal<void(const Vec2&)>;
-    using AvailableRegionSignal = boost::signals2::signal<void(const Vec2&)>;
-    using IsFocusedSignal = boost::signals2::signal<void(bool)>;
-    using IsHoveredSignal = boost::signals2::signal<void(bool)>;
+    void onRender();
+    void onViewportUpdate(const Vec2& viewport);
 
-    explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
+    Entity getEntityByPosition(const Vec2& position);
 
-    void emitSignals() override;
-
-    Vec2 position() const;
-    Vec2 mousePosition() const;
-    Vec2 size() const;
-    Vec2 availableRegion() const;
-    float aspectRatio() const;
-
-    bool isFocused() const;
-    bool isHovered() const;
-
-    SizeSignal* sizeSignal() { return &m_size_signal; }
-    AvailableRegionSignal* availableRegionSignal() { return &m_available_region_signal; }
-    IsFocusedSignal* isFocusedSignal() { return &m_is_focused_signal; }
-    IsHoveredSignal* isHoveredSignal() { return &m_is_hovered_signal; }
+    static constexpr int32_t ENTITY_ID_NONE{-1};
 
 private:
-    SizeSignal m_size_signal;
-    AvailableRegionSignal m_available_region_signal;
-    IsFocusedSignal m_is_focused_signal;
-    IsHoveredSignal m_is_hovered_signal;
+    void recreateEntityIdFramebuffer(const Vec2& size);
+    void createEntityIdPipeline();
+
+    void renderEntityId(const Entity& entity);
+
+    Scene* m_scene{nullptr};
+    const ViewProjectionCamera* m_camera{nullptr};
+    Scoped<Framebuffer> m_entity_id_fbo;
+    Scoped<Pipeline> m_entity_id_pipline;
+    Scoped<StagingBuffer> m_entity_id_buffer;
+    bool m_is_buffer_updated{false};
 };
 
-} // namespace GE::GUI
+} // namespace GE::Scene

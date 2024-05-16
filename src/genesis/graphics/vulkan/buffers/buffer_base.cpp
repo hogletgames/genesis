@@ -54,6 +54,12 @@ void BufferBase::copyFromHost(uint32_t size, const void *data, uint32_t offset)
     staging_buffer.copyTo(this, offset);
 }
 
+void BufferBase::clear()
+{
+    destroyVkHandles();
+    m_size = 0;
+}
+
 void BufferBase::createBuffer(uint32_t size, VkBufferUsageFlags usage,
                               VkMemoryPropertyFlags properties)
 {

@@ -50,6 +50,7 @@ public:
     void copyFromHost(uint32_t size, const void* data, uint32_t offset);
 
     VkBuffer buffer() const { return m_buffer; };
+    void clear();
 
 protected:
     void createBuffer(uint32_t size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);

@@ -49,7 +49,7 @@ constexpr uint32_t MAX_ANISOTROPY{16};
 std::unordered_map<GE::TextureFormat, VkFormat> toVkFormatMap()
 {
     return {
-        {GE::TextureFormat::R8, VK_FORMAT_R8_UINT},
+        {GE::TextureFormat::R8, VK_FORMAT_R8_UNORM},
         {GE::TextureFormat::RGB8, VK_FORMAT_R8G8B8_UNORM},
         {GE::TextureFormat::RGBA8, VK_FORMAT_R8G8B8A8_UNORM},
         {GE::TextureFormat::SRGB8, VK_FORMAT_R8G8B8_SRGB},
@@ -57,6 +57,8 @@ std::unordered_map<GE::TextureFormat, VkFormat> toVkFormatMap()
         {GE::TextureFormat::R16F, VK_FORMAT_R16_SFLOAT},
         {GE::TextureFormat::RGBA16F, VK_FORMAT_R16G16B16A16_SFLOAT},
         {GE::TextureFormat::R32F, VK_FORMAT_R32_SFLOAT},
+        {GE::TextureFormat::R32_UINT, VK_FORMAT_R32_UINT},
+        {GE::TextureFormat::R32_INT, VK_FORMAT_R32_SINT},
         {GE::TextureFormat::RGBA32F, VK_FORMAT_R32G32B32A32_SFLOAT},
         {GE::TextureFormat::D32F, VK_FORMAT_D32_SFLOAT},
         {GE::TextureFormat::D24S8, VK_FORMAT_D24_UNORM_S8_UINT},
