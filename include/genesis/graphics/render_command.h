@@ -36,7 +36,6 @@
 #include <genesis/core/memory.h>
 #include <genesis/graphics/gpu_command_queue.h>
 #include <genesis/graphics/pipeline.h>
-#include <genesis/math/types.h>
 
 namespace GE {
 
@@ -46,6 +45,7 @@ class Context;
 
 class IndexBuffer;
 class Mesh;
+class Renderer;
 class Texture;
 class UniformBuffer;
 class VertexBuffer;
@@ -53,11 +53,13 @@ class VertexBuffer;
 class GE_API RenderCommand
 {
 public:
+    explicit RenderCommand(Renderer* renderer);
+
     void bind(Pipeline* pipeline);
     void bind(VertexBuffer* buffer);
     void bind(IndexBuffer* buffer);
-    void bind(Pipeline* pipeline, const std::string& resource_name, UniformBuffer* buffer);
-    void bind(Pipeline* pipeline, const std::string& resource_name, Texture* texture);
+    void bind(Pipeline* pipeline, const std::string& resource_name, const UniformBuffer& buffer);
+    void bind(Pipeline* pipeline, const std::string& resource_name, const Texture& texture);
     template<typename T>
     void pushConstant(Pipeline* pipeline, const std::string& name, const T& value);
 
@@ -65,10 +67,13 @@ public:
     void draw(VertexBuffer* buffer, uint32_t vertex_count);
     void draw(VertexBuffer* vbo, IndexBuffer* ibo);
     void draw(GUI::Context* gui_layer);
+    void draw(uint32_t vertex_count, uint32_t instance_count, uint32_t first_vertex,
+              uint32_t first_instance);
 
     void submit(GPUCommandBuffer cmd);
 
 private:
+    Renderer* m_renderer{nullptr};
     GPUCommandQueue m_cmd_queue;
 };
 

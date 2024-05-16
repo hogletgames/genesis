@@ -69,8 +69,8 @@ bool LevelEditor::initialize()
         return false;
     }
 
-    m_scene_renderer =
-        GE::makeScoped<GE::Scene::Renderer>(m_ctx.cameraController()->camera().get());
+    createSceneRenderer();
+
     m_gui = GE::makeScoped<LevelEditorGUI>(&m_ctx);
     connectSignals();
     initializeProject();
@@ -94,27 +94,29 @@ void LevelEditor::onEvent(GE::Event* event)
 
 void LevelEditor::onRender()
 {
-    auto* renderer = m_ctx.sceneFbo()->renderer();
-    auto* scene = m_ctx.scene();
-
     updateParameters();
 
-    renderer->beginFrame();
-    m_scene_renderer->render(renderer, *scene);
-    renderer->endFrame();
-
+    m_ctx.sceneRenderer()->render(*m_ctx.scene());
     m_gui->onRender();
 }
 
 bool LevelEditor::createFramebuffer()
 {
     GE::Framebuffer::config_t model_fbo_config{};
-    model_fbo_config.clear_color = {0.3f, 0.3f, 0.3f, 1.0f};
+    model_fbo_config.attachments[0].clear_color = {0.3f, 0.3f, 0.3f, 1.0f};
     model_fbo_config.size = {720.0f, 480.0f};
     model_fbo_config.msaa_samples = GE::Graphics::limits().max_msaa;
 
     m_ctx.sceneFbo() = GE::Framebuffer::create(model_fbo_config);
     return m_ctx.sceneFbo() != nullptr;
+}
+
+void LevelEditor::createSceneRenderer()
+{
+    auto* renderer = m_ctx.sceneFbo()->renderer();
+    const auto* camera = m_ctx.cameraController()->camera().get();
+
+    m_ctx.sceneRenderer() = GE::makeScoped<GE::Scene::WeightedBlendedOITRenderer>(renderer, camera);
 }
 
 void LevelEditor::connectSignals()

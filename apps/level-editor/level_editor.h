@@ -34,7 +34,6 @@
 
 #include "level_editor_context.h"
 
-#include <genesis/assets/registry.h>
 #include <genesis/core/export.h>
 #include <genesis/core/timestamp.h>
 #include <genesis/graphics/framebuffer.h>
@@ -64,6 +63,7 @@ public:
 
 private:
     bool createFramebuffer();
+    void createSceneRenderer();
     void connectSignals();
     void initializeProject();
 
@@ -87,7 +87,6 @@ private:
 
     LevelEditorContext m_ctx;
     GE::Scoped<LevelEditorGUI> m_gui;
-    GE::Scoped<GE::Scene::Renderer> m_scene_renderer;
 
     GE::Vec2 m_viewport{1.0f, 1.0f};
 };

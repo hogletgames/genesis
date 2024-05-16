@@ -31,6 +31,7 @@
  */
 
 #include "pipeline.h"
+#include "blending.h"
 #include "buffers/uniform_buffer.h"
 #include "command_buffer.h"
 #include "device.h"
@@ -40,8 +41,10 @@
 #include "shader.h"
 #include "shader_data_type_size.h"
 #include "texture.h"
+#include "utils.h"
 #include "vulkan_exception.h"
 
+#include "genesis/core/asserts.h"
 #include "genesis/core/log.h"
 #include "genesis/graphics/gpu_command_queue.h"
 
@@ -49,6 +52,43 @@ namespace GE::Vulkan {
 namespace {
 
 constexpr auto SHADER_ENTRYPOINT = "main";
+
+VkPipelineColorBlendAttachmentState
+toVkPipelineColorBlendAttachmentState(const blending_t& blending)
+{
+    VkPipelineColorBlendAttachmentState color_blend_attachment{};
+    color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                                            VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    color_blend_attachment.blendEnable = toVkBool(blending.enabled);
+    color_blend_attachment.srcColorBlendFactor = toVkBlendFactor(blending.src_color_factor);
+    color_blend_attachment.dstColorBlendFactor = toVkBlendFactor(blending.dst_color_factor);
+    color_blend_attachment.colorBlendOp = toVkBlendOp(blending.color_op);
+    color_blend_attachment.srcAlphaBlendFactor = toVkBlendFactor(blending.src_alpha_factor);
+    color_blend_attachment.dstAlphaBlendFactor = toVkBlendFactor(blending.dst_alpha_factor);
+    color_blend_attachment.alphaBlendOp = toVkBlendOp(blending.alpha_op);
+
+    return color_blend_attachment;
+}
+
+std::vector<VkPipelineColorBlendAttachmentState>
+toColorBlendAttacmentStates(const pipeline_config_t::BlendingCondig& blending, uint32_t count)
+{
+    std::vector<VkPipelineColorBlendAttachmentState> color_blend_attachments(count);
+
+    if (std::holds_alternative<blending_t>(blending)) {
+        std::fill(color_blend_attachments.begin(), color_blend_attachments.end(),
+                  toVkPipelineColorBlendAttachmentState(std::get<blending_t>(blending)));
+    } else {
+        const auto& blendings = std::get<std::vector<blending_t>>(blending);
+        GE_CORE_ASSERT(blendings.size() == count, "Invalid blending config count '{} != {}'",
+                       blendings.size(), count);
+
+        std::transform(blendings.cbegin(), blendings.cend(), color_blend_attachments.begin(),
+                       &toVkPipelineColorBlendAttachmentState);
+    }
+
+    return color_blend_attachments;
+}
 
 bool isPushConstantValid(const push_constant_t& push_constant, uint32_t expected_size)
 {
@@ -79,15 +119,16 @@ Pipeline::~Pipeline()
 void Pipeline::bind(GPUCommandQueue* queue)
 {
     queue->enqueue([this](void* cmd_buffer) {
-        vkCmdBindPipeline(cmdBuffer(cmd_buffer), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
+        vkCmdBindPipeline(toVkCommandBuffer(cmd_buffer), VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          m_pipeline);
     });
 }
 
-void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, GE::UniformBuffer* ubo)
+void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, const GE::UniformBuffer& ubo)
 {
     VkDescriptorBufferInfo info{};
-    info.buffer = toVkBuffer(ubo->nativeHandle());
-    info.range = ubo->size();
+    info.buffer = toVkBuffer(ubo.nativeHandle());
+    info.range = ubo.size();
 
     VkWriteDescriptorSet write_descriptor_set{};
     write_descriptor_set.pBufferInfo = &info;
@@ -95,9 +136,9 @@ void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, GE::Uniform
     bindResource(queue, name, &write_descriptor_set);
 }
 
-void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, GE::Texture* texture)
+void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, const GE::Texture& texture)
 {
-    auto* vk_texture = toVulkan(texture);
+    const auto* vk_texture = toVulkan(texture);
 
     VkDescriptorImageInfo info{};
     info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -131,6 +172,11 @@ void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, flo
 }
 
 void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, double value)
+{
+    pushConstantIfValid(queue, name, value);
+}
+
+void Pipeline::pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec2& value)
 {
     pushConstantIfValid(queue, name, value);
 }
@@ -179,34 +225,9 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     config.multisample_state.alphaToCoverageEnable = VK_FALSE; // Optional
     config.multisample_state.alphaToOneEnable = VK_FALSE;      // Optional
 
-    VkPipelineColorBlendAttachmentState color_blend_attachment{};
-    color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                                            VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-    color_blend_attachment.blendEnable = VK_TRUE;
-    color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-    color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-    color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;
-    color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-    color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-    color_blend_attachment.alphaBlendOp = VK_BLEND_OP_ADD;
-
-    config.color_blend_attachments.resize(config.msaa_samples);
-    std::fill(config.color_blend_attachments.begin(), config.color_blend_attachments.end(),
-              color_blend_attachment);
-
-    config.color_blend_state.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    config.color_blend_state.logicOpEnable = VK_FALSE;
-    config.color_blend_state.logicOp = VK_LOGIC_OP_COPY;
-    config.color_blend_state.attachmentCount = config.color_blend_attachments.size();
-    config.color_blend_state.pAttachments = config.color_blend_attachments.data();
-    config.color_blend_state.blendConstants[0] = 1.0f;
-    config.color_blend_state.blendConstants[1] = 1.0f;
-    config.color_blend_state.blendConstants[2] = 1.0f;
-    config.color_blend_state.blendConstants[3] = 1.0f;
-
     config.depth_stencil_state.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    config.depth_stencil_state.depthTestEnable = VK_TRUE;
-    config.depth_stencil_state.depthWriteEnable = VK_TRUE;
+    config.depth_stencil_state.depthTestEnable = toVkBool(config.depth_test_enable);
+    config.depth_stencil_state.depthWriteEnable = toVkBool(config.depth_write_enable);
     config.depth_stencil_state.depthCompareOp = VK_COMPARE_OP_LESS;
     config.depth_stencil_state.depthBoundsTestEnable = VK_FALSE;
     config.depth_stencil_state.stencilTestEnable = VK_FALSE;
@@ -274,13 +295,29 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
 
     VkPipelineVertexInputStateCreateInfo vertex_input_state{};
     vertex_input_state.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertex_input_state.vertexBindingDescriptionCount = 1;
-    vertex_input_state.pVertexBindingDescriptions = &binding_description;
-    vertex_input_state.vertexAttributeDescriptionCount = attribute_descriptions.size();
-    vertex_input_state.pVertexAttributeDescriptions = attribute_descriptions.data();
+    if (!attribute_descriptions.empty()) {
+        vertex_input_state.vertexBindingDescriptionCount = 1;
+        vertex_input_state.pVertexBindingDescriptions = &binding_description;
+        vertex_input_state.vertexAttributeDescriptionCount = attribute_descriptions.size();
+        vertex_input_state.pVertexAttributeDescriptions = attribute_descriptions.data();
+    }
 
     config.rasterization_state.frontFace = config.front_face;
     config.multisample_state.rasterizationSamples = config.msaa_samples;
+
+    auto color_blend_attachments =
+        toColorBlendAttacmentStates(config.blending, config.color_formats.size());
+
+    VkPipelineColorBlendStateCreateInfo color_blend_state{};
+    color_blend_state.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    color_blend_state.logicOpEnable = VK_FALSE;
+    color_blend_state.logicOp = VK_LOGIC_OP_COPY;
+    color_blend_state.attachmentCount = color_blend_attachments.size();
+    color_blend_state.pAttachments = color_blend_attachments.data();
+    color_blend_state.blendConstants[0] = 1.0f;
+    color_blend_state.blendConstants[1] = 1.0f;
+    color_blend_state.blendConstants[2] = 1.0f;
+    color_blend_state.blendConstants[3] = 1.0f;
 
     VkPipelineRenderingCreateInfo rendering_info{};
     rendering_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
@@ -299,7 +336,7 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     pipeline_info.pRasterizationState = &config.rasterization_state;
     pipeline_info.pMultisampleState = &config.multisample_state;
     pipeline_info.pDepthStencilState = &config.depth_stencil_state;
-    pipeline_info.pColorBlendState = &config.color_blend_state;
+    pipeline_info.pColorBlendState = &color_blend_state;
     pipeline_info.pDynamicState = &config.dynamic_state;
     pipeline_info.layout = m_pipeline_layout;
     pipeline_info.basePipelineHandle = VK_NULL_HANDLE; // Optional
@@ -317,11 +354,15 @@ void Pipeline::bindResource(GPUCommandQueue* queue, const std::string& name,
     auto resource = m_resources->resource(name);
 
     if (!resource.has_value()) {
-        GE_ERR("Failed to bound '{}': there is no such resource", name);
+        GE_CORE_ERR("Failed to bind '{}': there is no such resource", name);
         return;
     }
 
-    auto* descriptor_set = m_resources->descriptorSet(resource->set);
+    auto* descriptor_set = m_resources->descriptorSet(resource.value());
+    if (descriptor_set == VK_NULL_HANDLE) {
+        GE_CORE_ERR("Failed to allocate Descriptor Set for '{}'", name);
+        return;
+    }
 
     write_descriptor_set->sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     write_descriptor_set->dstSet = descriptor_set;
@@ -332,8 +373,8 @@ void Pipeline::bindResource(GPUCommandQueue* queue, const std::string& name,
     vkUpdateDescriptorSets(m_device->device(), 1, write_descriptor_set, 0, nullptr);
 
     queue->enqueue([this, set = resource->set, descriptor_set](void* cmd) {
-        vkCmdBindDescriptorSets(cmdBuffer(cmd), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout,
-                                set, 1, &descriptor_set, 0, nullptr);
+        vkCmdBindDescriptorSets(toVkCommandBuffer(cmd), VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                m_pipeline_layout, set, 1, &descriptor_set, 0, nullptr);
     });
 }
 
@@ -351,8 +392,9 @@ void Pipeline::pushConstantCmd(GPUCommandQueue* queue, const push_constant_t& pu
                                T value)
 {
     queue->enqueue([this, &push_constant, value](void* cmd_buffer) {
-        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
-                           push_constant.offset, push_constant.size, &value);
+        vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
+                           push_constant.pipeline_stages, push_constant.offset, push_constant.size,
+                           &value);
     });
 }
 
@@ -360,9 +402,10 @@ template<>
 void Pipeline::pushConstantCmd<bool>(GPUCommandQueue* queue, const push_constant_t& push_constant,
                                      bool value)
 {
-    queue->enqueue([this, &push_constant, vk_value = value ? VK_TRUE : VK_FALSE](void* cmd_buffer) {
-        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
-                           push_constant.offset, push_constant.size, &vk_value);
+    queue->enqueue([this, &push_constant, vk_value = toVkBool(value)](void* cmd_buffer) {
+        vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
+                           push_constant.pipeline_stages, push_constant.offset, push_constant.size,
+                           &vk_value);
     });
 }
 
@@ -371,8 +414,9 @@ void Pipeline::pushConstantCmd<const Vec3&>(GPUCommandQueue* queue,
                                             const push_constant_t& push_constant, const Vec3& value)
 {
     queue->enqueue([this, &push_constant, &value](void* cmd_buffer) {
-        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
-                           push_constant.offset, push_constant.size, value_ptr(value));
+        vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
+                           push_constant.pipeline_stages, push_constant.offset, push_constant.size,
+                           value_ptr(value));
     });
 }
 
@@ -381,8 +425,9 @@ void Pipeline::pushConstantCmd<const Mat4&>(GPUCommandQueue* queue,
                                             const push_constant_t& push_constant, const Mat4& value)
 {
     queue->enqueue([this, &push_constant, &value](void* cmd_buffer) {
-        vkCmdPushConstants(cmdBuffer(cmd_buffer), m_pipeline_layout, push_constant.pipeline_stages,
-                           push_constant.offset, push_constant.size, value_ptr(value));
+        vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
+                           push_constant.pipeline_stages, push_constant.offset, push_constant.size,
+                           value_ptr(value));
     });
 }
 

@@ -31,6 +31,7 @@
  */
 
 #include "renderer_base.h"
+#include "command_buffer.h"
 #include "descriptor_pool.h"
 #include "device.h"
 #include "texture.h"
@@ -130,7 +131,10 @@ bool RendererBase::beginRendering(ClearMode clear_mode)
     rendering_info.layerCount = 1;
     rendering_info.colorAttachmentCount = colorAttachments.size();
     rendering_info.pColorAttachments = colorAttachments.data();
-    rendering_info.pDepthAttachment = &depthAttachment;
+
+    if (depthAttachment.has_value()) {
+        rendering_info.pDepthAttachment = &depthAttachment.value();
+    }
 
     cmdBeginRendering(cmd, &rendering_info);
     return true;
@@ -160,6 +164,15 @@ bool RendererBase::endRendering()
     }
 
     return true;
+}
+
+void RendererBase::draw(GPUCommandQueue* queue, uint32_t vertex_count, uint32_t instance_count,
+                        uint32_t first_vertex, uint32_t first_instance)
+{
+    queue->enqueue([vertex_count, instance_count, first_vertex, first_instance](void* cmd) {
+        vkCmdDraw(toVkCommandBuffer(cmd), vertex_count, instance_count, first_vertex,
+                  first_instance);
+    });
 }
 
 } // namespace GE::Vulkan

@@ -89,7 +89,7 @@ build/examples/sandbox/sandbox -e gui
 
 ```bash
 export VK_LAYER_PATH=build/_deps/vulkan-validationlayers-build/layers
-export VK_ICD_FILENAMES=build/_deps/moltenvk-src/Package/Release/MoltenVK/dylib/macOS/MoltenVK_icd.json
+export VK_ICD_FILENAMES=build/_deps/moltenvk-src/Package/Latest/MoltenVK/dynamic/dylib/macOS/MoltenVK_icd.json
 build/examples/sandbox/sandbox -e gui
 ```
 

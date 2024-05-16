@@ -83,14 +83,20 @@ DescriptorPool::~DescriptorPool()
     destroyVkHandles();
 }
 
-VkDescriptorSet DescriptorPool::allocateDescriptorSet(VkDescriptorSetLayout layout)
+VkDescriptorSet DescriptorPool::allocateDescriptorSet(VkDescriptorSetLayout layout, bool use_cache)
 {
+    if (use_cache) {
+        if (auto it = m_cache.find(layout); it != m_cache.end()) {
+            return it->second;
+        }
+    }
+
     VkDescriptorSet set{VK_NULL_HANDLE};
     auto* pool = getPool();
     auto result = allocateDescriptorSet(pool, layout, &set);
 
     if (result == VK_SUCCESS) {
-        return set;
+        return m_cache[layout] = set;
     }
 
     if (result == VK_ERROR_FRAGMENTED_POOL || result == VK_ERROR_OUT_OF_POOL_MEMORY) {
@@ -102,11 +108,12 @@ VkDescriptorSet DescriptorPool::allocateDescriptorSet(VkDescriptorSetLayout layo
         throw Vulkan::Exception("Failed to allocate Descriptor Set");
     }
 
-    return set;
+    return m_cache[layout] = set;
 }
 
 void DescriptorPool::reset()
 {
+    m_cache.clear();
     std::for_each(m_pools.begin(), m_pools.end(),
                   [this](auto pool) { vkResetDescriptorPool(m_device->device(), pool, 0); });
 }

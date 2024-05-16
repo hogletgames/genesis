@@ -56,6 +56,8 @@ struct fb_attachment_t {
     Type type{Type::UNKNOWN};
     TextureType texture_type{TextureType::UNKNOWN};
     TextureFormat texture_format{TextureFormat::UNKNOWN};
+    Vec4 clear_color{1.0f, 1.0f, 1.0f, 1.0f};
+    float clear_depth{1.0f};
 };
 
 class GE_API Framebuffer: public NonCopyable
@@ -65,8 +67,6 @@ public:
         Vec2 size{1920.0f, 1080.0f};
         uint32_t layers{1};
         uint32_t msaa_samples{1};
-        Vec4 clear_color{1.0f, 1.0f, 1.0f, 1.0f};
-        float clear_depth{1.0f};
         std::vector<fb_attachment_t> attachments = {
             {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D, TextureFormat::SRGBA8},
             {fb_attachment_t::Type::DEPTH, TextureType::TEXTURE_2D, TextureFormat::D32F},
@@ -78,10 +78,8 @@ public:
     virtual Renderer* renderer() = 0;
     virtual const Vec2& size() const = 0;
     virtual uint32_t MSAASamples() const = 0;
-    virtual const Vec4& clearColor() const = 0;
-    virtual float clearDepth() const = 0;
 
-    virtual const Texture& colorTexture(size_t i = 0) const = 0;
+    virtual const Texture& colorTexture(uint32_t i = 0) const = 0;
     virtual const Texture& depthTexture() const = 0;
     virtual uint32_t colorAttachmentCount() const = 0;
     virtual bool hasDepthAttachment() const = 0;

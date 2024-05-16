@@ -51,7 +51,7 @@ IndexBuffer::IndexBuffer(Shared<Device> device, const uint32_t* indices, uint32_
 void IndexBuffer::bind(GPUCommandQueue* cmd_queue) const
 {
     cmd_queue->enqueue([this](void* cmd) {
-        vkCmdBindIndexBuffer(cmdBuffer(cmd), m_buffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(toVkCommandBuffer(cmd), m_buffer, 0, VK_INDEX_TYPE_UINT32);
     });
 }
 

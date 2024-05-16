@@ -7,6 +7,7 @@ list(APPEND GRAPHICS_VULKAN_SOURCES
     renderers/framebuffer_renderer.cpp
     renderers/renderer_base.cpp
     renderers/window_renderer.cpp
+    blending.cpp
     descriptor_pool.cpp
     device.cpp
     framebuffer.cpp
@@ -36,6 +37,7 @@ list(APPEND GRAPHICS_VULKAN_HEADERS
     renderers/framebuffer_renderer.h
     renderers/renderer_base.h
     renderers/window_renderer.h
+    blending.h
     command_buffer.h
     descriptor_pool.h
     device.h

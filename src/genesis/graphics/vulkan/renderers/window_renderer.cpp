@@ -101,17 +101,14 @@ void WindowRenderer::endFrame()
 {
     VkCommandBuffer* cmd = &m_cmd_buffers[m_swap_chain->currentImageIndex()];
     m_render_command.submit(*cmd);
-
-    if (!endRendering()) {
-        return;
-    }
-
-    m_swap_chain->submitCommandBuffer(cmd);
-    m_descriptor_pool->reset();
+    endRendering();
 }
 
 void WindowRenderer::swapBuffers()
 {
+    VkCommandBuffer* cmd = &m_cmd_buffers[m_swap_chain->currentImageIndex()];
+    m_swap_chain->submitCommandBuffer(cmd);
+
     auto present_result = m_swap_chain->presentImage();
 
     if (present_result == VK_ERROR_OUT_OF_DATE_KHR || present_result == VK_SUBOPTIMAL_KHR ||
@@ -121,6 +118,8 @@ void WindowRenderer::swapBuffers()
     } else if (present_result != VK_SUCCESS) {
         GE_CORE_ERR("Failed to present Swap Chain Image");
     }
+
+    m_descriptor_pool->reset();
 }
 
 Scoped<GE::Pipeline> WindowRenderer::createPipeline(const GE::pipeline_config_t& config)
@@ -261,7 +260,8 @@ WindowRenderer::colorRenderingAttachments(ClearMode clear_mode)
     return m_color_rendering_attachments;
 }
 
-const VkRenderingAttachmentInfo& WindowRenderer::depthRenderingAttachment(ClearMode clear_mode)
+std::optional<VkRenderingAttachmentInfo>
+WindowRenderer::depthRenderingAttachment(ClearMode clear_mode)
 {
     bool should_clear = clear_mode == CLEAR_DEPTH || clear_mode == CLEAR_ALL;
 

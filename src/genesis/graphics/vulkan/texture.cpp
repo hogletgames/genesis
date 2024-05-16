@@ -49,13 +49,18 @@ constexpr uint32_t MAX_ANISOTROPY{16};
 std::unordered_map<GE::TextureFormat, VkFormat> toVkFormatMap()
 {
     return {
+        {GE::TextureFormat::R8, VK_FORMAT_R8_UINT},
         {GE::TextureFormat::RGB8, VK_FORMAT_R8G8B8_UNORM},
         {GE::TextureFormat::RGBA8, VK_FORMAT_R8G8B8A8_UNORM},
         {GE::TextureFormat::SRGB8, VK_FORMAT_R8G8B8_SRGB},
         {GE::TextureFormat::SRGBA8, VK_FORMAT_R8G8B8A8_SRGB},
-        {GE::TextureFormat::R32F, VK_FORMAT_R32G32B32A32_SFLOAT},
+        {GE::TextureFormat::R16F, VK_FORMAT_R16_SFLOAT},
+        {GE::TextureFormat::RGBA16F, VK_FORMAT_R16G16B16A16_SFLOAT},
+        {GE::TextureFormat::R32F, VK_FORMAT_R32_SFLOAT},
+        {GE::TextureFormat::RGBA32F, VK_FORMAT_R32G32B32A32_SFLOAT},
         {GE::TextureFormat::D32F, VK_FORMAT_D32_SFLOAT},
         {GE::TextureFormat::D24S8, VK_FORMAT_D24_UNORM_S8_UINT},
+        {GE::TextureFormat::D32S8, VK_FORMAT_D32_SFLOAT_S8_UINT},
     };
 }
 
@@ -174,6 +179,7 @@ Texture::Texture(Shared<Device> device, const texture_config_t& config)
     : m_device{std::move(device)}
     , m_size{config.width, config.height}
     , m_format{config.format}
+    , m_is_opaque(config.is_opaque)
 {
     createImage(config);
     createSampler(config);

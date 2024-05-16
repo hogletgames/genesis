@@ -34,8 +34,12 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
+#include <genesis/graphics/blending.h>
 #include <genesis/graphics/shader.h>
 #include <genesis/math/types.h>
+
+#include <variant>
+#include <vector>
 
 namespace GE {
 
@@ -44,8 +48,13 @@ class Texture;
 class UniformBuffer;
 
 struct pipeline_config_t {
+    using BlendingCondig = std::variant<blending_t, std::vector<blending_t>>;
+
     Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
     Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
+    BlendingCondig blending{blending_t{}};
+    bool depth_test_enable{true};
+    bool depth_write_enable{true};
 };
 
 class Pipeline: public Interface
@@ -54,14 +63,17 @@ public:
     using NativeHandle = void*;
 
     virtual void bind(GPUCommandQueue* queue) = 0;
-    virtual void bind(GPUCommandQueue* queue, const std::string& name, UniformBuffer* ubo) = 0;
-    virtual void bind(GPUCommandQueue* queue, const std::string& name, Texture* texture) = 0;
+    virtual void bind(GPUCommandQueue* queue, const std::string& name,
+                      const UniformBuffer& ubo) = 0;
+    virtual void bind(GPUCommandQueue* queue, const std::string& name, const Texture& texture) = 0;
 
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, bool value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, int32_t value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, uint32_t value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, float value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, double value) = 0;
+    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
+                              const Vec2& value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
                               const Vec3& value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,

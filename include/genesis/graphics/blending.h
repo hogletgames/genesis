@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "model.h"
+#pragma once
 
-#include "genesis/core.h"
-#include "genesis/graphics.h"
+#include <genesis/core/export.h>
 
-namespace {
+#include <cstdint>
 
-constexpr auto VERTEX_SHADER{"examples/sandbox/assets/shaders/model_shader.vert"};
-constexpr auto FRAGMENT_SHADER{"examples/sandbox/assets/shaders/model_shader.frag"};
-
-} // namespace
-
-namespace GE::Examples {
-
-Model::Model(Renderer* renderer, std::string_view model, std::string_view texture)
-    : Drawable{renderer, VERTEX_SHADER, FRAGMENT_SHADER}
+enum class BlendFactor : uint8_t
 {
-    GE_ASSERT(m_mesh.fromObj(model), "Failed to load mesh");
+    ZERO,
+    ONE,
+    SRC_COLOR,
+    ONE_MINUS_SRC_COLOR,
+    DST_COLOR,
+    ONE_MINUS_DST_COLOR,
+    SRC_ALPHA,
+    ONE_MINUS_SRC_ALPHA,
+    DST_ALPHA,
+    ONE_MINUS_DST_ALPHA,
+    CONSTANT_COLOR,
+    ONE_MINUS_CONSTANT_COLOR,
+    CONSTANT_ALPHA,
+    ONE_MINUS_CONSTANT_ALPHA
+};
 
-    m_texture = GE::TextureLoader{texture.data()}.load();
-    GE_ASSERT(m_texture, "Failed to load texture");
-}
-
-void Model::draw(Renderer* renderer, const mvp_t& mvp)
+enum class BlendOp : uint8_t
 {
-    bind(renderer, mvp);
-    renderer->command()->bind(m_pipeline.get(), "u_Texture", *m_texture);
-    renderer->command()->draw(m_mesh);
-}
+    ADD,
+    SUBTRACT,
+    REVERSE_SUBTRACT,
+    MIN,
+    MAX
+};
 
-} // namespace GE::Examples
+struct GE_API blending_t {
+    bool enabled{true};
+
+    BlendFactor src_color_factor{BlendFactor::SRC_ALPHA};
+    BlendFactor dst_color_factor{BlendFactor::ONE_MINUS_SRC_ALPHA};
+    BlendOp color_op{BlendOp::ADD};
+
+    BlendFactor src_alpha_factor{BlendFactor::SRC_ALPHA};
+    BlendFactor dst_alpha_factor{BlendFactor::ONE_MINUS_SRC_ALPHA};
+    BlendOp alpha_op{BlendOp::ADD};
+};

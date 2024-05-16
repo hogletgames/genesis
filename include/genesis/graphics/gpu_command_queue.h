@@ -37,7 +37,6 @@
 
 #include <deque>
 #include <functional>
-#include <unordered_map>
 
 namespace GE {
 
@@ -49,16 +48,14 @@ public:
     using DelayedCommand = std::function<void(GPUCommandBuffer)>;
     using DelayedCommandQueue = std::deque<DelayedCommand>;
     using PipelineHandle = Pipeline::NativeHandle;
-    using QueueMap = std::unordered_map<PipelineHandle, DelayedCommandQueue>;
 
-    void setCurrentPipeline(Pipeline* pipeline);
     void enqueue(DelayedCommand cmd);
     void execCommands(GPUCommandBuffer cmd_buffer) const;
     void clear();
 
 private:
     PipelineHandle m_current_pipeline{};
-    QueueMap m_cmd_queue;
+    std::deque<DelayedCommand> m_cmd_queue;
 };
 
 } // namespace GE

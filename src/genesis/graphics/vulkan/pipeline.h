@@ -62,8 +62,6 @@ struct pipeline_config_t: GE::pipeline_config_t {
     VkPipelineInputAssemblyStateCreateInfo input_assembly_state{};
     VkPipelineRasterizationStateCreateInfo rasterization_state{};
     VkPipelineMultisampleStateCreateInfo multisample_state{};
-    std::vector<VkPipelineColorBlendAttachmentState> color_blend_attachments{};
-    VkPipelineColorBlendStateCreateInfo color_blend_state{};
     VkPipelineDepthStencilStateCreateInfo depth_stencil_state{};
     std::vector<VkDynamicState> dynamic_state_list{};
     VkPipelineDynamicStateCreateInfo dynamic_state{};
@@ -76,14 +74,16 @@ public:
     ~Pipeline();
 
     void bind(GPUCommandQueue* queue) override;
-    void bind(GPUCommandQueue* queue, const std::string& name, GE::UniformBuffer* ubo) override;
-    void bind(GPUCommandQueue* queue, const std::string& name, GE::Texture* texture) override;
+    void bind(GPUCommandQueue* queue, const std::string& name,
+              const GE::UniformBuffer& ubo) override;
+    void bind(GPUCommandQueue* queue, const std::string& name, const GE::Texture& texture) override;
 
     void pushConstant(GPUCommandQueue* queue, const std::string& name, bool value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, int32_t value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, uint32_t value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, float value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, double value) override;
+    void pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec2& value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec3& value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, const Mat4& value) override;
 

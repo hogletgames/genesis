@@ -54,6 +54,8 @@ enum class TextureFormat : uint8_t
     RGBA8,
     SRGB8,
     SRGBA8,
+    R16F,
+    RGBA16F,
     R32F,
     RGBA32F,
     D32F,
@@ -95,6 +97,7 @@ struct texture_config_t {
     TextureWrap wrap_w{TextureWrap::REPEAT};
     uint32_t mip_levels{MIP_LEVELS_AUTO};
     bool image_storage{false};
+    bool is_opaque{true};
 
     static constexpr uint32_t MIP_LEVELS_AUTO{0};
 };
@@ -107,6 +110,7 @@ public:
     virtual bool setData(const void* data, uint32_t size) = 0;
     virtual const Vec2& size() const = 0;
     virtual TextureFormat format() const = 0;
+    virtual bool isOpaque() const = 0;
     virtual NativeID nativeID() const = 0;
 
     static Scoped<Texture> create(const texture_config_t& config);
@@ -114,7 +118,7 @@ public:
     static uint32_t calculateMipLevels(uint32_t width, uint32_t height);
 };
 
-inline constexpr bool isDepthFormat(TextureFormat format)
+constexpr bool isDepthFormat(TextureFormat format)
 {
     switch (format) {
         case TextureFormat::D32F:
@@ -124,12 +128,12 @@ inline constexpr bool isDepthFormat(TextureFormat format)
     }
 }
 
-inline constexpr bool isColorFormat(TextureFormat format)
+constexpr bool isColorFormat(TextureFormat format)
 {
     return !isDepthFormat(format);
 }
 
-inline constexpr uint32_t toTextureBPP(TextureFormat format)
+constexpr uint32_t toTextureBPP(TextureFormat format)
 {
     switch (format) {
         case TextureFormat::R8: return 1;

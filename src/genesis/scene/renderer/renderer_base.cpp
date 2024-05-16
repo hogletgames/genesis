@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,24 +30,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "renderer.h"
+#include "renderer/renderer_base.h"
 #include "camera/view_projection_camera.h"
 #include "components.h"
 #include "entity.h"
-#include "scene.h"
 
+#include "genesis/core/log.h"
+#include "genesis/graphics/render_command.h"
 #include "genesis/graphics/renderer.h"
-#include "genesis/graphics/uniform_buffer.h"
 
 namespace GE::Scene {
-namespace {
 
-struct vp_t {
-    Mat4 view{1.0f};
-    Mat4 projection{1.0f};
-};
+RendererBase::RendererBase(GE::Renderer* renderer, const ViewProjectionCamera* camera)
+    : m_renderer{renderer}
+    , m_camera{camera}
+{}
 
-bool isValid(std::string_view entity_name, Pipeline* material, Texture* texture, Mesh* mesh)
+void RendererBase::renderEntity(GE::Renderer* renderer, Pipeline* pipeline, const Entity& entity)
+{
+    std::string_view entity_tag = entity.get<TagComponent>().tag;
+
+    const auto& sprite = entity.get<SpriteComponent>();
+    auto* texture = sprite.texture.get();
+    auto* mesh = sprite.mesh.get();
+
+    if (!isValid(entity_tag, pipeline, texture, mesh)) {
+        return;
+    }
+
+    auto mvp = m_camera->viewProjection() * entity.get<TransformComponent>().transform();
+
+    auto* cmd = renderer->command();
+    cmd->bind(pipeline);
+    cmd->bind(pipeline, "u_Sprite", *texture);
+    cmd->pushConstant(pipeline, "pc.mvp", mvp);
+    cmd->draw(*mesh);
+}
+
+bool RendererBase::isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
+                           Mesh* mesh) const
 {
     if (material == nullptr) {
         GE_CORE_ERR("A pipeline for an entity '{}' is null", entity_name);
@@ -65,52 +86,6 @@ bool isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
     }
 
     return true;
-}
-
-} // namespace
-
-Renderer::Renderer(const ViewProjectionCamera* camera)
-    : m_camera{camera}
-    , m_vp_ubo{UniformBuffer::create(sizeof(vp_t))}
-    , m_translation_ubo{UniformBuffer::create(sizeof(Mat4))}
-{}
-
-Renderer::~Renderer() = default;
-
-void Renderer::render(GE::Renderer* renderer, const Scene& scene)
-{
-    updateViewProjectionUBO();
-    scene.forEach<MaterialComponent, SpriteComponent>(
-        [this, renderer](const auto& entity) { renderSprite(renderer, entity); });
-}
-
-void Renderer::renderSprite(GE::Renderer* renderer, const GE::Scene::Entity& entity)
-{
-    std::string_view entity_tag = entity.get<TagComponent>().tag;
-
-    const auto& material = entity.get<MaterialComponent>();
-    auto* pipeline = material.material.get();
-
-    const auto& sprite = entity.get<SpriteComponent>();
-    auto* texture = sprite.texture.get();
-    auto* mesh = sprite.mesh.get();
-
-    if (!isValid(entity_tag, pipeline, texture, mesh)) {
-        return;
-    }
-
-    auto mvp = m_camera->viewProjection() * entity.get<TransformComponent>().transform();
-
-    auto* cmd = renderer->command();
-    cmd->bind(pipeline);
-    cmd->bind(pipeline, "u_Sprite", texture);
-    cmd->pushConstant(pipeline, "pc.mvp", mvp);
-    cmd->draw(*mesh);
-}
-
-void Renderer::updateViewProjectionUBO()
-{
-    m_vp_ubo->setObject(vp_t{m_camera->view(), m_camera->projection()});
 }
 
 } // namespace GE::Scene

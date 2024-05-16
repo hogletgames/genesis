@@ -54,10 +54,8 @@ public:
     Renderer* renderer() override;
     const Vec2& size() const override { return m_config.size; }
     uint32_t MSAASamples() const override { return m_config.msaa_samples; }
-    const Vec4& clearColor() const override { return m_config.clear_color; }
-    float clearDepth() const override { return m_config.clear_depth; }
 
-    const Vulkan::Texture& colorTexture(size_t i) const override;
+    const Vulkan::Texture& colorTexture(uint32_t i) const override;
     const Vulkan::Texture& depthTexture() const override;
     uint32_t colorAttachmentCount() const override;
     bool hasDepthAttachment() const override;
@@ -86,10 +84,12 @@ private:
     std::vector<Scoped<Vulkan::Texture>> m_color_textures;
     std::vector<Scoped<Image>> m_color_msaa_images;
     std::vector<VkRenderingAttachmentInfo> m_color_rendering_attachments;
+    std::vector<Vec4> m_clear_color;
 
     Scoped<Vulkan::Texture> m_depth_texture;
     Scoped<Image> m_depth_msaa_image;
     VkRenderingAttachmentInfo m_depth_rendering_attachment{};
+    float m_clear_depth{1.0f};
 };
 
 } // namespace GE::Vulkan

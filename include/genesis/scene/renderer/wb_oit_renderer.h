@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "model.h"
+#pragma once
 
-#include "genesis/core.h"
-#include "genesis/graphics.h"
+#include <genesis/core/memory.h>
+#include <genesis/math/types.h>
+#include <genesis/scene/renderer/renderer_base.h>
 
-namespace {
+namespace GE {
+class Framebuffer;
+} // namespace GE
 
-constexpr auto VERTEX_SHADER{"examples/sandbox/assets/shaders/model_shader.vert"};
-constexpr auto FRAGMENT_SHADER{"examples/sandbox/assets/shaders/model_shader.frag"};
+namespace GE::Assets {
+class Registry;
+} // namespace GE::Assets
 
-} // namespace
+namespace GE::Scene {
 
-namespace GE::Examples {
+class Entity;
 
-Model::Model(Renderer* renderer, std::string_view model, std::string_view texture)
-    : Drawable{renderer, VERTEX_SHADER, FRAGMENT_SHADER}
+class WeightedBlendedOITRenderer: public RendererBase
 {
-    GE_ASSERT(m_mesh.fromObj(model), "Failed to load mesh");
+public:
+    explicit WeightedBlendedOITRenderer(GE::Renderer* renderer, const ViewProjectionCamera* camera);
 
-    m_texture = GE::TextureLoader{texture.data()}.load();
-    GE_ASSERT(m_texture, "Failed to load texture");
-}
+    void render(const Scene& scene) override;
+    std::string_view type() const override { return TYPE; }
 
-void Model::draw(Renderer* renderer, const mvp_t& mvp)
-{
-    bind(renderer, mvp);
-    renderer->command()->bind(m_pipeline.get(), "u_Texture", *m_texture);
-    renderer->command()->draw(m_mesh);
-}
+    static constexpr std::string_view TYPE = "Weighted-Blended OIT Scene Renderer";
 
-} // namespace GE::Examples
+private:
+    void recreateWbOitFramebuffer(const Vec2& size);
+    void createOpaqueColorPipeline(GE::Renderer* renderer);
+    void createAccumulationPipeline(GE::Renderer* renderer);
+    void createComposingPipeline(GE::Renderer* renderer);
+
+    void renderOpaqueEntities(GE::Renderer* renderer, const Scene& scene);
+    void renderTransparentEntities(GE::Renderer* renderer, const Scene& scene);
+    void composeScene(GE::Renderer* renderer);
+
+    Scoped<Framebuffer> m_wb_oit_fbo;
+    Shared<Pipeline> m_color_pipeline;
+    Shared<Pipeline> m_accumulation_pipeline;
+    Shared<Pipeline> m_composing_pipeline;
+};
+
+} // namespace GE::Scene

@@ -34,10 +34,12 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/graphics/render_command.h>
+#include <genesis/math/types.h>
 
 namespace GE {
 
 class Event;
+class GPUCommandQueue;
 class Pipeline;
 class RenderCommand;
 struct pipeline_config_t;
@@ -53,12 +55,16 @@ public:
         CLEAR_ALL
     };
 
+    virtual void draw(GPUCommandQueue* queue, uint32_t vertex_count, uint32_t instance_count,
+                      uint32_t first_vertex, uint32_t first_instance) = 0;
+
     virtual bool beginFrame(ClearMode clear_mode = CLEAR_ALL) = 0;
     virtual void endFrame() = 0;
     virtual void swapBuffers() = 0;
 
     virtual void onEvent(Event* event) = 0;
 
+    virtual Vec2 size() const = 0;
     virtual RenderCommand* command() = 0;
 
     virtual Scoped<Pipeline> createPipeline(const pipeline_config_t& config) = 0;

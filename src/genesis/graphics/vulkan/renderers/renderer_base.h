@@ -62,6 +62,9 @@ protected:
     void updateDynamicState();
     bool endRendering();
 
+    void draw(GPUCommandQueue* queue, uint32_t vertex_count, uint32_t instance_count,
+              uint32_t first_vertex, uint32_t first_instance) override;
+
     virtual void transitImageLayoutBeforeRendering(VkCommandBuffer cmd) = 0;
     virtual void transitImageLayoutAfterRendering(VkCommandBuffer cmd) = 0;
 
@@ -71,7 +74,8 @@ protected:
 
     virtual const std::vector<VkRenderingAttachmentInfo>&
     colorRenderingAttachments(ClearMode clear_mode) = 0;
-    virtual const VkRenderingAttachmentInfo& depthRenderingAttachment(ClearMode clear_mode) = 0;
+    virtual std::optional<VkRenderingAttachmentInfo>
+    depthRenderingAttachment(ClearMode clear_mode) = 0;
 
     Shared<Device> m_device;
 
@@ -80,7 +84,7 @@ protected:
     Shared<DescriptorPool> m_descriptor_pool;
     std::vector<VkCommandBuffer> m_cmd_buffers;
 
-    RenderCommand m_render_command;
+    RenderCommand m_render_command{this};
 
 private:
     void destroyVkHandles();

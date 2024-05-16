@@ -89,17 +89,21 @@ bool FramebufferRenderer::beginFrame(Renderer::ClearMode clear_mode)
 
 void FramebufferRenderer::endFrame()
 {
-    VkCommandBuffer cmd = cmdBuffer();
-    m_render_command.submit(cmd);
-
-    endRendering() && submit();
+    m_render_command.submit(cmdBuffer());
+    endRendering();
 }
 
 void FramebufferRenderer::swapBuffers()
 {
+    submit();
     vkWaitForFences(m_device->device(), 1, &m_in_flight_fence, VK_TRUE,
                     std::numeric_limits<uint64_t>::max());
     m_descriptor_pool->reset();
+}
+
+Vec2 FramebufferRenderer::size() const
+{
+    return m_framebuffer->size();
 }
 
 Scoped<GE::Pipeline> FramebufferRenderer::createPipeline(const GE::pipeline_config_t& config)
@@ -117,10 +121,14 @@ Scoped<GE::Pipeline> FramebufferRenderer::createPipeline(const GE::pipeline_conf
     auto vulkan_config = Vulkan::Pipeline::createDefaultConfig(config);
     vulkan_config.pipeline_cache = m_pipeline_cache;
     vulkan_config.color_formats = color_formats(m_framebuffer);
-    vulkan_config.depth_format = toVkFormat(m_framebuffer->depthTexture().format());
     vulkan_config.front_face = VK_FRONT_FACE_CLOCKWISE;
     vulkan_config.msaa_samples = toVkSampleCountFlag(m_framebuffer->MSAASamples());
     vulkan_config.descriptor_pool = m_descriptor_pool;
+
+    if (m_framebuffer->hasDepthAttachment()) {
+        vulkan_config.depth_format = toVkFormat(m_framebuffer->depthTexture().format());
+    };
+
     return tryMakeScoped<Vulkan::Pipeline>(m_device, vulkan_config);
 }
 
@@ -256,9 +264,14 @@ FramebufferRenderer::colorRenderingAttachments(ClearMode clear_mode)
     return m_framebuffer->colorRenderingAttachments(clear_mode);
 }
 
-const VkRenderingAttachmentInfo& FramebufferRenderer::depthRenderingAttachment(ClearMode clear_mode)
+std::optional<VkRenderingAttachmentInfo>
+FramebufferRenderer::depthRenderingAttachment(ClearMode clear_mode)
 {
-    return m_framebuffer->depthRenderingAttachment(clear_mode);
+    if (m_framebuffer->hasDepthAttachment()) {
+        return m_framebuffer->depthRenderingAttachment(clear_mode);
+    }
+
+    return {};
 }
 
 } // namespace GE::Vulkan

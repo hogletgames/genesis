@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2023, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "model.h"
+#include "renderer/plain_renderer.h"
+#include "components.h"
+#include "scene.h"
 
-#include "genesis/core.h"
-#include "genesis/graphics.h"
+#include "genesis/graphics/renderer.h"
 
-namespace {
+namespace GE::Scene {
 
-constexpr auto VERTEX_SHADER{"examples/sandbox/assets/shaders/model_shader.vert"};
-constexpr auto FRAGMENT_SHADER{"examples/sandbox/assets/shaders/model_shader.frag"};
-
-} // namespace
-
-namespace GE::Examples {
-
-Model::Model(Renderer* renderer, std::string_view model, std::string_view texture)
-    : Drawable{renderer, VERTEX_SHADER, FRAGMENT_SHADER}
+void PlainRenderer::render(const Scene& scene)
 {
-    GE_ASSERT(m_mesh.fromObj(model), "Failed to load mesh");
+    m_renderer->beginFrame();
 
-    m_texture = GE::TextureLoader{texture.data()}.load();
-    GE_ASSERT(m_texture, "Failed to load texture");
+    scene.forEach<MaterialComponent, SpriteComponent>([this](const auto& entity) {
+        auto* pipeline = entity.template get<MaterialComponent>().material.get();
+        renderEntity(m_renderer, pipeline, entity);
+    });
+
+    m_renderer->endFrame();
 }
 
-void Model::draw(Renderer* renderer, const mvp_t& mvp)
-{
-    bind(renderer, mvp);
-    renderer->command()->bind(m_pipeline.get(), "u_Texture", *m_texture);
-    renderer->command()->draw(m_mesh);
-}
-
-} // namespace GE::Examples
+} // namespace GE::Scene

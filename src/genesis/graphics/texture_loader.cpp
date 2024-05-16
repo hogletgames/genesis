@@ -39,54 +39,42 @@
 
 #include <stb_image.h>
 
+namespace GE {
 namespace {
 
-GE::TextureFormat toTextureFormatFromHDR(int channel_count)
+TextureFormat toTextureFormatFromHDR(int channel_count)
 {
     switch (channel_count) {
-        case 1: return GE::TextureFormat::R32F;
-        case 3:
-        case 4: return GE::TextureFormat::RGBA32F;
-        case 2:
+        case ::STBI_grey: return TextureFormat::R32F;
+        case ::STBI_rgb:
+        case ::STBI_rgb_alpha: return TextureFormat::RGBA32F;
+        case ::STBI_grey_alpha:
         default: break;
     }
 
-    return GE::TextureFormat::UNKNOWN;
+    return TextureFormat::UNKNOWN;
 }
 
-GE::TextureFormat toTextureFormat(int channel_count, bool is_hdr)
+TextureFormat toTextureFormat(int channel_count, bool is_hdr)
 {
     if (is_hdr) {
         return toTextureFormatFromHDR(channel_count);
     }
 
     switch (channel_count) {
-        case 1: return GE::TextureFormat::R8;
-        case 3:
-        case 4: return GE::TextureFormat::RGBA8;
-        case 2:
+        case ::STBI_grey: return TextureFormat::R8;
+        case ::STBI_rgb:
+        case ::STBI_rgb_alpha: return TextureFormat::RGBA8;
+        case ::STBI_grey_alpha:
         default: break;
     }
 
-    return GE::TextureFormat::UNKNOWN;
+    return TextureFormat::UNKNOWN;
 }
 
-GE::texture_config_t toTextureConfig(int width, int height, int channel_count, bool is_hdr)
+uint32_t toTextureSize(const texture_config_t& config)
 {
-    GE::texture_config_t config{};
-    config.type = GE::TextureType::TEXTURE_2D;
-    config.format = toTextureFormat(channel_count, is_hdr);
-    config.width = static_cast<uint32_t>(width);
-    config.height = static_cast<uint32_t>(height);
-    config.depth = 1;
-    config.layers = 1;
-
-    return config;
-}
-
-uint32_t toTextureSize(const GE::texture_config_t& config)
-{
-    return config.width * config.height * GE::toTextureBPP(config.format);
+    return config.width * config.height * toTextureBPP(config.format);
 }
 
 void* stbiLoadWrapper(const std::vector<uint8_t>& memory, int* width, int* height,
@@ -114,7 +102,37 @@ bool isNullTextureData(const void* texture_data)
     return false;
 }
 
-std::pair<void*, GE::texture_config_t> loadStbiTexture(const std::vector<uint8_t>& data)
+bool isHDRTexureOpaque(const void* texture_data, int width, int height, int channel_count)
+{
+    const auto* texture = static_cast<const float*>(texture_data);
+
+    for (int64_t i{channel_count - 1}; i < width * height * channel_count; i += channel_count) {
+        if (texture[i] < 1.0f) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool isOpaque(const void* texture_data, int width, int height, int channel_count, bool is_hdr)
+{
+    if (is_hdr) {
+        return isHDRTexureOpaque(texture_data, width, height, channel_count);
+    }
+
+    const auto* texture = static_cast<const stbi_uc*>(texture_data);
+
+    for (int64_t i{channel_count - 1}; i < width * height * channel_count; i += channel_count) {
+        if (texture[i] < std::numeric_limits<stbi_uc>::max()) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+std::pair<void*, texture_config_t> loadStbiTexture(const std::vector<uint8_t>& data)
 {
     int width{};
     int height{};
@@ -127,14 +145,14 @@ std::pair<void*, GE::texture_config_t> loadStbiTexture(const std::vector<uint8_t
         return {};
     }
 
-    if (channel_count == 2) {
-        GE_CORE_ERR("Unsupported texture channel count: 2");
+    if (channel_count == ::STBI_grey_alpha) {
+        GE_CORE_ERR("Unsupported texture channel count: {}", channel_count);
         ::stbi_image_free(texture_data);
         return {};
     }
 
     // Convert 3 to 4 channels
-    if (channel_count == 3) {
+    if (channel_count == ::STBI_rgb) {
         ::stbi_image_free(texture_data);
         texture_data = stbiLoadWrapper(data, &width, &height, &channel_count, ::STBI_rgb_alpha);
     }
@@ -145,13 +163,21 @@ std::pair<void*, GE::texture_config_t> loadStbiTexture(const std::vector<uint8_t
 
     int data_size = static_cast<int>(data.size());
     bool is_hdr = ::stbi_is_hdr_from_memory(data.data(), data_size) != 0;
+    TextureFormat format = toTextureFormat(channel_count, is_hdr);
 
-    return {texture_data, toTextureConfig(width, height, channel_count, is_hdr)};
+    texture_config_t config{};
+    config.type = TextureType::TEXTURE_2D;
+    config.format = format;
+    config.width = static_cast<uint32_t>(width);
+    config.height = static_cast<uint32_t>(height);
+    config.is_opaque = isOpaque(texture_data, width, height, channel_count, is_hdr);
+    config.depth = 1;
+    config.layers = 1;
+
+    return {texture_data, config};
 }
 
 } // namespace
-
-namespace GE {
 
 TextureLoader::TextureLoader(std::string filepath)
     : m_filepath{std::move(filepath)}

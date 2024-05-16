@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "model.h"
+#pragma once
 
-#include "genesis/core.h"
-#include "genesis/graphics.h"
+#include "genesis/graphics/pipeline.h"
 
-namespace {
+#include <genesis/scene/renderer/irenderer.h>
 
-constexpr auto VERTEX_SHADER{"examples/sandbox/assets/shaders/model_shader.vert"};
-constexpr auto FRAGMENT_SHADER{"examples/sandbox/assets/shaders/model_shader.frag"};
+#include <string>
 
-} // namespace
+namespace GE {
+class Mesh;
+class Pipeline;
+class Texture;
+} // namespace GE
 
-namespace GE::Examples {
+namespace GE::Scene {
 
-Model::Model(Renderer* renderer, std::string_view model, std::string_view texture)
-    : Drawable{renderer, VERTEX_SHADER, FRAGMENT_SHADER}
+class Entity;
+class ViewProjectionCamera;
+
+class RendererBase: public IRenderer
 {
-    GE_ASSERT(m_mesh.fromObj(model), "Failed to load mesh");
+public:
+    RendererBase(GE::Renderer* renderer, const ViewProjectionCamera* camera);
 
-    m_texture = GE::TextureLoader{texture.data()}.load();
-    GE_ASSERT(m_texture, "Failed to load texture");
-}
+protected:
+    void renderEntity(GE::Renderer* renderer, Pipeline* pipeline, const Entity& entity);
 
-void Model::draw(Renderer* renderer, const mvp_t& mvp)
-{
-    bind(renderer, mvp);
-    renderer->command()->bind(m_pipeline.get(), "u_Texture", *m_texture);
-    renderer->command()->draw(m_mesh);
-}
+    bool isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
+                 Mesh* mesh) const;
 
-} // namespace GE::Examples
+    GE::Renderer* m_renderer{nullptr};
+    const ViewProjectionCamera* m_camera{nullptr};
+};
+
+} // namespace GE::Scene

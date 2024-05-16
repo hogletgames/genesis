@@ -208,6 +208,7 @@ void AssetsPanel::visit(GE::Assets::TextureResource *resource)
 
     Text::call("Use count: %d", resource->texture().use_count());
     Text::call("Filepath: %s", resource->filepath().c_str());
+    Text::call("Is opaque: %s", toString(resource->texture()->isOpaque()).data());
     Image::call(texture->nativeID(), scaledTextureSize(texture->size(), m_window_size.x));
 }
 

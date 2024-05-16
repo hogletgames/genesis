@@ -37,6 +37,8 @@
 #include <vulkan/vulkan.h>
 
 #include <list>
+#include <unordered_map>
+#include <vector>
 
 namespace GE::Vulkan {
 
@@ -48,14 +50,14 @@ public:
     explicit DescriptorPool(Shared<Device> device, uint32_t count = MAX_COUNT_DEFAULT);
     ~DescriptorPool();
 
-    VkDescriptorSet allocateDescriptorSet(VkDescriptorSetLayout layout);
+    VkDescriptorSet allocateDescriptorSet(VkDescriptorSetLayout layout, bool use_cache);
     void reset();
 
     static constexpr uint32_t MAX_COUNT_DEFAULT{1000};
 
 private:
     VkResult allocateDescriptorSet(VkDescriptorPool pool, VkDescriptorSetLayout layout,
-                                   VkDescriptorSet *set);
+                                   VkDescriptorSet* set);
     VkDescriptorPool getPool();
     VkDescriptorPool createPool();
 
@@ -65,6 +67,7 @@ private:
     std::list<VkDescriptorPool> m_pools;
     std::vector<VkDescriptorPoolSize> m_sizes;
     uint32_t m_max_count{};
+    std::unordered_map<VkDescriptorSetLayout, VkDescriptorSet> m_cache;
 };
 
 } // namespace GE::Vulkan

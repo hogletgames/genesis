@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "model.h"
+#pragma once
 
-#include "genesis/core.h"
-#include "genesis/graphics.h"
+#include <genesis/core/interface.h>
 
-namespace {
+#include <string_view>
 
-constexpr auto VERTEX_SHADER{"examples/sandbox/assets/shaders/model_shader.vert"};
-constexpr auto FRAGMENT_SHADER{"examples/sandbox/assets/shaders/model_shader.frag"};
+namespace GE {
+class Renderer;
+} // namespace GE
 
-} // namespace
+namespace GE::Scene {
 
-namespace GE::Examples {
+class Scene;
 
-Model::Model(Renderer* renderer, std::string_view model, std::string_view texture)
-    : Drawable{renderer, VERTEX_SHADER, FRAGMENT_SHADER}
+class GE_API IRenderer: public Interface
 {
-    GE_ASSERT(m_mesh.fromObj(model), "Failed to load mesh");
+public:
+    virtual void render(const Scene& scene) = 0;
+    virtual std::string_view type() const = 0;
+};
 
-    m_texture = GE::TextureLoader{texture.data()}.load();
-    GE_ASSERT(m_texture, "Failed to load texture");
-}
-
-void Model::draw(Renderer* renderer, const mvp_t& mvp)
-{
-    bind(renderer, mvp);
-    renderer->command()->bind(m_pipeline.get(), "u_Texture", *m_texture);
-    renderer->command()->draw(m_mesh);
-}
-
-} // namespace GE::Examples
+} // namespace GE::Scene

@@ -36,9 +36,9 @@
 
 namespace GE::Vulkan {
 
-inline VkCommandBuffer cmdBuffer(void* cmd)
+constexpr VkCommandBuffer toVkCommandBuffer(void* cmd)
 {
-    return reinterpret_cast<VkCommandBuffer>(cmd);
+    return static_cast<VkCommandBuffer>(cmd);
 }
 
 } // namespace GE::Vulkan

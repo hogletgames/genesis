@@ -65,6 +65,11 @@ struct data_type_traits<double> {
 };
 
 template<>
+struct data_type_traits<Vec2> {
+    static constexpr size_t SIZE{data_type_traits<Vec2::value_type>::SIZE * Vec2::length()};
+};
+
+template<>
 struct data_type_traits<Vec3> {
     static constexpr size_t SIZE{data_type_traits<Vec3::value_type>::SIZE * Vec3::length()};
 };
