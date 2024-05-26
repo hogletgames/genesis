@@ -36,6 +36,11 @@
 #include <genesis/gui/window/window_base.h>
 #include <genesis/math/types.h>
 
+namespace GE {
+class Event;
+class MouseButtonReleasedEvent;
+} // namespace GE
+
 namespace GE::Scene {
 class Entity;
 } // namespace GE::Scene
@@ -60,7 +65,11 @@ public:
     static constexpr auto NAME{"Viewport"};
 
 private:
+    bool isPanelActive() const { return m_is_focused || m_is_hovered; }
+
     void drawGizmos(GE::Scene::Entity* entity);
+
+    bool onMouseButtonReleased(const GE::MouseButtonReleasedEvent& event);
 
     LevelEditorContext* m_ctx{nullptr};
     GE::Vec2 m_viewport{0.0f, 0.0f};
@@ -68,6 +77,7 @@ private:
 
     bool m_is_focused{false};
     bool m_is_hovered{false};
+    GE::Vec2 m_mouse_position{0.0f, 0.0f};
 };
 
 } // namespace LE

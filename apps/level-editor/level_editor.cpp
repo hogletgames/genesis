@@ -97,6 +97,7 @@ void LevelEditor::onRender()
     updateParameters();
 
     m_ctx.sceneRenderer()->render(*m_ctx.scene());
+    m_ctx.entityPicker()->onRender();
     m_gui->onRender();
 }
 
@@ -156,6 +157,7 @@ void LevelEditor::updateParameters()
     if (m_ctx.sceneFbo()->size() != m_viewport) {
         m_ctx.sceneFbo()->resize(m_viewport);
         m_ctx.cameraController()->camera()->setViewport(m_viewport);
+        m_ctx.entityPicker()->onViewportUpdate(m_viewport);
     }
 }
 
