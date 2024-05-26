@@ -40,6 +40,15 @@ Entity Registry::create()
     return {m_registry.create(), &m_registry};
 }
 
+Entity Registry::entity(EntityHandle entity_id)
+{
+    if (m_registry.valid(entity_id)) {
+        return {entity_id, &m_registry};
+    }
+
+    return {};
+}
+
 void Registry::destroy(const Entity& entity)
 {
     m_registry.destroy(entity.nativeHandle());

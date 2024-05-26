@@ -31,7 +31,6 @@
  */
 
 #include "scene.h"
-#include "components/camera_component.h"
 #include "components/tag_component.h"
 #include "components/transform_component.h"
 #include "entity.h"
@@ -51,6 +50,11 @@ Entity Scene::createEntity(std::string_view name)
     entity.add<TransformComponent>();
 
     return entity;
+}
+
+Entity Scene::entity(Entity::NativeHandle entity_id)
+{
+    return m_registry.entity(entity_id);
 }
 
 void Scene::destroyEntity(const Entity& entity)

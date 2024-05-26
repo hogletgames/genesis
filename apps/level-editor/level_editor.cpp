@@ -97,13 +97,14 @@ void LevelEditor::onRender()
     updateParameters();
 
     m_ctx.sceneRenderer()->render(*m_ctx.scene());
+    m_ctx.entityPicker()->onRender();
     m_gui->onRender();
 }
 
 bool LevelEditor::createFramebuffer()
 {
     GE::Framebuffer::config_t model_fbo_config{};
-    model_fbo_config.attachments[0].clear_color = {0.3f, 0.3f, 0.3f, 1.0f};
+    model_fbo_config.attachments[0].clear_color = GE::Vec4{0.3f, 0.3f, 0.3f, 1.0f};
     model_fbo_config.size = {720.0f, 480.0f};
     model_fbo_config.msaa_samples = GE::Graphics::limits().max_msaa;
 
@@ -156,6 +157,7 @@ void LevelEditor::updateParameters()
     if (m_ctx.sceneFbo()->size() != m_viewport) {
         m_ctx.sceneFbo()->resize(m_viewport);
         m_ctx.cameraController()->camera()->setViewport(m_viewport);
+        m_ctx.entityPicker()->onViewportUpdate(m_viewport);
     }
 }
 

@@ -38,6 +38,7 @@
 #include <genesis/core/memory.h>
 #include <genesis/scene/camera/view_projection_camera.h>
 #include <genesis/scene/camera/vp_camera_controller.h>
+#include <genesis/scene/entity_picker.h>
 #include <genesis/scene/renderer.h>
 #include <genesis/scene/scene.h>
 
@@ -57,6 +58,7 @@ public:
     GE::Scene::Scene* scene() { return &m_scene; }
     GE::Scene::VPCameraController* cameraController() { return &m_camera_controller; }
     GE::Scene::Entity* selectedEntity() { return &m_selected_entity; }
+    GE::Scene::EntityPicker* entityPicker() { return &m_entity_picker; }
 
     void resetSelectedEntity() { m_selected_entity = {}; }
 
@@ -70,6 +72,7 @@ private:
         GE::makeShared<GE::Scene::ViewProjectionCamera>()};
     GE::Scene::VPCameraController m_camera_controller{m_camera};
     GE::Scene::Entity m_selected_entity;
+    GE::Scene::EntityPicker m_entity_picker{&m_scene, m_camera.get()};
 };
 
 } // namespace LE

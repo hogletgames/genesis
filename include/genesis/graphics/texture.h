@@ -40,6 +40,8 @@
 
 namespace GE {
 
+class StagingBuffer;
+
 enum class TextureType : uint8_t
 {
     UNKNOWN = 0,
@@ -57,6 +59,8 @@ enum class TextureFormat : uint8_t
     R16F,
     RGBA16F,
     R32F,
+    R32_UINT,
+    R32_INT,
     RGBA32F,
     D32F,
     D24S8,
@@ -108,6 +112,7 @@ public:
     using NativeID = void*;
 
     virtual bool setData(const void* data, uint32_t size) = 0;
+    virtual void copyTo(StagingBuffer* buffer) const = 0;
     virtual const Vec2& size() const = 0;
     virtual TextureFormat format() const = 0;
     virtual bool isOpaque() const = 0;
@@ -133,6 +138,15 @@ constexpr bool isColorFormat(TextureFormat format)
     return !isDepthFormat(format);
 }
 
+constexpr bool isIntegerFormat(TextureFormat format)
+{
+    switch (format) {
+        case TextureFormat::R32_INT:
+        case TextureFormat::R32_UINT: return true;
+        default: return false;
+    }
+}
+
 constexpr uint32_t toTextureBPP(TextureFormat format)
 {
     switch (format) {
@@ -141,10 +155,21 @@ constexpr uint32_t toTextureBPP(TextureFormat format)
         case TextureFormat::SRGB8: return 3;
         case TextureFormat::RGBA8:
         case TextureFormat::SRGBA8:
-        case TextureFormat::R32F: return 4;
+        case TextureFormat::R32F:
+        case TextureFormat::R32_UINT:
+        case TextureFormat::R32_INT:
+        case TextureFormat::D32F:
+        case TextureFormat::D24S8: return 4;
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        case TextureFormat::D32S8: return 5;
         case TextureFormat::RGBA32F: return 16;
         default: return 0;
     }
+}
+
+constexpr uint32_t toTextureSize(const Vec2& size, TextureFormat format)
+{
+    return size.x * size.y * toTextureBPP(format);
 }
 
 } // namespace GE

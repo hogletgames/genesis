@@ -32,24 +32,71 @@
 
 #include "buffers/staging_buffer.h"
 #include "device.h"
+#include "image.h"
 #include "single_command.h"
+#include "texture.h"
+
+#include "genesis/core/asserts.h"
+#include "genesis/graphics/texture.h"
 
 #include <cstring>
 
 namespace GE::Vulkan {
+namespace {
+
+constexpr VkBufferUsageFlags USAGE{VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                                   VK_BUFFER_USAGE_TRANSFER_DST_BIT};
+constexpr VkMemoryPropertyFlags PROPERTIES{VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                           VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
+
+} // namespace
+
+StagingBuffer::StagingBuffer(Shared<Device> device)
+    : BufferBase{std::move(device)}
+{}
 
 StagingBuffer::StagingBuffer(Shared<Device> device, uint32_t size, const void *data)
     : BufferBase{std::move(device)}
 {
-    VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-    VkMemoryPropertyFlags properties =
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    createBuffer(size, usage, properties);
+    createBuffer(size, USAGE, PROPERTIES);
     copyData(size, data, 0);
+}
+
+void *StagingBuffer::data()
+{
+    if (m_size == 0) {
+        return nullptr;
+    }
+
+    if (m_mapped_memory != nullptr) {
+        return m_mapped_memory;
+    }
+
+    vkMapMemory(m_device->device(), m_memory, 0, m_size, 0, &m_mapped_memory);
+    return m_mapped_memory;
+}
+
+void StagingBuffer::resize(uint32_t size)
+{
+    clear();
+    createBuffer(size, USAGE, PROPERTIES);
+}
+
+void StagingBuffer::clear()
+{
+    if (m_mapped_memory != nullptr) {
+        vkUnmapMemory(m_device->device(), m_memory);
+        m_mapped_memory = nullptr;
+    }
+
+    destroyVkHandles();
+    m_size = 0;
 }
 
 void StagingBuffer::copyTo(BufferBase *dest, uint32_t offset)
 {
+    GE_CORE_ASSERT(m_size > 0, "Trying to copy empty buffer");
+
     SingleCommand cmd{m_device};
     VkBufferCopy copy_region{};
     copy_region.srcOffset = 0;

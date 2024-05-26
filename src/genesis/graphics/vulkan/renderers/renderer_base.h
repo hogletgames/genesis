@@ -33,6 +33,7 @@
 #pragma once
 
 #include <genesis/core/memory.h>
+#include <genesis/graphics/framebuffer.h>
 #include <genesis/graphics/renderer.h>
 
 #include <vulkan/vulkan.h>
@@ -90,10 +91,7 @@ private:
     void destroyVkHandles();
 };
 
-constexpr VkClearValue toVkClearColorValue(const GE::Vec4& clear_color)
-{
-    return {{{clear_color.x, clear_color.y, clear_color.z, clear_color.w}}};
-}
+VkClearValue toVkClearColorValue(const GE::ClearColorType& clear_color);
 
 constexpr VkClearValue toVkClearDepthStencilValue(float clear_depth)
 {

@@ -11,6 +11,7 @@ list(APPEND GRAPHICS_SOURCES
     shader_input_layout.cpp
     shader_precompiler.cpp
     shader_reflection.cpp
+    staging_buffer.cpp
     texture.cpp
     texture_loader.cpp
     vertex_buffer.cpp
@@ -34,6 +35,7 @@ list(APPEND GRAPHICS_HEADERS
     ${INCLUDE_DIR}/shader_precompiler.h
     ${INCLUDE_DIR}/shader_reflection.h
     ${INCLUDE_DIR}/shader_resource_descriptors.h
+    ${INCLUDE_DIR}/staging_buffer.h
     ${INCLUDE_DIR}/texture.h
     ${INCLUDE_DIR}/texture_loader.h
     ${INCLUDE_DIR}/uniform_buffer.h

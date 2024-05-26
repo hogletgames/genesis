@@ -5,6 +5,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/components.h
     ${INCLUDE_DIR}/entity.h
     ${INCLUDE_DIR}/entity_factory.h
+    ${INCLUDE_DIR}/entity_picker.h
     ${INCLUDE_DIR}/registry.h
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/scene.h
@@ -28,6 +29,7 @@ list(APPEND SCENE_HEADERS
 list(APPEND SCENE_SOURCES
     entity.cpp
     entity_factory.cpp
+    entity_picker.cpp
     registry.cpp
     scene.cpp
     scene_deserializer.cpp

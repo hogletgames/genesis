@@ -83,15 +83,21 @@ public:
     using Vulkan::Texture::Texture;
 
     bool setData(const void* data, uint32_t size) override;
+    void copyTo(GE::StagingBuffer* buffer) const override;
 
 private:
     uint32_t checkDepth(uint32_t depth) override;
     uint32_t checkLayers(uint32_t layers) override;
 };
 
-inline const Vulkan::Texture* toVulkan(const GE::Texture& texture)
+inline const Vulkan::Texture& toVulkan(const GE::Texture& texture)
 {
-    return dynamic_cast<const Vulkan::Texture*>(&texture);
+    return *dynamic_cast<const Vulkan::Texture*>(&texture);
+}
+
+inline Vulkan::Texture* toVulkan(GE::Texture* texture)
+{
+    return dynamic_cast<Vulkan::Texture*>(texture);
 }
 
 VkFormat toVkFormat(TextureFormat format);

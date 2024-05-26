@@ -32,6 +32,7 @@
 
 #include "graphics_factory.h"
 #include "buffers/index_buffer.h"
+#include "buffers/staging_buffer.h"
 #include "buffers/uniform_buffer.h"
 #include "buffers/vertex_buffer.h"
 #include "framebuffer.h"
@@ -61,6 +62,11 @@ Scoped<GE::VertexBuffer> GraphicsFactory::createVertexBuffer(uint32_t size,
 
 {
     return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size, vertices);
+}
+
+Scoped<GE::StagingBuffer> GraphicsFactory::createStagingBuffer() const
+{
+    return tryMakeScoped<Vulkan::StagingBuffer>(m_device);
 }
 
 Scoped<GE::UniformBuffer> GraphicsFactory::createUniformBuffer(uint32_t size,

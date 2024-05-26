@@ -138,12 +138,12 @@ void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, const GE::U
 
 void Pipeline::bind(GPUCommandQueue* queue, const std::string& name, const GE::Texture& texture)
 {
-    const auto* vk_texture = toVulkan(texture);
+    const auto& vk_texture = toVulkan(texture);
 
     VkDescriptorImageInfo info{};
     info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    info.imageView = vk_texture->image()->view();
-    info.sampler = vk_texture->sampler();
+    info.imageView = vk_texture.image()->view();
+    info.sampler = vk_texture.sampler();
 
     VkWriteDescriptorSet write_descriptor_set{};
     write_descriptor_set.pImageInfo = &info;

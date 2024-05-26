@@ -38,6 +38,8 @@
 #include "genesis/gui/widgets.h"
 #include "genesis/math.h"
 #include "genesis/scene.h"
+#include "genesis/window/events/event_dispatcher.h"
+#include "genesis/window/events/mouse_events.h"
 
 using namespace GE::GUI;
 
@@ -54,16 +56,20 @@ ViewportPanel::ViewportPanel(LevelEditorContext* ctx)
 
 void ViewportPanel::onUpdate(GE::Timestamp ts)
 {
-    if (m_is_focused || m_is_hovered) {
+    if (isPanelActive()) {
         m_ctx->cameraController()->onUpdate(ts);
     }
 }
 
 void ViewportPanel::onEvent(GE::Event* event)
 {
-    if (m_is_focused || m_is_hovered) {
+    if (isPanelActive()) {
         m_ctx->cameraController()->onEvent(event);
     }
+
+    GE::EventDispatcher dispatcher{event};
+    dispatcher.dispatch<GE::MouseButtonReleasedEvent>(
+        GE::toEventHandler(&ViewportPanel::onMouseButtonReleased, this));
 }
 
 void ViewportPanel::onRender()
@@ -78,6 +84,10 @@ void ViewportPanel::onRender()
 
     node.call<Image>(texture.nativeID(), texture.size());
     node.call(&ViewportPanel::drawGizmos, this, m_ctx->selectedEntity());
+
+    if (isPanelActive()) {
+        m_mouse_position = m_window.mousePosition();
+    }
 }
 
 void ViewportPanel::drawGizmos(GE::Scene::Entity* entity)
@@ -101,6 +111,15 @@ void ViewportPanel::drawGizmos(GE::Scene::Entity* entity)
         decompose(transform_matrix, &tc.translation, &tc.rotation, &tc.scale);
         tc.rotation = GE::radians(tc.rotation);
     }
+}
+
+bool ViewportPanel::onMouseButtonReleased(const GE::MouseButtonReleasedEvent& event)
+{
+    if (isPanelActive() && event.getMouseButton() == GE::MouseButton::LEFT) {
+        *m_ctx->selectedEntity() = m_ctx->entityPicker()->getEntityByPosition(m_mouse_position);
+    }
+
+    return false;
 }
 
 } // namespace LE
