@@ -45,6 +45,7 @@ public:
     using ForeachCallback = Registry::ForeachCallback;
 
     Entity createEntity(std::string_view name);
+    Entity entity(Entity::NativeHandle entity_id);
     void destroyEntity(const Entity& entity);
     void clear();
 

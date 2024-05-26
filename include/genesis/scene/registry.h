@@ -32,7 +32,6 @@
 
 #pragma once
 
-#include <genesis/core/asserts.h>
 #include <genesis/core/export.h>
 #include <genesis/scene/entity.h>
 
@@ -51,6 +50,7 @@ public:
     using EntityHandle = entt::entity;
 
     Entity create();
+    Entity entity(EntityHandle entity_id);
     void destroy(const Entity& entity);
     void clear();
 
