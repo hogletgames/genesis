@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,33 +30,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "staging_buffer.h"
+#include "graphics.h"
+#include "graphics_factory.h"
 
-#include <genesis/graphics/staging_buffer.h>
+namespace GE {
 
-#include "buffer_base.h"
-
-namespace GE::Vulkan {
-
-class StagingBuffer: public GE::StagingBuffer, BufferBase
+Scoped<StagingBuffer> StagingBuffer::create()
 {
-public:
-    explicit StagingBuffer(Shared<Device> device);
-    StagingBuffer(Shared<Device> device, uint32_t size, const void* data);
+    return Graphics::factory()->createStagingBuffer();
+}
 
-    void* data() override;
-    void resize(uint32_t size) override;
-    void clear() override;
-
-    NativeHandle nativeHandle() const override { return m_buffer; }
-    uint32_t size() const override { return m_size; }
-
-    void copyTo(BufferBase* dest, uint32_t offset);
-
-private:
-    void copyData(uint32_t size, const void* data, uint32_t offset);
-
-    void* m_mapped_memory{nullptr};
-};
-
-} // namespace GE::Vulkan
+} // namespace GE

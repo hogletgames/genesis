@@ -11,6 +11,7 @@ list(APPEND GRAPHICS_SOURCES
     shader_input_layout.cpp
     shader_precompiler.cpp
     shader_reflection.cpp
+    staging_buffer.cpp
     texture.cpp
     texture_loader.cpp
     vertex_buffer.cpp
