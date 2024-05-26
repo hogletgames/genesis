@@ -163,7 +163,7 @@ void WindowRenderer::createRenderingAttachments()
     color_attachment.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    color_attachment.clearValue = toVkClearColorValue({0.0f, 0.0f, 0.0f, 1.0f});
+    color_attachment.clearValue = toVkClearColorValue(Vec4{0.0f, 0.0f, 0.0f, 1.0f});
 
     if (m_msaa_samples > 1) {
         color_attachment.resolveMode = VK_RESOLVE_MODE_AVERAGE_BIT;

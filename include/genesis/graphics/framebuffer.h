@@ -38,11 +38,14 @@
 #include <genesis/graphics/texture.h>
 #include <genesis/math/types.h>
 
+#include <variant>
 #include <vector>
 
 namespace GE {
 
 class Texture;
+
+using ClearColorType = std::variant<Vec4, IVec4, UVec4>;
 
 struct fb_attachment_t {
     enum class Type : uint8_t
@@ -56,7 +59,7 @@ struct fb_attachment_t {
     Type type{Type::UNKNOWN};
     TextureType texture_type{TextureType::UNKNOWN};
     TextureFormat texture_format{TextureFormat::UNKNOWN};
-    Vec4 clear_color{1.0f, 1.0f, 1.0f, 1.0f};
+    ClearColorType clear_color{Vec4{1.0f, 1.0f, 1.0f, 1.0f}};
     float clear_depth{1.0f};
 };
 
