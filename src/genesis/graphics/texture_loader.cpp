@@ -72,11 +72,6 @@ TextureFormat toTextureFormat(int channel_count, bool is_hdr)
     return TextureFormat::UNKNOWN;
 }
 
-uint32_t toTextureSize(const texture_config_t& config)
-{
-    return config.width * config.height * toTextureBPP(config.format);
-}
-
 void* stbiLoadWrapper(const std::vector<uint8_t>& memory, int* width, int* height,
                       int* channel_count, int desired_channels)
 {
@@ -214,7 +209,7 @@ Scoped<Texture> TextureLoader::load()
         return nullptr;
     }
 
-    uint32_t texture_data_size = toTextureSize(config);
+    uint32_t texture_data_size = toTextureSize({config.width, config.height}, config.format);
     texture->setData(texture_data, texture_data_size);
 
     return texture;
