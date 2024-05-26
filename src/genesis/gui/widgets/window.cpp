@@ -56,6 +56,17 @@ Vec2 Window::position() const
     return toVec2(ImGui::GetWindowPos());
 }
 
+Vec2 Window::mousePosition() const
+{
+    auto mouse_position = toVec2(ImGui::GetMousePos());
+    auto window_position = toVec2(ImGui::GetWindowPos());
+    auto content_region_min = toVec2(ImGui::GetWindowContentRegionMin());
+    auto content_region_screen = window_position + content_region_min;
+    auto mouse_pos_in_content_region = mouse_position - content_region_screen;
+
+    return mouse_pos_in_content_region;
+}
+
 Vec2 Window::size() const
 {
     return toVec2(ImGui::GetWindowSize());
