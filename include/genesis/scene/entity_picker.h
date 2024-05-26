@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,16 +32,48 @@
 
 #pragma once
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/component_list.h>
-#include <genesis/scene/components.h>
-#include <genesis/scene/entity.h>
-#include <genesis/scene/entity_factory.h>
-#include <genesis/scene/entity_picker.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/renderer.h>
-#include <genesis/scene/scene.h>
-#include <genesis/scene/scene_deserializer.h>
-#include <genesis/scene/scene_serializer.h>
+#include <genesis/core/export.h>
+#include <genesis/core/memory.h>
+#include <genesis/math/types.h>
+
+namespace GE {
+class Framebuffer;
+class Pipeline;
+class StagingBuffer;
+class Texture;
+} // namespace GE
+
+namespace GE::Scene {
+
+class Entity;
+class Scene;
+class ViewProjectionCamera;
+
+class GE_API EntityPicker
+{
+public:
+    EntityPicker(Scene* scene, const ViewProjectionCamera* camera);
+    ~EntityPicker();
+
+    void onRender();
+    void onViewportUpdate(const Vec2& viewport);
+
+    Entity getEntityByPosition(const Vec2& position);
+
+    static constexpr int32_t ENTITY_ID_NONE{-1};
+
+private:
+    void recreateEntityIdFramebuffer(const Vec2& size);
+    void createEntityIdPipeline();
+
+    void renderEntityId(const Entity& entity);
+
+    Scene* m_scene{nullptr};
+    const ViewProjectionCamera* m_camera{nullptr};
+    Scoped<Framebuffer> m_entity_id_fbo;
+    Scoped<Pipeline> m_entity_id_pipline;
+    Scoped<StagingBuffer> m_entity_id_buffer;
+    bool m_is_buffer_updated{false};
+};
+
+} // namespace GE::Scene
