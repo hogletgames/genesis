@@ -40,6 +40,8 @@
 
 namespace GE {
 
+class StagingBuffer;
+
 enum class TextureType : uint8_t
 {
     UNKNOWN = 0,
@@ -110,6 +112,7 @@ public:
     using NativeID = void*;
 
     virtual bool setData(const void* data, uint32_t size) = 0;
+    virtual void copyTo(StagingBuffer* buffer) const = 0;
     virtual const Vec2& size() const = 0;
     virtual TextureFormat format() const = 0;
     virtual bool isOpaque() const = 0;

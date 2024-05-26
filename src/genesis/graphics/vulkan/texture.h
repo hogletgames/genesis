@@ -83,6 +83,7 @@ public:
     using Vulkan::Texture::Texture;
 
     bool setData(const void* data, uint32_t size) override;
+    void copyTo(GE::StagingBuffer* buffer) const override;
 
 private:
     uint32_t checkDepth(uint32_t depth) override;

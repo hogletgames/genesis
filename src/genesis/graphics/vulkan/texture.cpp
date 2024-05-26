@@ -294,6 +294,15 @@ bool Texture2D::setData(const void* data, uint32_t size)
     return true;
 }
 
+void Texture2D::copyTo(GE::StagingBuffer* buffer) const
+{
+    if (uint32_t texture_size = toTextureSize(m_size, m_format); buffer->size() < texture_size) {
+        buffer->resize(texture_size);
+    }
+
+    m_image->copyTo(*buffer);
+}
+
 uint32_t Texture2D::checkDepth(uint32_t depth)
 {
     GE_CORE_ASSERT(depth == 1, "Expected depth=1, got={}", depth);

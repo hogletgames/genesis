@@ -40,10 +40,13 @@
 
 #include <vector>
 
+namespace GE {
+class StagingBuffer;
+}
+
 namespace GE::Vulkan {
 
 class Device;
-class StagingBuffer;
 struct memory_barrier_config_t;
 
 struct image_config_t {
@@ -65,7 +68,8 @@ public:
     Image(Shared<Device> device, const image_config_t& config);
     ~Image();
 
-    void copyFrom(const StagingBuffer& buffer, const std::vector<VkBufferImageCopy>& regions);
+    void copyFrom(const GE::StagingBuffer& buffer, const std::vector<VkBufferImageCopy>& regions);
+    void copyTo(const GE::StagingBuffer& buffer);
 
     VkImageMemoryBarrier imageMemoryBarrier() const;
 
@@ -86,8 +90,10 @@ private:
 
     uint32_t getMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
 
-    void transitionImageLayout();
-    void copyToImage(const StagingBuffer& buffer, const std::vector<VkBufferImageCopy>& regions);
+    void transitionImageLayout(VkImageLayout new_layout);
+    void copyToImage(const GE::StagingBuffer& buffer,
+                     const std::vector<VkBufferImageCopy>& regions);
+    void copyFromImage(const GE::StagingBuffer& buffer);
     void createMipmaps();
 
     Shared<Device> m_device;
