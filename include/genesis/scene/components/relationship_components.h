@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,10 +32,26 @@
 
 #pragma once
 
-#include <genesis/scene/components/camera_component.h>
-#include <genesis/scene/components/material_component.h>
-#include <genesis/scene/components/relationship_components.h>
-#include <genesis/scene/components/sprite_component.h>
-#include <genesis/scene/components/tag_component.h>
-#include <genesis/scene/components/transform_component.h>
-#include <genesis/scene/components/yaml_convert.h>
+#include <genesis/scene/entity.h>
+
+namespace GE::Scene {
+
+struct HeadNodeComponent {
+    static constexpr std::string_view NAME{"Head Node"};
+};
+
+struct TailNodeComponent {
+    static constexpr std::string_view NAME{"Tail Node"};
+};
+
+struct NodeComponent {
+    Entity::NativeHandle prev_node{Entity::NULL_ID};
+    Entity::NativeHandle next_node{Entity::NULL_ID};
+
+    Entity::NativeHandle child_node{Entity::NULL_ID};
+    Entity::NativeHandle parent_node{Entity::NULL_ID};
+
+    static constexpr std::string_view NAME{"Node"};
+};
+
+} // namespace GE::Scene

@@ -55,7 +55,7 @@ public:
     }
 
     template<typename T, typename... Args>
-    T& add(Args&&... args)
+    decltype(auto) add(Args&&... args)
     {
         GE_CORE_ASSERT(!has<T>(), "Entity already has this component");
         return m_registry->emplace<T>(m_handle, std::forward<Args>(args)...);
