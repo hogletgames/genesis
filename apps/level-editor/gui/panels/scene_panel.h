@@ -32,23 +32,43 @@
 
 #pragma once
 
+#include <genesis/core/deferred_commands.h>
 #include <genesis/gui/window/window_base.h>
+#include <genesis/scene/entity.h>
 
 namespace GE::GUI {
 class WidgetNode;
 } // namespace GE::GUI
 
 namespace GE::Scene {
-class Entity;
+class EntityNode;
 } // namespace GE::Scene
 
 namespace LE {
 
 class LevelEditorContext;
 
+class DeferredScenePanelCommands: public GE::DeferredCommands<void()>
+{
+public:
+    DeferredScenePanelCommands(LevelEditorContext* ctx)
+        : m_ctx{ctx}
+    {}
+
+    void selectEntity(const GE::Scene::Entity& entity);
+    void removeEntity(const GE::Scene::Entity& entity);
+    void appendEntity(const GE::Scene::Entity& dst, const GE::Scene::Entity& src);
+    void appendToChildren(const GE::Scene::Entity& dst, const GE::Scene::Entity& src);
+
+private:
+    LevelEditorContext* m_ctx{nullptr};
+};
+
 class GE_API ScenePanel: public GE::GUI::WindowBase
 {
 public:
+    using DeferredCmdQueue = std::deque<std::function<void()>>;
+
     explicit ScenePanel(LevelEditorContext* ctx);
 
     void onRender() override;
@@ -57,12 +77,20 @@ public:
 
 private:
     void drawScene(GE::GUI::WidgetNode* node);
+
+    void drawEntities(GE::GUI::WidgetNode* node, const GE::Scene::EntityNode& entity);
     void drawEntity(GE::GUI::WidgetNode* node, const GE::Scene::Entity& entity);
+    void drawEntityDragDrop(const GE::Scene::Entity& entity);
     void drawContextMenu(GE::GUI::WidgetNode* node);
 
-    void removeEntity(const GE::Scene::Entity& entity);
+    void resetDragDropEntities();
 
     LevelEditorContext* m_ctx{nullptr};
+    DeferredScenePanelCommands m_commands;
+
+    bool m_is_select_entity_handled{false};
+    GE::Scene::Entity m_drag_drop_src_entity;
+    GE::Scene::Entity m_drag_drop_dst_entity;
 };
 
 } // namespace LE
