@@ -35,33 +35,35 @@
 #include <genesis/core/memory.h>
 #include <genesis/gui/widgets/widget_node.h>
 
-#include <deque>
-
 namespace GE::GUI {
 
 class GE_API WidgetNodeGuard
 {
 public:
-    explicit WidgetNodeGuard(WidgetNode* node)
-        : m_node{node}
+    explicit WidgetNodeGuard(WidgetNode* widget)
+        : m_widget{widget}
     {
-        if (m_node != nullptr) {
-            m_node->begin();
-            m_node->emitSignals();
-        }
+        begin();
+    }
+
+    explicit WidgetNodeGuard(Scoped<WidgetNode> widget)
+        : m_internal_widget{std::move(widget)}
+        , m_widget{m_internal_widget.get()}
+    {
+        begin();
     }
 
     ~WidgetNodeGuard()
     {
-        if (m_node != nullptr) {
-            m_node->end();
+        if (m_widget != nullptr) {
+            m_widget->end();
         }
     }
 
     template<typename T, typename... Args>
     auto call(Args&&... args) -> std::enable_if_t<std::is_void_v<decltype(T::call(args...))>>
     {
-        if (isNodeCallable()) {
+        if (isOpened()) {
             T::call(std::forward<Args>(args)...);
         }
     }
@@ -70,7 +72,7 @@ public:
     auto call(Args&&... args)
         -> std::enable_if_t<std::is_same_v<decltype(T::call(args...)), bool>, bool>
     {
-        if (isNodeCallable()) {
+        if (isOpened()) {
             return T::call(std::forward<Args>(args)...);
         }
 
@@ -80,27 +82,50 @@ public:
     template<typename Func, typename... Args>
     void call(Func&& f, Args&&... args)
     {
-        if (isNodeCallable()) {
+        if (isOpened()) {
             std::invoke(std::forward<Func>(f), std::forward<Args>(args)...);
         }
     }
 
-    WidgetNodeGuard subNode(WidgetNode* node)
+    WidgetNodeGuard subNode(WidgetNode* widget_node)
     {
-        if (isNodeCallable()) {
-            return WidgetNodeGuard{node};
+        if (isOpened()) {
+            return WidgetNodeGuard{widget_node};
         }
 
         return WidgetNodeGuard{nullptr};
     }
 
-    WidgetNode* node() { return m_node; }
-    bool isOpened() const { return m_node != nullptr && m_node->isOpened(); }
+    template<typename T, typename... Args>
+    WidgetNodeGuard makeSubNode(Args&&... args)
+    {
+        if (isOpened()) {
+            return create<T>(std::forward<Args>(args)...);
+        }
+
+        return WidgetNodeGuard{nullptr};
+    }
+
+    WidgetNode* widget() { return m_widget; }
+    bool isOpened() const { return m_widget != nullptr && m_widget->isOpened(); }
+
+    template<typename T, typename... Args>
+    static WidgetNodeGuard create(Args&&... args)
+    {
+        return WidgetNodeGuard{makeScoped<T>(std::forward<Args>(args)...)};
+    }
 
 private:
-    bool isNodeCallable() const { return m_node != nullptr && m_node->isOpened(); }
+    void begin() const
+    {
+        if (m_widget != nullptr) {
+            m_widget->begin();
+            m_widget->emitSignals();
+        }
+    }
 
-    WidgetNode* m_node{nullptr};
+    Scoped<WidgetNode> m_internal_widget;
+    WidgetNode* m_widget{nullptr};
 };
 
 } // namespace GE::GUI
