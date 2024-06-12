@@ -45,9 +45,8 @@ ViewMenu::ViewMenu(WindowMap *panels)
 
 void ViewMenu::onRender(GE::GUI::WidgetNodeGuard *bar_node)
 {
-    Menu view{"View"};
-    auto view_node = bar_node->subNode(&view);
-    drawPanels(&view_node);
+    auto view_menu = bar_node->makeSubNode<Menu>("View");
+    drawPanels(&view_menu);
 }
 
 void ViewMenu::drawPanels(GE::GUI::WidgetNodeGuard *view_node)
@@ -57,11 +56,10 @@ void ViewMenu::drawPanels(GE::GUI::WidgetNodeGuard *view_node)
         ScenePanel::NAME,        ComponentsPanel::NAME,
     };
 
-    Menu panels{"Panels"};
-    auto panels_node = view_node->subNode(&panels);
+    auto panels_menu = view_node->makeSubNode<Menu>("Panels");
     for (const char *panel_name : PANEL_NAMES) {
         if (auto *panel = m_panels->get(panel_name);
-            panels_node.call<MenuItem>(panel_name, "", panel->isOpen())) {
+            panels_menu.call<MenuItem>(panel_name, "", panel->isOpen())) {
             panel->setIsOpen(!panel->isOpen());
         }
     }

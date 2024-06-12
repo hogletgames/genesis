@@ -118,14 +118,14 @@ void drawReadOnlyOptions(GE::GUI::WidgetNodeGuard* node,
 
 void drawCameraOptions(GE::GUI::WidgetNodeGuard* parent, GE::Examples::GuiLayerWindow* window)
 {
-    GE::GUI::TreeNode camera_tree{window->name(), GE::GUI::TreeNode::FRAMED};
-    auto node = parent->subNode(&camera_tree);
+    auto camera_tree_node =
+        parent->makeSubNode<GE::GUI::TreeNode>(window->name(), GE::GUI::TreeNode::FRAMED);
     auto camera = window->camera();
 
-    drawView(&node, camera);
-    drawProjectionCombo(&node, camera);
-    drawProjectionOptions(&node, camera);
-    drawReadOnlyOptions(&node, camera);
+    drawView(&camera_tree_node, camera);
+    drawProjectionCombo(&camera_tree_node, camera);
+    drawProjectionOptions(&camera_tree_node, camera);
+    drawReadOnlyOptions(&camera_tree_node, camera);
 }
 
 } // namespace

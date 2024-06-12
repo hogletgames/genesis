@@ -74,7 +74,7 @@ void EditorCameraPanel::drawProjectionCombo(::WidgetNodeGuard *node)
         GE::toString(GE::Scene::ViewProjectionCamera::PERSPECTIVE),
     };
 
-    ::ComboBox combo{"Projection type", PROJECTIONS, GE::toString(m_camera->type())};
+    ComboBox combo{"Projection type", PROJECTIONS, GE::toString(m_camera->type())};
     combo.itemChangedSignal()->connect([this](std::string_view projection) {
         m_camera->setType(GE::Scene::toProjectionType(projection));
     });

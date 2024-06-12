@@ -88,17 +88,16 @@ void AssetsPanel::drawContextMenu(AssetsPanel::NodeGuard *node)
     auto flags = PopupFlag::MOUSE_BUTTON_RIGHT | PopupFlag::NO_OPEN_OVER_ITEMS |
                  PopupFlag::NO_OPEN_OVER_EXISTING_POPUP;
 
-    PopupContextWindow context{{}, flags};
-    auto context_node = node->subNode(&context);
-    Menu add_resource{"Add resource"};
-    auto add_resource_node = context_node.subNode(&add_resource);
-    if (add_resource_node.call<MenuItem>("Mesh")) {
+    auto popup_context = node->makeSubNode<PopupContextWindow>(std::string_view{}, flags);
+    auto add_resource_menu = popup_context.makeSubNode<Menu>("Add resource");
+
+    if (add_resource_menu.call<MenuItem>("Mesh")) {
         m_add_mesh_resource_signal();
     }
-    if (add_resource_node.call<MenuItem>("Pipeline")) {
+    if (add_resource_menu.call<MenuItem>("Pipeline")) {
         m_add_pipeline_resource_signal();
     }
-    if (add_resource_node.call<MenuItem>("Texture")) {
+    if (add_resource_menu.call<MenuItem>("Texture")) {
         m_add_texture_resource_signal();
     }
 }
@@ -110,8 +109,7 @@ void AssetsPanel::drawAssets(AssetsPanel::NodeGuard *node)
 
     for (auto it = ids.cbegin(); it < ids.cend();) {
         std::string_view package = it->package();
-        TreeNode package_tree{package};
-        auto package_tree_node = node->subNode(&package_tree);
+        auto package_tree_node = node->makeSubNode<TreeNode>(package);
 
         if (package_tree_node.isOpened()) {
             it = drawPackage(it, ids.cend(), package);
