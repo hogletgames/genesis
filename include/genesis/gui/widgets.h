@@ -35,6 +35,7 @@
 #include <genesis/gui/widgets/button.h>
 #include <genesis/gui/widgets/checkbox.h>
 #include <genesis/gui/widgets/combo_box.h>
+#include <genesis/gui/widgets/drag_drop.h>
 #include <genesis/gui/widgets/image.h>
 #include <genesis/gui/widgets/input_text.h>
 #include <genesis/gui/widgets/item.h>

@@ -9,6 +9,7 @@ list(APPEND GUI_SOURCES
     widgets/button.cpp
     widgets/checkbox.cpp
     widgets/combo_box.cpp
+    widgets/drag_drop.cpp
     widgets/image.cpp
     widgets/input_text.cpp
     widgets/item.cpp
@@ -42,6 +43,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/widgets/button.h
     ${INCLUDE_DIR}/widgets/checkbox.h
     ${INCLUDE_DIR}/widgets/combo_box.h
+    ${INCLUDE_DIR}/widgets/drag_drop.h
     ${INCLUDE_DIR}/widgets/image.h
     ${INCLUDE_DIR}/widgets/input_text.h
     ${INCLUDE_DIR}/widgets/item.h
