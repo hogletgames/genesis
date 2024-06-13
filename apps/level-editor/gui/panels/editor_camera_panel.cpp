@@ -54,7 +54,7 @@ void EditorCameraPanel::onRender()
     drawReadOnlyOptions(&node);
 }
 
-void EditorCameraPanel::drawView(::WidgetNode *node)
+void EditorCameraPanel::drawView(WidgetNode *node)
 {
     if (auto position = m_camera->position();
         node->call<::ValueEditor>("Position", &position, 0.1f, -100.0f, 100.0f)) {
@@ -67,7 +67,7 @@ void EditorCameraPanel::drawView(::WidgetNode *node)
     }
 }
 
-void EditorCameraPanel::drawProjectionCombo(::WidgetNode *node)
+void EditorCameraPanel::drawProjectionCombo(WidgetNode *node)
 {
     static const std::vector<std::string> PROJECTIONS = {
         GE::toString(GE::Scene::ViewProjectionCamera::ORTHOGRAPHIC),
@@ -83,7 +83,7 @@ void EditorCameraPanel::drawProjectionCombo(::WidgetNode *node)
     }
 }
 
-void EditorCameraPanel::drawPerspectiveProjection(::WidgetNode *node)
+void EditorCameraPanel::drawPerspectiveProjection(WidgetNode *node)
 {
     auto [fov, near, far] = m_camera->perspectiveOptions();
     node->call<::ValueEditor>("Field of view", &fov, 0.1f, 0.0f, 180.0f);
@@ -93,7 +93,7 @@ void EditorCameraPanel::drawPerspectiveProjection(::WidgetNode *node)
     m_camera->setPerspectiveOptions({fov, near, far});
 }
 
-void EditorCameraPanel::drawOrthoProjection(::WidgetNode *node)
+void EditorCameraPanel::drawOrthoProjection(WidgetNode *node)
 {
     auto [size, near, far] = m_camera->orthographicOptions();
     node->call<::ValueEditor>("Size", &size, 0.1f, 0.0f, 10.0f);
@@ -103,7 +103,7 @@ void EditorCameraPanel::drawOrthoProjection(::WidgetNode *node)
     m_camera->setOrthoOptions({size, near, far});
 }
 
-void EditorCameraPanel::drawProjectionOptions(::WidgetNode *node)
+void EditorCameraPanel::drawProjectionOptions(WidgetNode *node)
 {
     switch (m_camera->type()) {
         case GE::Scene::ViewProjectionCamera::PERSPECTIVE: drawPerspectiveProjection(node); break;
@@ -112,7 +112,7 @@ void EditorCameraPanel::drawProjectionOptions(::WidgetNode *node)
     }
 }
 
-void EditorCameraPanel::drawReadOnlyOptions(::WidgetNode *node)
+void EditorCameraPanel::drawReadOnlyOptions(WidgetNode *node)
 {
     node->call<::Text>("Direction: %s", GE::toString(m_camera->direction()).c_str());
 }

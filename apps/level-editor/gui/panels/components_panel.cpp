@@ -82,8 +82,7 @@ void ComponentsPanel::draw(Entity *entity)
     auto flags = TreeNode::DEFAULT_OPEN | TreeNode::FRAMED | TreeNode::SPAN_AVAIL_WIDTH |
                  TreeNode::ALLOW_ITEM_OVERLAP | TreeNode::FRAME_PADDING;
 
-    TreeNode tree{Component::NAME, flags};
-    WidgetNode tree_node{&tree};
+    auto tree_node = WidgetNode::create<TreeNode>(Component::NAME, flags);
     draw(&tree_node, &entity->get<Component>());
 }
 

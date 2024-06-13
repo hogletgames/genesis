@@ -133,8 +133,7 @@ AssetsPanel::ResourceIDIt AssetsPanel::drawPackage(ResourceIDIt begin, ResourceI
         }
 
         std::string_view group = it->group();
-        TreeNode group_tree{group};
-        WidgetNode group_tree_node{&group_tree};
+        auto group_tree_node = WidgetNode::create<TreeNode>(group);
 
         if (group_tree_node.isOpened()) {
             it = drawGroup(it, end, package, group);
@@ -157,16 +156,14 @@ AssetsPanel::ResourceIDIt AssetsPanel::drawGroup(ResourceIDIt begin, ResourceIDI
         }
 
         std::string_view name = it->name();
-        TreeNode name_tree{name};
-        WidgetNode name_tree_node{&name_tree};
+        auto name_tree_node = WidgetNode::create<TreeNode>(name);
 
         if (name_tree_node.isOpened()) {
             m_registry->visit(*it, this);
         }
 
-        PopupContextItem context{name};
-        WidgetNode context_node{&context};
-        context_node.call<MenuItem>(GE_FMTSTR("Remove '{}'", it->id()));
+        auto popup_context = WidgetNode::create<PopupContextItem>(name);
+        popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", it->id()));
     }
 
     return it;
@@ -184,8 +181,7 @@ void AssetsPanel::visit(GE::Assets::PipelineResource *resource)
 
     {
         Text::call("Vertex shader: %s", resource->vertexShader().c_str());
-        TreeNode code_tree{"Code:##1"};
-        WidgetNode code_node{&code_tree};
+        auto code_node = WidgetNode::create<TreeNode>("Code:");
         if (code_node.isOpened()) {
             auto code = GE::FS::readFile<char>(resource->vertexShader());
             Text::call(std::string_view{code.data(), code.size()});
@@ -194,8 +190,7 @@ void AssetsPanel::visit(GE::Assets::PipelineResource *resource)
 
     {
         Text::call("Fragment shader: %s", resource->fragmentShader().c_str());
-        TreeNode code_tree{"Code:##2"};
-        WidgetNode code_node{&code_tree};
+        auto code_node = WidgetNode::create<TreeNode>("Code:##2");
         if (code_node.isOpened()) {
             auto code = GE::FS::readFile<char>(resource->fragmentShader());
             Text::call(std::string_view{code.data(), code.size()});
