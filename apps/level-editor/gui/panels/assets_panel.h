@@ -44,7 +44,7 @@ class Registry;
 } // namespace GE::Assets
 
 namespace GE::GUI {
-class WidgetNodeGuard;
+class WidgetNode;
 } // namespace GE::GUI
 
 namespace LE {
@@ -69,12 +69,11 @@ private:
     using Registry = GE::Assets::Registry;
     using ResourceIDs = Registry::ResourceIDs;
     using ResourceIDIt = ResourceIDs::const_iterator;
-    using NodeGuard = GE::GUI::WidgetNodeGuard;
 
     void updateWindowParameters();
 
-    void drawContextMenu(NodeGuard* node);
-    void drawAssets(NodeGuard* node);
+    void drawContextMenu(GE::GUI::WidgetNode* node);
+    void drawAssets(GE::GUI::WidgetNode* node);
     ResourceIDIt drawPackage(ResourceIDIt begin, ResourceIDIt end, std::string_view package);
     AssetsPanel::ResourceIDIt drawGroup(ResourceIDIt begin, ResourceIDIt end,
                                         std::string_view package, std::string_view group);

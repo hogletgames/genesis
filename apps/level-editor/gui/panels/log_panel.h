@@ -37,7 +37,7 @@
 #include <memory>
 
 namespace GE::GUI {
-class WidgetNodeGuard;
+class WidgetNode;
 } // namespace GE::GUI
 
 namespace LE {
@@ -53,8 +53,8 @@ public:
     static constexpr auto NAME{"Log"};
 
 private:
-    void drawControls(GE::GUI::WidgetNodeGuard* node);
-    void drawLogs(GE::GUI::WidgetNodeGuard* node);
+    void drawControls(GE::GUI::WidgetNode* node);
+    void drawLogs(GE::GUI::WidgetNode* node);
 
     class LogSink;
     std::shared_ptr<LogSink> m_log_sink;

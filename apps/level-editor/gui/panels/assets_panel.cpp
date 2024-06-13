@@ -75,7 +75,7 @@ AssetsPanel::AssetsPanel(GE::Assets::Registry *registry)
 
 void AssetsPanel::onRender()
 {
-    WidgetNodeGuard window_node{&m_window};
+    WidgetNode window_node{&m_window};
     window_node.call(&AssetsPanel::updateWindowParameters, this);
     drawAssets(&window_node);
     drawContextMenu(&window_node);
@@ -86,7 +86,7 @@ void AssetsPanel::updateWindowParameters()
     m_window_size = m_window.availableRegion();
 }
 
-void AssetsPanel::drawContextMenu(AssetsPanel::NodeGuard *node)
+void AssetsPanel::drawContextMenu(WidgetNode *node)
 {
     auto flags = PopupFlag::MOUSE_BUTTON_RIGHT | PopupFlag::NO_OPEN_OVER_ITEMS |
                  PopupFlag::NO_OPEN_OVER_EXISTING_POPUP;
@@ -105,7 +105,7 @@ void AssetsPanel::drawContextMenu(AssetsPanel::NodeGuard *node)
     }
 }
 
-void AssetsPanel::drawAssets(AssetsPanel::NodeGuard *node)
+void AssetsPanel::drawAssets(WidgetNode *node)
 {
     auto ids = m_registry->ids();
     std::sort(ids.begin(), ids.end());
@@ -134,7 +134,7 @@ AssetsPanel::ResourceIDIt AssetsPanel::drawPackage(ResourceIDIt begin, ResourceI
 
         std::string_view group = it->group();
         TreeNode group_tree{group};
-        WidgetNodeGuard group_tree_node{&group_tree};
+        WidgetNode group_tree_node{&group_tree};
 
         if (group_tree_node.isOpened()) {
             it = drawGroup(it, end, package, group);
@@ -158,14 +158,14 @@ AssetsPanel::ResourceIDIt AssetsPanel::drawGroup(ResourceIDIt begin, ResourceIDI
 
         std::string_view name = it->name();
         TreeNode name_tree{name};
-        WidgetNodeGuard name_tree_node{&name_tree};
+        WidgetNode name_tree_node{&name_tree};
 
         if (name_tree_node.isOpened()) {
             m_registry->visit(*it, this);
         }
 
         PopupContextItem context{name};
-        WidgetNodeGuard context_node{&context};
+        WidgetNode context_node{&context};
         context_node.call<MenuItem>(GE_FMTSTR("Remove '{}'", it->id()));
     }
 
@@ -185,7 +185,7 @@ void AssetsPanel::visit(GE::Assets::PipelineResource *resource)
     {
         Text::call("Vertex shader: %s", resource->vertexShader().c_str());
         TreeNode code_tree{"Code:##1"};
-        WidgetNodeGuard code_node{&code_tree};
+        WidgetNode code_node{&code_tree};
         if (code_node.isOpened()) {
             auto code = GE::FS::readFile<char>(resource->vertexShader());
             Text::call(std::string_view{code.data(), code.size()});
@@ -195,7 +195,7 @@ void AssetsPanel::visit(GE::Assets::PipelineResource *resource)
     {
         Text::call("Fragment shader: %s", resource->fragmentShader().c_str());
         TreeNode code_tree{"Code:##2"};
-        WidgetNodeGuard code_node{&code_tree};
+        WidgetNode code_node{&code_tree};
         if (code_node.isOpened()) {
             auto code = GE::FS::readFile<char>(resource->fragmentShader());
             Text::call(std::string_view{code.data(), code.size()});

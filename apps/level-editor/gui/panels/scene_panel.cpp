@@ -49,12 +49,12 @@ ScenePanel::ScenePanel(LevelEditorContext* ctx)
 
 void ScenePanel::onRender()
 {
-    WidgetNodeGuard node{&m_window};
+    WidgetNode node{&m_window};
     drawScene(&node);
     drawContextMenu(&node);
 }
 
-void ScenePanel::drawScene(WidgetNodeGuard* node)
+void ScenePanel::drawScene(WidgetNode* node)
 {
     m_ctx->scene()->forEachEntity([this, node](const auto& entity) { drawEntity(node, entity); });
 
@@ -63,7 +63,7 @@ void ScenePanel::drawScene(WidgetNodeGuard* node)
     }
 }
 
-void ScenePanel::drawEntity(WidgetNodeGuard* node, const Entity& entity)
+void ScenePanel::drawEntity(WidgetNode* node, const Entity& entity)
 {
     auto flags = TreeNode::OPEN_ON_ARROW | TreeNode::SPAN_AVAIL_WIDTH;
     bool remove_entity{false};
@@ -76,7 +76,7 @@ void ScenePanel::drawEntity(WidgetNodeGuard* node, const Entity& entity)
 
     {
         auto entity_tree_node = node->makeSubNode<TreeNode>(tag, flags);
-        auto popup_context = WidgetNodeGuard::create<PopupContextItem>();
+        auto popup_context = WidgetNode::create<PopupContextItem>();
 
         if (popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", tag))) {
             remove_entity = true;
@@ -92,7 +92,7 @@ void ScenePanel::drawEntity(WidgetNodeGuard* node, const Entity& entity)
     }
 }
 
-void ScenePanel::drawContextMenu(WidgetNodeGuard* node)
+void ScenePanel::drawContextMenu(WidgetNode* node)
 {
     EntityFactory entity_factory{m_ctx->scene(), m_ctx->assets()};
     auto flags = PopupFlag::MOUSE_BUTTON_RIGHT | PopupFlag::NO_OPEN_OVER_EXISTING_POPUP;

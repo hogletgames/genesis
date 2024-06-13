@@ -126,13 +126,13 @@ void LogPanel::onRender()
 {
     StyleVar padding{StyleVar::WINDOW_PADDING, {0.0f, 0.0f}};
 
-    if (WidgetNodeGuard node{&m_window}; node.isOpened()) {
+    if (WidgetNode node{&m_window}; node.isOpened()) {
         drawControls(&node);
         drawLogs(&node);
     }
 }
 
-void LogPanel::drawControls(WidgetNodeGuard *node)
+void LogPanel::drawControls(WidgetNode *node)
 {
     if (node->call<Button>("Clear")) {
         m_log_sink->clear();
@@ -148,7 +148,7 @@ void LogPanel::drawControls(WidgetNodeGuard *node)
     }
 }
 
-void LogPanel::drawLogs(WidgetNodeGuard *node)
+void LogPanel::drawLogs(WidgetNode *node)
 {
     auto logs = m_log_sink->lines();
     auto log_lines = GE::joinString(logs.begin(), logs.end());

@@ -60,7 +60,7 @@ ComponentsPanel::ComponentsPanel(LevelEditorContext *ctx)
 
 void ComponentsPanel::onRender()
 {
-    WidgetNodeGuard node{&m_window};
+    WidgetNode node{&m_window};
     if (!m_ctx->selectedEntity()->isNull()) {
         drawEntityComponents(m_ctx->selectedEntity());
     }
@@ -83,11 +83,11 @@ void ComponentsPanel::draw(Entity *entity)
                  TreeNode::ALLOW_ITEM_OVERLAP | TreeNode::FRAME_PADDING;
 
     TreeNode tree{Component::NAME, flags};
-    WidgetNodeGuard tree_node{&tree};
+    WidgetNode tree_node{&tree};
     draw(&tree_node, &entity->get<Component>());
 }
 
-void ComponentsPanel::draw(GE::GUI::WidgetNodeGuard *node, GE::Scene::CameraComponent *camera)
+void ComponentsPanel::draw(WidgetNode *node, GE::Scene::CameraComponent *camera)
 {
     bool is_primary_camera = *m_ctx->selectedEntity() == m_ctx->scene()->mainCamera();
 
@@ -98,7 +98,7 @@ void ComponentsPanel::draw(GE::GUI::WidgetNodeGuard *node, GE::Scene::CameraComp
     node->call<Checkbox>("Fixed aspect ratio", &camera->fixed_aspect_ratio);
 }
 
-void ComponentsPanel::draw(WidgetNodeGuard *node, MaterialComponent *material)
+void ComponentsPanel::draw(WidgetNode *node, MaterialComponent *material)
 {
     auto material_id = material->materialID().id();
 
@@ -108,12 +108,12 @@ void ComponentsPanel::draw(WidgetNodeGuard *node, MaterialComponent *material)
     }
 }
 
-void ComponentsPanel::draw(WidgetNodeGuard *node, TagComponent *tag)
+void ComponentsPanel::draw(WidgetNode *node, TagComponent *tag)
 {
     node->call<Text>("Tag: %s", tag->tag.c_str());
 }
 
-void ComponentsPanel::draw(WidgetNodeGuard *node, TransformComponent *transform)
+void ComponentsPanel::draw(WidgetNode *node, TransformComponent *transform)
 {
     node->call<ValueEditor>("Translation", &transform->translation, 0.05f, -10.0f, 10.0f);
     if (auto angles = GE::degrees(transform->rotation);
@@ -123,7 +123,7 @@ void ComponentsPanel::draw(WidgetNodeGuard *node, TransformComponent *transform)
     node->call<ValueEditor>("Scale", &transform->scale, 0.1, 0.0f, 10.0f);
 }
 
-void ComponentsPanel::draw(WidgetNodeGuard *node, SpriteComponent *sprite)
+void ComponentsPanel::draw(WidgetNode *node, SpriteComponent *sprite)
 {
     auto mesh_id = sprite->meshID().id();
     auto texture_id = sprite->textureID().id();

@@ -66,7 +66,7 @@ void MenuBar::onEvent(GE::Event *event)
 void MenuBar::onRender()
 {
     MainMenuBar bar;
-    WidgetNodeGuard bar_node{&bar};
+    WidgetNode bar_node{&bar};
     m_menus.onRender(&bar_node);
 }
 

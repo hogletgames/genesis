@@ -35,7 +35,7 @@
 #include <genesis/gui/window/window_base.h>
 
 namespace GE::GUI {
-class WidgetNodeGuard;
+class WidgetNode;
 } // namespace GE::GUI
 
 namespace GE::Scene {
@@ -64,11 +64,11 @@ private:
     void drawEntityComponents(GE::Scene::Entity* entity);
     template<typename Component>
     void draw(GE::Scene::Entity* entity);
-    void draw(GE::GUI::WidgetNodeGuard* node, GE::Scene::CameraComponent* camera);
-    void draw(GE::GUI::WidgetNodeGuard* node, GE::Scene::MaterialComponent* material);
-    void draw(GE::GUI::WidgetNodeGuard* node, GE::Scene::TagComponent* tag);
-    void draw(GE::GUI::WidgetNodeGuard* node, GE::Scene::TransformComponent* transform);
-    void draw(GE::GUI::WidgetNodeGuard* node, GE::Scene::SpriteComponent* sprite);
+    void draw(GE::GUI::WidgetNode* node, GE::Scene::CameraComponent* camera);
+    void draw(GE::GUI::WidgetNode* node, GE::Scene::MaterialComponent* material);
+    void draw(GE::GUI::WidgetNode* node, GE::Scene::TagComponent* tag);
+    void draw(GE::GUI::WidgetNode* node, GE::Scene::TransformComponent* transform);
+    void draw(GE::GUI::WidgetNode* node, GE::Scene::SpriteComponent* sprite);
 
     LevelEditorContext* m_ctx{nullptr};
 };

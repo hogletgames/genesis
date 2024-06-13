@@ -46,8 +46,7 @@ namespace {
 constexpr auto VIKING_ROOM_MODEL{"examples/sdl2-vulkan/models/viking_room.obj"};
 constexpr auto VIKING_ROOM_TEXTURE{"examples/sandbox/assets/textures/viking_room.png"};
 
-void drawView(GE::GUI::WidgetNodeGuard* node,
-              const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
+void drawView(GE::GUI::WidgetNode* node, const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
     if (auto position = camera->position();
         node->call<GE::GUI::ValueEditor>("Position", &position, 1.0f, -100.0f, 100.0f)) {
@@ -60,7 +59,7 @@ void drawView(GE::GUI::WidgetNodeGuard* node,
     }
 }
 
-void drawProjectionCombo(GE::GUI::WidgetNodeGuard* node,
+void drawProjectionCombo(GE::GUI::WidgetNode* node,
                          const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
     static const std::vector<std::string> PROJECTIONS = {
@@ -77,7 +76,7 @@ void drawProjectionCombo(GE::GUI::WidgetNodeGuard* node,
     }
 }
 
-void drawPerspectiveProjection(GE::GUI::WidgetNodeGuard* node,
+void drawPerspectiveProjection(GE::GUI::WidgetNode* node,
                                const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
     auto [fov, near, far] = camera->perspectiveOptions();
@@ -88,7 +87,7 @@ void drawPerspectiveProjection(GE::GUI::WidgetNodeGuard* node,
     camera->setPerspectiveOptions({fov, near, far});
 }
 
-void drawOrthoProjection(GE::GUI::WidgetNodeGuard* node,
+void drawOrthoProjection(GE::GUI::WidgetNode* node,
                          const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
     auto [size, near, far] = camera->orthographicOptions();
@@ -99,7 +98,7 @@ void drawOrthoProjection(GE::GUI::WidgetNodeGuard* node,
     camera->setOrthoOptions({size, near, far});
 }
 
-void drawProjectionOptions(GE::GUI::WidgetNodeGuard* node,
+void drawProjectionOptions(GE::GUI::WidgetNode* node,
                            const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
     switch (camera->type()) {
@@ -112,13 +111,13 @@ void drawProjectionOptions(GE::GUI::WidgetNodeGuard* node,
     }
 }
 
-void drawReadOnlyOptions(GE::GUI::WidgetNodeGuard* node,
+void drawReadOnlyOptions(GE::GUI::WidgetNode* node,
                          const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
     node->call<GE::GUI::Text>("Direction: %s", GE::toString(camera->direction()).c_str());
 }
 
-void drawCameraOptions(GE::GUI::WidgetNodeGuard* parent, GE::Examples::GuiLayerWindow* window)
+void drawCameraOptions(GE::GUI::WidgetNode* parent, GE::Examples::GuiLayerWindow* window)
 {
     auto camera_tree_node =
         parent->makeSubNode<GE::GUI::TreeNode>(window->name(), GE::GUI::TreeNode::FRAMED);
@@ -177,7 +176,7 @@ void GUILayer::onRender()
 void GUILayer::drawCheckboxWindow()
 {
     GUI::Window window{"Windows Checkbox"};
-    GUI::WidgetNodeGuard node{&window};
+    GUI::WidgetNode node{&window};
 
     for (auto& gui_window : m_gui_windows) {
         if (node.call<GUI::Checkbox>(gui_window->name(), gui_window->isOpenFlag());

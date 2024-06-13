@@ -64,7 +64,7 @@ void GuiLayerWindow::draw()
     }
 
     GUI::StyleVar padding{GUI::StyleVar::WINDOW_PADDING, {0.0f, 0.0f}};
-    GUI::WidgetNodeGuard node{&m_window};
+    GUI::WidgetNode node{&m_window};
     node.call(&GuiLayerWindow::updateWindowParameters, this);
 
     Drawable::mvp_t mvp{};

@@ -51,5 +51,5 @@
 #include <genesis/gui/widgets/tree_node.h>
 #include <genesis/gui/widgets/value_editor.h>
 #include <genesis/gui/widgets/widget.h>
-#include <genesis/gui/widgets/widget_node_guard.h>
+#include <genesis/gui/widgets/widget_node.h>
 #include <genesis/gui/widgets/window.h>

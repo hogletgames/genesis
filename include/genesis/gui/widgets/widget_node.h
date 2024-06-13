@@ -37,23 +37,23 @@
 
 namespace GE::GUI {
 
-class GE_API WidgetNodeGuard
+class GE_API WidgetNode
 {
 public:
-    explicit WidgetNodeGuard(Widget* widget)
+    explicit WidgetNode(Widget* widget)
         : m_widget{widget}
     {
         begin();
     }
 
-    explicit WidgetNodeGuard(Scoped<Widget> widget)
+    explicit WidgetNode(Scoped<Widget> widget)
         : m_internal_widget{std::move(widget)}
         , m_widget{m_internal_widget.get()}
     {
         begin();
     }
 
-    ~WidgetNodeGuard()
+    ~WidgetNode()
     {
         if (m_widget != nullptr) {
             m_widget->end();
@@ -87,32 +87,32 @@ public:
         }
     }
 
-    WidgetNodeGuard subNode(Widget* widget_node)
+    WidgetNode subNode(Widget* widget_node)
     {
         if (isOpened()) {
-            return WidgetNodeGuard{widget_node};
+            return WidgetNode{widget_node};
         }
 
-        return WidgetNodeGuard{nullptr};
+        return WidgetNode{nullptr};
     }
 
     template<typename T, typename... Args>
-    WidgetNodeGuard makeSubNode(Args&&... args)
+    WidgetNode makeSubNode(Args&&... args)
     {
         if (isOpened()) {
             return create<T>(std::forward<Args>(args)...);
         }
 
-        return WidgetNodeGuard{nullptr};
+        return WidgetNode{nullptr};
     }
 
     Widget* widget() { return m_widget; }
     bool isOpened() const { return m_widget != nullptr && m_widget->isOpened(); }
 
     template<typename T, typename... Args>
-    static WidgetNodeGuard create(Args&&... args)
+    static WidgetNode create(Args&&... args)
     {
-        return WidgetNodeGuard{makeScoped<T>(std::forward<Args>(args)...)};
+        return WidgetNode{makeScoped<T>(std::forward<Args>(args)...)};
     }
 
 private:

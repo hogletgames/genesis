@@ -43,7 +43,7 @@ class LevelEditorContext;
 class GE_API AssetsMenu: public GE::GUI::MenuBase
 {
 public:
-    void onRender(GE::GUI::WidgetNodeGuard* bar_node) override;
+    void onRender(GE::GUI::WidgetNode* bar_node) override;
 
     LoadSignal* loadAssetSignal() { return &m_load_asset_signal; }
     SaveSignal* saveAssetSignal() { return &m_save_asset_signal; }

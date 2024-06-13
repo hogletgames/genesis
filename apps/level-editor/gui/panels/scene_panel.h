@@ -35,7 +35,7 @@
 #include <genesis/gui/window/window_base.h>
 
 namespace GE::GUI {
-class WidgetNodeGuard;
+class WidgetNode;
 } // namespace GE::GUI
 
 namespace GE::Scene {
@@ -56,9 +56,9 @@ public:
     static constexpr auto NAME{"Scene"};
 
 private:
-    void drawScene(GE::GUI::WidgetNodeGuard* node);
-    void drawEntity(GE::GUI::WidgetNodeGuard* node, const GE::Scene::Entity& entity);
-    void drawContextMenu(GE::GUI::WidgetNodeGuard* node);
+    void drawScene(GE::GUI::WidgetNode* node);
+    void drawEntity(GE::GUI::WidgetNode* node, const GE::Scene::Entity& entity);
+    void drawContextMenu(GE::GUI::WidgetNode* node);
 
     void removeEntity(const GE::Scene::Entity& entity);
 

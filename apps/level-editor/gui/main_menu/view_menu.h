@@ -42,10 +42,10 @@ class GE_API ViewMenu: public GE::GUI::MenuBase
 public:
     explicit ViewMenu(GE::GUI::WindowMap* panels);
 
-    void onRender(GE::GUI::WidgetNodeGuard* bar_node) override;
+    void onRender(GE::GUI::WidgetNode* bar_node) override;
 
 private:
-    void drawPanels(GE::GUI::WidgetNodeGuard* view_node);
+    void drawPanels(GE::GUI::WidgetNode* view_node);
 
     GE::GUI::WindowMap* m_panels;
 };

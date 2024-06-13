@@ -38,7 +38,7 @@ using namespace GE::GUI;
 
 namespace LE {
 
-void AssetsMenu::onRender(GE::GUI::WidgetNodeGuard* bar_node)
+void AssetsMenu::onRender(WidgetNode* bar_node)
 {
     auto menu = bar_node->makeSubNode<Menu>("Assets");
     if (menu.call<MenuItem>("Load...")) {

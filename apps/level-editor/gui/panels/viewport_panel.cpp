@@ -72,7 +72,7 @@ void ViewportPanel::onRender()
 {
     StyleVar padding{StyleVar::WINDOW_PADDING, {0.0f, 0.0f}};
 
-    WidgetNodeGuard window{&m_window};
+    WidgetNode window{&m_window};
 
     auto& scene_fbo = m_ctx->sceneFbo();
     scene_fbo->renderer()->swapBuffers();

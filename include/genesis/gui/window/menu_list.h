@@ -44,7 +44,7 @@ class GE_API MenuList: public IMenu
 public:
     void onUpdate(Timestamp ts) override;
     void onEvent(Event* event) override;
-    void onRender(WidgetNodeGuard* node) override;
+    void onRender(WidgetNode* node) override;
 
     void appendMenu(Shared<IMenu> menu);
 

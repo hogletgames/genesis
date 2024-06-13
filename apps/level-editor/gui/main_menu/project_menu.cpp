@@ -43,7 +43,7 @@ ProjectMenu::ProjectMenu(Settings* settings)
     : m_settings{settings}
 {}
 
-void ProjectMenu::onRender(WidgetNodeGuard* bar_node)
+void ProjectMenu::onRender(WidgetNode* bar_node)
 {
     std::string_view current_project_path = m_settings->currentProject()->projectPath();
 

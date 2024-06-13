@@ -47,7 +47,7 @@ NotificationModal::NotificationModal(const std::string& title, std::string text)
 
 void NotificationModal::onRender()
 {
-    WidgetNodeGuard window_node{&m_window};
+    WidgetNode window_node{&m_window};
     window_node.call<Text>(m_text);
     if (window_node.call<Button>("Ok")) {
         close();
