@@ -33,13 +33,13 @@
 #pragma once
 
 #include <genesis/core/bit.h>
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget.h>
 
 #include <string_view>
 
 namespace GE::GUI {
 
-class GE_API ComboBox: public WidgetNode
+class GE_API ComboBox: public Widget
 {
 public:
     using Flags = int;

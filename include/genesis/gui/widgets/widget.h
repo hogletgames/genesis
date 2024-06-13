@@ -38,7 +38,7 @@
 
 namespace GE::GUI {
 
-class GE_API WidgetNode: public Interface
+class GE_API Widget: public Interface
 {
 public:
     void begin()

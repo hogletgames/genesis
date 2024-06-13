@@ -32,14 +32,14 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget.h>
 #include <genesis/math/types.h>
 
 #include <string_view>
 
 namespace GE::GUI {
 
-class GE_API Window: public WidgetNode
+class GE_API Window: public Widget
 {
 public:
     using Flags = int;

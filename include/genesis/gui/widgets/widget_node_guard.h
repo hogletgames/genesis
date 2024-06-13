@@ -33,20 +33,20 @@
 #pragma once
 
 #include <genesis/core/memory.h>
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget.h>
 
 namespace GE::GUI {
 
 class GE_API WidgetNodeGuard
 {
 public:
-    explicit WidgetNodeGuard(WidgetNode* widget)
+    explicit WidgetNodeGuard(Widget* widget)
         : m_widget{widget}
     {
         begin();
     }
 
-    explicit WidgetNodeGuard(Scoped<WidgetNode> widget)
+    explicit WidgetNodeGuard(Scoped<Widget> widget)
         : m_internal_widget{std::move(widget)}
         , m_widget{m_internal_widget.get()}
     {
@@ -87,7 +87,7 @@ public:
         }
     }
 
-    WidgetNodeGuard subNode(WidgetNode* widget_node)
+    WidgetNodeGuard subNode(Widget* widget_node)
     {
         if (isOpened()) {
             return WidgetNodeGuard{widget_node};
@@ -106,7 +106,7 @@ public:
         return WidgetNodeGuard{nullptr};
     }
 
-    WidgetNode* widget() { return m_widget; }
+    Widget* widget() { return m_widget; }
     bool isOpened() const { return m_widget != nullptr && m_widget->isOpened(); }
 
     template<typename T, typename... Args>
@@ -123,8 +123,8 @@ private:
         }
     }
 
-    Scoped<WidgetNode> m_internal_widget;
-    WidgetNode* m_widget{nullptr};
+    Scoped<Widget> m_internal_widget;
+    Widget* m_widget{nullptr};
 };
 
 } // namespace GE::GUI

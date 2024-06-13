@@ -33,13 +33,13 @@
 #pragma once
 
 #include <genesis/gui/widgets/flags.h>
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget.h>
 
 #include <string_view>
 
 namespace GE::GUI {
 
-class GE_API PopupContextWindow: public WidgetNode
+class GE_API PopupContextWindow: public Widget
 {
 public:
     explicit PopupContextWindow(std::string_view str_id = {},

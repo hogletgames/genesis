@@ -35,7 +35,7 @@
 #include <genesis/core/memory.h>
 #include <genesis/graphics/mesh.h>
 #include <genesis/gui/base_layer.h>
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget.h>
 #include <genesis/gui/widgets/widget_node_guard.h>
 
 namespace GE::Examples {

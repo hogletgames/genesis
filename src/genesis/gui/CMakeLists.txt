@@ -58,7 +58,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/widgets/text.h
     ${INCLUDE_DIR}/widgets/tree_node.h
     ${INCLUDE_DIR}/widgets/value_editor.h
-    ${INCLUDE_DIR}/widgets/widget_node.h
+    ${INCLUDE_DIR}/widgets/widget.h
     ${INCLUDE_DIR}/widgets/widget_node_guard.h
     ${INCLUDE_DIR}/widgets/window.h
     ${INCLUDE_DIR}/window/imenu.h
