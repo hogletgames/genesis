@@ -87,7 +87,7 @@ public:
         }
     }
 
-    WidgetNode subNode(Widget* widget_node)
+    WidgetNode subNode(Widget* widget_node) const
     {
         if (isOpened()) {
             return WidgetNode{widget_node};
