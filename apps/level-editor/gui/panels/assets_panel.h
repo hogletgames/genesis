@@ -71,6 +71,8 @@ private:
     using ResourceIDIt = ResourceIDs::const_iterator;
     using NodeGuard = GE::GUI::WidgetNodeGuard;
 
+    void updateWindowParameters();
+
     void drawContextMenu(NodeGuard* node);
     void drawAssets(NodeGuard* node);
     ResourceIDIt drawPackage(ResourceIDIt begin, ResourceIDIt end, std::string_view package);

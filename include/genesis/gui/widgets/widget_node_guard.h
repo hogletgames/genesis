@@ -120,7 +120,6 @@ private:
     {
         if (m_widget != nullptr) {
             m_widget->begin();
-            m_widget->emitSignals();
         }
     }
 

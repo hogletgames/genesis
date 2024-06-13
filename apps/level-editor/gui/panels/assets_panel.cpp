@@ -71,16 +71,19 @@ GE::Vec2 scaledTextureSize(const GE::Vec2 &texture_size, float window_width)
 AssetsPanel::AssetsPanel(GE::Assets::Registry *registry)
     : WindowBase{NAME}
     , m_registry{registry}
-{
-    m_window.availableRegionSignal()->connect(
-        [this](const auto &region) { m_window_size = region; });
-}
+{}
 
 void AssetsPanel::onRender()
 {
     WidgetNodeGuard window_node{&m_window};
+    window_node.call(&AssetsPanel::updateWindowParameters, this);
     drawAssets(&window_node);
     drawContextMenu(&window_node);
+}
+
+void AssetsPanel::updateWindowParameters()
+{
+    m_window_size = m_window.availableRegion();
 }
 
 void AssetsPanel::drawContextMenu(AssetsPanel::NodeGuard *node)

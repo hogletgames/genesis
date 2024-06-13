@@ -96,12 +96,4 @@ bool Window::isHovered() const
     return ImGui::IsWindowHovered();
 }
 
-void Window::emitSignals()
-{
-    m_size_signal(size());
-    m_available_region_signal(availableRegion());
-    m_is_focused_signal(isFocused());
-    m_is_hovered_signal(isHovered());
-}
-
 } // namespace GE::GUI

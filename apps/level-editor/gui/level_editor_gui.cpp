@@ -81,7 +81,7 @@ void LevelEditorGUI::createPanels()
     editor_camera->open();
 
     auto viewport = GE::makeScoped<ViewportPanel>(m_ctx);
-    viewport->viewportSizeSignal()->connect(m_viewport_size_signal);
+    viewport->viewportChangedSignal()->connect(m_viewport_changed_signal);
     viewport->open();
 
     auto assets = GE::makeScoped<AssetsPanel>(m_ctx->assets());

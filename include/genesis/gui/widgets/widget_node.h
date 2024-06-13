@@ -57,8 +57,6 @@ public:
 
     bool isOpened() const { return m_is_opened; }
 
-    virtual void emitSignals() {}
-
 protected:
     using BeginFunc = std::function<bool()>;
     using EndFunc = std::function<void()>;

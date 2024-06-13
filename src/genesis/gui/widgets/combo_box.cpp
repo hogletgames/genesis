@@ -72,11 +72,4 @@ ComboBox::ComboBox(std::string_view name, Items items, std::string_view current_
     setEndFunc(&ImGui::EndCombo);
 }
 
-void ComboBox::emitSignals()
-{
-    if (m_selected_item != m_current_item) {
-        m_item_changed(m_selected_item);
-    }
-}
-
 } // namespace GE::GUI

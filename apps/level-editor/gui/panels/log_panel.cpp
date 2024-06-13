@@ -139,10 +139,13 @@ void LogPanel::drawControls(WidgetNodeGuard *node)
     }
     node->call<SameLine>();
 
-    ComboBox level{"level", LEVELS, toString(m_log_sink->level())};
-    level.itemChangedSignal()->connect(
-        [this](std::string_view value) { m_log_sink->set_level(toSpdlogLevel(value)); });
+    auto level_string = toString(m_log_sink->level());
+    ComboBox level{"level", LEVELS, level_string};
     node->subNode(&level);
+
+    if (level.selectedItem() != level_string) {
+        m_log_sink->set_level(toSpdlogLevel(level.selectedItem()));
+    }
 }
 
 void LogPanel::drawLogs(WidgetNodeGuard *node)

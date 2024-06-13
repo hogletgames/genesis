@@ -48,11 +48,7 @@ namespace LE {
 ViewportPanel::ViewportPanel(LevelEditorContext* ctx)
     : WindowBase(NAME)
     , m_ctx{ctx}
-{
-    m_window.isFocusedSignal()->connect([this](bool is_focused) { m_is_focused = is_focused; });
-    m_window.isHoveredSignal()->connect([this](bool is_hovered) { m_is_hovered = is_hovered; });
-    viewportSizeSignal()->connect([this](const auto& viewport) { m_viewport = viewport; });
-}
+{}
 
 void ViewportPanel::onUpdate(GE::Timestamp ts)
 {
@@ -76,18 +72,30 @@ void ViewportPanel::onRender()
 {
     StyleVar padding{StyleVar::WINDOW_PADDING, {0.0f, 0.0f}};
 
-    WidgetNodeGuard node{&m_window};
+    WidgetNodeGuard window{&m_window};
 
     auto& scene_fbo = m_ctx->sceneFbo();
     scene_fbo->renderer()->swapBuffers();
     const auto& texture = scene_fbo->colorTexture();
 
-    node.call<Image>(texture.nativeID(), texture.size());
-    node.call(&ViewportPanel::drawGizmos, this, m_ctx->selectedEntity());
+    window.call(&ViewportPanel::updateWindowParameters, this);
+    window.call<Image>(texture.nativeID(), texture.size());
+    window.call(&ViewportPanel::drawGizmos, this, m_ctx->selectedEntity());
 
     if (isPanelActive()) {
         m_mouse_position = m_window.mousePosition();
     }
+}
+
+void ViewportPanel::updateWindowParameters()
+{
+    if (m_viewport != m_window.availableRegion()) {
+        m_viewport = m_window.availableRegion();
+        m_viewport_changed_signal(m_viewport);
+    }
+
+    m_is_focused = m_window.isFocused();
+    m_is_hovered = m_window.isHovered();
 }
 
 void ViewportPanel::drawGizmos(GE::Scene::Entity* entity)
