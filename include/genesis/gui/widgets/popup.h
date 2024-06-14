@@ -71,4 +71,19 @@ public:
                               PopupFlags flags = PopupFlag::MOUSE_BUTTON_RIGHT);
 };
 
+class GE_API Popup: public Widget
+{
+public:
+    explicit Popup(std::string_view str_id, PopupFlags flags = PopupFlag::NONE);
+};
+
+class OpenPopup
+{
+public:
+    OpenPopup() = delete;
+    ~OpenPopup() = delete;
+
+    static void call(std::string_view str_id);
+};
+
 } // namespace GE::GUI

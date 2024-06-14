@@ -80,4 +80,15 @@ PopupContextItem::PopupContextItem(std::string_view str_id, PopupFlags flags)
     setEndFunc(&ImGui::EndPopup);
 }
 
+Popup::Popup(std::string_view str_id, PopupFlags flags)
+{
+    setBeginFunc(&ImGui::BeginPopup, str_id.data(), toImGuiPopupFlags(flags));
+    setEndFunc(&ImGui::EndPopup);
+}
+
+void OpenPopup::call(std::string_view str_id)
+{
+    ImGui::OpenPopup(str_id.data());
+}
+
 } // namespace GE::GUI
