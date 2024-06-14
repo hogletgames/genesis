@@ -45,7 +45,7 @@ class LevelEditorContext;
 class GE_API LevelEditorGUI
 {
 public:
-    using ViewportSizeSignal = ViewportPanel::ViewportSizeSignal;
+    using ViewportChangedSignal = ViewportPanel::ViewportChangedSignal;
 
     explicit LevelEditorGUI(LevelEditorContext* ctx);
 
@@ -58,7 +58,7 @@ public:
     GE::GUI::WindowMap* panels() { return &m_panels; }
     GE::GUI::WindowMap* windows() { return &m_windows; }
 
-    ViewportSizeSignal* viewportSizeSignal() { return &m_viewport_size_signal; }
+    ViewportChangedSignal* viewportChangedSignal() { return &m_viewport_changed_signal; }
     LoadSignal* loadAssetSignal() { return m_menu_bar.loadAssetSignal(); }
     SaveSignal* saveAssetSignal() { return m_menu_bar.saveAssetSignal(); }
     LoadSignal* loadSceneSignal() { return m_menu_bar.loadSceneSignal(); }
@@ -78,7 +78,7 @@ private:
     GE::GUI::WindowMap m_windows;
     GE::GUI::ModalWindows m_modals;
 
-    ViewportSizeSignal m_viewport_size_signal;
+    ViewportChangedSignal m_viewport_changed_signal;
 };
 
 } // namespace LE

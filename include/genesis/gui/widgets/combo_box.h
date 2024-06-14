@@ -33,20 +33,17 @@
 #pragma once
 
 #include <genesis/core/bit.h>
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget.h>
 
-#include <boost/signals2/signal.hpp>
-
-#include <string>
+#include <string_view>
 
 namespace GE::GUI {
 
-class GE_API ComboBox: public WidgetNode
+class GE_API ComboBox: public Widget
 {
 public:
     using Flags = int;
     using Items = std::vector<std::string_view>;
-    using ItemChangedSignal = boost::signals2::signal<void(std::string_view)>;
 
     enum Flag
     {
@@ -69,18 +66,12 @@ public:
 
     ComboBox(std::string_view name, Items items, std::string_view current_item, Flags flags = NONE);
 
-    void emitSignals() override;
-
     std::string_view selectedItem() const { return m_selected_item; }
-
-    ItemChangedSignal* itemChangedSignal() { return &m_item_changed; }
 
 private:
     Items m_items;
     std::string_view m_current_item;
     std::string_view m_selected_item;
-
-    ItemChangedSignal m_item_changed;
 };
 
 } // namespace GE::GUI

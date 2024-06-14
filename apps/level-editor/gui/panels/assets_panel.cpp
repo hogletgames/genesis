@@ -71,47 +71,48 @@ GE::Vec2 scaledTextureSize(const GE::Vec2 &texture_size, float window_width)
 AssetsPanel::AssetsPanel(GE::Assets::Registry *registry)
     : WindowBase{NAME}
     , m_registry{registry}
-{
-    m_window.availableRegionSignal()->connect(
-        [this](const auto &region) { m_window_size = region; });
-}
+{}
 
 void AssetsPanel::onRender()
 {
-    WidgetNodeGuard window_node{&m_window};
+    WidgetNode window_node{&m_window};
+    window_node.call(&AssetsPanel::updateWindowParameters, this);
     drawAssets(&window_node);
     drawContextMenu(&window_node);
 }
 
-void AssetsPanel::drawContextMenu(AssetsPanel::NodeGuard *node)
+void AssetsPanel::updateWindowParameters()
+{
+    m_window_size = m_window.availableRegion();
+}
+
+void AssetsPanel::drawContextMenu(WidgetNode *node)
 {
     auto flags = PopupFlag::MOUSE_BUTTON_RIGHT | PopupFlag::NO_OPEN_OVER_ITEMS |
                  PopupFlag::NO_OPEN_OVER_EXISTING_POPUP;
 
-    PopupContextWindow context{{}, flags};
-    auto context_node = node->subNode(&context);
-    Menu add_resource{"Add resource"};
-    auto add_resource_node = context_node.subNode(&add_resource);
-    if (add_resource_node.call<MenuItem>("Mesh")) {
+    auto popup_context = node->makeSubNode<PopupContextWindow>(std::string_view{}, flags);
+    auto add_resource_menu = popup_context.makeSubNode<Menu>("Add resource");
+
+    if (add_resource_menu.call<MenuItem>("Mesh")) {
         m_add_mesh_resource_signal();
     }
-    if (add_resource_node.call<MenuItem>("Pipeline")) {
+    if (add_resource_menu.call<MenuItem>("Pipeline")) {
         m_add_pipeline_resource_signal();
     }
-    if (add_resource_node.call<MenuItem>("Texture")) {
+    if (add_resource_menu.call<MenuItem>("Texture")) {
         m_add_texture_resource_signal();
     }
 }
 
-void AssetsPanel::drawAssets(AssetsPanel::NodeGuard *node)
+void AssetsPanel::drawAssets(WidgetNode *node)
 {
     auto ids = m_registry->ids();
     std::sort(ids.begin(), ids.end());
 
     for (auto it = ids.cbegin(); it < ids.cend();) {
         std::string_view package = it->package();
-        TreeNode package_tree{package};
-        auto package_tree_node = node->subNode(&package_tree);
+        auto package_tree_node = node->makeSubNode<TreeNode>(package);
 
         if (package_tree_node.isOpened()) {
             it = drawPackage(it, ids.cend(), package);
@@ -132,8 +133,7 @@ AssetsPanel::ResourceIDIt AssetsPanel::drawPackage(ResourceIDIt begin, ResourceI
         }
 
         std::string_view group = it->group();
-        TreeNode group_tree{group};
-        WidgetNodeGuard group_tree_node{&group_tree};
+        auto group_tree_node = WidgetNode::create<TreeNode>(group);
 
         if (group_tree_node.isOpened()) {
             it = drawGroup(it, end, package, group);
@@ -156,16 +156,14 @@ AssetsPanel::ResourceIDIt AssetsPanel::drawGroup(ResourceIDIt begin, ResourceIDI
         }
 
         std::string_view name = it->name();
-        TreeNode name_tree{name};
-        WidgetNodeGuard name_tree_node{&name_tree};
+        auto name_tree_node = WidgetNode::create<TreeNode>(name);
 
         if (name_tree_node.isOpened()) {
             m_registry->visit(*it, this);
         }
 
-        PopupContextItem context{name};
-        WidgetNodeGuard context_node{&context};
-        context_node.call<MenuItem>(GE_FMTSTR("Remove '{}'", it->id()));
+        auto popup_context = WidgetNode::create<PopupContextItem>(name);
+        popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", it->id()));
     }
 
     return it;
@@ -183,8 +181,7 @@ void AssetsPanel::visit(GE::Assets::PipelineResource *resource)
 
     {
         Text::call("Vertex shader: %s", resource->vertexShader().c_str());
-        TreeNode code_tree{"Code:##1"};
-        WidgetNodeGuard code_node{&code_tree};
+        auto code_node = WidgetNode::create<TreeNode>("Code:");
         if (code_node.isOpened()) {
             auto code = GE::FS::readFile<char>(resource->vertexShader());
             Text::call(std::string_view{code.data(), code.size()});
@@ -193,8 +190,7 @@ void AssetsPanel::visit(GE::Assets::PipelineResource *resource)
 
     {
         Text::call("Fragment shader: %s", resource->fragmentShader().c_str());
-        TreeNode code_tree{"Code:##2"};
-        WidgetNodeGuard code_node{&code_tree};
+        auto code_node = WidgetNode::create<TreeNode>("Code:##2");
         if (code_node.isOpened()) {
             auto code = GE::FS::readFile<char>(resource->fragmentShader());
             Text::call(std::string_view{code.data(), code.size()});

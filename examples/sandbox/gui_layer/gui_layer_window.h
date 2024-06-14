@@ -70,6 +70,8 @@ public:
 private:
     explicit GuiLayerWindow(std::string name);
 
+    void updateWindowParameters();
+
     bool m_is_open{false};
     bool m_is_focused{false};
     std::string m_name;

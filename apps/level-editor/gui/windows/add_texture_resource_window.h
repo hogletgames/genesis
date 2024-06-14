@@ -36,6 +36,8 @@
 #include <genesis/gui/widgets/window.h>
 #include <genesis/gui/window/window_base.h>
 
+#include <boost/signals2/signal.hpp>
+
 namespace LE {
 
 class LevelEditorContext;

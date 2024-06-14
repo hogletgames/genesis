@@ -49,7 +49,7 @@ AddMeshResourceWindow::AddMeshResourceWindow(LevelEditorContext* ctx)
 
 void AddMeshResourceWindow::onRender()
 {
-    WidgetNodeGuard node{&m_window};
+    WidgetNode node{&m_window};
     node.call<InputText>("Package", m_id.package());
     node.call<InputText>("Group", m_id.group());
     node.call<InputText>("Name", m_id.name());

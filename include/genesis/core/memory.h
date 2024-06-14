@@ -39,8 +39,8 @@
 
 namespace GE {
 
-template<typename T>
-using Scoped = std::unique_ptr<T>;
+template<typename T, typename D = std::default_delete<T>>
+using Scoped = std::unique_ptr<T, D>;
 
 template<typename T>
 using Shared = std::shared_ptr<T>;

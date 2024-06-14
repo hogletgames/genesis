@@ -122,7 +122,8 @@ void LevelEditor::createSceneRenderer()
 
 void LevelEditor::connectSignals()
 {
-    m_gui->viewportSizeSignal()->connect([this](const auto& viewport) { m_viewport = viewport; });
+    m_gui->viewportChangedSignal()->connect(
+        [this](const auto& viewport) { m_viewport = viewport; });
     m_gui->loadAssetSignal()->connect([this] { onLoadAssets(); });
     m_gui->saveAssetSignal()->connect([this] { onSaveAssets(); });
     m_gui->loadSceneSignal()->connect([this] { onLoadScene(); });

@@ -49,12 +49,12 @@ ScenePanel::ScenePanel(LevelEditorContext* ctx)
 
 void ScenePanel::onRender()
 {
-    WidgetNodeGuard node{&m_window};
+    WidgetNode node{&m_window};
     drawScene(&node);
     drawContextMenu(&node);
 }
 
-void ScenePanel::drawScene(WidgetNodeGuard* node)
+void ScenePanel::drawScene(WidgetNode* node)
 {
     m_ctx->scene()->forEachEntity([this, node](const auto& entity) { drawEntity(node, entity); });
 
@@ -63,7 +63,7 @@ void ScenePanel::drawScene(WidgetNodeGuard* node)
     }
 }
 
-void ScenePanel::drawEntity(WidgetNodeGuard* node, const Entity& entity)
+void ScenePanel::drawEntity(WidgetNode* node, const Entity& entity)
 {
     auto flags = TreeNode::OPEN_ON_ARROW | TreeNode::SPAN_AVAIL_WIDTH;
     bool remove_entity{false};
@@ -73,12 +73,12 @@ void ScenePanel::drawEntity(WidgetNodeGuard* node, const Entity& entity)
     }
 
     std::string_view tag = entity.get<TagComponent>().tag;
-    TreeNode entity_tree{tag, flags};
+
     {
-        auto entity_node = node->subNode(&entity_tree);
-        PopupContextItem context_menu;
-        WidgetNodeGuard context_menu_node{&context_menu};
-        if (context_menu_node.call<MenuItem>(GE_FMTSTR("Remove '{}'", tag))) {
+        auto entity_tree_node = node->makeSubNode<TreeNode>(tag, flags);
+        auto popup_context = WidgetNode::create<PopupContextItem>();
+
+        if (popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", tag))) {
             remove_entity = true;
         }
 
@@ -92,25 +92,24 @@ void ScenePanel::drawEntity(WidgetNodeGuard* node, const Entity& entity)
     }
 }
 
-void ScenePanel::drawContextMenu(WidgetNodeGuard* node)
+void ScenePanel::drawContextMenu(WidgetNode* node)
 {
     EntityFactory entity_factory{m_ctx->scene(), m_ctx->assets()};
     auto flags = PopupFlag::MOUSE_BUTTON_RIGHT | PopupFlag::NO_OPEN_OVER_EXISTING_POPUP;
 
-    PopupContextWindow context_menu{{}, flags};
-    auto context_menu_node = node->subNode(&context_menu);
-    Menu add_entity_menu{"Add entity"};
-    auto add_entity_node = context_menu_node.subNode(&add_entity_menu);
-    if (add_entity_node.call<MenuItem>("Circle")) {
+    auto context_menu_node = node->makeSubNode<PopupContextWindow>(std::string_view{}, flags);
+    auto add_entity_menu = context_menu_node.makeSubNode<Menu>("Add entity");
+
+    if (add_entity_menu.call<MenuItem>("Circle")) {
         entity_factory.createCircle("Circle");
     }
-    if (add_entity_node.call<MenuItem>("Square")) {
+    if (add_entity_menu.call<MenuItem>("Square")) {
         entity_factory.createSquare("Square");
     }
-    if (add_entity_node.call<MenuItem>("Empty entity")) {
+    if (add_entity_menu.call<MenuItem>("Empty entity")) {
         entity_factory.createEmptyEntity("Entity");
     }
-    if (add_entity_node.call<MenuItem>("Camera")) {
+    if (add_entity_menu.call<MenuItem>("Camera")) {
         entity_factory.createCamera("Camera");
     }
 }

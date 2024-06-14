@@ -45,7 +45,7 @@ class ProjectMenu: public GE::GUI::MenuBase
 public:
     explicit ProjectMenu(Settings* settings);
 
-    void onRender(GE::GUI::WidgetNodeGuard* bar_node) override;
+    void onRender(GE::GUI::WidgetNode* bar_node) override;
 
     SaveFileSignal* saveSignal() { return &m_save_signal; }
     SaveSignal* saveAsSignal() { return &m_save_as_signal; }

@@ -35,7 +35,7 @@
 #include <genesis/gui/window/window_base.h>
 
 namespace GE::GUI {
-class WidgetNodeGuard;
+class WidgetNode;
 } // namespace GE::GUI
 
 namespace GE::Scene {
@@ -54,12 +54,12 @@ public:
     static constexpr auto NAME{"Editor camera"};
 
 private:
-    void drawView(GE::GUI::WidgetNodeGuard* node);
-    void drawProjectionCombo(GE::GUI::WidgetNodeGuard* node);
-    void drawPerspectiveProjection(GE::GUI::WidgetNodeGuard* node);
-    void drawOrthoProjection(GE::GUI::WidgetNodeGuard* node);
-    void drawProjectionOptions(GE::GUI::WidgetNodeGuard* node);
-    void drawReadOnlyOptions(GE::GUI::WidgetNodeGuard* node);
+    void drawView(GE::GUI::WidgetNode* node);
+    void drawProjectionCombo(GE::GUI::WidgetNode* node);
+    void drawPerspectiveProjection(GE::GUI::WidgetNode* node);
+    void drawOrthoProjection(GE::GUI::WidgetNode* node);
+    void drawProjectionOptions(GE::GUI::WidgetNode* node);
+    void drawReadOnlyOptions(GE::GUI::WidgetNode* node);
 
     GE::Scene::ViewProjectionCamera* m_camera{nullptr};
 };

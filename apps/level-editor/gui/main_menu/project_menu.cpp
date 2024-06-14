@@ -43,27 +43,26 @@ ProjectMenu::ProjectMenu(Settings* settings)
     : m_settings{settings}
 {}
 
-void ProjectMenu::onRender(WidgetNodeGuard* bar_node)
+void ProjectMenu::onRender(WidgetNode* bar_node)
 {
     std::string_view current_project_path = m_settings->currentProject()->projectPath();
 
-    Menu menu{"Project"};
-    auto project_node = bar_node->subNode(&menu);
-    if (project_node.call<MenuItem>("Load")) {
+    auto project_menu = bar_node->makeSubNode<Menu>("Project");
+    if (project_menu.call<MenuItem>("Load")) {
         m_load_signal();
     }
-    if (project_node.call<MenuItem>("Save", std::string_view{}, false,
+    if (project_menu.call<MenuItem>("Save", std::string_view{}, false,
                                     !current_project_path.empty())) {
         m_save_signal(current_project_path);
     }
-    if (project_node.call<MenuItem>("Save As...")) {
+    if (project_menu.call<MenuItem>("Save As...")) {
         m_save_as_signal();
     }
 
-    Menu recent_projects{"Recent projects", !m_settings->projectPaths().empty()};
-    auto recent_projects_node = project_node.subNode(&recent_projects);
+    auto recent_projects_menu =
+        project_menu.makeSubNode<Menu>("Recent projects", !m_settings->projectPaths().empty());
     for (const auto& [name, path] : m_settings->projectPaths()) {
-        if (recent_projects_node.call<MenuItem>(name)) {
+        if (recent_projects_menu.call<MenuItem>(name)) {
             m_load_recent_signal(path);
         }
     }

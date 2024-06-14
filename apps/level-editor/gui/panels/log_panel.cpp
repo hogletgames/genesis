@@ -126,26 +126,29 @@ void LogPanel::onRender()
 {
     StyleVar padding{StyleVar::WINDOW_PADDING, {0.0f, 0.0f}};
 
-    if (WidgetNodeGuard node{&m_window}; node.isOpened()) {
+    if (WidgetNode node{&m_window}; node.isOpened()) {
         drawControls(&node);
         drawLogs(&node);
     }
 }
 
-void LogPanel::drawControls(WidgetNodeGuard *node)
+void LogPanel::drawControls(WidgetNode *node)
 {
     if (node->call<Button>("Clear")) {
         m_log_sink->clear();
     }
     node->call<SameLine>();
 
-    ComboBox level{"level", LEVELS, toString(m_log_sink->level())};
-    level.itemChangedSignal()->connect(
-        [this](std::string_view value) { m_log_sink->set_level(toSpdlogLevel(value)); });
+    auto level_string = toString(m_log_sink->level());
+    ComboBox level{"level", LEVELS, level_string};
     node->subNode(&level);
+
+    if (level.selectedItem() != level_string) {
+        m_log_sink->set_level(toSpdlogLevel(level.selectedItem()));
+    }
 }
 
-void LogPanel::drawLogs(WidgetNodeGuard *node)
+void LogPanel::drawLogs(WidgetNode *node)
 {
     auto logs = m_log_sink->lines();
     auto log_lines = GE::joinString(logs.begin(), logs.end());

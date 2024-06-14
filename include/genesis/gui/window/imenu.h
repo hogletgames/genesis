@@ -41,14 +41,14 @@ class Event;
 
 namespace GE::GUI {
 
-class WidgetNodeGuard;
+class WidgetNode;
 
 class GE_API IMenu: public Interface
 {
 public:
     virtual void onUpdate(Timestamp ts) = 0;
     virtual void onEvent(Event* event) = 0;
-    virtual void onRender(WidgetNodeGuard* bar_node) = 0;
+    virtual void onRender(WidgetNode* bar_node) = 0;
 };
 
 } // namespace GE::GUI

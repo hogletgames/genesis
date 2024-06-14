@@ -38,14 +38,13 @@ using namespace GE::GUI;
 
 namespace LE {
 
-void AssetsMenu::onRender(GE::GUI::WidgetNodeGuard* bar_node)
+void AssetsMenu::onRender(WidgetNode* bar_node)
 {
-    Menu menu{"Assets"};
-    auto node = bar_node->subNode(&menu);
-    if (node.call<MenuItem>("Load...")) {
+    auto menu = bar_node->makeSubNode<Menu>("Assets");
+    if (menu.call<MenuItem>("Load...")) {
         m_load_asset_signal();
     }
-    if (node.call<MenuItem>("Save as...")) {
+    if (menu.call<MenuItem>("Save as...")) {
         m_save_asset_signal();
     }
 }

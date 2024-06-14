@@ -32,13 +32,13 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget.h>
 
 #include <string_view>
 
 namespace GE::GUI {
 
-class GE_API Menu: public WidgetNode
+class GE_API Menu: public Widget
 {
 public:
     explicit Menu(std::string_view label, bool enabled = true);

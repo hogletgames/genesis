@@ -41,7 +41,7 @@ namespace LE {
 class SceneMenu: public GE::GUI::MenuBase
 {
 public:
-    void onRender(GE::GUI::WidgetNodeGuard* bar_node) override;
+    void onRender(GE::GUI::WidgetNode* bar_node) override;
 
     LoadSignal* loadSceneSignal() { return &m_load_scene_signal; }
     SaveSignal* saveSceneSignal() { return &m_save_scene_signal; }

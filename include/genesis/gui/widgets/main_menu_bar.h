@@ -32,11 +32,11 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget.h>
 
 namespace GE::GUI {
 
-class GE_API MainMenuBar: public WidgetNode
+class GE_API MainMenuBar: public Widget
 {
 public:
     MainMenuBar();

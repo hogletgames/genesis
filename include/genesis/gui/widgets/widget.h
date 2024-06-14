@@ -32,75 +32,55 @@
 
 #pragma once
 
-#include <genesis/core/memory.h>
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/core/interface.h>
 
-#include <deque>
+#include <functional>
 
 namespace GE::GUI {
 
-class GE_API WidgetNodeGuard
+class GE_API Widget: public Interface
 {
 public:
-    explicit WidgetNodeGuard(WidgetNode* node)
-        : m_node{node}
+    void begin()
     {
-        if (m_node != nullptr) {
-            m_node->begin();
-            m_node->emitSignals();
+        if (m_begin != nullptr) {
+            m_is_opened = m_begin();
         }
     }
 
-    ~WidgetNodeGuard()
+    void end()
     {
-        if (m_node != nullptr) {
-            m_node->end();
+        if (m_is_opened || m_force_end) {
+            m_end();
         }
     }
 
-    template<typename T, typename... Args>
-    auto call(Args&&... args) -> std::enable_if_t<std::is_void_v<decltype(T::call(args...))>>
-    {
-        if (isNodeCallable()) {
-            T::call(std::forward<Args>(args)...);
-        }
-    }
+    bool isOpened() const { return m_is_opened; }
 
-    template<typename T, typename... Args>
-    auto call(Args&&... args)
-        -> std::enable_if_t<std::is_same_v<decltype(T::call(args...)), bool>, bool>
-    {
-        if (isNodeCallable()) {
-            return T::call(std::forward<Args>(args)...);
-        }
+protected:
+    using BeginFunc = std::function<bool()>;
+    using EndFunc = std::function<void()>;
 
-        return false;
+    template<typename Func, typename... Args>
+    void setBeginFunc(Func&& f, Args&&... args)
+    {
+        m_begin = std::bind(std::forward<Func>(f), std::forward<Args>(args)...);
     }
 
     template<typename Func, typename... Args>
-    void call(Func&& f, Args&&... args)
+    void setEndFunc(Func&& f, Args&&... args)
     {
-        if (isNodeCallable()) {
-            std::invoke(std::forward<Func>(f), std::forward<Args>(args)...);
-        }
+        m_end = std::bind(std::forward<Func>(f), std::forward<Args>(args)...);
     }
 
-    WidgetNodeGuard subNode(WidgetNode* node)
-    {
-        if (isNodeCallable()) {
-            return WidgetNodeGuard{node};
-        }
-
-        return WidgetNodeGuard{nullptr};
-    }
-
-    WidgetNode* node() { return m_node; }
-    bool isOpened() const { return m_node != nullptr && m_node->isOpened(); }
+    void setForceEnd() { m_force_end = true; }
 
 private:
-    bool isNodeCallable() const { return m_node != nullptr && m_node->isOpened(); }
+    BeginFunc m_begin{nullptr};
+    EndFunc m_end{nullptr};
 
-    WidgetNode* m_node{nullptr};
+    bool m_is_opened{false};
+    bool m_force_end{false};
 };
 
 } // namespace GE::GUI

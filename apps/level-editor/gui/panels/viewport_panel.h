@@ -36,6 +36,8 @@
 #include <genesis/gui/window/window_base.h>
 #include <genesis/math/types.h>
 
+#include <boost/signals2/signal.hpp>
+
 namespace GE {
 class Event;
 class MouseButtonReleasedEvent;
@@ -52,7 +54,7 @@ class LevelEditorContext;
 class GE_API ViewportPanel: public GE::GUI::WindowBase
 {
 public:
-    using ViewportSizeSignal = GE::GUI::Window::AvailableRegionSignal;
+    using ViewportChangedSignal = boost::signals2::signal<void(const GE::Vec2&)>;
 
     explicit ViewportPanel(LevelEditorContext* ctx);
 
@@ -60,12 +62,14 @@ public:
     void onEvent(GE::Event* event) override;
     void onRender() override;
 
-    ViewportSizeSignal* viewportSizeSignal() { return m_window.availableRegionSignal(); }
+    ViewportChangedSignal* viewportChangedSignal() { return &m_viewport_changed_signal; }
 
     static constexpr auto NAME{"Viewport"};
 
 private:
     bool isPanelActive() const { return m_is_focused || m_is_hovered; }
+
+    void updateWindowParameters();
 
     void drawGizmos(GE::Scene::Entity* entity);
 
@@ -73,7 +77,7 @@ private:
 
     LevelEditorContext* m_ctx{nullptr};
     GE::Vec2 m_viewport{0.0f, 0.0f};
-    ViewportSizeSignal m_viewport_changed;
+    ViewportChangedSignal m_viewport_changed_signal;
 
     bool m_is_focused{false};
     bool m_is_hovered{false};

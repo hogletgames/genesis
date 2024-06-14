@@ -64,7 +64,8 @@ void GuiLayerWindow::draw()
     }
 
     GUI::StyleVar padding{GUI::StyleVar::WINDOW_PADDING, {0.0f, 0.0f}};
-    GUI::WidgetNodeGuard node{&m_window};
+    GUI::WidgetNode node{&m_window};
+    node.call(&GuiLayerWindow::updateWindowParameters, this);
 
     Drawable::mvp_t mvp{};
     mvp.model = translate(Mat4{1.0f}, m_camera->position());
@@ -94,14 +95,16 @@ GuiLayerWindow::GuiLayerWindow(std::string name)
     GE_ASSERT(m_fbo, "Failed to create framebuffer");
 
     m_camera_controller->setViewport(model_fbo_config.size);
+}
 
-    m_window.isFocusedSignal()->connect([this](bool is_focused) { m_is_focused = is_focused; });
-    m_window.availableRegionSignal()->connect([this](const Vec2& size) {
-        if (m_fbo->size() != size) {
-            m_fbo->resize(size);
-            m_camera_controller->setViewport(size);
-        }
-    });
+void GuiLayerWindow::updateWindowParameters()
+{
+    m_is_focused = m_window.isFocused();
+
+    if (auto viewport = m_window.availableRegion(); viewport != m_fbo->size()) {
+        m_fbo->resize(viewport);
+        m_camera_controller->setViewport(viewport);
+    }
 }
 
 } // namespace GE::Examples

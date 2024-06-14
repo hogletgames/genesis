@@ -32,57 +32,99 @@
 
 #pragma once
 
-#include <genesis/core/interface.h>
-
-#include <functional>
+#include <genesis/core/memory.h>
+#include <genesis/gui/widgets/widget.h>
 
 namespace GE::GUI {
 
-class GE_API WidgetNode: public Interface
+class GE_API WidgetNode
 {
 public:
-    void begin()
+    explicit WidgetNode(Widget* widget)
+        : m_widget{widget}
     {
-        if (m_begin != nullptr) {
-            m_is_opened = m_begin();
+        begin();
+    }
+
+    explicit WidgetNode(Scoped<Widget> widget)
+        : m_internal_widget{std::move(widget)}
+        , m_widget{m_internal_widget.get()}
+    {
+        begin();
+    }
+
+    ~WidgetNode()
+    {
+        if (m_widget != nullptr) {
+            m_widget->end();
         }
     }
 
-    void end()
+    template<typename T, typename... Args>
+    auto call(Args&&... args) -> std::enable_if_t<std::is_void_v<decltype(T::call(args...))>>
     {
-        if (m_is_opened || m_force_end) {
-            m_end();
+        if (isOpened()) {
+            T::call(std::forward<Args>(args)...);
         }
     }
 
-    bool isOpened() const { return m_is_opened; }
-
-    virtual void emitSignals() {}
-
-protected:
-    using BeginFunc = std::function<bool()>;
-    using EndFunc = std::function<void()>;
-
-    template<typename Func, typename... Args>
-    void setBeginFunc(Func&& f, Args&&... args)
+    template<typename T, typename... Args>
+    auto call(Args&&... args)
+        -> std::enable_if_t<std::is_same_v<decltype(T::call(args...)), bool>, bool>
     {
-        m_begin = std::bind(std::forward<Func>(f), std::forward<Args>(args)...);
+        if (isOpened()) {
+            return T::call(std::forward<Args>(args)...);
+        }
+
+        return false;
     }
 
     template<typename Func, typename... Args>
-    void setEndFunc(Func&& f, Args&&... args)
+    void call(Func&& f, Args&&... args)
     {
-        m_end = std::bind(std::forward<Func>(f), std::forward<Args>(args)...);
+        if (isOpened()) {
+            std::invoke(std::forward<Func>(f), std::forward<Args>(args)...);
+        }
     }
 
-    void setForceEnd() { m_force_end = true; }
+    WidgetNode subNode(Widget* widget_node) const
+    {
+        if (isOpened()) {
+            return WidgetNode{widget_node};
+        }
+
+        return WidgetNode{nullptr};
+    }
+
+    template<typename T, typename... Args>
+    WidgetNode makeSubNode(Args&&... args)
+    {
+        if (isOpened()) {
+            return create<T>(std::forward<Args>(args)...);
+        }
+
+        return WidgetNode{nullptr};
+    }
+
+    Widget* widget() { return m_widget; }
+    bool isOpened() const { return m_widget != nullptr && m_widget->isOpened(); }
+
+    template<typename T, typename... Args>
+    static WidgetNode create(Args&&... args)
+    {
+        return WidgetNode{makeScoped<T>(std::forward<Args>(args)...)};
+    }
 
 private:
-    BeginFunc m_begin{nullptr};
-    EndFunc m_end{nullptr};
+    void begin() const
+    {
+        if (m_widget != nullptr) {
+            m_widget->begin();
+        }
+    }
 
-    bool m_is_opened{false};
-    bool m_force_end{false};
+    Scoped<Widget> m_internal_widget;
+    Widget* m_widget{nullptr};
 };
 
 } // namespace GE::GUI

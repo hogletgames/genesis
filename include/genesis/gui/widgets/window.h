@@ -32,28 +32,19 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget.h>
 #include <genesis/math/types.h>
-
-#include <boost/signals2/signal.hpp>
 
 #include <string_view>
 
 namespace GE::GUI {
 
-class GE_API Window: public WidgetNode
+class GE_API Window: public Widget
 {
 public:
     using Flags = int;
 
-    using SizeSignal = boost::signals2::signal<void(const Vec2&)>;
-    using AvailableRegionSignal = boost::signals2::signal<void(const Vec2&)>;
-    using IsFocusedSignal = boost::signals2::signal<void(bool)>;
-    using IsHoveredSignal = boost::signals2::signal<void(bool)>;
-
     explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
-
-    void emitSignals() override;
 
     Vec2 position() const;
     Vec2 mousePosition() const;
@@ -63,17 +54,6 @@ public:
 
     bool isFocused() const;
     bool isHovered() const;
-
-    SizeSignal* sizeSignal() { return &m_size_signal; }
-    AvailableRegionSignal* availableRegionSignal() { return &m_available_region_signal; }
-    IsFocusedSignal* isFocusedSignal() { return &m_is_focused_signal; }
-    IsHoveredSignal* isHoveredSignal() { return &m_is_hovered_signal; }
-
-private:
-    SizeSignal m_size_signal;
-    AvailableRegionSignal m_available_region_signal;
-    IsFocusedSignal m_is_focused_signal;
-    IsHoveredSignal m_is_hovered_signal;
 };
 
 } // namespace GE::GUI

@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include <genesis/gui/widgets/widget_node.h>
+#include <genesis/gui/widgets/widget.h>
 #include <genesis/math/types.h>
 
 namespace GE::GUI {

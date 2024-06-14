@@ -48,7 +48,7 @@ void MenuList::onEvent(Event* event)
     }
 }
 
-void MenuList::onRender(WidgetNodeGuard* node)
+void MenuList::onRender(WidgetNode* node)
 {
     for (auto& menu : m_menus) {
         menu->onRender(node);
