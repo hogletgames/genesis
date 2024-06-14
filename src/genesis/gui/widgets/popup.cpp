@@ -30,16 +30,54 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "widgets/popup_context_window.h"
+#include "widgets/popup.h"
+
+#include "genesis/core/bit.h"
 
 #include <imgui.h>
 
 namespace GE::GUI {
+namespace {
+
+ImGuiPopupFlags toImGuiPopupFlags(PopupFlags flags)
+{
+    ImGuiPopupFlags imgui_flags{flags & ImGuiPopupFlags_MouseButtonMask_};
+
+    if (checkBits<PopupFlags>(flags, PopupFlag::NO_REOPEN)) {
+        imgui_flags = setBits<ImGuiPopupFlags>(imgui_flags, ImGuiPopupFlags_NoReopen);
+    }
+    if (checkBits<PopupFlags>(flags, PopupFlag::NO_OPEN_OVER_EXISTING_POPUP)) {
+        imgui_flags =
+            setBits<ImGuiPopupFlags>(imgui_flags, ImGuiPopupFlags_NoOpenOverExistingPopup);
+    }
+    if (checkBits<PopupFlags>(flags, PopupFlag::NO_OPEN_OVER_ITEMS)) {
+        imgui_flags = setBits<ImGuiPopupFlags>(imgui_flags, ImGuiPopupFlags_NoOpenOverItems);
+    }
+    if (checkBits<PopupFlags>(flags, PopupFlag::ANY_POPUP_ID)) {
+        imgui_flags = setBits<ImGuiPopupFlags>(imgui_flags, ImGuiPopupFlags_AnyPopupId);
+    }
+    if (checkBits<PopupFlags>(flags, PopupFlag::ANY_POPUP_LEVEL)) {
+        imgui_flags = setBits<ImGuiPopupFlags>(imgui_flags, ImGuiPopupFlags_AnyPopupLevel);
+    }
+    if (checkBits<PopupFlags>(flags, PopupFlag::ANY_POPUP)) {
+        imgui_flags = setBits<ImGuiPopupFlags>(imgui_flags, ImGuiPopupFlags_AnyPopup);
+    }
+
+    return imgui_flags;
+}
+
+} // namespace
 
 PopupContextWindow::PopupContextWindow(std::string_view str_id, PopupFlags flags)
 {
-    setBeginFunc(ImGui::BeginPopupContextWindow, str_id.data(), flags);
+    setBeginFunc(ImGui::BeginPopupContextWindow, str_id.data(), toImGuiPopupFlags(flags));
     setEndFunc(ImGui::EndPopup);
+}
+
+PopupContextItem::PopupContextItem(std::string_view str_id, PopupFlags flags)
+{
+    setBeginFunc(&ImGui::BeginPopupContextItem, str_id.data(), toImGuiPopupFlags(flags));
+    setEndFunc(&ImGui::EndPopup);
 }
 
 } // namespace GE::GUI

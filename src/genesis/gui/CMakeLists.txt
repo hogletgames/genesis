@@ -15,8 +15,7 @@ list(APPEND GUI_SOURCES
     widgets/main_menu_bar.cpp
     widgets/menu.cpp
     widgets/menu_item.cpp
-    widgets/popup_context_item.cpp
-    widgets/popup_context_window.cpp
+    widgets/popup.cpp
     widgets/same_line.cpp
     widgets/separator.cpp
     widgets/style_var.cpp
@@ -43,15 +42,13 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/widgets/button.h
     ${INCLUDE_DIR}/widgets/checkbox.h
     ${INCLUDE_DIR}/widgets/combo_box.h
-    ${INCLUDE_DIR}/widgets/flags.h
     ${INCLUDE_DIR}/widgets/image.h
     ${INCLUDE_DIR}/widgets/input_text.h
     ${INCLUDE_DIR}/widgets/item.h
     ${INCLUDE_DIR}/widgets/main_menu_bar.h
     ${INCLUDE_DIR}/widgets/menu.h
     ${INCLUDE_DIR}/widgets/menu_item.h
-    ${INCLUDE_DIR}/widgets/popup_context_item.h
-    ${INCLUDE_DIR}/widgets/popup_context_window.h
+    ${INCLUDE_DIR}/widgets/popup.h
     ${INCLUDE_DIR}/widgets/same_line.h
     ${INCLUDE_DIR}/widgets/separator.h
     ${INCLUDE_DIR}/widgets/style_var.h
