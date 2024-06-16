@@ -109,14 +109,16 @@ void ViewportPanel::drawGizmos(GE::Scene::Entity* entity)
     const auto& projection = camera->projection();
 
     auto& tc = entity->get<GE::Scene::TransformComponent>();
-    auto transform_matrix = tc.transform();
+    auto parent_transform = GE::Scene::parentalTransforms(*entity);
+    auto transform_matrix = parent_transform * tc.transform();
     bool is_ortho = camera->type() == GE::Scene::ProjectionCamera::ORTHOGRAPHIC;
 
     Gizmos gizmos{m_window.position(), m_viewport, is_ortho};
     gizmos.draw(view, projection, Gizmos::TRANSLATE, Gizmos::LOCAL, &transform_matrix);
 
     if (gizmos.isUsing()) {
-        decompose(transform_matrix, &tc.translation, &tc.rotation, &tc.scale);
+        auto local_transfrom = GE::inverse(parent_transform) * transform_matrix;
+        decompose(local_transfrom, &tc.translation, &tc.rotation, &tc.scale);
         tc.rotation = GE::radians(tc.rotation);
     }
 }

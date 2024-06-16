@@ -34,6 +34,7 @@
 #include "camera/view_projection_camera.h"
 #include "components.h"
 #include "entity.h"
+#include "entity_node.h"
 
 #include "genesis/core/log.h"
 #include "genesis/graphics/render_command.h"
@@ -58,7 +59,9 @@ void RendererBase::renderEntity(GE::Renderer* renderer, Pipeline* pipeline, cons
         return;
     }
 
-    auto mvp = m_camera->viewProjection() * entity.get<TransformComponent>().transform();
+    auto entity_transform = entity.get<TransformComponent>().transform();
+    auto parent_transform = parentalTransforms(entity);
+    auto mvp = m_camera->viewProjection() * entity_transform * parent_transform;
 
     auto* cmd = renderer->command();
     cmd->bind(pipeline);
@@ -86,6 +89,19 @@ bool RendererBase::isValid(std::string_view entity_name, Pipeline* material, Tex
     }
 
     return true;
+}
+
+Mat4 parentalTransforms(const Entity& entity)
+{
+    Mat4 parental_transform{1.0f};
+    auto parent_entity_node = EntityNode{entity}.parentNode();
+
+    while (!parent_entity_node.isNull()) {
+        parental_transform *= parent_entity_node.entity().get<TransformComponent>().transform();
+        parent_entity_node = parent_entity_node.parentNode();
+    }
+
+    return parental_transform;
 }
 
 } // namespace GE::Scene
