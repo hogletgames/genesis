@@ -31,23 +31,46 @@
  */
 
 #include "scene.h"
+#include "components/relationship_components.h"
 #include "components/tag_component.h"
 #include "components/transform_component.h"
 #include "entity.h"
 
+namespace GE::Scene {
 namespace {
 
 constexpr auto DEFAULT_ENTITY_NAME{"Entity"};
 
 } // namespace
 
-namespace GE::Scene {
+Scene::Scene(Scene&& other) noexcept
+    : m_name{std::move(other.m_name)}
+    , m_registry{std::move(other.m_registry)}
+    , m_main_camera{other.m_main_camera}
+{}
+
+Scene& Scene::operator=(Scene&& other) noexcept
+{
+    if (this != &other) {
+        m_name = std::move(other.m_name);
+        m_registry = std::move(other.m_registry);
+        m_main_camera = other.m_main_camera;
+    }
+
+    return *this;
+}
 
 Entity Scene::createEntity(std::string_view name)
 {
     auto entity = m_registry.create();
     entity.add<TagComponent>(!name.empty() ? name.data() : DEFAULT_ENTITY_NAME);
     entity.add<TransformComponent>();
+    entity.add<NodeComponent>();
+
+    if (m_registry.size() == 1) {
+        entity.add<HeadNodeComponent>();
+        entity.add<TailNodeComponent>();
+    }
 
     return entity;
 }
@@ -72,19 +95,24 @@ void Scene::clear()
     m_registry.clear();
 }
 
+Entity Scene::headEntity() const
+{
+    return m_registry.firstEntityWith<HeadNodeComponent>();
+}
+
+Entity Scene::tailEnity() const
+{
+    return m_registry.firstEntityWith<TailNodeComponent>();
+}
+
 void Scene::forEachEntity(const Scene::ForeachCallback& callback)
 {
     m_registry.eachEntity(callback);
 }
 
-void Scene::forEachEntity(const Scene::ForeachCallback& callback) const
+void Scene::forEachEntity(const Scene::ForeachConstCallback& callback) const
 {
     m_registry.eachEntity(callback);
-}
-
-void Scene::clear()
-{
-    m_registry.clear();
 }
 
 } // namespace GE::Scene

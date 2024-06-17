@@ -46,8 +46,18 @@ class Entity;
 class GE_API Registry
 {
 public:
-    using ForeachCallback = std::function<void(const Entity&)>;
+    using ForeachCallback = std::function<void(Entity&)>;
+    using ForeachConstCallback = std::function<void(const Entity&)>;
     using EntityHandle = entt::entity;
+
+    Registry() = default;
+    ~Registry() = default;
+
+    Registry(const Registry& other) = delete;
+    Registry& operator=(const Registry& other) = delete;
+
+    Registry(Registry&& other) noexcept;
+    Registry& operator=(Registry&& other) noexcept;
 
     Entity create();
     Entity entity(EntityHandle entity_handle);
@@ -55,13 +65,18 @@ public:
     void destroy(EntityHandle entity_handle);
     void clear();
 
+    size_t size() const;
+
     template<typename... Args>
     void eachEntityWith(const ForeachCallback& callback);
     void eachEntity(const ForeachCallback& callback);
 
     template<typename... Args>
-    void eachEntityWith(const ForeachCallback& callback) const;
-    void eachEntity(const ForeachCallback& callback) const;
+    void eachEntityWith(const ForeachConstCallback& callback) const;
+    void eachEntity(const ForeachConstCallback& callback) const;
+
+    template<typename... Args>
+    Entity firstEntityWith() const;
 
 private:
     Entity toEntity(EntityHandle entity) const;
@@ -73,16 +88,27 @@ template<typename... Args>
 void Registry::eachEntityWith(const ForeachCallback& callback)
 {
     for (auto entity : m_registry.view<Args...>()) {
+        auto scene_entity = toEntity(entity);
+        callback(scene_entity);
+    }
+}
+
+template<typename... Args>
+void Registry::eachEntityWith(const ForeachConstCallback& callback) const
+{
+    for (auto entity : m_registry.view<Args...>()) {
         callback(toEntity(entity));
     }
 }
 
 template<typename... Args>
-void Registry::eachEntityWith(const ForeachCallback& callback) const
+Entity Registry::firstEntityWith() const
 {
     for (auto entity : m_registry.view<Args...>()) {
-        callback(toEntity(entity));
+        return toEntity(entity);
     }
+
+    return {};
 }
 
 } // namespace GE::Scene

@@ -35,6 +35,19 @@
 
 namespace GE::Scene {
 
+Registry::Registry(Registry&& other) noexcept
+    : m_registry({std::move(other.m_registry)})
+{}
+
+Registry& Registry::operator=(Registry&& other) noexcept
+{
+    if (this != &other) {
+        m_registry = std::move(other.m_registry);
+    }
+
+    return *this;
+}
+
 Entity Registry::create()
 {
     return toEntity(m_registry.create());
@@ -66,14 +79,20 @@ void Registry::clear()
     m_registry.clear();
 }
 
+size_t Registry::size() const
+{
+    return m_registry.storage<EntityHandle>().in_use();
+}
+
 void Registry::eachEntity(const ForeachCallback& callback)
 {
     for (auto entity : m_registry.storage<EntityHandle>().each()) {
-        callback(toEntity(std::get<0>(entity)));
+        auto scene_entity = toEntity(std::get<0>(entity));
+        callback(scene_entity);
     }
 }
 
-void Registry::eachEntity(const ForeachCallback& callback) const
+void Registry::eachEntity(const ForeachConstCallback& callback) const
 {
     for (auto entity : m_registry.storage<EntityHandle>().each()) {
         callback(toEntity(std::get<0>(entity)));
