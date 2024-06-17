@@ -40,7 +40,7 @@ namespace GE::GUI {
 TreeNode::TreeNode(std::string_view label, Flags flags)
 {
     setBeginFunc([label, flags] {
-        ImGui::PushID(label.data());
+        ImGui::PushID(static_cast<const void*>(label.data()));
         Defer defer{[] { ImGui::PopID(); }};
         return ImGui::TreeNodeEx(label.data(), flags);
     });
