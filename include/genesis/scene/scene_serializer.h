@@ -40,7 +40,7 @@
 
 namespace GE::Scene {
 
-class Entity;
+class EntityNode;
 class Scene;
 
 class GE_API SceneSerializer
@@ -51,11 +51,11 @@ public:
     bool serialize(const std::string& config_filepath);
 
 private:
-    bool serializeScene();
-    YAML::Node serializeEntity(const Entity& entity);
+    YAML::Node serializeScene();
+    void serializeEntityNode(YAML::Node* root, const EntityNode& entity);
+    void serializeEntityNodes(YAML::Node* root, const EntityNode& entity);
 
     Scene* m_scene{nullptr};
-    YAML::Node m_serialized_scene;
 };
 
 } // namespace GE::Scene

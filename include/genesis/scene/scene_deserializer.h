@@ -33,8 +33,7 @@
 #pragma once
 
 #include <genesis/core/export.h>
-
-#include <string>
+#include <genesis/scene/scene.h>
 
 namespace GE::Assets {
 class Registry;
@@ -47,7 +46,6 @@ class Node;
 namespace GE::Scene {
 
 class Entity;
-class Scene;
 
 class GE_API SceneDeserializer
 {
@@ -57,15 +55,16 @@ public:
     bool deserialize(const std::string& config_filepath);
 
 private:
-    bool loadEntities(const YAML::Node& node);
-    bool loadEntity(const YAML::Node& node);
+    Entity loadEntities(Scene* scene, const YAML::Node& node);
+    Entity loadEntity(Scene* scene, const YAML::Node& node);
     bool loadComponent(Entity* entity, const YAML::Node& node);
-    bool loadCameraComponent(Entity* entity, const YAML::Node& node);
-    bool loadMaterialComponent(Entity* entity, const YAML::Node& node);
-    bool loadSpriteComponent(Entity* entity, const YAML::Node& node);
-    bool loadTagComponent(Entity* entity, const YAML::Node& node);
-    bool loadTransformComponent(Entity* entity, const YAML::Node& node);
+    void loadCameraComponent(Entity* entity, const YAML::Node& node);
+    void loadMaterialComponent(Entity* entity, const YAML::Node& node);
+    void loadSpriteComponent(Entity* entity, const YAML::Node& node);
+    void loadTagComponent(Entity* entity, const YAML::Node& node);
+    void loadTransformComponent(Entity* entity, const YAML::Node& node);
 
+    Scene m_scene_buffer;
     Scene* m_scene{nullptr};
     Assets::Registry* m_assets{nullptr};
 };
