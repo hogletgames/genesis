@@ -33,6 +33,7 @@
 #pragma once
 
 #include <genesis/math/camera.h>
+#include <genesis/math/linear.h>
 #include <genesis/math/transform.h>
 #include <genesis/math/trigonometric.h>
 #include <genesis/math/types.h>

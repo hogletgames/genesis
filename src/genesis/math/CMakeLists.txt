@@ -6,6 +6,7 @@ list(APPEND MATH_SOURCES
 
 list(APPEND MATH_HEADERS
     ${INCLUDE_DIR}/camera.h
+    ${INCLUDE_DIR}/linear.h
     ${INCLUDE_DIR}/transform.h
     ${INCLUDE_DIR}/trigonometric.h
     ${INCLUDE_DIR}/types.h
