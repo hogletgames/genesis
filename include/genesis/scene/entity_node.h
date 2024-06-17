@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,17 +32,58 @@
 
 #pragma once
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/component_list.h>
-#include <genesis/scene/components.h>
+#include <genesis/scene/components/relationship_components.h>
 #include <genesis/scene/entity.h>
-#include <genesis/scene/entity_factory.h>
-#include <genesis/scene/entity_node.h>
-#include <genesis/scene/entity_picker.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/renderer.h>
-#include <genesis/scene/scene.h>
-#include <genesis/scene/scene_deserializer.h>
-#include <genesis/scene/scene_serializer.h>
+
+namespace GE::Scene {
+
+class Scene;
+
+class GE_API EntityNode
+{
+public:
+    EntityNode() = default;
+    explicit EntityNode(const Entity& entity);
+
+    EntityNode& insert(const Entity& entity);
+    EntityNode& appendChild(const Entity& child_entity);
+
+    EntityNode prevNode() const;
+    EntityNode nextNode() const;
+    EntityNode childNode() const;
+    EntityNode parentNode() const;
+
+    EntityNode lastChild() const;
+
+    bool isNull() const;
+    bool isHead() const;
+    bool isTail() const;
+
+    bool hasPrevNode() const;
+    bool hasNextNode() const;
+    bool hasChildNode() const;
+    bool hasParentNode() const;
+
+    bool hasChild(const Entity& child) const;
+
+    Entity& entity() { return m_entity; }
+    const Entity& entity() const { return m_entity; }
+
+    void destoryEntityWithChildren(Scene* scene);
+
+private:
+    void moveHeadToNextNode();
+    void moveTailToPrevNode();
+    void moveTailToNextNode();
+
+    void eject();
+
+    NodeComponent& node();
+    const NodeComponent& node() const;
+
+    EntityNode makeEntity(Entity::NativeHandle entity_handle) const;
+
+    Entity m_entity;
+};
+
+} // namespace GE::Scene
