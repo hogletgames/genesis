@@ -45,8 +45,9 @@ public:
     using ForeachCallback = Registry::ForeachCallback;
 
     Entity createEntity(std::string_view name);
-    Entity entity(Entity::NativeHandle entity_id);
+    Entity entity(Entity::NativeHandle entity_handle);
     void destroyEntity(const Entity& entity);
+    void destroyEntity(Entity::NativeHandle entity_handle);
     void clear();
 
     const Entity& mainCamera() const { return m_main_camera; }

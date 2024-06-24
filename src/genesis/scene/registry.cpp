@@ -40,10 +40,10 @@ Entity Registry::create()
     return toEntity(m_registry.create());
 }
 
-Entity Registry::entity(EntityHandle entity_id)
+Entity Registry::entity(EntityHandle entity_handle)
 {
-    if (m_registry.valid(entity_id)) {
-        return toEntity(entity_id);
+    if (m_registry.valid(entity_handle)) {
+        return toEntity(entity_handle);
     }
 
     return {};
@@ -51,7 +51,14 @@ Entity Registry::entity(EntityHandle entity_id)
 
 void Registry::destroy(const Entity& entity)
 {
-    m_registry.destroy(entity.nativeHandle());
+    destroy(entity.nativeHandle());
+}
+
+void Registry::destroy(EntityHandle entity_handle)
+{
+    GE_CORE_ASSERT(m_registry.valid(entity_handle), "Invalid entity handle: {}",
+                   static_cast<int>(entity_handle));
+    m_registry.destroy(entity_handle);
 }
 
 void Registry::clear()

@@ -50,8 +50,9 @@ public:
     using EntityHandle = entt::entity;
 
     Entity create();
-    Entity entity(EntityHandle entity_id);
+    Entity entity(EntityHandle entity_handle);
     void destroy(const Entity& entity);
+    void destroy(EntityHandle entity_handle);
     void clear();
 
     template<typename... Args>

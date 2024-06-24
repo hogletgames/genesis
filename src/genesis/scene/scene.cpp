@@ -52,14 +52,24 @@ Entity Scene::createEntity(std::string_view name)
     return entity;
 }
 
-Entity Scene::entity(Entity::NativeHandle entity_id)
+Entity Scene::entity(Entity::NativeHandle entity_handle)
 {
-    return m_registry.entity(entity_id);
+    return m_registry.entity(entity_handle);
 }
 
 void Scene::destroyEntity(const Entity& entity)
 {
     m_registry.destroy(entity);
+}
+
+void Scene::destroyEntity(Entity::NativeHandle entity_handle)
+{
+    m_registry.destroy(entity_handle);
+}
+
+void Scene::clear()
+{
+    m_registry.clear();
 }
 
 void Scene::forEachEntity(const Scene::ForeachCallback& callback)
