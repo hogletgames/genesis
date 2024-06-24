@@ -32,25 +32,51 @@
 
 #pragma once
 
-#include <genesis/math/types.h>
-#include <genesis/physics2d/world.h>
+#include <genesis/core/enum.h>
+#include <genesis/core/interface.h>
+#include <genesis/physics2d/rigid_body_shape.h>
 
-#include <box2d/b2_world.h>
+#include <cstdint>
+#include <string_view>
 
-namespace GE::P2D::Box2D {
+namespace GE::P2D {
 
-class GE_API World: public GE::P2D::World
+class GE_API RigidBody: public NonCopyable
 {
 public:
-    explicit World(const Vec2& gravity);
+    enum class Type : uint8_t
+    {
+        STATIC,
+        DYNAMIC,
+        KINEMATIC,
+    };
 
-    void step(Timestamp ts, int32_t velocity_iterations, int32_t position_iterations) override;
+    virtual void createFixure(const box_body_shape_config_t& shape_config) = 0;
+    virtual void createFixure(const circle_body_shape_config_t& shape_config) = 0;
 
-    Scoped<GE::P2D::RigidBody> createRigidBody(RigidBody::Type type, const Vec2& position,
-                                               float angle) override;
+    virtual void setFixedRotation(bool flag) = 0;
 
-private:
-    b2World m_world;
+    virtual bool isFixedRotation() const = 0;
+    virtual Vec2 position() const = 0;
+    virtual float angle() const = 0;
 };
 
-} // namespace GE::P2D::Box2D
+inline RigidBody::Type toRigidBodyType(std::string_view type_string)
+{
+    if (auto type = toEnum<RigidBody::Type>(type_string); type.has_value()) {
+        return type.value();
+    }
+
+    return RigidBody::Type::STATIC;
+}
+
+} // namespace GE::P2D
+
+namespace GE {
+
+inline std::string toString(P2D::RigidBody::Type type)
+{
+    return toString<P2D::RigidBody::Type>(type);
+}
+
+} // namespace GE

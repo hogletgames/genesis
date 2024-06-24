@@ -32,4 +32,6 @@
 
 #pragma once
 
+#include <genesis/physics2d/rigid_body.h>
+#include <genesis/physics2d/rigid_body_shape.h>
 #include <genesis/physics2d/world.h>

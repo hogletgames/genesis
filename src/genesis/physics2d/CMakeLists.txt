@@ -5,6 +5,8 @@ list(APPEND FHYSICS2D_SOURCES
     )
 
 list(APPEND FHYSICS2D_HEADERS
+    ${INCLUDE_DIR}/rigid_body.h
+    ${INCLUDE_DIR}/rigid_body_shape.h
     ${INCLUDE_DIR}/world.h
     )
 

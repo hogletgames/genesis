@@ -32,6 +32,7 @@
 
 #include "world.h"
 #include "math_types.h"
+#include "rigid_body.h"
 
 namespace GE::P2D::Box2D {
 
@@ -42,6 +43,17 @@ World::World(const Vec2& gravity)
 void World::step(Timestamp ts, int32_t velocity_iterations, int32_t position_iterations)
 {
     m_world.Step(ts.sec(), velocity_iterations, position_iterations);
+}
+
+Scoped<GE::P2D::RigidBody> World::createRigidBody(RigidBody::Type type, const Vec2& position,
+                                                  float angle)
+{
+    b2BodyDef body_def{};
+    body_def.type = fromRigidBody(type);
+    body_def.position = toB2Vec2(position);
+    body_def.angle = angle;
+
+    return makeScoped<Box2D::RigidBody>(m_world.CreateBody(&body_def));
 }
 
 } // namespace GE::P2D::Box2D

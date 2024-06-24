@@ -1,9 +1,13 @@
 list(APPEND FHYSICS2D_BOX2D_SOURCES
+    rigid_body.cpp
+    rigid_body_shape.cpp
     world.cpp
     )
 
 list(APPEND FHYSICS2D_BOX2D_HEADERS
     math_types.h
+    rigid_body.h
+    rigid_body_shape.h
     world.h
     )
 
