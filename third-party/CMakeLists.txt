@@ -22,6 +22,12 @@ set(ENABLE_CTEST OFF)
 set(SHADERC_SKIP_TESTS ON)
 set(ALLOW_EXTERNAL_SPIRV_TOOLS ON)
 
+# Box2D
+set(BOX2D_BUILD_UNIT_TESTS OFF)
+set(BOX2D_BUILD_TESTBED OFF)
+set(BOX2D_BUILD_DOCS OFF)
+set(BOX2D_USER_SETTINGS OFF)
+
 # Variables
 set(DEPS_DIR ${FETCHCONTENT_BASE_DIR})
 
@@ -236,6 +242,12 @@ FetchContent_Declare(Vulkan-Headers
     GIT_REPOSITORY https://github.com/hogletgames/Vulkan-Headers.git
     GIT_TAG vulkan-sdk-1.3.268.0)
 FetchContent_MakeAvailable(Vulkan-Headers)
+
+# box2d
+FetchContent_Declare(box2d
+    GIT_REPOSITORY https://github.com/hogletgames/box2d.git
+    GIT_TAG v3.0.0)
+FetchContent_MakeAvailable(box2d)
 
 # Apple dependencies
 if (APPLE)
