@@ -80,11 +80,23 @@ public:
     }
 
     template<typename Func, typename... Args>
-    void call(Func&& f, Args&&... args)
+    auto call(Func&& f, Args&&... args)
+        -> std::enable_if_t<std::is_void_v<std::invoke_result_t<Func, Args...>>>
     {
         if (isOpened()) {
             std::invoke(std::forward<Func>(f), std::forward<Args>(args)...);
         }
+    }
+
+    template<typename Func, typename... Args>
+    auto call(Func&& f, Args&&... args)
+        -> std::enable_if_t<std::is_same_v<std::invoke_result_t<Func, Args...>, bool>, bool>
+    {
+        if (isOpened()) {
+            return std::invoke(std::forward<Func>(f), std::forward<Args>(args)...);
+        }
+
+        return false;
     }
 
     WidgetNode subNode(Widget* widget_node) const
