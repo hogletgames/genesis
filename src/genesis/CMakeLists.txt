@@ -11,6 +11,7 @@ list(APPEND GENESIS_HEADERS
     ${INCLUDE_DIR}/genesis.h
     ${INCLUDE_DIR}/graphics.h
     ${INCLUDE_DIR}/math.h
+    ${INCLUDE_DIR}/physics2d.h
     ${INCLUDE_DIR}/scene.h
     ${INCLUDE_DIR}/window.h
     )
@@ -24,6 +25,7 @@ target_link_libraries(genesis PUBLIC
     genesis::graphics
     genesis::gui
     genesis::math
+    genesis::physics2d
     genesis::scene
     genesis::window
     )
@@ -36,5 +38,6 @@ add_subdirectory(filesystem)
 add_subdirectory(graphics)
 add_subdirectory(gui)
 add_subdirectory(math)
+add_subdirectory(physics2d)
 add_subdirectory(scene)
 add_subdirectory(window)
