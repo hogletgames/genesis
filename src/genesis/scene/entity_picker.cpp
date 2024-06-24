@@ -34,6 +34,7 @@
 #include "camera/view_projection_camera.h"
 #include "components.h"
 #include "entity.h"
+#include "renderer/renderer_base.h"
 #include "scene.h"
 
 #include "genesis/graphics/framebuffer.h"
@@ -189,7 +190,8 @@ void EntityPicker::renderEntityId(const Entity& entity)
 {
     auto* pipeline = m_entity_id_pipline.get();
     auto* mesh = entity.get<SpriteComponent>().mesh.get();
-    auto mvp = m_camera->viewProjection() * entity.get<TransformComponent>().transform();
+    auto mvp = m_camera->viewProjection() * parentalTransforms(entity) *
+               entity.get<TransformComponent>().transform();
 
     auto* cmd = m_entity_id_fbo->renderer()->command();
     cmd->bind(pipeline);

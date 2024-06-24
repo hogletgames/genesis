@@ -5,6 +5,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/components.h
     ${INCLUDE_DIR}/entity.h
     ${INCLUDE_DIR}/entity_factory.h
+    ${INCLUDE_DIR}/entity_node.h
     ${INCLUDE_DIR}/entity_picker.h
     ${INCLUDE_DIR}/registry.h
     ${INCLUDE_DIR}/renderer.h
@@ -16,6 +17,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/camera/vp_camera_controller.h
     ${INCLUDE_DIR}/components/camera_component.h
     ${INCLUDE_DIR}/components/material_component.h
+    ${INCLUDE_DIR}/components/relationship_components.h
     ${INCLUDE_DIR}/components/sprite_component.h
     ${INCLUDE_DIR}/components/tag_component.h
     ${INCLUDE_DIR}/components/transform_component.h
@@ -29,6 +31,7 @@ list(APPEND SCENE_HEADERS
 list(APPEND SCENE_SOURCES
     entity.cpp
     entity_factory.cpp
+    entity_node.cpp
     entity_picker.cpp
     registry.cpp
     scene.cpp

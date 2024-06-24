@@ -103,8 +103,7 @@ void RenderCommand::draw(uint32_t vertex_count, uint32_t instance_count, uint32_
 
 void RenderCommand::submit(GPUCommandBuffer cmd)
 {
-    m_cmd_queue.execCommands(cmd);
-    m_cmd_queue.clear();
+    m_cmd_queue.submit(cmd);
 }
 
 } // namespace GE

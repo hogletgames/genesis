@@ -35,15 +35,28 @@
 
 namespace GE::Scene {
 
-Entity Registry::create()
+Registry::Registry(Registry&& other) noexcept
+    : m_registry({std::move(other.m_registry)})
+{}
+
+Registry& Registry::operator=(Registry&& other) noexcept
 {
-    return {m_registry.create(), &m_registry};
+    if (this != &other) {
+        m_registry = std::move(other.m_registry);
+    }
+
+    return *this;
 }
 
-Entity Registry::entity(EntityHandle entity_id)
+Entity Registry::create()
 {
-    if (m_registry.valid(entity_id)) {
-        return {entity_id, &m_registry};
+    return toEntity(m_registry.create());
+}
+
+Entity Registry::entity(EntityHandle entity_handle)
+{
+    if (m_registry.valid(entity_handle)) {
+        return toEntity(entity_handle);
     }
 
     return {};
@@ -51,7 +64,14 @@ Entity Registry::entity(EntityHandle entity_id)
 
 void Registry::destroy(const Entity& entity)
 {
-    m_registry.destroy(entity.nativeHandle());
+    destroy(entity.nativeHandle());
+}
+
+void Registry::destroy(EntityHandle entity_handle)
+{
+    GE_CORE_ASSERT(m_registry.valid(entity_handle), "Invalid entity handle: {}",
+                   static_cast<int>(entity_handle));
+    m_registry.destroy(entity_handle);
 }
 
 void Registry::clear()
@@ -59,14 +79,20 @@ void Registry::clear()
     m_registry.clear();
 }
 
+size_t Registry::size() const
+{
+    return m_registry.storage<EntityHandle>().in_use();
+}
+
 void Registry::eachEntity(const ForeachCallback& callback)
 {
     for (auto entity : m_registry.storage<EntityHandle>().each()) {
-        callback(toEntity(std::get<0>(entity)));
+        auto scene_entity = toEntity(std::get<0>(entity));
+        callback(scene_entity);
     }
 }
 
-void Registry::eachEntity(const ForeachCallback& callback) const
+void Registry::eachEntity(const ForeachConstCallback& callback) const
 {
     for (auto entity : m_registry.storage<EntityHandle>().each()) {
         callback(toEntity(std::get<0>(entity)));
@@ -75,7 +101,7 @@ void Registry::eachEntity(const ForeachCallback& callback) const
 
 Entity Registry::toEntity(EntityHandle entity) const
 {
-    return {entity, &m_registry};
+    return Entity::Factory::create(entity, &m_registry);
 }
 
 } // namespace GE::Scene

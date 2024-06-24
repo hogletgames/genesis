@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,26 +30,60 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "gpu_command_queue.h"
+#pragma once
 
-namespace GE {
+#include <genesis/scene/components/relationship_components.h>
+#include <genesis/scene/entity.h>
 
-void GPUCommandQueue::enqueue(GPUCommandQueue::DelayedCommand cmd)
+namespace GE::Scene {
+
+class Scene;
+
+class GE_API EntityNode
 {
-    m_cmd_queue.push_back(std::move(cmd));
-}
+public:
+    EntityNode() = default;
+    explicit EntityNode(const Entity& entity);
 
-void GPUCommandQueue::execCommands(GPUCommandBuffer cmd_buffer) const
-{
-    for (const auto& cmd : m_cmd_queue) {
-        cmd(cmd_buffer);
-    }
-}
+    EntityNode& insert(const Entity& entity);
+    EntityNode& appendChild(const Entity& child_entity);
 
-void GPUCommandQueue::clear()
-{
-    m_cmd_queue.clear();
-    m_current_pipeline = {};
-}
+    EntityNode prevNode() const;
+    EntityNode nextNode() const;
+    EntityNode childNode() const;
+    EntityNode parentNode() const;
 
-} // namespace GE
+    EntityNode lastChild() const;
+
+    bool isNull() const;
+    bool isHead() const;
+    bool isTail() const;
+
+    bool hasPrevNode() const;
+    bool hasNextNode() const;
+    bool hasChildNode() const;
+    bool hasParentNode() const;
+
+    bool hasChild(const Entity& child) const;
+
+    Entity& entity() { return m_entity; }
+    const Entity& entity() const { return m_entity; }
+
+    void destoryEntityWithChildren(Scene* scene);
+
+private:
+    void moveHeadToNextNode();
+    void moveTailToPrevNode();
+    void moveTailToNextNode();
+
+    void eject();
+
+    NodeComponent& node();
+    const NodeComponent& node() const;
+
+    EntityNode makeEntity(Entity::NativeHandle entity_handle) const;
+
+    Entity m_entity;
+};
+
+} // namespace GE::Scene

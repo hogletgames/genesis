@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "widgets/popup_context_window.h"
+#pragma once
 
-#include <imgui.h>
+#include <genesis/core/interface.h>
 
-namespace GE::GUI {
+#include <deque>
+#include <functional>
 
-PopupContextWindow::PopupContextWindow(std::string_view str_id, PopupFlags flags)
+namespace GE {
+
+template<typename Signature>
+class GE_API DeferredCommands: public NonCopyable
 {
-    setBeginFunc(ImGui::BeginPopupContextWindow, str_id.data(), flags);
-    setEndFunc(ImGui::EndPopup);
-}
+public:
+    using Cmd = std::function<Signature>;
 
-} // namespace GE::GUI
+    void enqueue(const Cmd& cmd) { m_commands.emplace_back(cmd); }
+
+    template<typename... Args>
+    void submit(Args&&... args)
+    {
+        std::for_each(m_commands.cbegin(), m_commands.cend(), [&args...](const Cmd& cmd) {
+            std::invoke(cmd, std::forward<Args>(args)...);
+        });
+
+        reset();
+    }
+
+    void reset() { m_commands.clear(); }
+
+private:
+    std::deque<Cmd> m_commands;
+};
+
+} // namespace GE

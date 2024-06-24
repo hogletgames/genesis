@@ -32,6 +32,7 @@
 
 #include "entity_factory.h"
 #include "components.h"
+#include "entity_node.h"
 #include "scene.h"
 
 #include "genesis/assets/registry.h"
@@ -47,6 +48,8 @@ Entity EntityFactory::createCamera(std::string_view name)
 {
     auto entity = m_scene->createEntity(name);
     entity.add<CameraComponent>();
+
+    appentToTail(entity);
     return entity;
 }
 
@@ -63,12 +66,14 @@ Entity EntityFactory::createSquare(std::string_view name)
     material.setMaterialID({"genesis", "materials", "sprite"});
     material.loadMaterial(m_assets);
 
+    appentToTail(entity);
     return entity;
 }
 
 Entity EntityFactory::createCircle(std::string_view name)
 {
     auto entity = m_scene->createEntity(name);
+
     auto& sprite = entity.add<SpriteComponent>();
     sprite.setMeshID({"genesis", "meshes", "square"});
     sprite.setTextureID({"genesis", "textures", "circle"});
@@ -78,12 +83,22 @@ Entity EntityFactory::createCircle(std::string_view name)
     material.setMaterialID({"genesis", "materials", "sprite"});
     material.loadMaterial(m_assets);
 
+    appentToTail(entity);
     return entity;
 }
 
 Entity EntityFactory::createEmptyEntity(std::string_view name)
 {
-    return m_scene->createEntity(name);
+    auto entity = m_scene->createEntity(name);
+    appentToTail(entity);
+    return entity;
+}
+
+void EntityFactory::appentToTail(const Entity& entity)
+{
+    if (auto tail_entity = m_scene->tailEnity(); tail_entity != entity) {
+        EntityNode{tail_entity}.insert(entity);
+    }
 }
 
 } // namespace GE::Scene

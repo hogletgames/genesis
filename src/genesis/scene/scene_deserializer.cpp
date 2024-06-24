@@ -33,6 +33,7 @@
 #include "scene_deserializer.h"
 #include "components.h"
 #include "entity.h"
+#include "entity_node.h"
 #include "scene.h"
 
 #include "genesis/core/log.h"
@@ -51,53 +52,69 @@ SceneDeserializer::SceneDeserializer(Scene *scene, Assets::Registry *assets)
 
 bool SceneDeserializer::deserialize(const std::string &config_filepath)
 {
-    YAML::Node node;
+    m_scene_buffer.clear();
 
     try {
-        node = YAML::LoadFile(config_filepath);
-    } catch (const std::exception &e) {
-        GE_CORE_ERR("Failed to load a scene config file '{}': '{}'", config_filepath, e.what());
-        return false;
-    }
+        YAML::Node node = YAML::LoadFile(config_filepath);
 
-    try {
-        m_scene->clear();
-        m_scene->setName(node["scene"]["name"].as<std::string>());
-        return loadEntities(node["scene"]["entities"]);
-    } catch (const std::exception &e) {
-        GE_CORE_ERR("Failed to deserialize a scene: {}", e.what());
-        return false;
-    }
-}
-
-bool SceneDeserializer::loadEntities(const YAML::Node &node)
-{
-    for (auto entity_node : node) {
-        if (!loadEntity(entity_node["entity"])) {
+        if (auto version = node["scene"]["serialization_version"].as<uint32_t>();
+            version < Scene::SERIALIZATION_VERSION) {
+            GE_CORE_ERR("Inconcistent serialization version: {}, expected: {}", version,
+                        Scene::SERIALIZATION_VERSION);
             return false;
         }
+
+        m_scene_buffer.setName(node["scene"]["name"].as<std::string>());
+
+        if (auto entities = node["scene"]["entities"]; entities.size() > 0) {
+            loadEntities(&m_scene_buffer, entities);
+        }
+    } catch (const std::exception &e) {
+        GE_CORE_ERR("Failed to deserialize a scene from a file '{}': '{}'", config_filepath,
+                    e.what());
+        return false;
     }
 
+    *m_scene = std::move(m_scene_buffer);
     return true;
 }
 
-bool SceneDeserializer::loadEntity(const YAML::Node &node)
+// NOLINTNEXTLINE(misc-no-recursion)
+Entity SceneDeserializer::loadEntities(Scene *scene, const YAML::Node &node)
 {
-    auto entity = m_scene->createEntity({});
+    auto first_entity = loadEntity(scene, node[0]);
+    auto last_entity = first_entity;
+
+    for (uint32_t i{1}; i < node.size(); i++) {
+        auto entity = loadEntity(scene, node[i]);
+
+        if (auto children_node = node[i]["children"]; children_node.IsDefined()) {
+            EntityNode{entity}.appendChild(loadEntities(scene, children_node));
+        }
+
+        EntityNode{last_entity}.insert(entity);
+        last_entity = entity;
+    }
+
+    return first_entity;
+}
+
+Entity SceneDeserializer::loadEntity(Scene *scene, const YAML::Node &node)
+{
+    auto entity = scene->createEntity();
 
     for (auto component_node : node["components"]) {
         if (!loadComponent(&entity, component_node)) {
             GE_CORE_ERR("Failed to load components for an entity");
-            return false;
         }
     }
 
-    return true;
+    return entity;
 }
 
 bool SceneDeserializer::loadComponent(Entity *entity, const YAML::Node &node)
 {
-    using Loader = bool (SceneDeserializer::*)(Entity *, const YAML::Node &);
+    using Loader = void (SceneDeserializer::*)(Entity *, const YAML::Node &);
 
     static const std::unordered_map<std::string, Loader> LOADERS = {
         {CameraComponent::NAME.data(), &SceneDeserializer::loadCameraComponent},
@@ -116,47 +133,42 @@ bool SceneDeserializer::loadComponent(Entity *entity, const YAML::Node &node)
 
     if (auto loader = getValue(LOADERS, type); loader) {
         try {
-            return std::invoke(loader, this, entity, node);
+            std::invoke(loader, this, entity, node);
         } catch (const std::exception &e) {
             GE_CORE_WARN("Failed to load component '{}': '{}'", type, e.what());
         }
     }
 
-    return false;
+    return true;
 }
 
-bool SceneDeserializer::loadCameraComponent(Entity *entity, const YAML::Node &node)
+void SceneDeserializer::loadCameraComponent(Entity *entity, const YAML::Node &node)
 {
     entity->add<CameraComponent>() = node.as<CameraComponent>();
-    return false;
 }
 
-bool SceneDeserializer::loadMaterialComponent(Entity *entity, const YAML::Node &node)
+void SceneDeserializer::loadMaterialComponent(Entity *entity, const YAML::Node &node)
 {
     auto &material = entity->add<MaterialComponent>();
     material = node.as<MaterialComponent>();
     material.loadMaterial(m_assets);
-    return material.isValid();
 }
 
-bool SceneDeserializer::loadSpriteComponent(Entity *entity, const YAML::Node &node)
+void SceneDeserializer::loadSpriteComponent(Entity *entity, const YAML::Node &node)
 {
     auto &sprite = entity->add<SpriteComponent>();
     sprite = node.as<SpriteComponent>();
     sprite.loadAll(m_assets);
-    return sprite.isValid();
 }
 
-bool SceneDeserializer::loadTagComponent(Entity *entity, const YAML::Node &node)
+void SceneDeserializer::loadTagComponent(Entity *entity, const YAML::Node &node)
 {
     entity->get<TagComponent>() = node.as<TagComponent>();
-    return true;
 }
 
-bool SceneDeserializer::loadTransformComponent(Entity *entity, const YAML::Node &node)
+void SceneDeserializer::loadTransformComponent(Entity *entity, const YAML::Node &node)
 {
     entity->get<TransformComponent>() = node.as<TransformComponent>();
-    return true;
 }
 
 } // namespace GE::Scene

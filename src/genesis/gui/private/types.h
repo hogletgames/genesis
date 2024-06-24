@@ -33,7 +33,6 @@
 #pragma once
 
 #include <genesis/core/utils.h>
-#include <genesis/gui/widgets/flags.h>
 #include <genesis/math/types.h>
 #include <genesis/window/mouse_button_codes.h>
 

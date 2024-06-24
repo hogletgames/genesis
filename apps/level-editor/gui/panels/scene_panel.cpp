@@ -42,9 +42,44 @@ using namespace GE::Scene;
 
 namespace LE {
 
+void DeferredScenePanelCommands::selectEntity(const Entity& entity)
+{
+    enqueue([this, entity] { *m_ctx->selectedEntity() = entity; });
+}
+
+void DeferredScenePanelCommands::removeEntity(const Entity& entity)
+{
+    enqueue([this, entity] {
+        if (entity == *m_ctx->selectedEntity()) {
+            m_ctx->resetSelectedEntity();
+        }
+
+        EntityNode{entity}.destoryEntityWithChildren(m_ctx->scene());
+    });
+}
+
+void DeferredScenePanelCommands::appendEntity(const Entity& dst, const Entity& src)
+{
+    enqueue([dst, src] {
+        if (EntityNode src_node{src}; !src_node.hasChild(dst)) {
+            EntityNode{dst}.insert(src);
+        }
+    });
+}
+
+void DeferredScenePanelCommands::appendToChildren(const Entity& dst, const Entity& src)
+{
+    enqueue([dst, src] {
+        if (EntityNode src_node{src}; !src_node.hasChild(dst)) {
+            EntityNode{dst}.appendChild(src);
+        }
+    });
+}
+
 ScenePanel::ScenePanel(LevelEditorContext* ctx)
     : WindowBase(NAME)
     , m_ctx{ctx}
+    , m_commands{m_ctx}
 {}
 
 void ScenePanel::onRender()
@@ -56,48 +91,110 @@ void ScenePanel::onRender()
 
 void ScenePanel::drawScene(WidgetNode* node)
 {
-    m_ctx->scene()->forEachEntity([this, node](const auto& entity) { drawEntity(node, entity); });
+    if (auto head_entity = m_ctx->scene()->headEntity(); !head_entity.isNull()) {
+        drawEntities(node, EntityNode{head_entity});
+    }
 
     if (GE::Input::isButtonPressed(GE::MouseButton::LEFT) && m_window.isHovered()) {
         m_ctx->resetSelectedEntity();
     }
+
+    m_commands.submit();
+    m_is_select_entity_handled = false;
 }
 
+// NOLINTNEXTLINE(misc-no-recursion)
+void ScenePanel::drawEntities(WidgetNode* node, const EntityNode& entity)
+{
+    auto current_entity = entity;
+
+    while (!current_entity.isNull()) {
+        drawEntity(node, current_entity.entity());
+        current_entity = current_entity.nextNode();
+    }
+}
+
+// NOLINTNEXTLINE(misc-no-recursion)
 void ScenePanel::drawEntity(WidgetNode* node, const Entity& entity)
 {
-    auto flags = TreeNode::OPEN_ON_ARROW | TreeNode::SPAN_AVAIL_WIDTH;
-    bool remove_entity{false};
-
+    TreeNode::Flags flags =
+        TreeNode::OPEN_ON_ARROW | TreeNode::SPAN_AVAIL_WIDTH | TreeNode::FRAME_PADDING;
     if (*m_ctx->selectedEntity() == entity) {
         flags |= TreeNode::SELECTED;
     }
+    if (!EntityNode{entity}.hasChildNode()) {
+        flags |= TreeNode::LEAF;
+    }
 
     std::string_view tag = entity.get<TagComponent>().tag;
+    auto entity_tree_node = node->makeSubNode<TreeNode>(tag, flags);
 
     {
-        auto entity_tree_node = node->makeSubNode<TreeNode>(tag, flags);
         auto popup_context = WidgetNode::create<PopupContextItem>();
-
         if (popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", tag))) {
-            remove_entity = true;
-        }
-
-        if (isItemClicked()) {
-            *m_ctx->selectedEntity() = entity;
+            m_commands.removeEntity(entity);
         }
     }
 
-    if (remove_entity) {
-        removeEntity(entity);
+    if (!m_is_select_entity_handled && isItemClicked()) {
+        m_commands.selectEntity(entity);
+        m_is_select_entity_handled = true;
+    }
+
+    drawEntityDragDrop(entity);
+
+    if (auto child_node = EntityNode{entity}.childNode();
+        entity_tree_node.isOpened() && !child_node.isNull()) {
+        drawEntities(&entity_tree_node, child_node);
+    }
+}
+
+void ScenePanel::drawEntityDragDrop(const Entity& entity)
+{
+    constexpr std::string_view PAYLOAD_TYPE{"entity_payload"};
+    constexpr std::string_view POPUP_ID{"scene_panel_entity_drop_popup"};
+
+    auto entity_handle = entity.nativeHandle();
+    const auto& tag = entity.get<TagComponent>();
+
+    DragDropPayload drag_drop_paylaod{PAYLOAD_TYPE.data(), &entity_handle};
+    WidgetNode::create<DragDropSource>(drag_drop_paylaod, tag.tag);
+    WidgetNode::create<DragDropTarget>(&drag_drop_paylaod);
+
+    if (drag_drop_paylaod.accepted()) {
+        auto src_entity_handle = *drag_drop_paylaod.get<Entity::NativeHandle>();
+        m_drag_drop_src_entity = m_ctx->scene()->entity(src_entity_handle);
+        m_drag_drop_dst_entity = entity;
+
+        OpenPopup::call(POPUP_ID);
+    }
+
+    if (entity != m_drag_drop_dst_entity) {
+        return;
+    }
+
+    auto dst_tag = entity.get<TagComponent>().tag;
+    auto drop_entity_popup = WidgetNode::create<PopupContextItem>(POPUP_ID);
+
+    if (drop_entity_popup.call<MenuItem>(GE_FMTSTR("Append to '{}'", dst_tag))) {
+        m_commands.appendEntity(m_drag_drop_dst_entity, m_drag_drop_src_entity);
+        resetDragDropEntities();
+    }
+    if (drop_entity_popup.call<MenuItem>(GE_FMTSTR("Append to children of '{}'", dst_tag))) {
+        m_commands.appendToChildren(m_drag_drop_dst_entity, m_drag_drop_src_entity);
+        resetDragDropEntities();
     }
 }
 
 void ScenePanel::drawContextMenu(WidgetNode* node)
 {
-    EntityFactory entity_factory{m_ctx->scene(), m_ctx->assets()};
-    auto flags = PopupFlag::MOUSE_BUTTON_RIGHT | PopupFlag::NO_OPEN_OVER_EXISTING_POPUP;
+    constexpr std::string_view POPUP_ID{"empty_space_popup"};
 
-    auto context_menu_node = node->makeSubNode<PopupContextWindow>(std::string_view{}, flags);
+    EntityFactory entity_factory{m_ctx->scene(), m_ctx->assets()};
+    auto flags = PopupFlag::MOUSE_BUTTON_RIGHT | PopupFlag::NO_OPEN_OVER_EXISTING_POPUP |
+                 PopupFlag::NO_OPEN_OVER_ITEMS;
+
+    auto context_menu_node = node->makeSubNode<PopupContextWindow>(POPUP_ID, flags);
     auto add_entity_menu = context_menu_node.makeSubNode<Menu>("Add entity");
 
     if (add_entity_menu.call<MenuItem>("Circle")) {
@@ -114,13 +211,10 @@ void ScenePanel::drawContextMenu(WidgetNode* node)
     }
 }
 
-void ScenePanel::removeEntity(const Entity& entity)
+void ScenePanel::resetDragDropEntities()
 {
-    if (entity == *m_ctx->selectedEntity()) {
-        m_ctx->resetSelectedEntity();
-    }
-
-    m_ctx->scene()->destroyEntity(entity);
+    m_drag_drop_dst_entity = Entity{};
+    m_drag_drop_src_entity = Entity{};
 }
 
 } // namespace LE

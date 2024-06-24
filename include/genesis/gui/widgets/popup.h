@@ -33,6 +33,9 @@
 #pragma once
 
 #include <genesis/core/bit.h>
+#include <genesis/gui/widgets/widget.h>
+
+#include <string_view>
 
 namespace GE::GUI {
 
@@ -43,14 +46,44 @@ struct PopupFlag {
         MOUSE_BUTTON_LEFT = 0,
         MOUSE_BUTTON_RIGHT = 1,
         MOUSE_BUTTON_MIDDLE = 2,
-        NO_OPEN_OVER_EXISTING_POPUP = bit(5),
-        NO_OPEN_OVER_ITEMS = bit(6),
-        ANY_POPUP_ID = bit(7),
-        ANY_POPUP_LEVEL = bit(8),
+        NO_REOPEN = bit(5),
+        NO_OPEN_OVER_EXISTING_POPUP = bit(7),
+        NO_OPEN_OVER_ITEMS = bit(8),
+        ANY_POPUP_ID = bit(10),
+        ANY_POPUP_LEVEL = bit(11),
         ANY_POPUP = ANY_POPUP_ID | ANY_POPUP_LEVEL,
     };
 };
 
 using PopupFlags = int;
+
+class GE_API PopupContextWindow: public Widget
+{
+public:
+    explicit PopupContextWindow(std::string_view str_id = {},
+                                PopupFlags flags = PopupFlag::MOUSE_BUTTON_RIGHT);
+};
+
+class GE_API PopupContextItem: public Widget
+{
+public:
+    explicit PopupContextItem(std::string_view str_id = {},
+                              PopupFlags flags = PopupFlag::MOUSE_BUTTON_RIGHT);
+};
+
+class GE_API Popup: public Widget
+{
+public:
+    explicit Popup(std::string_view str_id, PopupFlags flags = PopupFlag::NONE);
+};
+
+class OpenPopup
+{
+public:
+    OpenPopup() = delete;
+    ~OpenPopup() = delete;
+
+    static void call(std::string_view str_id);
+};
 
 } // namespace GE::GUI

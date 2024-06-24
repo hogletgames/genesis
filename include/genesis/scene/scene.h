@@ -39,15 +39,31 @@
 
 namespace GE::Scene {
 
-class Scene
+class EntityNode;
+
+class GE_API Scene
 {
 public:
     using ForeachCallback = Registry::ForeachCallback;
+    using ForeachConstCallback = Registry::ForeachConstCallback;
 
-    Entity createEntity(std::string_view name);
-    Entity entity(Entity::NativeHandle entity_id);
+    Scene() = default;
+    ~Scene() = default;
+
+    Scene(const Scene& other) = delete;
+    Scene& operator=(const Scene& other) = delete;
+
+    Scene(Scene&& other) noexcept;
+    Scene& operator=(Scene&& other) noexcept;
+
+    Entity createEntity(std::string_view name = {});
+    Entity entity(Entity::NativeHandle entity_handle);
     void destroyEntity(const Entity& entity);
+    void destroyEntity(Entity::NativeHandle entity_handle);
     void clear();
+
+    Entity headEntity() const;
+    Entity tailEnity() const;
 
     const Entity& mainCamera() const { return m_main_camera; }
     void setMainCamera(const Entity& camera) { m_main_camera = camera; }
@@ -60,8 +76,10 @@ public:
     void forEachEntity(const ForeachCallback& callback);
 
     template<typename... Args>
-    void forEach(const ForeachCallback& callback) const;
-    void forEachEntity(const ForeachCallback& callback) const;
+    void forEach(const ForeachConstCallback& callback) const;
+    void forEachEntity(const ForeachConstCallback& callback) const;
+
+    static constexpr uint32_t SERIALIZATION_VERSION{1};
 
 private:
     std::string m_name;
@@ -70,13 +88,13 @@ private:
 };
 
 template<typename... Args>
-void Scene::forEach(const GE::Scene::Scene::ForeachCallback& callback)
+void Scene::forEach(const Scene::ForeachCallback& callback)
 {
     m_registry.eachEntityWith<Args...>(callback);
 }
 
 template<typename... Args>
-void Scene::forEach(const GE::Scene::Scene::ForeachCallback& callback) const
+void Scene::forEach(const Scene::ForeachConstCallback& callback) const
 {
     m_registry.eachEntityWith<Args...>(callback);
 }
