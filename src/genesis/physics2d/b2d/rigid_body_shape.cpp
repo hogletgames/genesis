@@ -30,27 +30,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "rigid_body_shape.h"
 
-#include <genesis/math/types.h>
-#include <genesis/physics2d/world.h>
-
-#include <box2d/b2_world.h>
+#include "math_types.h"
 
 namespace GE::P2D::Box2D {
+namespace {}
 
-class GE_API World: public GE::P2D::World
+b2FixtureDef toFixtureDef(const body_shape_config_base_t& config)
 {
-public:
-    explicit World(const Vec2& gravity);
+    b2FixtureDef fixture_def{};
+    fixture_def.friction = config.friction;
+    fixture_def.restitution = config.restitution;
+    fixture_def.restitutionThreshold = config.restitution_threshold;
+    fixture_def.density = config.density;
+    return fixture_def;
+}
 
-    void step(Timestamp ts, int32_t velocity_iterations, int32_t position_iterations) override;
+b2PolygonShape toShape(const box_body_shape_config_t& config)
+{
+    b2PolygonShape shape;
+    shape.SetAsBox(config.size.x, config.size.y, toB2Vec2(config.center), config.angle);
+    return shape;
+}
 
-    Scoped<GE::P2D::RigidBody> createRigidBody(RigidBody::Type type, const Vec2& position,
-                                               float angle) override;
-
-private:
-    b2World m_world;
-};
+b2CircleShape toShape(const circle_body_shape_config_t& config)
+{
+    b2CircleShape shape{};
+    shape.m_p = toB2Vec2(config.offset);
+    shape.m_radius = config.radius;
+    return shape;
+}
 
 } // namespace GE::P2D::Box2D

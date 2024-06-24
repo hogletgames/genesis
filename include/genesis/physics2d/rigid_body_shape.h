@@ -33,24 +33,25 @@
 #pragma once
 
 #include <genesis/math/types.h>
-#include <genesis/physics2d/world.h>
 
-#include <box2d/b2_world.h>
+namespace GE::P2D {
 
-namespace GE::P2D::Box2D {
-
-class GE_API World: public GE::P2D::World
-{
-public:
-    explicit World(const Vec2& gravity);
-
-    void step(Timestamp ts, int32_t velocity_iterations, int32_t position_iterations) override;
-
-    Scoped<GE::P2D::RigidBody> createRigidBody(RigidBody::Type type, const Vec2& position,
-                                               float angle) override;
-
-private:
-    b2World m_world;
+struct body_shape_config_base_t {
+    float friction{0.2f};
+    float restitution{0.0f};
+    float restitution_threshold{1.0f};
+    float density{0.0f};
 };
 
-} // namespace GE::P2D::Box2D
+struct box_body_shape_config_t: body_shape_config_base_t {
+    Vec2 size{1.0f};
+    Vec2 center{0.0f};
+    float angle{0.0f};
+};
+
+struct circle_body_shape_config_t: body_shape_config_base_t {
+    Vec2 offset{0.0f};
+    float radius{1.0f};
+};
+
+} // namespace GE::P2D
