@@ -30,48 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "world.h"
-#include "math_types.h"
-#include "rigid_body.h"
+#pragma once
 
-#include <box2d/box2d.h>
+#include <genesis/math/types.h>
 
-namespace GE::P2D::Box2D {
-namespace {
+namespace GE::P2D {
 
-b2WorldId createWorld(const Vec2& gravity)
-{
-    b2WorldDef world_def{b2DefaultWorldDef()};
-    world_def.gravity = toB2Vec2(gravity);
+struct body_shape_config_base_t {
+    float friction{0.5f};
+    float restitution{0.0f};
+    float density{1.0f};
+};
 
-    return b2CreateWorld(&world_def);
-}
+struct box_body_shape_config_t: body_shape_config_base_t {
+    Vec2 size{1.0f, 1.0f};
+    Vec2 center{0.0f, 0.0f};
+    float angle{0.0f};
+};
 
-} // namespace
+struct circle_body_shape_config_t: body_shape_config_base_t {
+    Vec2 offset{0.0f, 0.0f};
+    float radius{0.5f};
+};
 
-World::World(const Vec2& gravity)
-    : m_world{createWorld(gravity)}
-{}
-
-World::~World()
-{
-    b2DestroyWorld(m_world);
-}
-
-void World::step(Timestamp ts, int32_t sub_step_count)
-{
-    b2World_Step(m_world, ts.sec(), sub_step_count);
-}
-
-Scoped<P2D::RigidBody> World::createRigidBody(RigidBody::Type type, const Vec2& position,
-                                              float angle)
-{
-    b2BodyDef body_def{b2DefaultBodyDef()};
-    body_def.type = fromRigidBody(type);
-    body_def.position = toB2Vec2(position);
-    body_def.rotation = b2MakeRot(angle);
-
-    return makeScoped<Box2D::RigidBody>(b2CreateBody(m_world, &body_def));
-}
-
-} // namespace GE::P2D::Box2D
+} // namespace GE::P2D

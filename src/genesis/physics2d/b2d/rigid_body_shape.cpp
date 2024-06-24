@@ -30,48 +30,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "world.h"
-#include "math_types.h"
-#include "rigid_body.h"
+#include "rigid_body_shape.h"
 
-#include <box2d/box2d.h>
+#include "math_types.h"
+
+#include <box2d/collision.h>
 
 namespace GE::P2D::Box2D {
-namespace {
+namespace {}
 
-b2WorldId createWorld(const Vec2& gravity)
+b2ShapeDef toB2ShapeDef(const body_shape_config_base_t& config)
 {
-    b2WorldDef world_def{b2DefaultWorldDef()};
-    world_def.gravity = toB2Vec2(gravity);
-
-    return b2CreateWorld(&world_def);
+    b2ShapeDef shape_def{b2DefaultShapeDef()};
+    shape_def.friction = config.friction;
+    shape_def.restitution = config.restitution;
+    shape_def.density = config.density;
+    return shape_def;
 }
 
-} // namespace
-
-World::World(const Vec2& gravity)
-    : m_world{createWorld(gravity)}
-{}
-
-World::~World()
+b2Polygon toB2Polygon(const box_body_shape_config_t& config)
 {
-    b2DestroyWorld(m_world);
+    return b2MakeOffsetBox(config.size.x / 2.0f, config.size.y / 2.0f, toB2Vec2(config.center),
+                           config.angle);
 }
 
-void World::step(Timestamp ts, int32_t sub_step_count)
+b2Circle toB2Circle(const circle_body_shape_config_t& config)
 {
-    b2World_Step(m_world, ts.sec(), sub_step_count);
-}
-
-Scoped<P2D::RigidBody> World::createRigidBody(RigidBody::Type type, const Vec2& position,
-                                              float angle)
-{
-    b2BodyDef body_def{b2DefaultBodyDef()};
-    body_def.type = fromRigidBody(type);
-    body_def.position = toB2Vec2(position);
-    body_def.rotation = b2MakeRot(angle);
-
-    return makeScoped<Box2D::RigidBody>(b2CreateBody(m_world, &body_def));
+    return b2Circle{toB2Vec2(config.offset), config.radius};
 }
 
 } // namespace GE::P2D::Box2D
