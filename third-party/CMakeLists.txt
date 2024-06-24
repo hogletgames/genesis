@@ -70,27 +70,27 @@ FetchContent_GetProperties(imgui)
 if (NOT imgui_POPULATED)
     FetchContent_Populate(imgui)
 
-    add_Library(imgui STATIC
+    add_Library(ge-imgui STATIC
         ${imgui_SOURCE_DIR}/imgui.cpp
         ${imgui_SOURCE_DIR}/imgui_draw.cpp
         ${imgui_SOURCE_DIR}/imgui_demo.cpp
         ${imgui_SOURCE_DIR}/imgui_tables.cpp
         ${imgui_SOURCE_DIR}/imgui_widgets.cpp)
-    target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+    target_include_directories(ge-imgui PUBLIC ${imgui_SOURCE_DIR})
 
-    add_library(imgui-vulkan STATIC
+    add_library(ge-imgui-vulkan STATIC
         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
         ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp)
-    target_link_libraries(imgui-vulkan PUBLIC
-        imgui
+    target_link_libraries(ge-imgui-vulkan PUBLIC
+        ge-imgui
         SDL2-static
         Vulkan::Headers
         Vulkan::Loader
         )
-    target_include_directories(imgui-vulkan PUBLIC ${imgui_SOURCE_DIR}/backends)
+    target_include_directories(ge-imgui-vulkan PUBLIC ${imgui_SOURCE_DIR}/backends)
 
     add_executable(imgui_sdl_vulkan_example ${imgui_SOURCE_DIR}/examples/example_sdl2_vulkan/main.cpp)
-    target_link_libraries(imgui_sdl_vulkan_example PRIVATE imgui-vulkan)
+    target_link_libraries(imgui_sdl_vulkan_example PRIVATE ge-imgui-vulkan)
     target_compile_definitions(imgui_sdl_vulkan_example PRIVATE _DEBUG)
 endif ()
 
@@ -109,7 +109,7 @@ if (NOT imguizmo_POPULATED)
         ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
         ${imguizmo_SOURCE_DIR}/ImSequencer.cpp
         )
-    target_link_libraries(ImGuizmo PUBLIC imgui)
+    target_link_libraries(ImGuizmo PUBLIC ge-imgui)
     target_include_directories(ImGuizmo PUBLIC ${imguizmo_SOURCE_DIR})
 endif ()
 

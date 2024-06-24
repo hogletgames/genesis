@@ -73,7 +73,7 @@ ge_add_module(graphics-vulkan
         Vulkan::Headers
         Vulkan::Loader
     PRIVATE_DEPS
-        imgui-vulkan
+        ge-imgui-vulkan
         SDL2::SDL2-static
         shaderc
         spirv-cross-cpp

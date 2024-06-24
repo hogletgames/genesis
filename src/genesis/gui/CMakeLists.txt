@@ -83,6 +83,6 @@ ge_add_module(gui
     PRIVATE_DEPS
         genesis::graphics
         nativefiledialog
-        imgui
+        ge-imgui
         ImGuizmo
     )

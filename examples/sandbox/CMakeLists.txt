@@ -29,5 +29,5 @@ ge_add_executable(sandbox
     PRIVATE_DEPS
         docopt_s
         genesis::genesis
-        imgui
+        ge-imgui
     )
