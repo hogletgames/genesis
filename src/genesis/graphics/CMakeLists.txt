@@ -2,7 +2,6 @@ set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/graphics)
 
 list(APPEND GRAPHICS_SOURCES
     framebuffer.cpp
-    gpu_command_queue.cpp
     graphics.cpp
     index_buffer.cpp
     mesh.cpp

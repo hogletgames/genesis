@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,26 +30,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "gpu_command_queue.h"
+#pragma once
+
+#include <genesis/core/interface.h>
+
+#include <deque>
+#include <functional>
 
 namespace GE {
 
-void GPUCommandQueue::enqueue(GPUCommandQueue::DelayedCommand cmd)
+template<typename Signature>
+class GE_API DeferredCommands: public NonCopyable
 {
-    m_cmd_queue.push_back(std::move(cmd));
-}
+public:
+    using Cmd = std::function<Signature>;
 
-void GPUCommandQueue::execCommands(GPUCommandBuffer cmd_buffer) const
-{
-    for (const auto& cmd : m_cmd_queue) {
-        cmd(cmd_buffer);
+    void enqueue(const Cmd& cmd) { m_commands.emplace_back(cmd); }
+
+    template<typename... Args>
+    void submit(Args&&... args)
+    {
+        std::for_each(m_commands.cbegin(), m_commands.cend(), [&args...](const Cmd& cmd) {
+            std::invoke(cmd, std::forward<Args>(args)...);
+        });
+
+        reset();
     }
-}
 
-void GPUCommandQueue::clear()
-{
-    m_cmd_queue.clear();
-    m_current_pipeline = {};
-}
+    void reset() { m_commands.clear(); }
+
+private:
+    std::deque<Cmd> m_commands;
+};
 
 } // namespace GE

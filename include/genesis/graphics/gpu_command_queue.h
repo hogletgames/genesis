@@ -32,30 +32,14 @@
 
 #pragma once
 
+#include <genesis/core/deferred_commands.h>
 #include <genesis/core/export.h>
-#include <genesis/graphics/pipeline.h>
-
-#include <deque>
-#include <functional>
 
 namespace GE {
 
 using GPUCommandBuffer = void*;
 
-class GE_API GPUCommandQueue
-{
-public:
-    using DelayedCommand = std::function<void(GPUCommandBuffer)>;
-    using DelayedCommandQueue = std::deque<DelayedCommand>;
-    using PipelineHandle = Pipeline::NativeHandle;
-
-    void enqueue(DelayedCommand cmd);
-    void execCommands(GPUCommandBuffer cmd_buffer) const;
-    void clear();
-
-private:
-    PipelineHandle m_current_pipeline{};
-    std::deque<DelayedCommand> m_cmd_queue;
-};
+class GE_API GPUCommandQueue: public DeferredCommands<void(GPUCommandBuffer)>
+{};
 
 } // namespace GE
