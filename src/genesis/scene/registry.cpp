@@ -37,13 +37,13 @@ namespace GE::Scene {
 
 Entity Registry::create()
 {
-    return {m_registry.create(), &m_registry};
+    return toEntity(m_registry.create());
 }
 
 Entity Registry::entity(EntityHandle entity_id)
 {
     if (m_registry.valid(entity_id)) {
-        return {entity_id, &m_registry};
+        return toEntity(entity_id);
     }
 
     return {};
@@ -75,7 +75,7 @@ void Registry::eachEntity(const ForeachCallback& callback) const
 
 Entity Registry::toEntity(EntityHandle entity) const
 {
-    return {entity, &m_registry};
+    return Entity::Factory::create(entity, &m_registry);
 }
 
 } // namespace GE::Scene

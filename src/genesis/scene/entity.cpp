@@ -34,9 +34,19 @@
 
 namespace GE::Scene {
 
-Entity::Entity(NativeHandle native_handle, entt::registry *registry)
+Entity::Entity(NativeHandle native_handle, entt::registry* registry)
     : m_handle{native_handle}
     , m_registry{registry}
 {}
+
+Entity Entity::Factory::create(NativeHandle entity_handle, entt::registry* registry)
+{
+    return {entity_handle, registry};
+}
+
+Entity Entity::Factory::createWithRegistryOfEntity(const Entity& entity, NativeHandle entity_handle)
+{
+    return entity.makeEntity(entity_handle);
+}
 
 } // namespace GE::Scene

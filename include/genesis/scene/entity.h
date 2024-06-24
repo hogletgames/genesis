@@ -39,12 +39,15 @@
 
 namespace GE::Scene {
 
+class EntityNode;
 class Registry;
 
 class GE_API Entity
 {
 public:
     using NativeHandle = entt::entity;
+
+    class Factory;
 
     Entity() = default;
 
@@ -57,28 +60,28 @@ public:
     template<typename T, typename... Args>
     decltype(auto) add(Args&&... args)
     {
-        GE_CORE_ASSERT(!has<T>(), "Entity already has this component");
+        GE_CORE_ASSERT(!has<T>(), "Entity already has '{}' component", T::NAME);
         return m_registry->emplace<T>(m_handle, std::forward<Args>(args)...);
     }
 
     template<typename T>
     void remove()
     {
-        GE_CORE_ASSERT(has<T>(), "Unable to remove non-existent component");
+        GE_CORE_ASSERT(has<T>(), "Unable to remove non-existent '{}' component", T::NAME);
         m_registry->remove<T>(m_handle);
     }
 
     template<typename T>
     T& get()
     {
-        GE_CORE_ASSERT(has<T>(), "Unable to get non-existent component");
+        GE_CORE_ASSERT(has<T>(), "Unable to get non-existent '{}' component", T::NAME);
         return m_registry->get<T>(m_handle);
     }
 
     template<typename T>
     const T& get() const
     {
-        GE_CORE_ASSERT(has<T>(), "Unable to get non-existent component");
+        GE_CORE_ASSERT(has<T>(), "Unable to get non-existent '{}' component", T::NAME);
         return m_registry->get<T>(m_handle);
     }
 
@@ -88,12 +91,11 @@ public:
     friend constexpr bool operator==(const Entity& lhs, const Entity& rhs);
     friend constexpr bool operator!=(const Entity& lhs, const Entity& rhs);
 
-private:
-    friend Registry;
-
-    Entity(NativeHandle native_handle, entt::registry* registry);
-
     static constexpr auto NULL_ID{entt::null};
+
+private:
+    Entity(NativeHandle native_handle, entt::registry* registry);
+    Entity makeEntity(NativeHandle entity_handle) const { return {entity_handle, m_registry}; }
 
     NativeHandle m_handle{NULL_ID};
     entt::registry* m_registry{nullptr};
@@ -108,5 +110,15 @@ constexpr bool operator!=(const Entity& lhs, const Entity& rhs)
 {
     return !(lhs == rhs);
 }
+
+class Entity::Factory
+{
+private:
+    friend EntityNode;
+    friend Registry;
+
+    static Entity create(NativeHandle entity_handle, entt::registry* registry);
+    static Entity createWithRegistryOfEntity(const Entity& entity, NativeHandle entity_handle);
+};
 
 } // namespace GE::Scene
