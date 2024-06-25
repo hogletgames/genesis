@@ -58,11 +58,8 @@ private:
     Entity loadEntities(Scene* scene, const YAML::Node& node);
     Entity loadEntity(Scene* scene, const YAML::Node& node);
     bool loadComponent(Entity* entity, const YAML::Node& node);
-    void loadCameraComponent(Entity* entity, const YAML::Node& node);
     void loadMaterialComponent(Entity* entity, const YAML::Node& node);
     void loadSpriteComponent(Entity* entity, const YAML::Node& node);
-    void loadTagComponent(Entity* entity, const YAML::Node& node);
-    void loadTransformComponent(Entity* entity, const YAML::Node& node);
 
     Scene m_scene_buffer;
     Scene* m_scene{nullptr};
