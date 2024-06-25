@@ -97,6 +97,122 @@ struct convert<GE::Scene::MaterialComponent> {
 };
 
 template<>
+struct convert<GE::Scene::RigidBody2DComponent> {
+    using Component = GE::Scene::RigidBody2DComponent;
+    static constexpr auto TYPE{Component ::NAME};
+
+    static bool decode(const Node& node, Component& rigid_body)
+    {
+        if (node["type"].as<std::string>() != TYPE) {
+            return false;
+        }
+
+        rigid_body.body_type = GE::P2D::toRigidBodyType(node["body_type"].as<std::string>());
+        rigid_body.fixed_rotation = node["fixed_rotation"].as<bool>();
+        return true;
+    }
+
+    static Node encode(const Component& rigid_body)
+    {
+        YAML::Node node;
+        node["type"] = TYPE.data();
+        node["body_type"] = GE::toString(rigid_body.body_type);
+        node["fixed_rotation"] = rigid_body.fixed_rotation;
+        return node;
+    }
+};
+
+template<>
+struct convert<GE::P2D::body_shape_config_base_t> {
+    static bool decode(const Node& node, GE::P2D::body_shape_config_base_t& shape)
+    {
+        shape.friction = node["friction"].as<float>();
+        shape.restitution = node["restitution"].as<float>();
+        shape.density = node["density"].as<float>();
+        return true;
+    }
+
+    static Node encode(const GE::P2D::body_shape_config_base_t& shape)
+    {
+        YAML::Node node;
+        node["friction"] = shape.friction;
+        node["restitution"] = shape.restitution;
+        node["density"] = shape.density;
+        return node;
+    }
+};
+
+template<>
+struct convert<GE::Scene::BoxCollider2DComponent> {
+    using Component = GE::Scene::BoxCollider2DComponent;
+    static constexpr auto TYPE{Component ::NAME};
+
+    static bool decode(const Node& node, Component& collider)
+    {
+        if (node["type"].as<std::string>() != TYPE) {
+            return false;
+        }
+
+        GE::P2D::body_shape_config_base_t& base_shape = collider;
+        base_shape = node["base_shape"].as<GE::P2D::body_shape_config_base_t>();
+
+        collider.size = node["size"].as<GE::Vec2>();
+        collider.center = node["center"].as<GE::Vec2>();
+        collider.angle = node["angle"].as<float>();
+        collider.show_collider = node["show_collider"].as<bool>();
+        return true;
+    }
+
+    static Node encode(const Component& collider)
+    {
+        const GE::P2D::body_shape_config_base_t& base_shape = collider;
+
+        YAML::Node node;
+        node["type"] = TYPE.data();
+        node["base_shape"] = base_shape;
+        node["size"] = collider.size;
+        node["center"] = collider.center;
+        node["angle"] = collider.angle;
+        node["show_collider"] = collider.show_collider;
+        return node;
+    }
+};
+
+template<>
+struct convert<GE::Scene::CircleCollider2DComponent> {
+    using Component = GE::Scene::CircleCollider2DComponent;
+    static constexpr auto TYPE{Component ::NAME};
+
+    static bool decode(const Node& node, Component& collider)
+    {
+        if (node["type"].as<std::string>() != TYPE) {
+            return false;
+        }
+
+        GE::P2D::body_shape_config_base_t& base_shape = collider;
+        base_shape = node["base_shape"].as<GE::P2D::body_shape_config_base_t>();
+
+        collider.offset = node["offset"].as<GE::Vec2>();
+        collider.radius = node["radius"].as<float>();
+        collider.show_collider = node["show_collider"].as<bool>();
+        return true;
+    }
+
+    static Node encode(const Component& collider)
+    {
+        const GE::P2D::body_shape_config_base_t& base_shape = collider;
+
+        YAML::Node node;
+        node["type"] = TYPE.data();
+        node["base_shape"] = base_shape;
+        node["offset"] = collider.offset;
+        node["radius"] = collider.radius;
+        node["show_collider"] = collider.show_collider;
+        return node;
+    }
+};
+
+template<>
 struct convert<GE::Scene::SpriteComponent> {
     using Component = GE::Scene::SpriteComponent;
     static constexpr auto TYPE{Component ::NAME};
