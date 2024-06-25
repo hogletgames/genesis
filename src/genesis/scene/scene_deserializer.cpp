@@ -43,7 +43,28 @@
 
 #include <unordered_map>
 
+#define BIND_LOADER(mem_function) \
+    [this](auto *entity, const auto &node) { mem_function(entity, node); }
+
+#define ADD_LOADER(component_type) {component_type::NAME.data(), &load<component_type>}
+
+#define ADD_MEM_FN_LOADER(component_type) \
+    {component_type::NAME.data(), BIND_LOADER(load##component_type)}
+
 namespace GE::Scene {
+namespace {
+
+template<typename ComponentType>
+void load(Entity *entity, const YAML::Node &node)
+{
+    if (!entity->has<ComponentType>()) {
+        entity->add<ComponentType>();
+    }
+
+    entity->get<ComponentType>() = node.as<ComponentType>();
+}
+
+} // namespace
 
 SceneDeserializer::SceneDeserializer(Scene *scene, Assets::Registry *assets)
     : m_scene{scene}
@@ -114,14 +135,17 @@ Entity SceneDeserializer::loadEntity(Scene *scene, const YAML::Node &node)
 
 bool SceneDeserializer::loadComponent(Entity *entity, const YAML::Node &node)
 {
-    using Loader = void (SceneDeserializer::*)(Entity *, const YAML::Node &);
+    using Loader = std::function<void(Entity *, const YAML::Node &)>;
 
     static const std::unordered_map<std::string, Loader> LOADERS = {
-        {CameraComponent::NAME.data(), &SceneDeserializer::loadCameraComponent},
-        {MaterialComponent::NAME.data(), &SceneDeserializer::loadMaterialComponent},
-        {SpriteComponent::NAME.data(), &SceneDeserializer::loadSpriteComponent},
-        {TagComponent::NAME.data(), &SceneDeserializer::loadTagComponent},
-        {TransformComponent::NAME.data(), &SceneDeserializer::loadTransformComponent},
+        ADD_LOADER(CameraComponent),
+        ADD_MEM_FN_LOADER(MaterialComponent),
+        ADD_LOADER(RigidBody2DComponent),
+        ADD_LOADER(BoxCollider2DComponent),
+        ADD_LOADER(CircleCollider2DComponent),
+        ADD_MEM_FN_LOADER(SpriteComponent),
+        ADD_LOADER(TagComponent),
+        ADD_LOADER(TransformComponent),
     };
 
     if (!node["type"].IsDefined()) {
@@ -133,18 +157,13 @@ bool SceneDeserializer::loadComponent(Entity *entity, const YAML::Node &node)
 
     if (auto loader = getValue(LOADERS, type); loader) {
         try {
-            std::invoke(loader, this, entity, node);
+            std::invoke(loader, entity, node);
         } catch (const std::exception &e) {
             GE_CORE_WARN("Failed to load component '{}': '{}'", type, e.what());
         }
     }
 
     return true;
-}
-
-void SceneDeserializer::loadCameraComponent(Entity *entity, const YAML::Node &node)
-{
-    entity->add<CameraComponent>() = node.as<CameraComponent>();
 }
 
 void SceneDeserializer::loadMaterialComponent(Entity *entity, const YAML::Node &node)
@@ -159,16 +178,6 @@ void SceneDeserializer::loadSpriteComponent(Entity *entity, const YAML::Node &no
     if (auto sprite = node.as<SpriteComponent>(); sprite.loadAll(m_assets)) {
         entity->add<SpriteComponent>() = sprite;
     }
-}
-
-void SceneDeserializer::loadTagComponent(Entity *entity, const YAML::Node &node)
-{
-    entity->get<TagComponent>() = node.as<TagComponent>();
-}
-
-void SceneDeserializer::loadTransformComponent(Entity *entity, const YAML::Node &node)
-{
-    entity->get<TransformComponent>() = node.as<TransformComponent>();
 }
 
 } // namespace GE::Scene
