@@ -56,7 +56,7 @@ std::string toString(EnumType value)
 }
 
 template<typename EnumType>
-std::optional<EnumType> toEnum(const std::string& string)
+std::optional<EnumType> toEnum(std::string_view string)
 {
     return magic_enum::enum_cast<EnumType>(string);
 }
