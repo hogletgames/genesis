@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,29 @@
 
 #pragma once
 
-#include <genesis/scene/components/camera_component.h>
-#include <genesis/scene/components/material_component.h>
-#include <genesis/scene/components/physics2d_components.h>
-#include <genesis/scene/components/relationship_components.h>
-#include <genesis/scene/components/sprite_component.h>
-#include <genesis/scene/components/tag_component.h>
-#include <genesis/scene/components/transform_component.h>
-#include <genesis/scene/components/yaml_convert.h>
+#include <genesis/core/memory.h>
+#include <genesis/math/types.h>
+#include <genesis/physics2d/rigid_body.h>
+
+#include <string_view>
+
+namespace GE::Scene {
+
+struct RigidBody2DComponent {
+    P2D::RigidBody::Type body_type{P2D::RigidBody::Type::STATIC};
+    bool fixed_rotation{false};
+
+    Scoped<P2D::RigidBody> body;
+
+    static constexpr std::string_view NAME{"Rigidbody 2D"};
+};
+
+struct BoxCollider2DComponent: P2D::box_body_shape_config_t {
+    static constexpr std::string_view NAME{"Box Collider 2D"};
+};
+
+struct CircleCollider2DComponent: P2D::circle_body_shape_config_t {
+    static constexpr std::string_view NAME{"Circle Collider 2D"};
+};
+
+} // namespace GE::Scene

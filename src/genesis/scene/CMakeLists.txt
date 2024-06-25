@@ -17,6 +17,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/camera/vp_camera_controller.h
     ${INCLUDE_DIR}/components/camera_component.h
     ${INCLUDE_DIR}/components/material_component.h
+    ${INCLUDE_DIR}/components/physics2d_components.h
     ${INCLUDE_DIR}/components/relationship_components.h
     ${INCLUDE_DIR}/components/sprite_component.h
     ${INCLUDE_DIR}/components/tag_component.h
@@ -54,6 +55,7 @@ ge_add_module(scene
         genesis::core
         genesis::graphics
         genesis::math
+        genesis::physics2d
         yaml-cpp::yaml-cpp
     PRIVATE_DEPS
         genesis::graphics

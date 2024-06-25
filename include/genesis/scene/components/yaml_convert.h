@@ -129,6 +129,86 @@ struct convert<GE::Scene::MaterialComponent> {
 };
 
 template<>
+struct convert<GE::Scene::RigidBody2DComponent> {
+    using Component = GE::Scene::RigidBody2DComponent;
+    static constexpr auto TYPE{Component ::NAME};
+
+    static bool decode(const Node& node, Component& rigid_body)
+    {
+        if (node["type"].as<std::string>() != TYPE) {
+            return false;
+        }
+
+        rigid_body.body_type = GE::P2D::toRigidBodyType(node["body_type"].as<std::string>());
+        rigid_body.fixed_rotation = node["fixed_rotation"].as<bool>();
+        return true;
+    }
+
+    static Node encode(const Component& rigid_body)
+    {
+        YAML::Node node;
+        node["type"] = TYPE.data();
+        node["body_type"] = GE::toString(rigid_body.body_type);
+        node["fixed_rotation"] = rigid_body.fixed_rotation;
+        return node;
+    }
+};
+
+template<>
+struct convert<GE::Scene::BoxCollider2DComponent> {
+    using Component = GE::Scene::BoxCollider2DComponent;
+    static constexpr auto TYPE{Component ::NAME};
+
+    static bool decode(const Node& node, Component& collider)
+    {
+        if (node["type"].as<std::string>() != TYPE) {
+            return false;
+        }
+
+        collider.size = node["size"].as<GE::Vec2>();
+        collider.center = node["center"].as<GE::Vec2>();
+        collider.angle = node["angle"].as<float>();
+        return true;
+    }
+
+    static Node encode(const Component& collider)
+    {
+        YAML::Node node;
+        node["type"] = TYPE.data();
+        node["size"] = collider.size;
+        node["center"] = collider.center;
+        node["angle"] = collider.angle;
+        return node;
+    }
+};
+
+template<>
+struct convert<GE::Scene::CircleCollider2DComponent> {
+    using Component = GE::Scene::CircleCollider2DComponent;
+    static constexpr auto TYPE{Component ::NAME};
+
+    static bool decode(const Node& node, Component& collider)
+    {
+        if (node["type"].as<std::string>() != TYPE) {
+            return false;
+        }
+
+        collider.offset = node["offset"].as<GE::Vec2>();
+        collider.radius = node["radius"].as<float>();
+        return true;
+    }
+
+    static Node encode(const Component& collider)
+    {
+        YAML::Node node;
+        node["type"] = TYPE.data();
+        node["offset"] = collider.offset;
+        node["radius"] = collider.radius;
+        return node;
+    }
+};
+
+template<>
 struct convert<GE::Scene::SpriteComponent> {
     using Component = GE::Scene::SpriteComponent;
     static constexpr auto TYPE{Component ::NAME};
