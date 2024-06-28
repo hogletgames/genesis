@@ -7,6 +7,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/entity_factory.h
     ${INCLUDE_DIR}/entity_node.h
     ${INCLUDE_DIR}/entity_picker.h
+    ${INCLUDE_DIR}/executor.h
     ${INCLUDE_DIR}/registry.h
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/scene.h
@@ -23,6 +24,9 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/components/tag_component.h
     ${INCLUDE_DIR}/components/transform_component.h
     ${INCLUDE_DIR}/components/yaml_convert.h
+    ${INCLUDE_DIR}/executor/dummy_executor.h
+    ${INCLUDE_DIR}/executor/executor_factory.h
+    ${INCLUDE_DIR}/executor/iexecutor.h
     ${INCLUDE_DIR}/renderer/irenderer.h
     ${INCLUDE_DIR}/renderer/plain_renderer.h
     ${INCLUDE_DIR}/renderer/renderer_base.h
@@ -41,6 +45,7 @@ list(APPEND SCENE_SOURCES
     camera/projection_camera.cpp
     camera/view_projection_camera.cpp
     camera/vp_camera_controller.cpp
+    executor/executor_factory.cpp
     renderer/plain_renderer.cpp
     renderer/renderer_base.cpp
     renderer/wb_oit_renderer.cpp
