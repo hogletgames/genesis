@@ -7,6 +7,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/entity_factory.h
     ${INCLUDE_DIR}/entity_node.h
     ${INCLUDE_DIR}/entity_picker.h
+    ${INCLUDE_DIR}/executor.h
     ${INCLUDE_DIR}/pipeline_library.h
     ${INCLUDE_DIR}/registry.h
     ${INCLUDE_DIR}/renderer.h
@@ -25,6 +26,8 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/components/tag_component.h
     ${INCLUDE_DIR}/components/transform_component.h
     ${INCLUDE_DIR}/components/yaml_convert.h
+    ${INCLUDE_DIR}/executor/dummy_executor.h
+    ${INCLUDE_DIR}/executor/iexecutor.h
     ${INCLUDE_DIR}/renderer/irenderer.h
     ${INCLUDE_DIR}/renderer/plain_renderer.h
     ${INCLUDE_DIR}/renderer/renderer_base.h

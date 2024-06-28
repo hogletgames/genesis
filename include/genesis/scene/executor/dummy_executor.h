@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2022, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,19 +32,24 @@
 
 #pragma once
 
-#include <genesis/scene/camera/projection_camera.h>
-#include <genesis/scene/camera/view_projection_camera.h>
-#include <genesis/scene/camera/vp_camera_controller.h>
-#include <genesis/scene/component_list.h>
-#include <genesis/scene/components.h>
-#include <genesis/scene/entity.h>
-#include <genesis/scene/entity_factory.h>
-#include <genesis/scene/entity_node.h>
-#include <genesis/scene/entity_picker.h>
-#include <genesis/scene/executor.h>
-#include <genesis/scene/pipeline_library.h>
-#include <genesis/scene/registry.h>
-#include <genesis/scene/renderer.h>
-#include <genesis/scene/scene.h>
-#include <genesis/scene/scene_deserializer.h>
-#include <genesis/scene/scene_serializer.h>
+#include <genesis/scene/executor/iexecutor.h>
+
+namespace GE::Scene {
+
+class Scene;
+
+class GE_API DummyExecutor: public IExecutor
+{
+public:
+    void onUpdate([[maybe_unused]] Timestamp timestamp) override {}
+
+    void pause() override {}
+    void resume() override {}
+
+    std::string_view type() const override { return TYPE; }
+    bool isPaused() const override { return true; }
+
+    static constexpr std::string_view TYPE{"Dummy"};
+};
+
+} // namespace GE::Scene
