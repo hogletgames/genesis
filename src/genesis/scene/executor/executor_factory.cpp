@@ -32,6 +32,7 @@
 
 #include "executor/executor_factory.h"
 #include "executor/dummy_executor.h"
+#include "executor/runtime2d_executor.h"
 
 #include "genesis/core/log.h"
 
@@ -39,10 +40,14 @@
 
 namespace GE::Scene {
 
-ExecutorFactory::ExecutorFactory()
+ExecutorFactory::ExecutorFactory(Scene* scene, P2D::World* world)
+    : m_scene{scene}
+    , m_world(world)
 {
     m_factory_methods = {
         {DummyExecutor::TYPE, &makeScoped<DummyExecutor>},
+        {Runtime2DExecutor::TYPE,
+         [this] { return makeScoped<Runtime2DExecutor>(m_scene, m_world); }},
     };
 }
 

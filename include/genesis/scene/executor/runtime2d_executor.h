@@ -32,12 +32,8 @@
 
 #pragma once
 
-#include <genesis/core/export.h>
 #include <genesis/core/memory.h>
 #include <genesis/scene/executor/iexecutor.h>
-
-#include <functional>
-#include <unordered_map>
 
 namespace GE::P2D {
 class World;
@@ -47,18 +43,29 @@ namespace GE::Scene {
 
 class Scene;
 
-class GE_API ExecutorFactory
+class Runtime2DExecutor: public IExecutor
 {
 public:
-    ExecutorFactory(Scene* scene, P2D::World* world);
-    Scoped<IExecutor> create(std::string_view type);
+    Runtime2DExecutor(Scene* scene, P2D::World* physics_world);
+    ~Runtime2DExecutor();
+
+    void onUpdate(Timestamp timestamp) override;
+
+    void pause() override { m_is_paused = true; }
+    void resume() override { m_is_paused = false; }
+
+    std::string_view type() const override { return TYPE; }
+    bool isPaused() const override { return m_is_paused; }
+
+    static constexpr std::string_view TYPE{"Runtime 2D"};
 
 private:
-    using FactoryMethod = std::function<Scoped<IExecutor>()>;
+    void initializePhysics2D();
+    void resetRigidBody2D();
 
     Scene* m_scene{nullptr};
     P2D::World* m_world{nullptr};
-    std::unordered_map<std::string_view, FactoryMethod> m_factory_methods;
+    bool m_is_paused{false};
 };
 
 } // namespace GE::Scene
