@@ -32,6 +32,40 @@
 
 #pragma once
 
-#include <genesis/scene/executor/dummy_executor.h>
+#include <genesis/core/memory.h>
 #include <genesis/scene/executor/iexecutor.h>
-#include <genesis/scene/executor/runtime2d_executor.h>
+
+namespace GE::P2D {
+class World;
+} // namespace GE::P2D
+
+namespace GE::Scene {
+
+class Scene;
+
+class GE_API Runtime2DExecutor: public IExecutor
+{
+public:
+    Runtime2DExecutor(Scene* scene, P2D::World* physics_world);
+    ~Runtime2DExecutor();
+
+    void onUpdate(Timestamp timestamp) override;
+
+    void pause() override { m_is_paused = true; }
+    void resume() override { m_is_paused = false; }
+
+    std::string_view type() const override { return TYPE; }
+    bool isPaused() const override { return m_is_paused; }
+
+    static constexpr std::string_view TYPE{"Runtime 2D"};
+
+private:
+    void initializePhysics2D();
+    void resetRigidBody2D();
+
+    Scene* m_scene{nullptr};
+    P2D::World* m_world{nullptr};
+    bool m_is_paused{false};
+};
+
+} // namespace GE::Scene
