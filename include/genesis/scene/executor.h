@@ -35,3 +35,4 @@
 #include <genesis/scene/executor/dummy_executor.h>
 #include <genesis/scene/executor/executor_factory.h>
 #include <genesis/scene/executor/iexecutor.h>
+#include <genesis/scene/executor/runtime2d_executor.h>
