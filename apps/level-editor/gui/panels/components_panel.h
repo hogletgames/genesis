@@ -40,11 +40,14 @@ class WidgetNode;
 
 namespace GE::Scene {
 class Entity;
+struct BoxCollider2DComponent;
 struct CameraComponent;
 struct MaterialComponent;
+struct CircleCollider2DComponent;
+struct RigidBody2DComponent;
+struct SpriteComponent;
 struct TagComponent;
 struct TransformComponent;
-struct SpriteComponent;
 } // namespace GE::Scene
 
 namespace LE {
@@ -69,6 +72,9 @@ private:
     void draw(GE::GUI::WidgetNode* node, GE::Scene::TagComponent* tag);
     void draw(GE::GUI::WidgetNode* node, GE::Scene::TransformComponent* transform);
     void draw(GE::GUI::WidgetNode* node, GE::Scene::SpriteComponent* sprite);
+    void draw(GE::GUI::WidgetNode* node, GE::Scene::RigidBody2DComponent* rigid_body);
+    void draw(GE::GUI::WidgetNode* node, GE::Scene::BoxCollider2DComponent* collider);
+    void draw(GE::GUI::WidgetNode* node, GE::Scene::CircleCollider2DComponent* collider);
 
     LevelEditorContext* m_ctx{nullptr};
 };
