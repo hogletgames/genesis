@@ -41,6 +41,7 @@
 
 using namespace GE::GUI;
 using namespace GE::Scene;
+using namespace GE::P2D;
 
 namespace LE {
 namespace {
@@ -165,6 +166,52 @@ void ComponentsPanel::draw(WidgetNode *node, SpriteComponent *sprite)
     if (node->call<Button>("Load")) {
         sprite->loadAll(m_ctx->assets());
     }
+}
+
+void ComponentsPanel::draw(WidgetNode *node, RigidBody2DComponent *rigid_body)
+{
+    static const std::vector<std::string> BODY_TYPES = {
+        GE::toString(RigidBody::Type::STATIC),
+        GE::toString(RigidBody::Type::DYNAMIC),
+        GE::toString(RigidBody::Type::KINEMATIC),
+    };
+
+    auto type_string = GE::toString(rigid_body->body_type);
+    ComboBox type_combo{"Type", BODY_TYPES, type_string};
+    node->subNode(&type_combo);
+
+    if (type_combo.selectedItem() != type_string) {
+        rigid_body->body_type = toRigidBodyType(type_combo.selectedItem());
+    }
+
+    node->call<Checkbox>("Fixed rotation", &rigid_body->fixed_rotation);
+}
+
+void ComponentsPanel::draw(WidgetNode *node, body_shape_config_base_t *shape_config)
+{
+    node->call<ValueEditor>("Friction", &shape_config->friction, 0.1f, 0.0f, 10.0f);
+    node->call<ValueEditor>("Restitution", &shape_config->restitution, 0.1f, 0.0f, 10.0f);
+    node->call<ValueEditor>("Density", &shape_config->density, 0.1f, 0.0f, 10.0f);
+}
+
+void ComponentsPanel::draw(WidgetNode *node, BoxCollider2DComponent *collider)
+{
+    node->call<Checkbox>("Show collider", &collider->show_collider);
+    draw(node, static_cast<body_shape_config_base_t *>(collider));
+    node->call<ValueEditor>("Size", &collider->size, 0.1f, 0.0f, 10.0f);
+    node->call<ValueEditor>("Center", &collider->center, 0.05f, -10.0f, 10.0f);
+    if (float angle = GE::degrees(collider->angle);
+        node->call<ValueEditor>("Angle", &angle, 1.0f, -360.0f, 360.0f)) {
+        collider->angle = GE::radians(angle);
+    }
+}
+
+void ComponentsPanel::draw(WidgetNode *node, CircleCollider2DComponent *collider)
+{
+    node->call<Checkbox>("Show collider", &collider->show_collider);
+    draw(node, static_cast<body_shape_config_base_t *>(collider));
+    node->call<ValueEditor>("Offset", &collider->offset, 0.05f, -10.0f, 10.0f);
+    node->call<ValueEditor>("Radius", &collider->radius, 0.05f, 0.0f, 10.0f);
 }
 
 } // namespace LE
