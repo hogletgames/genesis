@@ -41,6 +41,7 @@
 
 using namespace GE::GUI;
 using namespace GE::Scene;
+using namespace GE::P2D;
 
 namespace LE {
 namespace {
@@ -132,6 +133,38 @@ void ComponentsPanel::draw(WidgetNode *node, SpriteComponent *sprite)
     if (node->call<Button>("Load")) {
         sprite->loadAll(m_ctx->assets());
     }
+}
+
+void ComponentsPanel::draw(WidgetNode *node, RigidBody2DComponent *rigid_body)
+{
+    static const std::vector<std::string_view> BODY_TYPES{
+        GE::toString(RigidBody::Type::STATIC),
+        GE::toString(RigidBody::Type::DYNAMIC),
+        GE::toString(RigidBody::Type::KINEMATIC),
+    };
+
+    auto type_string = GE::toString(rigid_body->body_type);
+    ComboBox type_combo{"Type", BODY_TYPES, type_string};
+    node->subNode(&type_combo);
+
+    if (type_combo.selectedItem() != type_string) {
+        rigid_body->body_type = toRigidBodyType(type_combo.selectedItem());
+    }
+
+    node->call<Checkbox>("Fixed rotation", &rigid_body->fixed_rotation);
+}
+
+void ComponentsPanel::draw(WidgetNode *node, BoxCollider2DComponent *collider)
+{
+    node->call<ValueEditor>("Size", &collider->size);
+    node->call<ValueEditor>("Center", &collider->center);
+    node->call<ValueEditor>("Angle", &collider->angle);
+}
+
+void ComponentsPanel::draw(WidgetNode *node, CircleCollider2DComponent *collider)
+{
+    node->call<ValueEditor>("Offset", &collider->offset);
+    node->call<ValueEditor>("Radius", &collider->radius);
 }
 
 } // namespace LE
