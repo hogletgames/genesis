@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include "level_editor_context.h"
+
 #include <genesis/gui/window/window_base.h>
 
 namespace GE::GUI {
@@ -47,7 +49,7 @@ namespace LE {
 class GE_API EditorCameraPanel: public GE::GUI::WindowBase
 {
 public:
-    explicit EditorCameraPanel(GE::Scene::ViewProjectionCamera* camera);
+    explicit EditorCameraPanel(LevelEditorContext* ctx);
 
     void onRender() override;
 
@@ -61,7 +63,14 @@ private:
     void drawProjectionOptions(GE::GUI::WidgetNode* node);
     void drawReadOnlyOptions(GE::GUI::WidgetNode* node);
 
-    GE::Scene::ViewProjectionCamera* m_camera{nullptr};
+    void drawSceneExecutor(GE::GUI::WidgetNode* node);
+    void saveScene();
+    void loadSerializedScene();
+
+    GE::Scene::ViewProjectionCamera* camera() { return m_ctx->cameraController()->camera().get(); }
+
+    LevelEditorContext* m_ctx{nullptr};
+    std::string m_saved_scene_path;
 };
 
 } // namespace LE

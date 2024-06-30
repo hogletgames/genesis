@@ -62,6 +62,10 @@ namespace {
 template<typename ComponentType>
 void load(Entity *entity, const YAML::Node &node)
 {
+    if (!entity->has<ComponentType>()) {
+        entity->add<ComponentType>();
+    }
+
     entity->get<ComponentType>() = node.as<ComponentType>();
 }
 
@@ -138,7 +142,7 @@ bool SceneDeserializer::loadComponent(Entity *entity, const YAML::Node &node)
 {
     using Loader = std::function<void(Entity *, const YAML::Node &)>;
 
-    static const std::unordered_map<std::string, Loader> LOADERS = {
+    const std::unordered_map<std::string, Loader> LOADERS = {
         ADD_LOADER(CameraComponent),
         ADD_MEM_FN_LOADER(MaterialComponent),
         ADD_LOADER(RigidBody2DComponent),

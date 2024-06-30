@@ -37,20 +37,20 @@
 namespace GE::P2D {
 
 struct body_shape_config_base_t {
-    float friction{0.2f};
+    float friction{0.5f};
     float restitution{0.0f};
-    float restitution_threshold{1.0f};
-    float density{0.0f};
+    float restitution_threshold{0.5f};
+    float density{1.0f};
 };
 
 struct box_body_shape_config_t: body_shape_config_base_t {
-    Vec2 size{1.0f};
-    Vec2 center{0.0f};
+    Vec2 size{1.0f, 1.0f};
+    Vec2 center{0.0f, 0.0f};
     float angle{0.0f};
 };
 
 struct circle_body_shape_config_t: body_shape_config_base_t {
-    Vec2 offset{0.0f};
+    Vec2 offset{0.0f, 0.0f};
     float radius{1.0f};
 };
 

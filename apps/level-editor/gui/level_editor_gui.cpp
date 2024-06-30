@@ -76,8 +76,7 @@ void LevelEditorGUI::onRender()
 
 void LevelEditorGUI::createPanels()
 {
-    auto editor_camera =
-        GE::makeScoped<EditorCameraPanel>(m_ctx->cameraController()->camera().get());
+    auto editor_camera = GE::makeScoped<EditorCameraPanel>(m_ctx);
     editor_camera->open();
 
     auto viewport = GE::makeScoped<ViewportPanel>(m_ctx);

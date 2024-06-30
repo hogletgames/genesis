@@ -86,4 +86,13 @@ public:
     static void call(std::string_view str_id);
 };
 
+class CloseCurrentPopup
+{
+public:
+    CloseCurrentPopup() = delete;
+    ~CloseCurrentPopup() = delete;
+
+    static void call();
+};
+
 } // namespace GE::GUI

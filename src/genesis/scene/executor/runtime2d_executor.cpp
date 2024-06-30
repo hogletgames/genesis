@@ -35,7 +35,11 @@
 #include "components/transform_component.h"
 #include "entity.h"
 #include "scene.h"
+#include "scene_deserializer.h"
+#include "scene_serializer.h"
 
+#include "genesis/filesystem/filepath.h"
+#include "genesis/filesystem/known_folders.h"
 #include "genesis/math/types.h"
 #include "genesis/physics2d/rigid_body.h"
 #include "genesis/physics2d/world.h"
@@ -78,7 +82,7 @@ void Runtime2DExecutor::onUpdate(Timestamp timestamp)
     }
 
     m_world->step(timestamp, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
-    m_scene->forEachEntity(&updateEntityTransform);
+    m_scene->forEach<RigidBody2DComponent>(&updateEntityTransform);
 }
 
 void Runtime2DExecutor::initializePhysics2D()
@@ -91,9 +95,14 @@ void Runtime2DExecutor::initializePhysics2D()
                                                    rigid_body.fixed_rotation);
 
         if (entity.has<CircleCollider2DComponent>()) {
-            rigid_body.body->createFixure(entity.get<CircleCollider2DComponent>());
+            P2D::circle_body_shape_config_t circle_shape{entity.get<CircleCollider2DComponent>()};
+            circle_shape.radius *= transform.scale.x;
+            rigid_body.body->createFixure(circle_shape);
         } else if (entity.has<BoxCollider2DComponent>()) {
-            rigid_body.body->createFixure(entity.get<BoxCollider2DComponent>());
+            P2D::box_body_shape_config_t box_shape{entity.get<BoxCollider2DComponent>()};
+            box_shape.size.x *= transform.scale.x;
+            box_shape.size.y *= transform.scale.y;
+            rigid_body.body->createFixure(box_shape);
         }
     });
 }

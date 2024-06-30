@@ -41,6 +41,7 @@
 #include "genesis/filesystem.h"
 #include "genesis/graphics.h"
 #include "genesis/gui.h"
+#include "genesis/physics2d.h"
 #include "genesis/scene.h"
 
 using namespace GE::GUI;
@@ -50,6 +51,8 @@ namespace {
 
 const auto SETTINGS_FILE =
     GE::FS::joinPath(GE::FS::cacheDir(LEVEL_EDITOR_APP_NAME), "settings.yaml");
+
+constexpr GE::Vec2 GRAVITY{0.0f, -9.8f};
 
 } // namespace
 
@@ -71,6 +74,7 @@ bool LevelEditor::initialize()
 
     createSceneRenderer();
 
+    m_ctx.world() = GE::P2D::World::create(GRAVITY);
     m_gui = GE::makeScoped<LevelEditorGUI>(&m_ctx);
     connectSignals();
     initializeProject();
@@ -84,6 +88,7 @@ void LevelEditor::shutdown()
 
 void LevelEditor::onUpdate(GE::Timestamp ts)
 {
+    m_ctx.sceneExecutor()->onUpdate(ts);
     m_gui->onUpdate(ts);
 }
 
