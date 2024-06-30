@@ -41,4 +41,14 @@ void SameLine::call(float offset_from_start_x, float spacing_w)
     ImGui::SameLine(offset_from_start_x, spacing_w);
 }
 
+PushItemWidth::PushItemWidth(float width)
+{
+    ImGui::PushItemWidth(width);
+}
+
+PushItemWidth::~PushItemWidth()
+{
+    ImGui::PopItemWidth();
+}
+
 } // namespace GE::GUI

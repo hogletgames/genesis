@@ -91,4 +91,9 @@ void OpenPopup::call(std::string_view str_id)
     ImGui::OpenPopup(str_id.data());
 }
 
+void CloseCurrentPopup::call()
+{
+    ImGui::CloseCurrentPopup();
+}
+
 } // namespace GE::GUI

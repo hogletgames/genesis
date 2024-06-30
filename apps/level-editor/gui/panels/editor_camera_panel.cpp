@@ -35,14 +35,15 @@
 #include "genesis/gui/widgets.h"
 #include "genesis/math/trigonometric.h"
 #include "genesis/scene/camera/view_projection_camera.h"
+#include "genesis/scene/executor.h"
 
 using namespace GE::GUI;
 
 namespace LE {
 
-EditorCameraPanel::EditorCameraPanel(GE::Scene::ViewProjectionCamera *camera)
+EditorCameraPanel::EditorCameraPanel(LevelEditorContext *ctx)
     : WindowBase{NAME}
-    , m_camera{camera}
+    , m_ctx{ctx}
 {}
 
 void EditorCameraPanel::onRender()
@@ -52,18 +53,19 @@ void EditorCameraPanel::onRender()
     drawProjectionCombo(&node);
     drawProjectionOptions(&node);
     drawReadOnlyOptions(&node);
+    drawSceneExecutor(&node);
 }
 
 void EditorCameraPanel::drawView(WidgetNode *node)
 {
-    if (auto position = m_camera->position();
+    if (auto position = camera()->position();
         node->call<::ValueEditor>("Position", &position, 0.1f, -100.0f, 100.0f)) {
-        m_camera->setPosition(position);
+        camera()->setPosition(position);
     }
 
-    if (auto rotation = GE::degrees(m_camera->rotation());
+    if (auto rotation = GE::degrees(camera()->rotation());
         node->call<::ValueEditor>("Rotation", &rotation, 0.1f, -360.0f, 360.0f)) {
-        m_camera->setRotation(GE::radians(rotation));
+        camera()->setRotation(GE::radians(rotation));
     }
 }
 
@@ -74,38 +76,38 @@ void EditorCameraPanel::drawProjectionCombo(WidgetNode *node)
         GE::toString(GE::Scene::ViewProjectionCamera::PERSPECTIVE),
     };
 
-    auto current_projection = GE::toString(m_camera->type());
+    auto current_projection = GE::toString(camera()->type());
     ComboBox combo{"Projection type", PROJECTIONS, current_projection};
     node->subNode(&combo);
 
     if (combo.selectedItem() != current_projection) {
-        m_camera->setType(GE::Scene::toProjectionType(combo.selectedItem()));
+        camera()->setType(GE::Scene::toProjectionType(combo.selectedItem()));
     }
 }
 
 void EditorCameraPanel::drawPerspectiveProjection(WidgetNode *node)
 {
-    auto [fov, near, far] = m_camera->perspectiveOptions();
+    auto [fov, near, far] = camera()->perspectiveOptions();
     node->call<::ValueEditor>("Field of view", &fov, 0.1f, 0.0f, 180.0f);
     node->call<::ValueEditor>("Near", &near, 0.1f, 0.0f, 100.0f);
     node->call<::ValueEditor>("Far", &far, 0.1f, 0.0f, 100.0f);
 
-    m_camera->setPerspectiveOptions({fov, near, far});
+    camera()->setPerspectiveOptions({fov, near, far});
 }
 
 void EditorCameraPanel::drawOrthoProjection(WidgetNode *node)
 {
-    auto [size, near, far] = m_camera->orthographicOptions();
+    auto [size, near, far] = camera()->orthographicOptions();
     node->call<::ValueEditor>("Size", &size, 0.1f, 0.0f, 10.0f);
     node->call<::ValueEditor>("Near", &near, 0.1f, 0.0f, 100.f);
     node->call<::ValueEditor>("Far", &far, 0.1f, 0.0f, 100.0f);
 
-    m_camera->setOrthoOptions({size, near, far});
+    camera()->setOrthoOptions({size, near, far});
 }
 
 void EditorCameraPanel::drawProjectionOptions(WidgetNode *node)
 {
-    switch (m_camera->type()) {
+    switch (camera()->type()) {
         case GE::Scene::ViewProjectionCamera::PERSPECTIVE: drawPerspectiveProjection(node); break;
         case GE::Scene::ViewProjectionCamera::ORTHOGRAPHIC: drawOrthoProjection(node); break;
         default: break;
@@ -114,7 +116,24 @@ void EditorCameraPanel::drawProjectionOptions(WidgetNode *node)
 
 void EditorCameraPanel::drawReadOnlyOptions(WidgetNode *node)
 {
-    node->call<::Text>("Direction: %s", GE::toString(m_camera->direction()).c_str());
+    node->call<Text>("Direction: %s", GE::toString(camera()->direction()).c_str());
+}
+
+void EditorCameraPanel::drawSceneExecutor(WidgetNode *node)
+{
+    static const std::vector<std::string> EXECUTORS = {
+        GE::Scene::DummyExecutor::TYPE.data(),
+        GE::Scene::Runtime2DExecutor::TYPE.data(),
+    };
+
+    node->call<Text>("Scene executor:");
+    ComboBox executor_types{"Executor type", EXECUTORS, m_ctx->sceneExecutor()->type()};
+    node->subNode(&executor_types);
+
+    if (executor_types.selectedItem() != m_ctx->sceneExecutor()->type()) {
+        GE::Scene::ExecutorFactory factory{m_ctx->scene(), m_ctx->world().get()};
+        m_ctx->sceneExecutor() = factory.create(executor_types.selectedItem());
+    }
 }
 
 } // namespace LE

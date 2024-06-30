@@ -78,7 +78,7 @@ void Runtime2DExecutor::onUpdate(Timestamp timestamp)
     }
 
     m_world->step(timestamp, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
-    m_scene->forEachEntity(&updateEntityTransform);
+    m_scene->forEach<RigidBody2DComponent>(&updateEntityTransform);
 }
 
 void Runtime2DExecutor::initializePhysics2D()

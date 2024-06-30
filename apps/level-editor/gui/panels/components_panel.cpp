@@ -52,6 +52,12 @@ const char *isLoaded(const GE::Shared<T> &resource)
     return resource != nullptr ? "loaded" : "null";
 }
 
+template<typename T>
+bool isSuitableNewComponent(const Entity &entity)
+{
+    return !entity.has<T>();
+}
+
 } // namespace
 
 ComponentsPanel::ComponentsPanel(LevelEditorContext *ctx)
@@ -64,6 +70,7 @@ void ComponentsPanel::onRender()
     WidgetNode node{&m_window};
     if (!m_ctx->selectedEntity()->isNull()) {
         drawEntityComponents(m_ctx->selectedEntity());
+        drawAddNewComponents(&node, m_ctx->selectedEntity());
     }
 }
 
@@ -73,6 +80,26 @@ void ComponentsPanel::drawEntityComponents(Entity *entity)
         using Component = std::decay_t<decltype(component)>;
         if (entity->has<Component>()) {
             draw<Component>(entity);
+        }
+    });
+}
+
+void ComponentsPanel::drawAddNewComponents(WidgetNode *node, Entity *entity)
+{
+    constexpr std::string_view ADD_COMPONENT_POPUP{"add_component_popup"};
+
+    if (node->call<Button>("Add component")) {
+        node->call<OpenPopup>(ADD_COMPONENT_POPUP);
+    }
+
+    auto add_component_popup = WidgetNode::create<Popup>(ADD_COMPONENT_POPUP);
+    GE::forEachType<ComponentList>([&add_component_popup, entity](const auto &component) {
+        using Component = std::decay_t<decltype(component)>;
+
+        if (isSuitableNewComponent<Component>(*entity) &&
+            add_component_popup.call<MenuItem>(Component::NAME)) {
+            entity->add<Component>();
+            CloseCurrentPopup::call();
         }
     });
 }
@@ -87,7 +114,7 @@ void ComponentsPanel::draw(Entity *entity)
     draw(&tree_node, &entity->get<Component>());
 }
 
-void ComponentsPanel::draw(WidgetNode *node, GE::Scene::CameraComponent *camera)
+void ComponentsPanel::draw(WidgetNode *node, CameraComponent *camera)
 {
     bool is_primary_camera = *m_ctx->selectedEntity() == m_ctx->scene()->mainCamera();
 
@@ -137,7 +164,7 @@ void ComponentsPanel::draw(WidgetNode *node, SpriteComponent *sprite)
 
 void ComponentsPanel::draw(WidgetNode *node, RigidBody2DComponent *rigid_body)
 {
-    static const std::vector<std::string_view> BODY_TYPES{
+    static const std::vector<std::string> BODY_TYPES = {
         GE::toString(RigidBody::Type::STATIC),
         GE::toString(RigidBody::Type::DYNAMIC),
         GE::toString(RigidBody::Type::KINEMATIC),
@@ -154,8 +181,17 @@ void ComponentsPanel::draw(WidgetNode *node, RigidBody2DComponent *rigid_body)
     node->call<Checkbox>("Fixed rotation", &rigid_body->fixed_rotation);
 }
 
+void ComponentsPanel::draw(WidgetNode *node, body_shape_config_base_t *shape_config)
+{
+    node->call<ValueEditor>("Friction", &shape_config->friction);
+    node->call<ValueEditor>("Restitution", &shape_config->restitution);
+    node->call<ValueEditor>("Restitution threshold", &shape_config->restitution_threshold);
+    node->call<ValueEditor>("Density", &shape_config->density);
+}
+
 void ComponentsPanel::draw(WidgetNode *node, BoxCollider2DComponent *collider)
 {
+    draw(node, static_cast<body_shape_config_base_t *>(collider));
     node->call<ValueEditor>("Size", &collider->size);
     node->call<ValueEditor>("Center", &collider->center);
     node->call<ValueEditor>("Angle", &collider->angle);
@@ -163,6 +199,7 @@ void ComponentsPanel::draw(WidgetNode *node, BoxCollider2DComponent *collider)
 
 void ComponentsPanel::draw(WidgetNode *node, CircleCollider2DComponent *collider)
 {
+    draw(node, static_cast<body_shape_config_base_t *>(collider));
     node->call<ValueEditor>("Offset", &collider->offset);
     node->call<ValueEditor>("Radius", &collider->radius);
 }
