@@ -62,6 +62,8 @@ public:
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
                               const Vec3& value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
+                              const Vec4& value) = 0;
+    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
                               const Mat4& value) = 0;
 
     virtual NativeHandle nativeHandle() const = 0;

@@ -68,6 +68,7 @@ public:
     void pushConstant(GPUCommandQueue* queue, const std::string& name, double value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec2& value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec3& value) override;
+    void pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec4& value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, const Mat4& value) override;
 
     NativeHandle nativeHandle() const override { return m_pipeline; }
