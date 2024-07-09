@@ -410,6 +410,17 @@ void Pipeline::pushConstantCmd<bool>(GPUCommandQueue* queue, const push_constant
 }
 
 template<>
+void Pipeline::pushConstantCmd<const Vec2&>(GPUCommandQueue* queue,
+                                            const push_constant_t& push_constant, const Vec2& value)
+{
+    queue->enqueue([this, &push_constant, &value](void* cmd_buffer) {
+        vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
+                           push_constant.pipeline_stages, push_constant.offset, push_constant.size,
+                           value_ptr(value));
+    });
+}
+
+template<>
 void Pipeline::pushConstantCmd<const Vec3&>(GPUCommandQueue* queue,
                                             const push_constant_t& push_constant, const Vec3& value)
 {
