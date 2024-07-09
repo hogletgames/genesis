@@ -77,6 +77,16 @@ Vec2 Window::availableRegion() const
     return toVec2(ImGui::GetContentRegionAvail());
 }
 
+Vec2 Window::contentRegionMin() const
+{
+    return toVec2(ImGui::GetWindowContentRegionMin());
+}
+
+Vec2 Window::contentRegionMax() const
+{
+    return toVec2(ImGui::GetWindowContentRegionMax());
+}
+
 float Window::aspectRatio() const
 {
     if (auto window_size = size(); window_size.y > 0.0f) {

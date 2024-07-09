@@ -50,6 +50,8 @@ public:
     Vec2 mousePosition() const;
     Vec2 size() const;
     Vec2 availableRegion() const;
+    Vec2 contentRegionMin() const;
+    Vec2 contentRegionMax() const;
     float aspectRatio() const;
 
     bool isFocused() const;
