@@ -38,6 +38,8 @@
 #include "scene.h"
 
 #include "genesis/graphics/framebuffer.h"
+#include "genesis/graphics/pipeline_config.h"
+#include "genesis/graphics/shader.h"
 #include "genesis/graphics/staging_buffer.h"
 
 namespace GE::Scene {

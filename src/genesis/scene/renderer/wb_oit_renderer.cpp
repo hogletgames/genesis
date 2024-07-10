@@ -37,7 +37,9 @@
 
 #include "genesis/graphics/framebuffer.h"
 #include "genesis/graphics/graphics.h"
+#include "genesis/graphics/pipeline_config.h"
 #include "genesis/graphics/renderer.h"
+#include "genesis/graphics/shader.h"
 
 namespace GE::Scene {
 namespace {

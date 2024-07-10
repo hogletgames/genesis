@@ -33,8 +33,13 @@
 #pragma once
 
 #include <genesis/core/export.h>
+#include <genesis/core/memory.h>
+#include <genesis/graphics/shader.h>
 
-#include <cstdint>
+#include <variant>
+#include <vector>
+
+namespace GE {
 
 enum class BlendFactor : uint8_t
 {
@@ -74,3 +79,15 @@ struct GE_API blending_t {
     BlendFactor dst_alpha_factor{BlendFactor::ONE_MINUS_SRC_ALPHA};
     BlendOp alpha_op{BlendOp::ADD};
 };
+
+struct pipeline_config_t {
+    using BlendingCondig = std::variant<blending_t, std::vector<blending_t>>;
+
+    Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
+    Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
+    BlendingCondig blending{blending_t{false}};
+    bool depth_test_enable{true};
+    bool depth_write_enable{true};
+};
+
+} // namespace GE

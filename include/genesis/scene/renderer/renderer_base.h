@@ -32,8 +32,6 @@
 
 #pragma once
 
-#include "genesis/graphics/pipeline.h"
-
 #include <genesis/scene/renderer/irenderer.h>
 
 #include <string>

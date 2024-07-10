@@ -18,7 +18,6 @@ list(APPEND GRAPHICS_SOURCES
     )
 
 list(APPEND GRAPHICS_HEADERS
-    ${INCLUDE_DIR}/blending.h
     ${INCLUDE_DIR}/framebuffer.h
     ${INCLUDE_DIR}/gpu_command_queue.h
     ${INCLUDE_DIR}/graphics.h
@@ -27,6 +26,7 @@ list(APPEND GRAPHICS_HEADERS
     ${INCLUDE_DIR}/index_buffer.h
     ${INCLUDE_DIR}/mesh.h
     ${INCLUDE_DIR}/pipeline.h
+    ${INCLUDE_DIR}/pipeline_config.h
     ${INCLUDE_DIR}/render_command.h
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/shader.h

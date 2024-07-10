@@ -33,7 +33,7 @@
 #include "pipeline_resources.h"
 #include "descriptor_pool.h"
 #include "device.h"
-#include "pipeline.h"
+#include "pipeline_config.h"
 #include "vulkan_exception.h"
 
 #include "genesis/core/utils.h"

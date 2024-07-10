@@ -34,10 +34,11 @@
 
 #include <genesis/assets/resource_base.h>
 #include <genesis/core/memory.h>
-#include <genesis/graphics/pipeline.h>
 
 namespace GE {
+class Pipeline;
 class Renderer;
+class Shader;
 } // namespace GE
 
 namespace GE::Assets {
