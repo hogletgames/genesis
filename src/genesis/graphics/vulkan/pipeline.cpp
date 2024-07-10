@@ -31,12 +31,12 @@
  */
 
 #include "pipeline.h"
-#include "blending.h"
 #include "buffers/uniform_buffer.h"
 #include "command_buffer.h"
 #include "device.h"
 #include "image.h"
 #include "input_stage_descriptions.h"
+#include "pipeline_config.h"
 #include "pipeline_resources.h"
 #include "shader.h"
 #include "shader_data_type_size.h"

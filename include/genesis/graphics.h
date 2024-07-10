@@ -32,7 +32,6 @@
 
 #pragma once
 
-#include <genesis/graphics/blending.h>
 #include <genesis/graphics/framebuffer.h>
 #include <genesis/graphics/gpu_command_queue.h>
 #include <genesis/graphics/graphics.h>
@@ -41,6 +40,7 @@
 #include <genesis/graphics/index_buffer.h>
 #include <genesis/graphics/mesh.h>
 #include <genesis/graphics/pipeline.h>
+#include <genesis/graphics/pipeline_config.h>
 #include <genesis/graphics/render_command.h>
 #include <genesis/graphics/renderer.h>
 #include <genesis/graphics/shader.h>

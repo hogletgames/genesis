@@ -37,6 +37,7 @@
 #include "image.h"
 #include "pipeline.h"
 #include "pipeline_barrier.h"
+#include "pipeline_config.h"
 #include "texture.h"
 #include "utils.h"
 #include "vulkan_exception.h"
