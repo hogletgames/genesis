@@ -5,6 +5,7 @@ list(APPEND GRAPHICS_SOURCES
     graphics.cpp
     index_buffer.cpp
     mesh.cpp
+    primitives_renderer.cpp
     render_command.cpp
     shader.cpp
     shader_input_layout.cpp
@@ -25,6 +26,7 @@ list(APPEND GRAPHICS_HEADERS
     ${INCLUDE_DIR}/graphics_factory.h
     ${INCLUDE_DIR}/index_buffer.h
     ${INCLUDE_DIR}/mesh.h
+    ${INCLUDE_DIR}/primitives_renderer.h
     ${INCLUDE_DIR}/pipeline.h
     ${INCLUDE_DIR}/pipeline_config.h
     ${INCLUDE_DIR}/render_command.h

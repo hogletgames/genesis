@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021-2022, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,25 +32,34 @@
 
 #pragma once
 
-#include <genesis/graphics/framebuffer.h>
-#include <genesis/graphics/gpu_command_queue.h>
-#include <genesis/graphics/graphics.h>
-#include <genesis/graphics/graphics_context.h>
-#include <genesis/graphics/graphics_factory.h>
-#include <genesis/graphics/index_buffer.h>
-#include <genesis/graphics/mesh.h>
-#include <genesis/graphics/pipeline.h>
-#include <genesis/graphics/pipeline_config.h>
-#include <genesis/graphics/primitives_renderer.h>
-#include <genesis/graphics/render_command.h>
-#include <genesis/graphics/renderer.h>
-#include <genesis/graphics/shader.h>
-#include <genesis/graphics/shader_input_layout.h>
-#include <genesis/graphics/shader_precompiler.h>
-#include <genesis/graphics/shader_reflection.h>
-#include <genesis/graphics/shader_resource_descriptors.h>
-#include <genesis/graphics/texture.h>
-#include <genesis/graphics/texture_loader.h>
-#include <genesis/graphics/uniform_buffer.h>
-#include <genesis/graphics/vertex.h>
-#include <genesis/graphics/vertex_buffer.h>
+#include <genesis/core/export.h>
+#include <genesis/core/memory.h>
+#include <genesis/math/types.h>
+
+namespace GE {
+
+class IndexBuffer;
+class Pipeline;
+class Renderer;
+class VertexBuffer;
+
+class GE_API PrimitivesRenderer
+{
+public:
+    explicit PrimitivesRenderer(Renderer* renderer);
+    ~PrimitivesRenderer();
+
+    void begin();
+    void end();
+
+    void renderCircle(const Mat4& transform, const Vec4& color);
+    void renderSquare(const Mat4& transform, const Vec4& color);
+
+private:
+    Renderer* m_renderer{nullptr};
+    Scoped<Pipeline> m_pipeline;
+    Scoped<VertexBuffer> m_circle_vbo;
+    Scoped<VertexBuffer> m_square_vbo;
+};
+
+} // namespace GE
