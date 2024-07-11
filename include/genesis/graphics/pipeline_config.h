@@ -68,6 +68,28 @@ enum class BlendOp : uint8_t
     MAX
 };
 
+enum class PrimitiveTopology : uint8_t
+{
+    POINT_LIST,
+    LINE_LIST,
+    LINE_STRIP,
+    TRIANGLE_LIST,
+    TRIANGLE_STRIP,
+    TRIANGLE_FAN,
+    LINE_LIST_WITH_ADJACENCY,
+    LINE_STRIP_WITH_ADJACENCY,
+    TRIANGLE_LIST_WITH_ADJACENCY,
+    TRIANGLE_STRIP_WITH_ADJACENCY,
+    PATCH_LIST
+};
+
+enum class PolygonMode : uint8_t
+{
+    FILL,
+    LINE,
+    POINT
+};
+
 struct GE_API blending_t {
     bool enabled{true};
 
@@ -86,6 +108,8 @@ struct pipeline_config_t {
     Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
     Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
     BlendingCondig blending{blending_t{false}};
+    PrimitiveTopology primitive_topology{PrimitiveTopology::TRIANGLE_LIST};
+    PolygonMode polygon_mode{PolygonMode::FILL};
     bool depth_test_enable{true};
     bool depth_write_enable{true};
 };
