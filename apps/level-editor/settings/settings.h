@@ -35,13 +35,37 @@
 #include "project_settings.h"
 
 #include <genesis/core/export.h>
-#include <genesis/core/memory.h>
 
 #include <map>
 #include <string>
-#include <vector>
 
 namespace LE {
+
+class GE_API ResourcePaths
+{
+public:
+    ResourcePaths& setResourcesDir(const std::string& path);
+    ResourcePaths& setPlayButtonIconPath(const std::string& path);
+    ResourcePaths& setSimulationButtonIconPath(const std::string& path);
+    ResourcePaths& setStepButtonIconPath(const std::string& path);
+    ResourcePaths& setPauseButtonIconPath(const std::string& path);
+    ResourcePaths& setStopButtonIconPath(const std::string& path);
+
+    const std::string& resorcesDir() const;
+    std::string playButtonIconPath() const;
+    std::string simulationButtonIconPath() const;
+    std::string stepButtonIconPath() const;
+    std::string pauseButtonIconPath() const;
+    std::string stopButtonIconPath() const;
+
+private:
+    std::string m_resources_dir;
+    std::string m_play_button_icon_path;
+    std::string m_simulation_button_icon_path;
+    std::string m_step_button_icon_path;
+    std::string m_pause_button_icon_path;
+    std::string m_stop_button_icon_path;
+};
 
 class GE_API Settings
 {
@@ -50,9 +74,11 @@ public:
 
     ProjectSettings* currentProject() { return &m_current_project; }
     const ProjectPaths& projectPaths() const { return m_projects; }
+    const ResourcePaths& resourePaths() const { return m_resources; }
 
     void setProjectPath(const std::string& name, const std::string& path);
     void setProjectPaths(ProjectPaths projects) { m_projects = std::move(projects); }
+    void setResourcePaths(ResourcePaths resources) { m_resources = std::move(resources); }
 
     bool setCurrentProject(const std::string& project_name);
     void closeCurrentProject();
@@ -61,6 +87,7 @@ public:
 private:
     ProjectSettings m_current_project;
     ProjectPaths m_projects;
+    ResourcePaths m_resources;
 };
 
 } // namespace LE

@@ -51,6 +51,11 @@ bool validate(const YAML::Node &node)
         return false;
     }
 
+    if (!node["resources"]) {
+        GE_ERR("Failed to load a settings config file: 'resources' node is null");
+        return false;
+    }
+
     return true;
 }
 
@@ -76,6 +81,7 @@ bool SettingsDeserializer::deserialize(const std::string &filepath)
     }
 
     m_settings->setProjectPaths(node["projects"].as<Settings::ProjectPaths>());
+    m_settings->setResourcePaths(node["resources"].as<ResourcePaths>());
 
     if (auto current_project = node["current_project"].as<std::string>();
         !current_project.empty()) {

@@ -168,6 +168,7 @@ struct convert<GE::Scene::BoxCollider2DComponent> {
         collider.size = node["size"].as<GE::Vec2>();
         collider.center = node["center"].as<GE::Vec2>();
         collider.angle = node["angle"].as<float>();
+        collider.show_collider = node["show_collider"].as<bool>();
         return true;
     }
 
@@ -178,6 +179,7 @@ struct convert<GE::Scene::BoxCollider2DComponent> {
         node["size"] = collider.size;
         node["center"] = collider.center;
         node["angle"] = collider.angle;
+        node["show_collider"] = collider.show_collider;
         return node;
     }
 };
@@ -195,6 +197,7 @@ struct convert<GE::Scene::CircleCollider2DComponent> {
 
         collider.offset = node["offset"].as<GE::Vec2>();
         collider.radius = node["radius"].as<float>();
+        collider.show_collider = node["show_collider"].as<bool>();
         return true;
     }
 
@@ -204,6 +207,7 @@ struct convert<GE::Scene::CircleCollider2DComponent> {
         node["type"] = TYPE.data();
         node["offset"] = collider.offset;
         node["radius"] = collider.radius;
+        node["show_collider"] = collider.show_collider;
         return node;
     }
 };

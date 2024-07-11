@@ -47,6 +47,11 @@ void PlainRenderer::render(const Scene& scene)
         renderEntity(m_renderer, pipeline, entity);
     });
 
+    m_primitives_renderer.begin();
+    scene.forEach<RigidBody2DComponent>(
+        [this](const auto& entity) { renderCircleCollider2D(entity); });
+    m_primitives_renderer.end();
+
     m_renderer->endFrame();
 }
 

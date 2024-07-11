@@ -41,9 +41,15 @@
 #include "genesis/graphics/renderer.h"
 
 namespace GE::Scene {
+namespace {
+
+constexpr Vec4 COLLODER_COLOR{0.0f, 1.0f, 0.0f, 1.0f};
+
+} // namespace
 
 RendererBase::RendererBase(GE::Renderer* renderer, const ViewProjectionCamera* camera)
     : m_renderer{renderer}
+    , m_primitives_renderer{m_renderer}
     , m_camera{camera}
 {}
 
@@ -68,6 +74,59 @@ void RendererBase::renderEntity(GE::Renderer* renderer, Pipeline* pipeline, cons
     cmd->bind(pipeline, "u_Sprite", *texture);
     cmd->pushConstant(pipeline, "pc.mvp", mvp);
     cmd->draw(*mesh);
+}
+
+void RendererBase::renderPhysics2DColliders(const Entity& entity)
+{
+    if (entity.has<CircleCollider2DComponent>()) {
+        renderCircleCollider2D(entity);
+    }
+
+    if (entity.has<BoxCollider2DComponent>()) {
+        renderBoxCollider2D(entity);
+    }
+}
+
+void RendererBase::renderCircleCollider2D(const Entity& entity)
+{
+    const auto& collider = entity.get<CircleCollider2DComponent>();
+    if (!collider.show_collider) {
+        return;
+    }
+
+    const auto& transform_component = entity.get<TransformComponent>();
+
+    auto translation =
+        transform_component.translation + parentalTranslation(entity) + Vec3{collider.offset, 0.0f};
+    translation.z = 0.0f;
+
+    auto scale_factor = transform_component.scale * Vec3{collider.radius * 2.0f};
+    auto transform = translate(Mat4{1.0f}, translation) * scale(Mat4{1.0f}, scale_factor);
+
+    m_primitives_renderer.renderCircle(m_camera->viewProjection() * transform, COLLODER_COLOR);
+}
+
+void RendererBase::renderBoxCollider2D(const Entity& entity)
+{
+    const auto& collider = entity.get<BoxCollider2DComponent>();
+    if (!collider.show_collider) {
+        return;
+    }
+
+    const auto& transform_component = entity.get<TransformComponent>();
+
+    auto translation =
+        transform_component.translation + parentalTranslation(entity) + Vec3{collider.center, 0.0f};
+    translation.z = 0.0f;
+
+    auto rotation = transform_component.rotation.z + collider.angle;
+
+    auto scale_factor = transform_component.scale * Vec3{collider.size * 2.0f, 1.0f};
+    auto transform =
+        translate(Mat4{1.0f}, translation) * rotate(Mat4{1.0f}, rotation, Vec3{0.0f, 0.0f, 1.0f}) *
+        translate(Mat4{1.0f}, Vec3{collider.offset, 0.0f}) * scale(Mat4{1.0f}, scale_factor);
+
+    m_primitives_renderer.renderSquare(m_camera->viewProjection() * transform, COLLODER_COLOR);
 }
 
 bool RendererBase::isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
@@ -102,6 +161,19 @@ Mat4 parentalTransforms(const Entity& entity)
     }
 
     return parental_transform;
+}
+
+Vec3 parentalTranslation(const Entity& entity)
+{
+    Vec3 parental_translation{0.0f};
+    auto parent = EntityNode{entity}.parentNode();
+
+    while (!parent.isNull()) {
+        parental_translation += parent.entity().get<TransformComponent>().translation;
+        parent = parent.parentNode();
+    }
+
+    return parental_translation;
 }
 
 } // namespace GE::Scene

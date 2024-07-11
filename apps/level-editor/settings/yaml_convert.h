@@ -40,6 +40,32 @@
 namespace YAML {
 
 template<>
+struct convert<LE::ResourcePaths> {
+    static bool decode(const Node& node, LE::ResourcePaths& resources)
+    {
+        resources.setResourcesDir(node["resources_dir"].as<std::string>())
+            .setPlayButtonIconPath(node["play_button_icon"].as<std::string>())
+            .setSimulationButtonIconPath(node["simulation_button_icon"].as<std::string>())
+            .setStepButtonIconPath(node["step_button_icon"].as<std::string>())
+            .setPauseButtonIconPath(node["pause_button_icon"].as<std::string>())
+            .setStepButtonIconPath(node["stop_button_icon"].as<std::string>());
+        return true;
+    }
+
+    static Node encode(const LE::ResourcePaths& resources)
+    {
+        Node node;
+        node["resources_dir"] = resources.resorcesDir();
+        node["play_button_icon"] = resources.playButtonIconPath();
+        node["simulation_button_icon"] = resources.simulationButtonIconPath();
+        node["step_button_icon"] = resources.stepButtonIconPath();
+        node["pause_button_icon"] = resources.pauseButtonIconPath();
+        node["stop_button_icon"] = resources.stepButtonIconPath();
+        return node;
+    }
+};
+
+template<>
 struct convert<LE::ProjectSettings> {
     static bool decode(const Node& node, LE::ProjectSettings& project)
     {

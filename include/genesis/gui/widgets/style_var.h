@@ -37,7 +37,7 @@
 
 namespace GE::GUI {
 
-class StyleVar: public NonCopyable
+class GE_API StyleVar: public NonCopyable
 {
 public:
     enum Index
@@ -73,5 +73,75 @@ public:
     StyleVar(Index idx, const Vec2& value);
     ~StyleVar();
 };
+
+class GE_API StyleColor: public NonCopyable
+{
+public:
+    enum Index
+    {
+        TEXT,
+        TEXT_DISABLED,
+        WINDOW_BG,
+        CHILD_BG,
+        POPUP_BG,
+        BORDER,
+        BORDER_SHADOW,
+        FRAME_BG,
+        FRAME_BG_HOVERED,
+        FRAME_BG_ACTIVE,
+        TITLE_BG,
+        TITLE_BG_ACTIVE,
+        TITLE_BG_COLLAPSED,
+        MENU_BAR_BG,
+        SCROLLBAR_BG,
+        SCROLLBAR_GRAB,
+        SCROLLBAR_GRAB_HOVERED,
+        SCROLLBAR_GRAB_ACTIVE,
+        CHECK_MARK,
+        SLIDER_GRAB,
+        SLIDER_GRAB_ACTIVE,
+        BUTTON,
+        BUTTON_HOVERED,
+        BUTTON_ACTIVE,
+        HEADER,
+        HEADER_HOVERED,
+        HEADER_ACTIVE,
+        SEPARATOR,
+        SEPARATOR_HOVERED,
+        SEPARATOR_ACTIVE,
+        RESIZE_GRIP,
+        RESIZE_GRIP_HOVERED,
+        RESIZE_GRIP_ACTIVE,
+        TAB,
+        TAB_HOVERED,
+        TAB_ACTIVE,
+        TAB_UNFOCUSED,
+        TAB_UNFOCUSED_ACTIVE,
+        DOCKING_PREVIEW,
+        DOCKING_EMPTY_BG,
+        PLOT_LINES,
+        PLOT_LINES_HOVERED,
+        PLOT_HISTOGRAM,
+        PLOT_HISTOGRAM_HOVERED,
+        TABLE_HEADERBG,
+        TABLE_BORDER_STRONG,
+        TABLE_BORDER_LIGHT,
+        TABLE_ROW_BG,
+        TABLE_ROW_BG_ALT,
+        TEXT_SELECTED_BG,
+        DRAG_DROP_TARGET,
+        NAV_HIGHLIGHT,
+        NAV_WINDOWING_HIGHLIGHT,
+        NAV_WINDOWING_DIM_BG,
+        MODAL_WINDOW_DIM_BG,
+        COUNT
+    };
+
+    StyleColor(Index idx, uint32_t value);
+    StyleColor(Index idx, const Vec4& value);
+    ~StyleColor();
+};
+
+std::array<Vec4, StyleColor::COUNT> getStyleColors();
 
 } // namespace GE::GUI

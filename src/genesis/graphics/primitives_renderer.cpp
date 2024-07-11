@@ -36,19 +36,21 @@
 #include "renderer.h"
 #include "vertex_buffer.h"
 
+#include "genesis/core/asserts.h"
+
 namespace GE {
 namespace {
 
-constexpr uint32_t CIRCLE_VERTEX_COUNT{64};
+constexpr uint32_t CIRCLE_SEGMENT_COUNT{64};
+constexpr uint32_t BOX_VERTEX_COUNT{4};
 
-constexpr std::string_view CIRCLE_VERT = R"(
+constexpr std::string_view SHADER_VERT = R"(
 #version 450
 
 layout(location = 0) in vec2 a_Position;
 
 layout(push_constant) uniform u_PushConstants {
-    float radius;
-    vec2 center;
+    mat4 transform;
     vec4 color;
 } pc;
 
@@ -56,13 +58,12 @@ layout(location = 0) out vec4 v_Color;
 
 void main()
 {
-    vec2 vertex_position = a_Position * pc.radius + pc.center;
-    gl_Position = vec4(vertex_position, 0.0, 1.0);
     v_Color = pc.color;
+    gl_Position = pc.transform * vec4(a_Position, 0.0, 1.0);
 }
 )";
 
-constexpr std::string_view CIRCLE_FRAG = R"(
+constexpr std::string_view SHADER_FRAG = R"(
 #version 450
 
 layout(location = 0) in  vec4 v_Color;
@@ -75,51 +76,83 @@ void main()
 }
 )";
 
-Scoped<Pipeline> makeCirclePipeline(Renderer* renderer)
+Scoped<Pipeline> createPipeline(Renderer* renderer)
 {
     pipeline_config_t config;
-    config.vertex_shader->compileFromSource(CIRCLE_VERT.data());
-    config.fragment_shader->compileFromSource(CIRCLE_FRAG.data());
     config.primitive_topology = PrimitiveTopology::LINE_STRIP;
-    config.polygon_mode = PolygonMode::LINE;
     config.depth_test_enable = false;
     config.depth_write_enable = false;
+
+    config.vertex_shader->compileFromSource(SHADER_VERT.data());
+    GE_CORE_ASSERT(config.vertex_shader, "Failed to complie vertex shader");
+
+    config.fragment_shader->compileFromSource(SHADER_FRAG.data());
+    GE_CORE_ASSERT(config.fragment_shader, "Failed to complie fragment shader");
 
     return renderer->createPipeline(config);
 }
 
-Scoped<VertexBuffer> makeCircleVertices(uint64_t segment_count)
+Scoped<VertexBuffer> createCircleVBO(uint64_t segment_count)
 {
-    float angle = 2 * M_PI_2 / segment_count;
+    constexpr float CIRCLE_RADIUS{0.5f};
+
+    float angle = 2.0f * M_PI / segment_count;
     std::vector<Vec2> vertices(segment_count);
 
     for (int i{0}; i < segment_count; i++) {
         float point_angle = angle * i;
-        vertices[i].x = std::cos(point_angle);
-        vertices[i].y = std::sin(point_angle);
+        vertices[i] = Vec2{std::sin(point_angle), std::cos(point_angle)} * CIRCLE_RADIUS;
     }
 
     vertices.push_back(vertices[0]);
-    return VertexBuffer::create(vertices.size(), vertices.data());
+    return VertexBuffer::create(vertices.size() * sizeof(Vec2), vertices.data());
+}
+
+Scoped<VertexBuffer> createSquareVBO()
+{
+    constexpr std::array<Vec2, 5> SQUARE_VERTICES = {
+        Vec2{-0.5f, 0.5f}, Vec2{0.5f, 0.5f}, Vec2{0.5f, -0.5f}, Vec2{-0.5, -0.5}, Vec2{-0.5, 0.5},
+    };
+
+    return VertexBuffer::create(SQUARE_VERTICES.size() * sizeof(Vec2), SQUARE_VERTICES.data());
 }
 
 } // namespace
 
 PrimitivesRenderer::PrimitivesRenderer(Renderer* renderer)
     : m_renderer{renderer}
-    , m_circle{makeCirclePipeline(m_renderer), makeCircleVertices(CIRCLE_VERTEX_COUNT)}
+    , m_pipeline{createPipeline(m_renderer)}
+    , m_circle_vbo{createCircleVBO(CIRCLE_SEGMENT_COUNT)}
+    , m_square_vbo{createSquareVBO()}
 {}
 
-void PrimitivesRenderer::renderCircle(float radius, const Vec2& center, const Vec3& color)
+PrimitivesRenderer::~PrimitivesRenderer() = default;
+
+void PrimitivesRenderer::begin()
+{
+    m_renderer->command()->bind(m_pipeline.get());
+}
+
+void PrimitivesRenderer::end() {}
+
+void PrimitivesRenderer::renderCircle(const Mat4& transform, const Vec4& color)
 {
     auto* cmd = m_renderer->command();
-    auto* pipeline = m_circle.pipeline.get();
+    auto* pipeline = m_pipeline.get();
 
-    cmd->bind(pipeline);
-    cmd->pushConstant(pipeline, "pc.radius", radius);
-    cmd->pushConstant(pipeline, "pc.center", center);
+    cmd->pushConstant(pipeline, "pc.transform", transform);
     cmd->pushConstant(pipeline, "pc.color", color);
-    cmd->draw(m_circle.vbo.get(), CIRCLE_VERTEX_COUNT);
+    cmd->draw(m_circle_vbo.get(), CIRCLE_SEGMENT_COUNT + 1);
+}
+
+void PrimitivesRenderer::renderSquare(const Mat4& transform, const Vec4& color)
+{
+    auto* cmd = m_renderer->command();
+    auto* pipeline = m_pipeline.get();
+
+    cmd->pushConstant(pipeline, "pc.transform", transform);
+    cmd->pushConstant(pipeline, "pc.color", color);
+    cmd->draw(m_square_vbo.get(), BOX_VERTEX_COUNT + 1);
 }
 
 } // namespace GE

@@ -32,47 +32,36 @@
 
 #pragma once
 
+#include <genesis/core/export.h>
 #include <genesis/core/memory.h>
-#include <genesis/math/types.h>
-#include <genesis/scene/renderer/renderer_base.h>
+#include <genesis/graphics/texture.h>
 
 namespace GE {
-class Framebuffer;
+class Texture;
 } // namespace GE
 
-namespace GE::Assets {
-class Registry;
-} // namespace GE::Assets
+namespace LE {
 
-namespace GE::Scene {
+class LevelEditorContext;
+class ResourcePaths;
 
-class Entity;
-
-class WeightedBlendedOITRenderer: public RendererBase
+class GE_API Toolbar
 {
 public:
-    explicit WeightedBlendedOITRenderer(GE::Renderer* renderer, const ViewProjectionCamera* camera);
+    explicit Toolbar(LevelEditorContext* ctx);
+    ~Toolbar();
 
-    void render(const Scene& scene) override;
-    std::string_view type() const override { return TYPE; }
-
-    static constexpr std::string_view TYPE = "Weighted-Blended OIT Scene Renderer";
+    void onRender();
 
 private:
-    void recreateWbOitFramebuffer(const Vec2& size);
-    void createOpaqueColorPipeline(GE::Renderer* renderer);
-    void createAccumulationPipeline(GE::Renderer* renderer);
-    void createComposingPipeline(GE::Renderer* renderer);
+    void loadIcons(const ResourcePaths& resources);
 
-    void renderOpaqueEntities(GE::Renderer* renderer, const Scene& scene);
-    void renderTransparentEntities(GE::Renderer* renderer, const Scene& scene);
-    void renderPhysicsColliders(const Scene& scene);
-    void composeScene(GE::Renderer* renderer);
-
-    Scoped<Framebuffer> m_wb_oit_fbo;
-    Shared<Pipeline> m_color_pipeline;
-    Shared<Pipeline> m_accumulation_pipeline;
-    Shared<Pipeline> m_composing_pipeline;
+    LevelEditorContext* m_ctx;
+    GE::Scoped<GE::Texture> m_play_button_icon;
+    GE::Scoped<GE::Texture> m_simulation_button_icon;
+    GE::Scoped<GE::Texture> m_step_button_icon;
+    GE::Scoped<GE::Texture> m_pause_button_icon;
+    GE::Scoped<GE::Texture> m_stop_button_icon;
 };
 
-} // namespace GE::Scene
+} // namespace LE

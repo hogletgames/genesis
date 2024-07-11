@@ -47,15 +47,18 @@ SettingsSerializer::SettingsSerializer(Settings *settings)
 
 bool SettingsSerializer::serialize(const std::string &filepath)
 {
-    YAML::Node yaml_settings;
-    return serializeSettings(&yaml_settings) && writeSettings(yaml_settings, filepath);
+    YAML::Node yaml_settings = serializeSettings();
+    return writeSettings(yaml_settings, filepath);
 }
 
-bool SettingsSerializer::serializeSettings(YAML::Node *node)
+YAML::Node SettingsSerializer::serializeSettings()
 {
-    (*node)["current_project"] = m_settings->currentProject()->name();
-    (*node)["projects"] = m_settings->projectPaths();
-    return true;
+    YAML::Node node;
+    node["current_project"] = m_settings->currentProject()->name();
+    node["projects"] = m_settings->projectPaths();
+    node["resources"] = m_settings->resourePaths();
+
+    return node;
 }
 
 bool SettingsSerializer::writeSettings(const YAML::Node &node, const std::string &filepath)

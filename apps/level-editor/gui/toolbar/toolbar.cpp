@@ -30,49 +30,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "toolbar.h"
+#include "level_editor_context.h"
 
-#include <genesis/core/memory.h>
-#include <genesis/math/types.h>
-#include <genesis/scene/renderer/renderer_base.h>
+#include "genesis/graphics/texture.h"
+#include "genesis/graphics/texture_loader.h"
+#include "genesis/gui/widgets/style_var.h"
 
-namespace GE {
-class Framebuffer;
-} // namespace GE
+using namespace GE::GUI;
 
-namespace GE::Assets {
-class Registry;
-} // namespace GE::Assets
+namespace LE {
 
-namespace GE::Scene {
-
-class Entity;
-
-class WeightedBlendedOITRenderer: public RendererBase
+Toolbar::Toolbar(LevelEditorContext* ctx)
+    : m_ctx{ctx}
 {
-public:
-    explicit WeightedBlendedOITRenderer(GE::Renderer* renderer, const ViewProjectionCamera* camera);
+    loadIcons(m_ctx->settings()->resourePaths());
+}
 
-    void render(const Scene& scene) override;
-    std::string_view type() const override { return TYPE; }
+Toolbar::~Toolbar() = default;
 
-    static constexpr std::string_view TYPE = "Weighted-Blended OIT Scene Renderer";
+void Toolbar::onRender()
+{
+    auto colors = getStyleColors();
+    auto button_hovered = colors[StyleColor::BUTTON_HOVERED];
+    auto button_active = colors[StyleColor::BUTTON_ACTIVE];
 
-private:
-    void recreateWbOitFramebuffer(const Vec2& size);
-    void createOpaqueColorPipeline(GE::Renderer* renderer);
-    void createAccumulationPipeline(GE::Renderer* renderer);
-    void createComposingPipeline(GE::Renderer* renderer);
+    button_hovered.w = 0.5f;
+    button_active.w = 0.5f;
 
-    void renderOpaqueEntities(GE::Renderer* renderer, const Scene& scene);
-    void renderTransparentEntities(GE::Renderer* renderer, const Scene& scene);
-    void renderPhysicsColliders(const Scene& scene);
-    void composeScene(GE::Renderer* renderer);
+    StyleVar window_padding_style{StyleVar::WINDOW_PADDING, GE::Vec2{0.0f, 2.0f}};
+    StyleVar item_inner_spacing_style{StyleVar::ITEM_INNER_SPACING, GE::Vec2{0.0f, 0.0f}};
+    StyleColor button_color{StyleColor::BUTTON, GE::Vec4{0.0f, 0.0f, 0.0f, 0.0f}};
+    StyleColor button_hovered_style{StyleColor::BUTTON_HOVERED, button_hovered};
+    StyleColor button_active_style{StyleColor::BUTTON_ACTIVE, button_active};
+}
 
-    Scoped<Framebuffer> m_wb_oit_fbo;
-    Shared<Pipeline> m_color_pipeline;
-    Shared<Pipeline> m_accumulation_pipeline;
-    Shared<Pipeline> m_composing_pipeline;
-};
+void Toolbar::loadIcons(const ResourcePaths& resources)
+{
+    m_play_button_icon = GE::TextureLoader{resources.playButtonIconPath()}.load();
+    m_simulation_button_icon = GE::TextureLoader{resources.simulationButtonIconPath()}.load();
+    m_step_button_icon = GE::TextureLoader{resources.stepButtonIconPath()}.load();
+    m_pause_button_icon = GE::TextureLoader{resources.pauseButtonIconPath()}.load();
+    m_stop_button_icon = GE::TextureLoader{resources.stopButtonIconPath()}.load();
+}
 
-} // namespace GE::Scene
+} // namespace LE

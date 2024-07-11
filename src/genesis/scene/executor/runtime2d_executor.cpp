@@ -100,8 +100,7 @@ void Runtime2DExecutor::initializePhysics2D()
             rigid_body.body->createFixure(circle_shape);
         } else if (entity.has<BoxCollider2DComponent>()) {
             P2D::box_body_shape_config_t box_shape{entity.get<BoxCollider2DComponent>()};
-            box_shape.size.x *= transform.scale.x;
-            box_shape.size.y *= transform.scale.y;
+            box_shape.size *= Vec2{transform.scale};
             rigid_body.body->createFixure(box_shape);
         }
     });

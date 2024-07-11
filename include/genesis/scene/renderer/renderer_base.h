@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <genesis/graphics/primitives_renderer.h>
 #include <genesis/scene/renderer/irenderer.h>
 
 #include <string>
@@ -55,13 +56,19 @@ public:
 protected:
     void renderEntity(GE::Renderer* renderer, Pipeline* pipeline, const Entity& entity);
 
+    void renderPhysics2DColliders(const Entity& entity);
+    void renderCircleCollider2D(const Entity& entity);
+    void renderBoxCollider2D(const Entity& entit);
+
     bool isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
                  Mesh* mesh) const;
 
-    GE::Renderer* m_renderer{nullptr};
+    Renderer* m_renderer{nullptr};
+    PrimitivesRenderer m_primitives_renderer;
     const ViewProjectionCamera* m_camera{nullptr};
 };
 
 Mat4 parentalTransforms(const Entity& entity);
+Vec3 parentalTranslation(const Entity& entity);
 
 } // namespace GE::Scene

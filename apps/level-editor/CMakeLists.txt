@@ -16,6 +16,7 @@ list(APPEND LEVEL_EDITOR_SOURCES
     gui/panels/log_panel.cpp
     gui/panels/scene_panel.cpp
     gui/panels/viewport_panel.cpp
+    gui/toolbar/toolbar.cpp
     gui/windows/add_mesh_resource_window.cpp
     gui/windows/add_pipeline_resources_window.cpp
     gui/windows/add_texture_resource_window.cpp
@@ -49,6 +50,7 @@ list(APPEND LEVEL_EDITOR_HEADERS
     gui/panels/log_panel.h
     gui/panels/scene_panel.h
     gui/panels/viewport_panel.h
+    gui/toolbar/toolbar.h
     gui/windows/add_mesh_resource_window.h
     gui/windows/add_pipeline_resources_window.h
     gui/windows/add_texture_resource_window.h

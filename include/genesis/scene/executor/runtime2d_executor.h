@@ -65,7 +65,7 @@ private:
 
     Scene* m_scene{nullptr};
     P2D::World* m_world{nullptr};
-    bool m_is_paused{true};
+    bool m_is_paused{false};
 };
 
 } // namespace GE::Scene

@@ -47,17 +47,19 @@ class GE_API PrimitivesRenderer
 {
 public:
     explicit PrimitivesRenderer(Renderer* renderer);
+    ~PrimitivesRenderer();
 
-    void renderCircle(float radius, const Vec2& center, const Vec3& color);
+    void begin();
+    void end();
+
+    void renderCircle(const Mat4& transform, const Vec4& color);
+    void renderSquare(const Mat4& transform, const Vec4& color);
 
 private:
-    struct primitives_data_t {
-        Scoped<Pipeline> pipeline;
-        Scoped<VertexBuffer> vbo;
-    };
-
     Renderer* m_renderer{nullptr};
-    primitives_data_t m_circle;
+    Scoped<Pipeline> m_pipeline;
+    Scoped<VertexBuffer> m_circle_vbo;
+    Scoped<VertexBuffer> m_square_vbo;
 };
 
 } // namespace GE

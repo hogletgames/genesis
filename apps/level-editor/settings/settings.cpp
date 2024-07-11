@@ -33,7 +33,75 @@
 #include "settings.h"
 #include "project_settings.h"
 
+#include "genesis/filesystem/filepath.h"
+
 namespace LE {
+
+ResourcePaths& ResourcePaths::setResourcesDir(const std::string& path)
+{
+    m_resources_dir = path;
+    return *this;
+}
+
+ResourcePaths& ResourcePaths::setPlayButtonIconPath(const std::string& path)
+{
+    m_play_button_icon_path = path;
+    return *this;
+}
+
+ResourcePaths& ResourcePaths::setSimulationButtonIconPath(const std::string& path)
+{
+    m_simulation_button_icon_path = path;
+    return *this;
+}
+
+ResourcePaths& ResourcePaths::setStepButtonIconPath(const std::string& path)
+{
+    m_step_button_icon_path = path;
+    return *this;
+}
+
+ResourcePaths& ResourcePaths::setPauseButtonIconPath(const std::string& path)
+{
+    m_pause_button_icon_path = path;
+    return *this;
+}
+
+ResourcePaths& ResourcePaths::setStopButtonIconPath(const std::string& path)
+{
+    m_stop_button_icon_path = path;
+    return *this;
+}
+
+const std::string& ResourcePaths::resorcesDir() const
+{
+    return m_resources_dir;
+}
+
+std::string ResourcePaths::playButtonIconPath() const
+{
+    return GE::FS::joinPath(m_resources_dir, m_play_button_icon_path);
+}
+
+std::string ResourcePaths::simulationButtonIconPath() const
+{
+    return GE::FS::joinPath(m_resources_dir, m_simulation_button_icon_path);
+}
+
+std::string ResourcePaths::stepButtonIconPath() const
+{
+    return GE::FS::joinPath(m_resources_dir, m_step_button_icon_path);
+}
+
+std::string ResourcePaths::pauseButtonIconPath() const
+{
+    return GE::FS::joinPath(m_resources_dir, m_pause_button_icon_path);
+}
+
+std::string ResourcePaths::stopButtonIconPath() const
+{
+    return GE::FS::joinPath(m_resources_dir, m_stop_button_icon_path);
+}
 
 void Settings::setProjectPath(const std::string& name, const std::string& path)
 {

@@ -50,10 +50,14 @@ struct RigidBody2DComponent {
 };
 
 struct BoxCollider2DComponent: P2D::box_body_shape_config_t {
+    bool show_collider{false};
+
     static constexpr std::string_view NAME{"Box Collider 2D"};
 };
 
 struct CircleCollider2DComponent: P2D::circle_body_shape_config_t {
+    bool show_collider{false};
+
     static constexpr std::string_view NAME{"Circle Collider 2D"};
 };
 

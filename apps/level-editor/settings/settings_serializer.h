@@ -52,7 +52,7 @@ public:
     bool serialize(const std::string& filepath);
 
 private:
-    bool serializeSettings(YAML::Node* node);
+    YAML::Node serializeSettings();
     bool writeSettings(const YAML::Node& node, const std::string& filepath);
 
     Settings* m_settings{nullptr};

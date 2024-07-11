@@ -220,6 +220,7 @@ void WeightedBlendedOITRenderer::render(const Scene& scene)
 
     m_renderer->beginFrame(Renderer::CLEAR_ALL);
     composeScene(m_renderer);
+    renderPhysicsColliders(scene);
     m_renderer->endFrame();
 }
 
@@ -349,6 +350,14 @@ void WeightedBlendedOITRenderer::renderTransparentEntities(GE::Renderer* rendere
             renderEntity(renderer, m_accumulation_pipeline.get(), entity);
         }
     });
+}
+
+void WeightedBlendedOITRenderer::renderPhysicsColliders(const Scene& scene)
+{
+    m_primitives_renderer.begin();
+    scene.forEach<RigidBody2DComponent>(
+        [this](const auto& entity) { renderPhysics2DColliders(entity); });
+    m_primitives_renderer.end();
 }
 
 void WeightedBlendedOITRenderer::composeScene(GE::Renderer* renderer)
