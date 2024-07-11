@@ -196,7 +196,7 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     Vulkan::pipeline_config_t config{std::move(base_config)};
 
     config.input_assembly_state.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    config.input_assembly_state.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    config.input_assembly_state.topology = toVkPrimitiveTopology(config.primitive_topology);
     config.input_assembly_state.primitiveRestartEnable = VK_FALSE;
 
     config.viewport_state.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -208,7 +208,7 @@ Vulkan::pipeline_config_t Pipeline::createDefaultConfig(GE::pipeline_config_t ba
     config.rasterization_state.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     config.rasterization_state.depthClampEnable = VK_FALSE;
     config.rasterization_state.rasterizerDiscardEnable = VK_FALSE;
-    config.rasterization_state.polygonMode = VK_POLYGON_MODE_FILL;
+    config.rasterization_state.polygonMode = toVkPolygonMode(config.polygon_mode);
     config.rasterization_state.lineWidth = 1.0f;
     config.rasterization_state.cullMode = VK_CULL_MODE_BACK_BIT;
     config.rasterization_state.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;

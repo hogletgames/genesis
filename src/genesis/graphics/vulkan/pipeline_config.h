@@ -57,7 +57,9 @@ struct pipeline_config_t: GE::pipeline_config_t {
     VkPipelineDynamicStateCreateInfo dynamic_state{};
 };
 
-GE_API VkBlendFactor toVkBlendFactor(BlendFactor factor);
-GE_API VkBlendOp toVkBlendOp(BlendOp op);
+VkBlendFactor toVkBlendFactor(BlendFactor factor);
+VkBlendOp toVkBlendOp(BlendOp op);
+VkPrimitiveTopology toVkPrimitiveTopology(PrimitiveTopology topology);
+VkPolygonMode toVkPolygonMode(PolygonMode mode);
 
 } // namespace GE::Vulkan

@@ -73,4 +73,40 @@ VkBlendOp toVkBlendOp(BlendOp op)
     return VK_BLEND_OP_ADD;
 }
 
+VkPrimitiveTopology toVkPrimitiveTopology(PrimitiveTopology topology)
+{
+    switch (topology) {
+        case PrimitiveTopology::POINT_LIST: return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+        case PrimitiveTopology::LINE_LIST: return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+        case PrimitiveTopology::LINE_STRIP: return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+        case PrimitiveTopology::TRIANGLE_LIST: return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        case PrimitiveTopology::TRIANGLE_STRIP: return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+        case PrimitiveTopology::TRIANGLE_FAN: return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+        case PrimitiveTopology::LINE_LIST_WITH_ADJACENCY:
+            return VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY;
+        case PrimitiveTopology::LINE_STRIP_WITH_ADJACENCY:
+            return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY;
+        case PrimitiveTopology::TRIANGLE_LIST_WITH_ADJACENCY:
+            return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY;
+        case PrimitiveTopology::TRIANGLE_STRIP_WITH_ADJACENCY:
+            return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY;
+        case PrimitiveTopology::PATCH_LIST: return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
+        default: GE_CORE_ASSERT("Unsupported primitive topology: {}", toString(topology));
+    }
+
+    return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+}
+
+VkPolygonMode toVkPolygonMode(PolygonMode mode)
+{
+    switch (mode) {
+        case PolygonMode::FILL: return VK_POLYGON_MODE_FILL;
+        case PolygonMode::LINE: return VK_POLYGON_MODE_LINE;
+        case PolygonMode::POINT: return VK_POLYGON_MODE_POINT;
+        default: GE_CORE_ASSERT("Unsupported polygon mode: {}", toString(mode));
+    }
+
+    return VK_POLYGON_MODE_FILL;
+}
+
 } // namespace GE::Vulkan
