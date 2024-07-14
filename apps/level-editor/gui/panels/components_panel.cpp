@@ -110,7 +110,7 @@ void ComponentsPanel::draw(WidgetNode *node, MaterialComponent *material)
 
 void ComponentsPanel::draw(WidgetNode *node, TagComponent *tag)
 {
-    node->call<Text>("Tag: %s", tag->tag.c_str());
+    node->call<InputText>("Tag", &tag->tag);
 }
 
 void ComponentsPanel::draw(WidgetNode *node, TransformComponent *transform)
