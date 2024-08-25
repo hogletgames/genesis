@@ -80,9 +80,15 @@ Shared<T> tryMakeShared(Args&&... args)
 }
 
 template<class T, class U>
-constexpr Shared<T> staticPtrCast(const Shared<U>& ptr)
+Shared<T> staticPtrCast(const Shared<U>& ptr)
 {
     return std::static_pointer_cast<T>(ptr);
+}
+
+template<class T, class U>
+Shared<T> dynamicPtrCast(const Shared<U>& ptr)
+{
+    return std::dynamic_pointer_cast<T>(ptr);
 }
 
 } // namespace GE
