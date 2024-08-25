@@ -31,7 +31,6 @@
  */
 
 #include "registry.h"
-#include "iresource.h"
 
 namespace GE::Assets {
 
@@ -39,37 +38,79 @@ Registry::Registry() = default;
 
 Registry::~Registry() = default;
 
-void Registry::add(Scoped<IResource> resource)
+Registry::Registry(Registry&& other) noexcept
+    : m_packages{std::move(other.m_packages)}
+{}
+
+Registry& Registry::operator=(Registry&& other) noexcept
 {
-    auto uuid = resource->id();
-    m_resources.emplace(uuid, std::move(resource));
+    if (this != &other) {
+        m_packages = std::move(other.m_packages);
+    }
+
+    return *this;
 }
 
-void Registry::remove(const ResourceID &uuid)
+Package* Registry::emplacePackage(const std::string& name, const std::string& filepath)
 {
-    m_resources.erase(uuid);
+    return &m_packages.emplace(name, Package{name, filepath}).first->second;
 }
 
-void Registry::visit(const ResourceID &id, ResourceVisitor *visitor)
+void Registry::insertPackage(Package&& package)
 {
-    if (auto it = m_resources.find(id); it != m_resources.end()) {
-        it->second->accept(visitor);
+    auto name = package.name();
+    m_packages.insert({std::move(name), std::move(package)});
+}
+
+void Registry::removePackage(const std::string& name)
+{
+    m_packages.erase(name);
+}
+
+void Registry::removeResource(const ResourceID& id)
+{
+    if (auto it = m_packages.find(id.package()); it != m_packages.end()) {
+        return it->second.removeResource(id);
     }
 }
 
-void Registry::visitAll(ResourceVisitor *visitor)
+Package* Registry::package(const std::string& name)
 {
-    for (auto &[_, resource] : m_resources) {
-        resource->accept(visitor);
+    if (auto it = m_packages.find(name); it != m_packages.end()) {
+        return &it->second;
     }
+
+    return nullptr;
 }
 
-Registry::ResourceIDs Registry::ids() const
+const Package* Registry::package(const std::string& name) const
 {
-    ResourceIDs ids(m_resources.size());
-    std::transform(m_resources.begin(), m_resources.end(), ids.begin(),
-                   [](const auto &resource) { return resource.first; });
-    return ids;
+    if (auto it = m_packages.find(name); it != m_packages.end()) {
+        return &it->second;
+    }
+
+    return nullptr;
+}
+
+std::vector<const Package*> Registry::allPackages() const
+{
+    std::vector<const Package*> packages(m_packages.size());
+    std::transform(m_packages.cbegin(), m_packages.cend(), packages.begin(),
+                   [](const auto& package) { return &package.second; });
+    return packages;
+}
+
+std::vector<ResourceID> Registry::allResourceIDs()
+{
+    std::vector<ResourceID> all_resource_ids;
+
+    for (const auto& [package_name, package] : m_packages) {
+        auto resource_ids = package.allResourceIDs();
+        std::copy(all_resource_ids.begin(), all_resource_ids.end(),
+                  std::back_inserter(all_resource_ids));
+    }
+
+    return all_resource_ids;
 }
 
 } // namespace GE::Assets

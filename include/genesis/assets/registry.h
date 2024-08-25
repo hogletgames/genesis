@@ -32,8 +32,8 @@
 
 #pragma once
 
+#include <genesis/assets/package.h>
 #include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_pointer_visitor.h>
 #include <genesis/core/memory.h>
 
 #include <unordered_map>
@@ -46,56 +46,58 @@ class IResource;
 class GE_API Registry
 {
 public:
-    using ResourceIDs = std::vector<ResourceID>;
-
     Registry();
     ~Registry();
 
-    void add(Scoped<IResource> resource);
-    void remove(const ResourceID& uuid);
+    Registry(const Registry& other) = delete;
+    Registry& operator=(const Registry& other) = delete;
+
+    Registry(Registry&& other) noexcept;
+    Registry& operator=(Registry&& other) noexcept;
+
+    Package* emplacePackage(const std::string& name, const std::string& filepath);
+    void insertPackage(Package&& package);
+
+    void removePackage(const std::string& name);
+    void removeResource(const ResourceID& id);
+
+    Package* package(const std::string& name);
+    const Package* package(const std::string& name) const;
 
     template<typename T>
-    const T* get(const ResourceID& id) const;
-    template<typename T>
-    T* get(const ResourceID& id);
-    template<typename T>
-    ResourceIDs getAll();
+    Shared<T> get(const ResourceID& id) const;
 
-    void visit(const ResourceID& id, ResourceVisitor* visitor);
-    void visitAll(ResourceVisitor* visitor);
+    template<typename T>
+    std::vector<Shared<T>> getAllOf() const;
 
-    ResourceIDs ids() const;
+    std::vector<const Package*> allPackages() const;
+    std::vector<ResourceID> allResourceIDs();
 
 private:
-    std::unordered_map<ResourceID, Scoped<IResource>> m_resources;
+    std::unordered_map<std::string, Package> m_packages;
 };
 
 template<typename T>
-const T* Registry::get(const ResourceID& id) const
+Shared<T> Registry::get(const ResourceID& id) const
 {
-    ResourcePointerVisitor<T> visitor;
-    visit(id, &visitor);
-    return visitor.get();
+    if (auto package = m_packages.find(id.package()); package != m_packages.end()) {
+        return package->second.template get<T>(id);
+    }
+
+    return {};
 }
 
 template<typename T>
-T* Registry::get(const ResourceID& id)
+std::vector<Shared<T>> Registry::getAllOf() const
 {
-    ResourcePointerVisitor<T> visitor;
-    visit(id, &visitor);
-    return visitor.get();
-}
+    std::vector<Shared<T>> all_resources;
 
-template<typename T>
-Registry::ResourceIDs Registry::getAll()
-{
-    struct Visitor: ResourceVisitor {
-        ResourceIDs resources;
-        void visit(T* resource) { resources.push_back(resource->id()); }
-    } visitor;
+    for (const auto& [package_name, package] : m_packages) {
+        auto resources = package.template getAllOf<T>();
+        std::copy(resources.cbegin(), resources.cend(), std::back_inserter(all_resources));
+    }
 
-    visitAll(&visitor);
-    return visitor.resources;
+    return all_resources;
 }
 
 } // namespace GE::Assets
