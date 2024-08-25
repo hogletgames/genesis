@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <genesis/core/enum.h>
 #include <genesis/core/export.h>
 #include <genesis/core/format.h>
 #include <genesis/core/hash.h>
@@ -41,13 +42,21 @@
 
 namespace GE::Assets {
 
+enum class Group : uint8_t
+{
+    UNKNOWN,
+    PIPELINES,
+    MESHES,
+    TEXTURES
+};
+
 class GE_API ResourceID
 {
 public:
     ResourceID() = default;
     ResourceID(const ResourceID& other) { copy(other); }
     ResourceID(ResourceID&& other) noexcept { move(other); }
-    ResourceID(std::string package, std::string group, std::string name);
+    ResourceID(std::string package, Group group, std::string name);
 
     ~ResourceID() = default;
 
@@ -55,27 +64,27 @@ public:
     ResourceID& operator=(ResourceID&& other) noexcept;
 
     const std::string& package() const { return m_package; }
-    const std::string& group() const { return m_group; }
+    Group group() const { return m_group; }
     const std::string& name() const { return m_name; }
 
     std::string* package() { return &m_package; }
-    std::string* group() { return &m_group; }
+    Group* group() { return &m_group; }
     std::string* name() { return &m_name; }
 
-    std::string id() const { return GE_FMTSTR("{}.{}.{}", m_package, m_group, m_name); }
+    std::string asString() const;
 
 private:
     void copy(const ResourceID& other);
     void move(ResourceID& other);
 
     std::string m_package;
-    std::string m_group;
+    Group m_group{Group::UNKNOWN};
     std::string m_name;
 };
 
-inline ResourceID::ResourceID(std::string package, std::string group, std::string name)
+inline ResourceID::ResourceID(std::string package, Group group, std::string name)
     : m_package{std::move(package)}
-    , m_group{std::move(group)}
+    , m_group{group}
     , m_name{std::move(name)}
 {}
 
@@ -97,6 +106,11 @@ inline ResourceID& ResourceID::operator=(ResourceID&& other) noexcept
     return *this;
 }
 
+inline std::string ResourceID::asString() const
+{
+    return GE_FMTSTR("{}.{}.{}", m_package, GE::toString(m_group), m_name);
+}
+
 inline void ResourceID::copy(const ResourceID& other)
 {
     m_package = other.m_package;
@@ -107,14 +121,15 @@ inline void ResourceID::copy(const ResourceID& other)
 inline void ResourceID::move(ResourceID& other)
 {
     m_package = std::move(other.m_package);
-    m_group = std::move(other.m_group);
+    m_group = other.m_group;
     m_name = std::move(other.m_name);
 }
 
 inline bool operator<(const ResourceID& lhs, const ResourceID& rhs)
 {
     auto to_tuple = [](const ResourceID& id) {
-        return std::tie(id.package(), id.group(), id.name());
+        return std::tuple<const std::string&, const Group&, const std::string&>(
+            id.package(), id.group(), id.name());
     };
     return to_tuple(lhs) < to_tuple(rhs);
 }
