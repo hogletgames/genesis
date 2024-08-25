@@ -4,7 +4,6 @@ list(APPEND ASSETS_SOURCES
     mesh_resource.cpp
     pipeline_resource.cpp
     registry.cpp
-    resource_base.cpp
     resource_deserializer.cpp
     resource_serializer.cpp
     texture_resource.cpp

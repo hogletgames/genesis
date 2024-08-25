@@ -40,21 +40,34 @@
 
 namespace GE::Assets {
 
+class Package;
+
 class GE_API MeshResource: public ResourceBase
 {
 public:
-    MeshResource(const ResourceID& id, std::string filepath);
+    class Factory;
 
-    void accept(ResourceVisitor* visitor) override;
+    struct config_t {
+        std::string name;
+        std::string filepath;
+    };
 
-    const Shared<Mesh>& mesh() const { return m_mesh; }
     const std::string& filepath() const { return m_filepath; }
+    const Shared<Mesh>& mesh() const { return m_mesh; }
 
-    static Scoped<MeshResource> create(const ResourceID& id, const std::string& filepath);
+    static constexpr Group GROUP{Group::MESHES};
 
 private:
+    MeshResource(const std::string& package, const config_t& config);
+
     std::string m_filepath;
-    Shared<Mesh> m_mesh;
+    Shared<Mesh> m_mesh{makeShared<Mesh>()};
+};
+
+class MeshResource::Factory
+{
+    friend Package;
+    static Shared<MeshResource> create(const std::string& package, const config_t& config);
 };
 
 } // namespace GE::Assets

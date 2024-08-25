@@ -32,7 +32,6 @@
 
 #include "pipeline_resource.h"
 #include "assets_exception.h"
-#include "resource_visitor.h"
 
 #include "genesis/core/log.h"
 #include "genesis/graphics/pipeline.h"
@@ -41,11 +40,18 @@
 
 namespace GE::Assets {
 
-PipelineResource::PipelineResource(const ResourceID &id, std::string vertex_shader,
-                                   std::string fragment_shader)
-    : ResourceBase{id}
-    , m_vertex_shader_path{std::move(vertex_shader)}
-    , m_fragment_shader_path{std::move(fragment_shader)}
+Scoped<Pipeline> PipelineResource::createPipeline(GE::Renderer *renderer,
+                                                  pipeline_config_t config) const
+{
+    config.vertex_shader = m_vertex_shader;
+    config.fragment_shader = m_fragment_shader;
+    return renderer->createPipeline(config);
+}
+
+PipelineResource::PipelineResource(const std::string &package, const config_t &config)
+    : ResourceBase{{package, GROUP, config.name}}
+    , m_vertex_shader_path{config.vertex_shader_path}
+    , m_fragment_shader_path{config.fragment_shader_path}
     , m_vertex_shader{Shader::create(Shader::Type::VERTEX)}
     , m_fragment_shader{Shader::create(Shader::Type::FRAGMENT)}
 {
@@ -58,28 +64,15 @@ PipelineResource::PipelineResource(const ResourceID &id, std::string vertex_shad
     }
 }
 
-void PipelineResource::accept(ResourceVisitor *visitor)
+Shared<PipelineResource> PipelineResource::Factory::create(const std::string &package,
+                                                           const config_t &config)
 {
-    visitor->visit(this);
-}
-
-bool PipelineResource::createPipeline(Renderer *renderer)
-{
-    pipeline_config_t config{m_vertex_shader, m_fragment_shader};
-
-    if (m_pipeline = renderer->createPipeline(config); !m_pipeline) {
-        GE_CORE_ERR("Failed to pipeline for pipeline resource");
-        return false;
+    try {
+        return Shared<PipelineResource>{new PipelineResource{package, config}};
+    } catch (const GE::Exception &e) {
+        GE_CORE_ERR("Failed to create a pipeline resource: '{}'", e.what());
+        return nullptr;
     }
-
-    return true;
-}
-
-Scoped<PipelineResource> PipelineResource::create(const ResourceID &id,
-                                                  const std::string &vertex_shader_path,
-                                                  const std::string &fragment_shader_path)
-{
-    return tryMakeScoped<PipelineResource>(id, vertex_shader_path, fragment_shader_path);
 }
 
 } // namespace GE::Assets

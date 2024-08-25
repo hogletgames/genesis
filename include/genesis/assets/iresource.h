@@ -33,17 +33,15 @@
 #pragma once
 
 #include <genesis/assets/resource_id.h>
+#include <genesis/core/asserts.h>
 #include <genesis/core/interface.h>
 
 namespace GE::Assets {
-
-class ResourceVisitor;
 
 class GE_API IResource: public Interface
 {
 public:
     virtual const ResourceID& id() const = 0;
-    virtual void accept(ResourceVisitor* visitor) = 0;
 };
 
 } // namespace GE::Assets
