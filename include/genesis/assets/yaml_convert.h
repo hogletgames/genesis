@@ -45,9 +45,14 @@ template<>
 struct convert<GE::Assets::ResourceID> {
     static bool decode(const Node& node, GE::Assets::ResourceID& id)
     {
+        auto group = GE::toEnum<GE::Assets::Group>(node["group"].as<std::string>());
+        if (!group.has_value()) {
+            return false;
+        }
+
         id = GE::Assets::ResourceID{
             node["package"].as<std::string>(),
-            node["group"].as<std::string>(),
+            group.value(),
             node["name"].as<std::string>(),
         };
 
@@ -59,24 +64,19 @@ struct convert<GE::Assets::ResourceID> {
         Node node;
         node.SetStyle(YAML::EmitterStyle::Flow);
         node["package"] = id.package();
-        node["group"] = id.group();
+        node["group"] = GE::toString(id.group());
         node["name"] = id.name();
         return node;
     }
 };
 
 template<>
-struct convert<GE::Scoped<GE::Assets::MeshResource>> {
-    static bool decode(const Node& node, GE::Scoped<GE::Assets::MeshResource>& resource)
+struct convert<GE::Assets::MeshResource::config_t> {
+    static bool decode(const Node& node, GE::Assets::MeshResource::config_t& resource_data)
     {
-        using GE::Assets::MeshResource;
-        using GE::Assets::ResourceID;
-
-        auto id = node["id"].as<ResourceID>();
-        auto filepath = node["filepath"].as<std::string>();
-
-        resource = MeshResource::create(id, filepath);
-        return resource != nullptr;
+        resource_data.name = node["name"].as<std::string>();
+        resource_data.filepath = node["filepath"].as<std::string>();
+        return true;
     }
 };
 
@@ -85,26 +85,20 @@ struct convert<GE::Assets::MeshResource> {
     static Node encode(const GE::Assets::MeshResource& resource)
     {
         Node node;
-        node["id"] = resource.id();
+        node["name"] = resource.id().name();
         node["filepath"] = resource.filepath();
-
         return node;
     }
 };
 
 template<>
-struct convert<GE::Scoped<GE::Assets::PipelineResource>> {
-    static bool decode(const Node& node, GE::Scoped<GE::Assets::PipelineResource>& resource)
+struct convert<GE::Assets::PipelineResource::config_t> {
+    static bool decode(const Node& node, GE::Assets::PipelineResource::config_t& config)
     {
-        using GE::Assets::PipelineResource;
-        using GE::Assets::ResourceID;
-
-        auto id = node["id"].as<ResourceID>();
-        auto vertex_shader = node["vertex_shader"].as<std::string>();
-        auto fragment_shader = node["fragment_shader"].as<std::string>();
-
-        resource = PipelineResource::create(id, vertex_shader, fragment_shader);
-        return resource != nullptr;
+        config.name = node["name"].as<std::string>();
+        config.vertex_shader_path = node["vertex_shader_path"].as<std::string>();
+        config.fragment_shader_path = node["fragment_shader_path"].as<std::string>();
+        return true;
     }
 };
 
@@ -113,26 +107,20 @@ struct convert<GE::Assets::PipelineResource> {
     static Node encode(const GE::Assets::PipelineResource& resource)
     {
         Node node;
-        node["id"] = resource.id();
-        node["vertex_shader"] = resource.vertexShader();
-        node["fragment_shader"] = resource.fragmentShader();
-
+        node["name"] = resource.id().name();
+        node["vertex_shader_path"] = resource.vertexShaderPath();
+        node["fragment_shader_path"] = resource.fragmentShaderPath();
         return node;
     }
 };
 
 template<>
-struct convert<GE::Scoped<GE::Assets::TextureResource>> {
-    static bool decode(const Node& node, GE::Scoped<GE::Assets::TextureResource>& resource)
+struct convert<GE::Assets::TextureResource::config_t> {
+    static bool decode(const Node& node, GE::Assets::TextureResource::config_t& config)
     {
-        using GE::Assets::ResourceID;
-        using GE::Assets::TextureResource;
-
-        auto id = node["id"].as<ResourceID>();
-        auto filepath = node["filepath"].as<std::string>();
-
-        resource = TextureResource::create(id, filepath);
-        return resource != nullptr;
+        config.name = node["name"].as<std::string>();
+        config.filepath = node["filepath"].as<std::string>();
+        return true;
     }
 };
 
@@ -141,9 +129,8 @@ struct convert<GE::Assets::TextureResource> {
     static Node encode(const GE::Assets::TextureResource& resource)
     {
         Node node;
-        node["id"] = resource.id();
+        node["name"] = resource.id().name();
         node["filepath"] = resource.filepath();
-
         return node;
     }
 };
