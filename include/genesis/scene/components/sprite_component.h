@@ -55,7 +55,7 @@ struct GE_API SpriteComponent {
 
     bool loadTexture(Assets::Registry *assets);
     bool loadMesh(Assets::Registry *assets);
-    void loadAll(Assets::Registry *assets);
+    bool loadAll(Assets::Registry *assets);
 
 private:
     Assets::ResourceID m_texture_id;
@@ -64,7 +64,7 @@ private:
 
 inline bool SpriteComponent::loadTexture(Assets::Registry *assets)
 {
-    if (const auto *resource = assets->get<Assets::TextureResource>(m_texture_id);
+    if (const auto &resource = assets->get<Assets::TextureResource>(m_texture_id);
         resource != nullptr) {
         texture = resource->texture();
         return true;
@@ -75,7 +75,7 @@ inline bool SpriteComponent::loadTexture(Assets::Registry *assets)
 
 inline bool SpriteComponent::loadMesh(Assets::Registry *assets)
 {
-    if (const auto *resource = assets->get<Assets::MeshResource>(m_mesh_id); resource != nullptr) {
+    if (const auto &resource = assets->get<Assets::MeshResource>(m_mesh_id); resource != nullptr) {
         mesh = resource->mesh();
         return true;
     }
@@ -83,10 +83,9 @@ inline bool SpriteComponent::loadMesh(Assets::Registry *assets)
     return false;
 }
 
-inline void SpriteComponent::loadAll(Assets::Registry *assets)
+inline bool SpriteComponent::loadAll(Assets::Registry *assets)
 {
-    loadTexture(assets);
-    loadMesh(assets);
+    return loadTexture(assets) && loadMesh(assets);
 }
 
 } // namespace GE::Scene

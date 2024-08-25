@@ -58,13 +58,12 @@ Entity EntityFactory::createSquare(std::string_view name)
     auto entity = m_scene->createEntity(name);
 
     auto& sprite = entity.add<SpriteComponent>();
-    sprite.setMeshID({"genesis", "meshes", "square"});
-    sprite.setTextureID({"genesis", "textures", "square"});
+    sprite.setMeshID({"genesis", Assets::Group::MESHES, "square"});
+    sprite.setTextureID({"genesis", Assets::Group::TEXTURES, "square"});
     sprite.loadAll(m_assets);
 
     auto& material = entity.add<MaterialComponent>();
-    material.setMaterialID({"genesis", "materials", "sprite"});
-    material.loadMaterial(m_assets);
+    material.setMaterialID({"genesis", Assets::Group::PIPELINES, "sprite"});
 
     appentToTail(entity);
     return entity;
@@ -75,13 +74,12 @@ Entity EntityFactory::createCircle(std::string_view name)
     auto entity = m_scene->createEntity(name);
 
     auto& sprite = entity.add<SpriteComponent>();
-    sprite.setMeshID({"genesis", "meshes", "square"});
-    sprite.setTextureID({"genesis", "textures", "circle"});
+    sprite.setMeshID({"genesis", Assets::Group::MESHES, "square"});
+    sprite.setTextureID({"genesis", Assets::Group::TEXTURES, "circle"});
     sprite.loadAll(m_assets);
 
     auto& material = entity.add<MaterialComponent>();
-    material.setMaterialID({"genesis", "materials", "sprite"});
-    material.loadMaterial(m_assets);
+    material.setMaterialID({"genesis", Assets::Group::PIPELINES, "sprite"});
 
     appentToTail(entity);
     return entity;
