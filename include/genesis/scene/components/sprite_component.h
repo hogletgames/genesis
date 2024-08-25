@@ -34,7 +34,6 @@
 
 #include <genesis/assets/mesh_resource.h>
 #include <genesis/assets/registry.h>
-#include <genesis/assets/resource_pointer_visitor.h>
 #include <genesis/assets/texture_resource.h>
 
 namespace GE::Scene {

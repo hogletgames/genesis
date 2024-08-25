@@ -143,9 +143,6 @@ void LevelEditor::initializeProject()
         loadAssets(assets);
     }
 
-    GE::Assets::PipelineInitializer initializer{m_ctx.sceneFbo()->renderer()};
-    m_ctx.assets()->visitAll(&initializer);
-
     if (const auto& scene = project->scenePath(); !scene.empty()) {
         loadScene(scene);
     }
