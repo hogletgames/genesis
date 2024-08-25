@@ -37,68 +37,68 @@
 #include "texture_resource.h"
 #include "yaml_convert.h"
 
-#include "genesis/core/memory.h"
-
 namespace GE::Assets {
-namespace {
-
-std::string toString(const YAML::Node& node)
-{
-    std::stringstream ss;
-    ss << node;
-    return ss.str();
-}
-
-template<typename T>
-Scoped<T> resourceAs(const YAML::Node& node)
-{
-    try {
-        return node.as<Scoped<T>>();
-    } catch (const std::exception& e) {
-        GE_CORE_ERR("Failed to decode '{}': {}", toString(node), e.what());
-        return nullptr;
-    }
-}
-
-} // namespace
 
 ResourceDeserializer::ResourceDeserializer(Registry* registry)
-    : m_registry{registry}
+    : m_assets{registry}
 {}
 
 bool ResourceDeserializer::deserialize(const std::string& config_filepath)
 {
-    auto node = YAML::LoadFile(config_filepath);
+    try {
+        auto assets_node = YAML::LoadFile(config_filepath);
 
-    if (node.IsNull()) {
-        GE_CORE_ERR("Failed to load an assets config file from the '{}'", config_filepath);
+        for (const auto& package_filepath_node : assets_node["packages"]) {
+            deserializePackage(package_filepath_node.as<std::string>());
+        }
+    } catch (const std::exception& e) {
+        GE_CORE_ERR("Failed to load assets '{}': '{}'", config_filepath, e.what());
         return false;
     }
 
-    auto resources = node["resources"];
-    bool result{true};
+    return true;
+}
 
-    result &= populate<MeshResource>(resources["meshes"]);
-    result &= populate<PipelineResource>(resources["pipelines"]);
-    result &= populate<TextureResource>(resources["textures"]);
+void ResourceDeserializer::deserializePackage(const std::string& package_filepath)
+{
+    auto package_node = YAML::LoadFile(package_filepath);
+    auto package_name = package_node["name"].as<std::string>();
 
-    return result;
+    Package package{package_name, package_filepath};
+
+    auto resources_node = package_node["resources"];
+    deserializeMeshes(&package, resources_node);
+    deserializePipelines(&package, resources_node);
+    deserializeTextures(&package, resources_node);
+
+    m_assets->insertPackage(std::move(package));
+}
+
+void ResourceDeserializer::deserializeMeshes(Package* package, const YAML::Node& package_node)
+{
+    for (const auto& mesh_node : package_node[GE::toString(Group::MESHES)]) {
+        deserializeResource<MeshResource>(package, mesh_node);
+    }
+}
+
+void ResourceDeserializer::deserializePipelines(Package* package, const YAML::Node& package_node)
+{
+    for (const auto& material_node : package_node[GE::toString(Group::PIPELINES)]) {
+        deserializeResource<PipelineResource>(package, material_node);
+    }
+}
+
+void ResourceDeserializer::deserializeTextures(Package* package, const YAML::Node& package_node)
+{
+    for (const auto& texture_node : package_node[GE::toString(Group::TEXTURES)]) {
+        deserializeResource<TextureResource>(package, texture_node);
+    }
 }
 
 template<typename T>
-bool ResourceDeserializer::populate(const YAML::Node& node)
+void ResourceDeserializer::deserializeResource(Package* package, const YAML::Node& resource_node)
 {
-    bool result{true};
-
-    for (const auto& resource_node : node) {
-        if (auto resource = resourceAs<T>(resource_node); resource) {
-            m_registry->add(std::move(resource));
-        } else {
-            result = false;
-        }
-    }
-
-    return result;
+    package->createResource<T>(resource_node.as<typename T::config_t>());
 }
 
 } // namespace GE::Assets

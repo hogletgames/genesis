@@ -40,6 +40,7 @@
 
 namespace GE::Assets {
 
+class Package;
 class Registry;
 
 class GE_API ResourceDeserializer
@@ -50,11 +51,15 @@ public:
     bool deserialize(const std::string& config_filepath);
 
 private:
-    template<typename T>
-    bool populate(const YAML::Node& node);
+    void deserializePackage(const std::string& package_filepath);
+    void deserializeMeshes(Package* package, const YAML::Node& package_node);
+    void deserializePipelines(Package* package, const YAML::Node& package_node);
+    void deserializeTextures(Package* package, const YAML::Node& package_node);
 
-    Registry* m_registry{nullptr};
-    YAML::Node m_assets;
+    template<typename T>
+    void deserializeResource(Package* package, const YAML::Node& resource_node);
+
+    Registry* m_assets{nullptr};
 };
 
 } // namespace GE::Assets
