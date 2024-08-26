@@ -214,8 +214,9 @@ void Device::createLogicalDevice()
     }
 
     VkPhysicalDeviceFeatures device_features{};
-    device_features.samplerAnisotropy = VK_TRUE;
+    device_features.independentBlend = VK_TRUE;
     device_features.sampleRateShading = VK_TRUE;
+    device_features.samplerAnisotropy = VK_TRUE;
 
     VkPhysicalDeviceDynamicRenderingFeatures dynamic_rendering_features{};
     dynamic_rendering_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES;
@@ -293,7 +294,8 @@ bool Device::isPhysicalDeviceSuitable(VkPhysicalDevice physical_device)
     VkPhysicalDeviceFeatures features{};
     vkGetPhysicalDeviceFeatures(physical_device, &features);
 
-    return features.samplerAnisotropy == VK_TRUE;
+    return features.independentBlend == VK_TRUE && features.samplerAnisotropy == VK_TRUE &&
+           features.sampleRateShading == VK_TRUE;
 }
 
 queue_family_indices_t Device::findQueueFamilies(VkPhysicalDevice physical_device)
