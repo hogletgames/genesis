@@ -51,7 +51,8 @@ class Entity;
 class WeightedBlendedOITRenderer: public RendererBase
 {
 public:
-    explicit WeightedBlendedOITRenderer(GE::Renderer* renderer, const ViewProjectionCamera* camera);
+    WeightedBlendedOITRenderer(GE::Renderer* renderer, const Assets::Registry& assets,
+                               const ViewProjectionCamera* camera);
 
     void render(const Scene& scene) override;
     std::string_view type() const override { return TYPE; }
@@ -60,9 +61,9 @@ public:
 
 private:
     void recreateWbOitFramebuffer(const Vec2& size);
-    void createOpaqueColorPipeline(GE::Renderer* renderer);
-    void createAccumulationPipeline(GE::Renderer* renderer);
-    void createComposingPipeline(GE::Renderer* renderer);
+    void createOpaqueColorPipeline(GE::Renderer* renderer, const Assets::Registry& assets);
+    void createAccumulationPipeline(GE::Renderer* renderer, const Assets::Registry& assets);
+    void createComposingPipeline(GE::Renderer* renderer, const Assets::Registry& assets);
 
     void renderOpaqueEntities(GE::Renderer* renderer, const Scene& scene);
     void renderTransparentEntities(GE::Renderer* renderer, const Scene& scene);

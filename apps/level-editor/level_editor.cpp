@@ -69,11 +69,10 @@ bool LevelEditor::initialize()
         return false;
     }
 
-    createSceneRenderer();
-
     m_gui = GE::makeScoped<LevelEditorGUI>(&m_ctx);
     connectSignals();
     initializeProject();
+    createSceneRenderer();
     return true;
 }
 
@@ -115,9 +114,11 @@ bool LevelEditor::createFramebuffer()
 void LevelEditor::createSceneRenderer()
 {
     auto* renderer = m_ctx.sceneFbo()->renderer();
+    auto* assets = m_ctx.assets();
     const auto* camera = m_ctx.cameraController()->camera().get();
 
-    m_ctx.sceneRenderer() = GE::makeScoped<GE::Scene::WeightedBlendedOITRenderer>(renderer, camera);
+    m_ctx.sceneRenderer() =
+        GE::makeScoped<GE::Scene::WeightedBlendedOITRenderer>(renderer, *assets, camera);
 }
 
 void LevelEditor::connectSignals()
