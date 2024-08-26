@@ -32,11 +32,9 @@
 
 #pragma once
 
-#include "genesis/graphics/pipeline.h"
-
+#include <genesis/graphics/pipeline.h>
+#include <genesis/scene/pipeline_library.h>
 #include <genesis/scene/renderer/irenderer.h>
-
-#include <string>
 
 namespace GE {
 class Mesh;
@@ -61,6 +59,7 @@ protected:
                  Mesh* mesh) const;
 
     GE::Renderer* m_renderer{nullptr};
+    PipelineLibrary m_pipeline_library;
     const ViewProjectionCamera* m_camera{nullptr};
 };
 
