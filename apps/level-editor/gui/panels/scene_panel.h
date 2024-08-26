@@ -51,7 +51,7 @@ class LevelEditorContext;
 class DeferredScenePanelCommands: public GE::DeferredCommands<void()>
 {
 public:
-    DeferredScenePanelCommands(LevelEditorContext* ctx)
+    explicit DeferredScenePanelCommands(LevelEditorContext* ctx)
         : m_ctx{ctx}
     {}
 
