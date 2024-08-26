@@ -73,6 +73,7 @@ bool LevelEditor::initialize()
     connectSignals();
     initializeProject();
     createSceneRenderer();
+    createEntityPicker();
     return true;
 }
 
@@ -119,6 +120,15 @@ void LevelEditor::createSceneRenderer()
 
     m_ctx.sceneRenderer() =
         GE::makeScoped<GE::Scene::WeightedBlendedOITRenderer>(renderer, *assets, camera);
+}
+
+void LevelEditor::createEntityPicker()
+{
+    auto* scene = m_ctx.scene();
+    auto* assets = m_ctx.assets();
+    const auto* camera = m_ctx.cameraController()->camera().get();
+
+    m_ctx.entityPicker() = GE::makeScoped<GE::Scene::EntityPicker>(scene, *assets, camera);
 }
 
 void LevelEditor::connectSignals()
