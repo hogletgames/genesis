@@ -32,38 +32,24 @@
 
 #pragma once
 
-#include <genesis/assets/resource_id.h>
-#include <genesis/gui/widgets/window.h>
-#include <genesis/gui/window/window_base.h>
-
-#include <boost/signals2/signal.hpp>
+#include "gui/windows/add_resource_window_base.h"
 
 namespace LE {
 
-class LevelEditorContext;
-
-class GE_API AddPipelineResourceWindow: public GE::GUI::WindowBase
+class GE_API AddPipelineResourceWindow: public AddResourceWindowBase
 {
 public:
-    using ErrorSignal = boost::signals2::signal<void(std::string_view)>;
-
     explicit AddPipelineResourceWindow(LevelEditorContext* ctx);
 
     void onRender() override;
-
-    ErrorSignal* errorSignal() { return &m_error_signal; }
 
     static constexpr auto NAME{"Add Pipeline Resource"};
 
 private:
     void addResource();
 
-    LevelEditorContext* m_ctx{nullptr};
-    GE::Assets::ResourceID m_id{"genesis", "pipelines", "unknown"};
     std::string m_vertex_shader;
     std::string m_fragment_shader;
-
-    ErrorSignal m_error_signal;
 };
 
 } // namespace LE

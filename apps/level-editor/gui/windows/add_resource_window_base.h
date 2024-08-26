@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,35 @@
 
 #pragma once
 
-#include "gui/windows/add_resource_window_base.h"
+#include <genesis/gui/window/window_base.h>
+
+#include <boost/signals2/signal.hpp>
+
+namespace GE::GUI {
+class WidgetNode;
+} // namespace GE::GUI
 
 namespace LE {
 
-class GE_API AddMeshResourceWindow: public AddResourceWindowBase
+class LevelEditorContext;
+
+class GE_API AddResourceWindowBase: public GE::GUI::WindowBase
 {
 public:
-    explicit AddMeshResourceWindow(LevelEditorContext* ctx);
+    using ErrorSignal = boost::signals2::signal<void(std::string_view)>;
 
-    void onRender() override;
+    ErrorSignal* errorSignal() { return &m_error_signal; }
 
-    static constexpr auto NAME{"Add Mesh Resource"};
+protected:
+    AddResourceWindowBase(std::string_view name, LevelEditorContext* ctx);
 
-private:
-    void addResource();
+    void renderPackageCombobox(GE::GUI::WidgetNode* node);
 
-    std::string m_mesh_path;
+    LevelEditorContext* m_ctx{nullptr};
+    std::string m_package_name;
+    std::string m_resource_name;
+
+    ErrorSignal m_error_signal;
 };
 
 } // namespace LE

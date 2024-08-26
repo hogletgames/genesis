@@ -32,37 +32,23 @@
 
 #pragma once
 
-#include <genesis/assets/resource_id.h>
-#include <genesis/gui/widgets/window.h>
-#include <genesis/gui/window/window_base.h>
-
-#include <boost/signals2/signal.hpp>
+#include "gui/windows/add_resource_window_base.h"
 
 namespace LE {
 
-class LevelEditorContext;
-
-class GE_API AddTextureResourceWindow: public GE::GUI::WindowBase
+class GE_API AddTextureResourceWindow: public AddResourceWindowBase
 {
 public:
-    using ErrorSignal = boost::signals2::signal<void(std::string_view)>;
-
     explicit AddTextureResourceWindow(LevelEditorContext* ctx);
 
     void onRender() override;
-
-    ErrorSignal* errorSignal() { return &m_error_signal; }
 
     static constexpr auto NAME{"Add Texture Resource"};
 
 private:
     void addResource();
 
-    LevelEditorContext* m_ctx{nullptr};
-    GE::Assets::ResourceID m_id{"genesis", "textures", "unknown"};
     std::string m_texture_path;
-
-    ErrorSignal m_error_signal;
 };
 
 } // namespace LE

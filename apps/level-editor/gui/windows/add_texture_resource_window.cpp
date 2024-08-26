@@ -39,23 +39,22 @@
 #include "genesis/gui/widgets.h"
 
 using namespace GE::GUI;
+using namespace GE::Assets;
 
 namespace LE {
 
 AddTextureResourceWindow::AddTextureResourceWindow(LevelEditorContext* ctx)
-    : WindowBase{NAME}
-    , m_ctx(ctx)
+    : AddResourceWindowBase{NAME, ctx}
 {}
 
 void AddTextureResourceWindow::onRender()
 {
     WidgetNode node{&m_window};
-    node.call<InputText>("Package", m_id.package());
-    node.call<InputText>("Group", m_id.group());
-    node.call<InputText>("Name", m_id.name());
+    renderPackageCombobox(&node);
+    node.call<InputText>("Name", &m_resource_name);
     if (node.call<Button>("Texture path")) {
         m_texture_path = openSingleFile("png");
-        *m_id.name() = GE::FS::stem(m_texture_path);
+        m_resource_name = GE::FS::stem(m_texture_path);
     }
     node.call<SameLine>();
     node.call<InputText>("", &m_texture_path);
@@ -66,13 +65,19 @@ void AddTextureResourceWindow::onRender()
 
 void AddTextureResourceWindow::addResource()
 {
-    if (auto resource = GE::Assets::TextureResource::create(m_id, m_texture_path); resource) {
-        m_ctx->assets()->add(std::move(resource));
-        close();
+    auto* package = m_ctx->assets()->package(m_package_name);
+    if (package == nullptr) {
+        m_error_signal(GE_FMTSTR("Package '{}' not found", m_package_name));
         return;
     }
 
-    m_error_signal("Failed to create texture resource");
+    auto resource = package->createResource<TextureResource>({m_resource_name, m_texture_path});
+    if (resource == nullptr) {
+        m_error_signal(GE_FMTSTR("Failed to create texture resource '{}'", m_resource_name));
+        return;
+    }
+
+    close();
 }
 
 } // namespace LE
