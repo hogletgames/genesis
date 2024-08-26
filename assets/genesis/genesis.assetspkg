@@ -1,0 +1,23 @@
+name: genesis
+resources:
+  PIPELINES:
+    - name: entity_id
+      vertex_shader_path: assets/genesis/pipelines/entity_id.vert
+      fragment_shader_path: assets/genesis/pipelines/entity_id.frag
+    - name: sprite
+      vertex_shader_path: assets/genesis/pipelines/sprite.vert
+      fragment_shader_path: assets/genesis/pipelines/sprite.frag
+    - name: wb_oit_composing
+      vertex_shader_path: assets/genesis/pipelines/wb_oit_composing.vert
+      fragment_shader_path: assets/genesis/pipelines/wb_oit_composing.frag
+    - name: wb_oit_accumulation
+      vertex_shader_path: assets/genesis/pipelines/sprite.vert
+      fragment_shader_path: assets/genesis/pipelines/wb_oit_accumulation.frag
+  MESHES:
+    - name: square
+      filepath: assets/genesis/meshes/square.obj
+  TEXTURES:
+    - name: square
+      filepath: assets/genesis/textures/square.png
+    - name: circle
+      filepath: assets/genesis/textures/circle.png
