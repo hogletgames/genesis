@@ -7,6 +7,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/entity_factory.h
     ${INCLUDE_DIR}/entity_node.h
     ${INCLUDE_DIR}/entity_picker.h
+    ${INCLUDE_DIR}/pipeline_library.h
     ${INCLUDE_DIR}/registry.h
     ${INCLUDE_DIR}/renderer.h
     ${INCLUDE_DIR}/scene.h

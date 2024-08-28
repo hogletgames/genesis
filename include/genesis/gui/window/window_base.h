@@ -42,8 +42,8 @@ namespace GE::GUI {
 class GE_API WindowBase: public IWindow
 {
 public:
-    explicit WindowBase(std::string name)
-        : m_name{std::move(name)}
+    explicit WindowBase(std::string_view name)
+        : m_name{name}
         , m_window{m_name, &m_is_open}
     {}
 

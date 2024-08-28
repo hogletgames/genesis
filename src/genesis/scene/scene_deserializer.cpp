@@ -149,16 +149,16 @@ void SceneDeserializer::loadCameraComponent(Entity *entity, const YAML::Node &no
 
 void SceneDeserializer::loadMaterialComponent(Entity *entity, const YAML::Node &node)
 {
-    auto &material = entity->add<MaterialComponent>();
-    material = node.as<MaterialComponent>();
-    material.loadMaterial(m_assets);
+    if (auto material = node.as<MaterialComponent>(); material.loadMaterial(m_assets)) {
+        entity->add<MaterialComponent>() = material;
+    }
 }
 
 void SceneDeserializer::loadSpriteComponent(Entity *entity, const YAML::Node &node)
 {
-    auto &sprite = entity->add<SpriteComponent>();
-    sprite = node.as<SpriteComponent>();
-    sprite.loadAll(m_assets);
+    if (auto sprite = node.as<SpriteComponent>(); sprite.loadAll(m_assets)) {
+        entity->add<SpriteComponent>() = sprite;
+    }
 }
 
 void SceneDeserializer::loadTagComponent(Entity *entity, const YAML::Node &node)

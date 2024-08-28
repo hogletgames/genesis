@@ -38,7 +38,7 @@ namespace GE::GUI {
 
 void Text::call(std::string_view fmt, ...)
 {
-    ImGui::PushID(fmt.data());
+    ImGui::PushID(reinterpret_cast<const void*>(fmt.data()));
     va_list args{};
     va_start(args, fmt);
     ImGui::TextV(fmt.data(), args);

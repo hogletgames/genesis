@@ -129,11 +129,9 @@ void ScenePanel::drawEntity(WidgetNode* node, const Entity& entity)
     std::string_view tag = entity.get<TagComponent>().tag;
     auto entity_tree_node = node->makeSubNode<TreeNode>(tag, flags);
 
-    {
-        auto popup_context = WidgetNode::create<PopupContextItem>();
-        if (popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", tag))) {
-            m_commands.removeEntity(entity);
-        }
+    if (auto popup_context = WidgetNode::create<PopupContextItem>();
+        popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", tag))) {
+        m_commands.removeEntity(entity);
     }
 
     if (!m_is_select_entity_handled && isItemClicked()) {

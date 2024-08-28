@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,12 +30,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "resource_base.h"
+#pragma once
 
-namespace GE::Assets {
+#include <genesis/assets/resource_id.h>
+#include <genesis/core/memory.h>
 
-ResourceBase::ResourceBase(ResourceID id)
-    : m_id{std::move(id)}
-{}
+#include <unordered_map>
 
-} // namespace GE::Assets
+namespace GE {
+class Pipeline;
+class Renderer;
+} // namespace GE
+
+namespace GE::Scene {
+
+class GE_API PipelineLibrary
+{
+public:
+    void add(const Assets::ResourceID& id, const Shared<Pipeline>& pipeline)
+    {
+        m_registry[id] = pipeline;
+    }
+
+    bool has(const Assets::ResourceID& id) const { return m_registry.find(id) != m_registry.end(); }
+    const Shared<Pipeline>& get(const Assets::ResourceID& id) const { return m_registry.at(id); }
+
+private:
+    std::unordered_map<Assets::ResourceID, Shared<Pipeline>> m_registry;
+};
+
+} // namespace GE::Scene

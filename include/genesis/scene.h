@@ -41,6 +41,7 @@
 #include <genesis/scene/entity_factory.h>
 #include <genesis/scene/entity_node.h>
 #include <genesis/scene/entity_picker.h>
+#include <genesis/scene/pipeline_library.h>
 #include <genesis/scene/registry.h>
 #include <genesis/scene/renderer.h>
 #include <genesis/scene/scene.h>

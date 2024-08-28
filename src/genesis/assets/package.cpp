@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,23 +30,58 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
-
-#include <genesis/assets/resource_visitor.h>
+#include "package.h"
 
 namespace GE::Assets {
+namespace {
 
 template<typename T>
-class GE_API ResourcePointerVisitor: public ResourceVisitor
+void appendIds(std::vector<ResourceID>* resource_ids,
+               const std::unordered_map<std::string, Shared<T>>& resources)
 {
-public:
-    void visit(T* resource) override { m_resource = resource; }
+    resource_ids->reserve(resource_ids->size() + resources.size());
+    std::transform(resources.cbegin(), resources.cend(), std::back_inserter(*resource_ids),
+                   [](const auto& item) { return item.second->id(); });
+}
 
-    const T* get() const { return m_resource; }
-    T* get() { return m_resource; }
+} // namespace
 
-private:
-    T* m_resource{nullptr};
-};
+Package::Package(Package&& other) noexcept
+    : m_name{std::move(other.m_name)}
+    , m_filepath{std::move(other.m_filepath)}
+    , m_pipelines{std::move(other.m_pipelines)}
+    , m_meshes{std::move(other.m_meshes)}
+    , m_textures{std::move(other.m_textures)}
+{}
+
+Package& Package::operator=(Package&& other) noexcept
+{
+    if (this != &other) {
+        m_name = std::move(other.m_name);
+        m_filepath = std::move(other.m_filepath);
+        m_pipelines = std::move(other.m_pipelines);
+        m_meshes = std::move(other.m_meshes);
+        m_textures = std::move(other.m_textures);
+    }
+
+    return *this;
+}
+
+void Package::removeResource(const ResourceID& id)
+{
+    m_pipelines.erase(id.name());
+    m_meshes.erase(id.name());
+    m_textures.erase(id.name());
+}
+
+std::vector<ResourceID> Package::allResourceIDs() const
+{
+    std::vector<ResourceID> resource_ids;
+    appendIds(&resource_ids, m_pipelines);
+    appendIds(&resource_ids, m_meshes);
+    appendIds(&resource_ids, m_textures);
+
+    return resource_ids;
+}
 
 } // namespace GE::Assets

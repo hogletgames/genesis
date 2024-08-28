@@ -43,6 +43,10 @@ class StagingBuffer;
 class Texture;
 } // namespace GE
 
+namespace GE::Assets {
+class Registry;
+} // namespace GE::Assets
+
 namespace GE::Scene {
 
 class Entity;
@@ -52,7 +56,7 @@ class ViewProjectionCamera;
 class GE_API EntityPicker
 {
 public:
-    EntityPicker(Scene* scene, const ViewProjectionCamera* camera);
+    EntityPicker(Scene* scene, const Assets::Registry& assets, const ViewProjectionCamera* camera);
     ~EntityPicker();
 
     void onRender();
@@ -64,14 +68,14 @@ public:
 
 private:
     void recreateEntityIdFramebuffer(const Vec2& size);
-    void createEntityIdPipeline();
+    void createEntityIdPipeline(const Assets::Registry& assets);
 
     void renderEntityId(const Entity& entity);
 
     Scene* m_scene{nullptr};
     const ViewProjectionCamera* m_camera{nullptr};
     Scoped<Framebuffer> m_entity_id_fbo;
-    Scoped<Pipeline> m_entity_id_pipline;
+    Scoped<Pipeline> m_entity_id_pipeline;
     Scoped<StagingBuffer> m_entity_id_buffer;
     bool m_is_buffer_updated{false};
 };

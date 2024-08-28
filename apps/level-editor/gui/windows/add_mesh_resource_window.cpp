@@ -38,24 +38,23 @@
 #include "genesis/gui/file_dialog.h"
 #include "genesis/gui/widgets.h"
 
+using namespace GE::Assets;
 using namespace GE::GUI;
 
 namespace LE {
 
 AddMeshResourceWindow::AddMeshResourceWindow(LevelEditorContext* ctx)
-    : WindowBase{NAME}
-    , m_ctx{ctx}
+    : AddResourceWindowBase{NAME, ctx}
 {}
 
 void AddMeshResourceWindow::onRender()
 {
     WidgetNode node{&m_window};
-    node.call<InputText>("Package", m_id.package());
-    node.call<InputText>("Group", m_id.group());
-    node.call<InputText>("Name", m_id.name());
+    renderPackageCombobox(&node);
+    node.call<InputText>("Name", &m_resource_name);
     if (node.call<Button>("Mesh path")) {
         m_mesh_path = openSingleFile("obj");
-        *m_id.name() = GE::FS::stem(m_mesh_path);
+        m_resource_name = GE::FS::stem(m_mesh_path);
     }
     node.call<SameLine>();
     node.call<InputText>("", &m_mesh_path);
@@ -66,13 +65,19 @@ void AddMeshResourceWindow::onRender()
 
 void AddMeshResourceWindow::addResource()
 {
-    if (auto resource = GE::Assets::MeshResource::create(m_id, m_mesh_path); resource) {
-        m_ctx->assets()->add(std::move(resource));
-        close();
+    auto* package = m_ctx->assets()->package(m_package_name);
+    if (package == nullptr) {
+        m_error_signal(GE_FMTSTR("Package '{}' not found", m_package_name));
         return;
     }
 
-    m_error_signal("Failed to create mesh resource");
+    auto resource = package->createResource<MeshResource>({m_resource_name, m_mesh_path});
+    if (resource == nullptr) {
+        m_error_signal(GE_FMTSTR("Failed to create pipeline resource '{}'", m_resource_name));
+        return;
+    }
+
+    close();
 }
 
 } // namespace LE

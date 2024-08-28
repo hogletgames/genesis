@@ -31,6 +31,7 @@
  */
 
 #include "resource_serializer.h"
+#include "genesis/core/asserts.h"
 #include "pipeline_resource.h"
 #include "registry.h"
 #include "texture_resource.h"
@@ -41,44 +42,75 @@
 #include <fstream>
 
 namespace GE::Assets {
+namespace {
+
+bool writeToFile(const std::string &filepath, const YAML::Node &node)
+{
+    std::ofstream fout{filepath};
+    if (!fout) {
+        GE_CORE_ERR("Failed to serialize data to config file '{}'", filepath);
+        return false;
+    }
+
+    fout << node;
+    return true;
+}
+
+} // namespace
 
 ResourceSerializer::ResourceSerializer(Registry *registry)
     : m_registry{registry}
 {}
 
-void ResourceSerializer::visit(MeshResource *resource)
-{
-    m_assets["resources"]["meshes"].push_back(*resource);
-}
-
-void ResourceSerializer::visit(TextureResource *resource)
-{
-    m_assets["resources"]["textures"].push_back(*resource);
-}
-
-void ResourceSerializer::visit(PipelineResource *resource)
-{
-    m_assets["resources"]["pipelines"].push_back(*resource);
-}
-
 bool ResourceSerializer::serialize(const std::string &config_filepath)
 {
-    m_registry->visitAll(this);
+    auto assets = serializeAssets();
 
-    if (m_assets.IsNull()) {
+    if (assets.IsNull()) {
         GE_CORE_ERR("Failed to encode an asset registry");
         return false;
     }
 
-    std::ofstream fout{config_filepath};
+    return writeToFile(config_filepath, assets);
+}
 
-    if (!fout) {
-        GE_CORE_ERR("Failed open an asset config file '{}'", config_filepath);
-        return false;
+YAML::Node ResourceSerializer::serializeAssets()
+{
+    YAML::Node assets_node;
+
+    auto resources_node = assets_node["packages"];
+
+    for (const auto *package : m_registry->allPackages()) {
+        auto package_node = serializePackage(*package);
+
+        if (writeToFile(package->filepath(), package_node)) {
+            resources_node.push_back(package->filepath());
+        }
     }
 
-    fout << m_assets;
-    return true;
+    return assets_node;
+}
+
+YAML::Node ResourceSerializer::serializePackage(const Package &package)
+{
+    YAML::Node package_node;
+
+    package_node["name"] = package.name();
+    auto resources_node = package_node["resources"];
+
+    for (const auto &pipeline : package.getAllOf<PipelineResource>()) {
+        resources_node[GE::toString(Group::PIPELINES)].push_back(YAML::Node{*pipeline});
+    }
+
+    for (const auto &mesh : package.getAllOf<MeshResource>()) {
+        resources_node[GE::toString(Group::MESHES)].push_back(YAML::Node{*mesh});
+    }
+
+    for (const auto &texture : package.getAllOf<TextureResource>()) {
+        resources_node[GE::toString(Group::TEXTURES)].push_back(YAML::Node{*texture});
+    }
+
+    return package_node;
 }
 
 } // namespace GE::Assets

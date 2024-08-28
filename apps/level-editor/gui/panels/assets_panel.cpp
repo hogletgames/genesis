@@ -39,26 +39,13 @@
 #include "genesis/filesystem/file_content.h"
 #include "genesis/gui/widgets.h"
 
+using namespace GE::Assets;
 using namespace GE::GUI;
 
 namespace LE {
 namespace {
 
-template<typename ForwardIt>
-ForwardIt nextPackage(ForwardIt begin, ForwardIt end, std::string_view current_package)
-{
-    return std::find_if(
-        begin, end, [current_package](const auto &id) { return id.package() != current_package; });
-}
-
-template<typename ForwardIt>
-ForwardIt nextGroup(ForwardIt begin, ForwardIt end, std::string_view current_package,
-                    std::string_view current_group)
-{
-    return std::find_if(begin, end, [current_package, current_group](const auto &id) {
-        return id.package() != current_package || id.group() != current_group;
-    });
-}
+constexpr TreeNode::Flags TREE_NODE_FLAGS{TreeNode::SPAN_AVAIL_WIDTH | TreeNode::FRAME_PADDING};
 
 GE::Vec2 scaledTextureSize(const GE::Vec2 &texture_size, float window_width)
 {
@@ -68,9 +55,20 @@ GE::Vec2 scaledTextureSize(const GE::Vec2 &texture_size, float window_width)
 
 } // namespace
 
-AssetsPanel::AssetsPanel(GE::Assets::Registry *registry)
+void DeferredAssetsPanelCommands::removePackage(const std::string &name)
+{
+    enqueue([this, name] { m_assets->removePackage(name); });
+}
+
+void DeferredAssetsPanelCommands::removeResource(const ResourceID &id)
+{
+    enqueue([this, id] { m_assets->removeResource(id); });
+}
+
+AssetsPanel::AssetsPanel(Registry *assets)
     : WindowBase{NAME}
-    , m_registry{registry}
+    , m_assets{assets}
+    , m_commands(assets)
 {}
 
 void AssetsPanel::onRender()
@@ -79,6 +77,8 @@ void AssetsPanel::onRender()
     window_node.call(&AssetsPanel::updateWindowParameters, this);
     drawAssets(&window_node);
     drawContextMenu(&window_node);
+
+    m_commands.submit();
 }
 
 void AssetsPanel::updateWindowParameters()
@@ -107,105 +107,107 @@ void AssetsPanel::drawContextMenu(WidgetNode *node)
 
 void AssetsPanel::drawAssets(WidgetNode *node)
 {
-    auto ids = m_registry->ids();
-    std::sort(ids.begin(), ids.end());
+    if (!node->isOpened()) {
+        return;
+    }
 
-    for (auto it = ids.cbegin(); it < ids.cend();) {
-        std::string_view package = it->package();
-        auto package_tree_node = node->makeSubNode<TreeNode>(package);
+    auto packages = m_assets->allPackages();
+    std::sort(packages.begin(), packages.end(),
+              [](const auto *lhs, const auto *rhs) { return lhs->name() < rhs->name(); });
 
-        if (package_tree_node.isOpened()) {
-            it = drawPackage(it, ids.cend(), package);
-        } else {
-            it = nextPackage(it, ids.cend(), package);
-        }
+    for (const auto *package : packages) {
+        drawPackage(node, *package);
     }
 }
 
-AssetsPanel::ResourceIDIt AssetsPanel::drawPackage(ResourceIDIt begin, ResourceIDIt end,
-                                                   std::string_view package)
+void AssetsPanel::drawPackage(WidgetNode *node, const Package &package)
 {
-    auto it{begin};
+    auto package_node = node->makeSubNode<TreeNode>(package.name(), TREE_NODE_FLAGS);
 
-    while (it < end) {
-        if (it->package() != package) {
-            break;
-        }
-
-        std::string_view group = it->group();
-        auto group_tree_node = WidgetNode::create<TreeNode>(group);
-
-        if (group_tree_node.isOpened()) {
-            it = drawGroup(it, end, package, group);
-        } else {
-            it = nextGroup(it, end, package, group);
-        }
+    if (auto popup_context = WidgetNode::create<PopupContextItem>();
+        popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", package.name()))) {
+        m_commands.removePackage(package.name());
     }
 
-    return it;
+    if (package_node.isOpened()) {
+        drawResources<MeshResource>(&package_node, package);
+        drawResources<PipelineResource>(&package_node, package);
+        drawResources<TextureResource>(&package_node, package);
+    }
 }
 
-AssetsPanel::ResourceIDIt AssetsPanel::drawGroup(ResourceIDIt begin, ResourceIDIt end,
-                                                 std::string_view package, std::string_view group)
+void AssetsPanel::drawResource(WidgetNode *node, const GE::Shared<MeshResource> &resource)
 {
-    auto it{begin};
+    auto mesh_node = node->makeSubNode<TreeNode>(resource->id().name(), TREE_NODE_FLAGS);
+    mesh_node.call<Text>("Use count: %d", resource->mesh().use_count());
+    mesh_node.call<Text>("Filepath: %s", resource->filepath().c_str());
 
-    for (; it < end; ++it) {
-        if (it->package() != package || it->group() != group) {
-            break;
-        }
-
-        std::string_view name = it->name();
-        auto name_tree_node = WidgetNode::create<TreeNode>(name);
-
-        if (name_tree_node.isOpened()) {
-            m_registry->visit(*it, this);
-        }
-
-        auto popup_context = WidgetNode::create<PopupContextItem>(name);
-        popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", it->id()));
+    if (auto popup_context = WidgetNode::create<PopupContextItem>();
+        popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", resource->id().asString()))) {
+        m_commands.removeResource(resource->id());
     }
-
-    return it;
 }
 
-void AssetsPanel::visit(GE::Assets::MeshResource *resource)
+void AssetsPanel::drawResource(WidgetNode *node, const GE::Shared<PipelineResource> &resource)
 {
-    Text::call("Use count: %d", resource->mesh().use_count());
-    Text::call("Filepath: %s", resource->filepath().c_str());
-}
+    auto pipeline_node = node->makeSubNode<TreeNode>(resource->id().name(), TREE_NODE_FLAGS);
 
-void AssetsPanel::visit(GE::Assets::PipelineResource *resource)
-{
-    Text::call("Use count: %d", resource->pipeline().use_count());
-
-    {
-        Text::call("Vertex shader: %s", resource->vertexShader().c_str());
-        auto code_node = WidgetNode::create<TreeNode>("Code:");
-        if (code_node.isOpened()) {
-            auto code = GE::FS::readFile<char>(resource->vertexShader());
-            Text::call(std::string_view{code.data(), code.size()});
-        }
+    pipeline_node.call<Text>("Vertex shader: %s", resource->vertexShaderPath().c_str());
+    auto vertex_node = pipeline_node.makeSubNode<TreeNode>("Code:##1");
+    if (vertex_node.isOpened()) {
+        auto code = GE::FS::readFile<char>(resource->vertexShaderPath());
+        code.push_back('\0');
+        vertex_node.call<Text>(std::string_view{code.data(), code.size()});
     }
 
-    {
-        Text::call("Fragment shader: %s", resource->fragmentShader().c_str());
-        auto code_node = WidgetNode::create<TreeNode>("Code:##2");
-        if (code_node.isOpened()) {
-            auto code = GE::FS::readFile<char>(resource->fragmentShader());
-            Text::call(std::string_view{code.data(), code.size()});
-        }
+    pipeline_node.call<Text>("Fragment shader: %s", resource->fragmentShaderPath().c_str());
+    auto fragment_node = pipeline_node.makeSubNode<TreeNode>("Code:##2");
+    if (fragment_node.isOpened()) {
+        auto code = GE::FS::readFile<char>(resource->fragmentShaderPath());
+        code.push_back('\0');
+        fragment_node.call<Text>(std::string_view{code.data(), code.size()});
+    }
+
+    if (auto popup_context = WidgetNode::create<PopupContextItem>();
+        popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", resource->id().asString()))) {
+        m_commands.removeResource(resource->id());
     }
 }
 
-void AssetsPanel::visit(GE::Assets::TextureResource *resource)
+void AssetsPanel::drawResource(WidgetNode *node, const GE::Shared<TextureResource> &resource)
 {
     auto *texture = resource->texture().get();
 
-    Text::call("Use count: %d", resource->texture().use_count());
-    Text::call("Filepath: %s", resource->filepath().c_str());
-    Text::call("Is opaque: %s", toString(resource->texture()->isOpaque()).data());
-    Image::call(texture->nativeID(), scaledTextureSize(texture->size(), m_window_size.x));
+    auto texture_node = node->makeSubNode<TreeNode>(resource->id().name(), TREE_NODE_FLAGS);
+    texture_node.call<Text>("Use count: %d", resource->texture().use_count());
+    texture_node.call<Text>("Filepath: %s", resource->filepath().c_str());
+    texture_node.call<Text>("Is opaque: %s", toString(resource->texture()->isOpaque()).data());
+    texture_node.call<Image>(texture->nativeID(),
+                             scaledTextureSize(texture->size(), m_window_size.x));
+
+    if (auto popup_context = WidgetNode::create<PopupContextItem>();
+        popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", resource->id().asString()))) {
+        m_commands.removeResource(resource->id());
+    }
+}
+
+template<typename T>
+void AssetsPanel::drawResources(WidgetNode *node, const Package &package)
+{
+    auto resources = package.getAllOf<T>();
+    if (resources.empty()) {
+        return;
+    }
+
+    auto group_name = GE::toString(T::GROUP);
+    auto resources_node = node->makeSubNode<TreeNode>(group_name, TREE_NODE_FLAGS);
+    if (!resources_node.isOpened()) {
+        return;
+    }
+
+    for (const auto &resource : resources) {
+        drawResource(&resources_node, resource);
+    }
 }
 
 } // namespace LE

@@ -37,45 +37,14 @@
 #include "renderer/renderer_base.h"
 #include "scene.h"
 
+#include "genesis/assets/resource_id.h"
 #include "genesis/graphics/framebuffer.h"
 #include "genesis/graphics/staging_buffer.h"
 
 namespace GE::Scene {
 namespace {
 
-const std::string ENTITY_ID_SHADER_VERTEX = R"(
-#version 450
-
-layout(location = 0) in vec3 a_Position;
-layout(location = 1) in vec3 a_Color;
-layout(location = 2) in vec2 a_TexCoord;
-
-layout(push_constant) uniform u_PushConstants {
-    mat4 mvp;
-    int entityId;
-} pc;
-
-layout(location = 0) out int v_EntityId;
-
-void main()
-{
-    v_EntityId = pc.entityId;
-    gl_Position = pc.mvp * vec4(a_Position, 1.0);
-}
-)";
-
-const std::string ENTITY_ID_SSHADER_FRAGMENT = R"(
-#version 450
-
-layout(location = 0) in flat int v_EntityId;
-
-layout(location = 0) out int outEntityId;
-
-void main()
-{
-    outEntityId = v_EntityId;
-}
-)";
+const Assets::ResourceID ENTITY_ID_RESOURCE_ID{"genesis", Assets::Group::PIPELINES, "entity_id"};
 
 constexpr int32_t toInt32(Entity::NativeHandle entityHandle)
 {
@@ -84,13 +53,14 @@ constexpr int32_t toInt32(Entity::NativeHandle entityHandle)
 
 } // namespace
 
-EntityPicker::EntityPicker(Scene* scene, const ViewProjectionCamera* camera)
+EntityPicker::EntityPicker(Scene* scene, const Assets::Registry& assets,
+                           const ViewProjectionCamera* camera)
     : m_scene{scene}
     , m_camera{camera}
     , m_entity_id_buffer{StagingBuffer::create()}
 {
     recreateEntityIdFramebuffer(camera->viewport());
-    createEntityIdPipeline();
+    createEntityIdPipeline(assets);
 }
 
 EntityPicker::~EntityPicker() = default;
@@ -162,33 +132,27 @@ void EntityPicker::recreateEntityIdFramebuffer(const Vec2& size)
     m_entity_id_fbo = Framebuffer::create(config);
 }
 
-void EntityPicker::createEntityIdPipeline()
+void EntityPicker::createEntityIdPipeline(const Assets::Registry& assets)
 {
-    auto vertex_shader = Shader::create(Shader::Type::VERTEX);
-    GE_CORE_ASSERT(vertex_shader->compileFromSource(ENTITY_ID_SHADER_VERTEX),
-                   "Failed to compile vertex shader for entity ID pipeline");
-
-    auto fragment_shader = Shader::create(Shader::Type::FRAGMENT);
-    GE_CORE_ASSERT(fragment_shader->compileFromSource(ENTITY_ID_SSHADER_FRAGMENT),
-                   "Failed to compile vertex shader for entity ID pipeline");
+    auto pipeline_resource = assets.get<Assets::PipelineResource>(ENTITY_ID_RESOURCE_ID);
+    GE_CORE_ASSERT(pipeline_resource, "Failed to find entity ID pipeline resource '{}'",
+                   ENTITY_ID_RESOURCE_ID.asString());
 
     blending_t color_blending{};
     color_blending.enabled = false;
 
     pipeline_config_t config{};
-    config.vertex_shader = std::move(vertex_shader);
-    config.fragment_shader = std::move(fragment_shader);
     config.blending = color_blending;
     config.depth_test_enable = true;
     config.depth_write_enable = true;
 
-    m_entity_id_pipline = m_entity_id_fbo->renderer()->createPipeline(config);
-    GE_CORE_ASSERT(m_entity_id_pipline, "Failed to create entity ID pipeline");
+    m_entity_id_pipeline = pipeline_resource->createPipeline(m_entity_id_fbo->renderer(), config);
+    GE_CORE_ASSERT(m_entity_id_pipeline, "Failed to create entity ID pipeline");
 }
 
 void EntityPicker::renderEntityId(const Entity& entity)
 {
-    auto* pipeline = m_entity_id_pipline.get();
+    auto* pipeline = m_entity_id_pipeline.get();
     auto* mesh = entity.get<SpriteComponent>().mesh.get();
     auto mvp = m_camera->viewProjection() * parentalTransforms(entity) *
                entity.get<TransformComponent>().transform();

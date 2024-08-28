@@ -69,11 +69,11 @@ bool LevelEditor::initialize()
         return false;
     }
 
-    createSceneRenderer();
-
     m_gui = GE::makeScoped<LevelEditorGUI>(&m_ctx);
     connectSignals();
     initializeProject();
+    createSceneRenderer();
+    createEntityPicker();
     return true;
 }
 
@@ -115,9 +115,20 @@ bool LevelEditor::createFramebuffer()
 void LevelEditor::createSceneRenderer()
 {
     auto* renderer = m_ctx.sceneFbo()->renderer();
+    auto* assets = m_ctx.assets();
     const auto* camera = m_ctx.cameraController()->camera().get();
 
-    m_ctx.sceneRenderer() = GE::makeScoped<GE::Scene::WeightedBlendedOITRenderer>(renderer, camera);
+    m_ctx.sceneRenderer() =
+        GE::makeScoped<GE::Scene::WeightedBlendedOITRenderer>(renderer, *assets, camera);
+}
+
+void LevelEditor::createEntityPicker()
+{
+    auto* scene = m_ctx.scene();
+    auto* assets = m_ctx.assets();
+    const auto* camera = m_ctx.cameraController()->camera().get();
+
+    m_ctx.entityPicker() = GE::makeScoped<GE::Scene::EntityPicker>(scene, *assets, camera);
 }
 
 void LevelEditor::connectSignals()
@@ -142,9 +153,6 @@ void LevelEditor::initializeProject()
     if (const auto& assets = project->assetsPath(); !assets.empty()) {
         loadAssets(assets);
     }
-
-    GE::Assets::PipelineInitializer initializer{m_ctx.sceneFbo()->renderer()};
-    m_ctx.assets()->visitAll(&initializer);
 
     if (const auto& scene = project->scenePath(); !scene.empty()) {
         loadScene(scene);

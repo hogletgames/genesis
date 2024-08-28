@@ -32,30 +32,30 @@
 
 #pragma once
 
-#include <genesis/assets/resource_visitor.h>
+#include <genesis/core/export.h>
 
 #include <yaml-cpp/yaml.h>
 
-#include <string>
-
 namespace GE::Assets {
 
+class MeshResource;
 class Registry;
+class Package;
+class PipelineResource;
+class TextureResource;
 
-class GE_API ResourceSerializer: public ResourceVisitor
+class GE_API ResourceSerializer
 {
 public:
     explicit ResourceSerializer(Registry *registry);
 
-    void visit(MeshResource *resource) override;
-    void visit(TextureResource *resource) override;
-    void visit(PipelineResource *resource) override;
-
     bool serialize(const std::string &config_filepath);
 
 private:
+    YAML::Node serializeAssets();
+    YAML::Node serializePackage(const Package &package);
+
     Registry *m_registry{nullptr};
-    YAML::Node m_assets;
 };
 
 } // namespace GE::Assets

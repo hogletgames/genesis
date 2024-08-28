@@ -39,15 +39,51 @@ namespace GE::Assets {
 class GE_API ResourceBase: public IResource
 {
 public:
+    ResourceBase(const ResourceBase& other);
+    ResourceBase(ResourceBase&& other) noexcept;
+    ResourceBase& operator=(const ResourceBase& other);
+    ResourceBase& operator=(ResourceBase&& other) noexcept;
+
+    const ResourceID& id() const override { return m_id; };
+
+protected:
     ResourceBase() = default;
+    ~ResourceBase() = default;
+
     explicit ResourceBase(ResourceID id);
-
-    void setId(const ResourceID& id) { m_id = id; }
-
-    const ResourceID& id() const override { return m_id; }
 
 private:
     ResourceID m_id;
 };
+
+inline ResourceBase::ResourceBase(const ResourceBase& other)
+    : m_id{other.m_id}
+{}
+
+inline ResourceBase::ResourceBase(ResourceBase&& other) noexcept
+    : m_id{std::move(other.m_id)}
+{}
+
+inline ResourceBase& ResourceBase::operator=(const ResourceBase& other)
+{
+    if (this != &other) {
+        m_id = other.m_id;
+    }
+
+    return *this;
+}
+
+inline ResourceBase& ResourceBase::operator=(ResourceBase&& other) noexcept
+{
+    if (this != &other) {
+        m_id = std::move(other.m_id);
+    }
+
+    return *this;
+}
+
+inline ResourceBase::ResourceBase(ResourceID id)
+    : m_id{std::move(id)}
+{}
 
 } // namespace GE::Assets

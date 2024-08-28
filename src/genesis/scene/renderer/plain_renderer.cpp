@@ -43,8 +43,13 @@ void PlainRenderer::render(const Scene& scene)
     m_renderer->beginFrame();
 
     scene.forEach<MaterialComponent, SpriteComponent>([this](const auto& entity) {
-        auto* pipeline = entity.template get<MaterialComponent>().material.get();
-        renderEntity(m_renderer, pipeline, entity);
+        const auto& material = entity.template get<MaterialComponent>();
+        if (!m_pipeline_library.has(material.materialID())) {
+            m_pipeline_library.add(material.materialID(),
+                                   material.pipeline_resource->createPipeline(m_renderer));
+        }
+
+        renderEntity(m_renderer, m_pipeline_library.get(material.materialID()).get(), entity);
     });
 
     m_renderer->endFrame();

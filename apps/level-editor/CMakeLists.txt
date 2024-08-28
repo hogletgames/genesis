@@ -18,6 +18,7 @@ list(APPEND LEVEL_EDITOR_SOURCES
     gui/panels/viewport_panel.cpp
     gui/windows/add_mesh_resource_window.cpp
     gui/windows/add_pipeline_resources_window.cpp
+    gui/windows/add_resource_window_base.cpp
     gui/windows/add_texture_resource_window.cpp
     settings/project_settings.cpp
     settings/settings.cpp
@@ -51,6 +52,7 @@ list(APPEND LEVEL_EDITOR_HEADERS
     gui/panels/viewport_panel.h
     gui/windows/add_mesh_resource_window.h
     gui/windows/add_pipeline_resources_window.h
+    gui/windows/add_resource_window_base.h
     gui/windows/add_texture_resource_window.h
     settings/project_settings.h
     settings/settings.h

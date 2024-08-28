@@ -32,16 +32,16 @@
 
 #include "texture_resource.h"
 #include "assets_exception.h"
-#include "resource_visitor.h"
 
 #include "genesis/core/format.h"
+#include "genesis/core/log.h"
 #include "genesis/graphics/texture_loader.h"
 
 namespace GE::Assets {
 
-TextureResource::TextureResource(const ResourceID& id, std::string filepath)
-    : ResourceBase(id)
-    , m_filepath{std::move(filepath)}
+TextureResource::TextureResource(const std::string& package, const config_t& config)
+    : ResourceBase{{package, GROUP, config.name}}
+    , m_filepath{config.filepath}
     , m_texture{TextureLoader{m_filepath}.load()}
 {
     if (!m_texture) {
@@ -50,14 +50,15 @@ TextureResource::TextureResource(const ResourceID& id, std::string filepath)
     }
 }
 
-void TextureResource::accept(ResourceVisitor* visitor)
+Shared<TextureResource> TextureResource::Factory::create(const std::string& package,
+                                                         const config_t& config)
 {
-    visitor->visit(this);
-}
-
-Scoped<TextureResource> TextureResource::create(const ResourceID& id, const std::string& filepath)
-{
-    return tryMakeScoped<TextureResource>(id, filepath);
+    try {
+        return Shared<TextureResource>{new TextureResource{package, config}};
+    } catch (const GE::Exception& e) {
+        GE_CORE_ERR("Failed to create a texture resource: {}", e.what());
+        return nullptr;
+    }
 }
 
 } // namespace GE::Assets

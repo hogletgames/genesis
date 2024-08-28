@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,35 @@
 
 #pragma once
 
-#include <genesis/assets/resource_visitor.h>
+#include <genesis/gui/window/window_base.h>
 
-namespace GE {
-class Renderer;
-} // namespace GE
+#include <boost/signals2/signal.hpp>
 
-namespace GE::Assets {
+namespace GE::GUI {
+class WidgetNode;
+} // namespace GE::GUI
 
-class PipelineInitializer: public ResourceVisitor
+namespace LE {
+
+class LevelEditorContext;
+
+class GE_API AddResourceWindowBase: public GE::GUI::WindowBase
 {
 public:
-    explicit PipelineInitializer(Renderer* renderer);
+    using ErrorSignal = boost::signals2::signal<void(std::string_view)>;
 
-private:
-    void visit(PipelineResource* resource) override;
+    ErrorSignal* errorSignal() { return &m_error_signal; }
 
-    Renderer* m_renderer{nullptr};
+protected:
+    AddResourceWindowBase(std::string_view name, LevelEditorContext* ctx);
+
+    void renderPackageCombobox(GE::GUI::WidgetNode* node);
+
+    LevelEditorContext* m_ctx{nullptr};
+    std::string m_package_name;
+    std::string m_resource_name;
+
+    ErrorSignal m_error_signal;
 };
 
-} // namespace GE::Assets
+} // namespace LE

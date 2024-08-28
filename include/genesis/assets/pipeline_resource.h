@@ -42,30 +42,40 @@ class Renderer;
 
 namespace GE::Assets {
 
+class Package;
+
 class GE_API PipelineResource: public ResourceBase
 {
 public:
-    PipelineResource(const ResourceID& id, std::string vertex_shader, std::string fragment_shader);
+    class Factory;
 
-    void accept(ResourceVisitor* visitor) override;
+    struct config_t {
+        std::string name;
+        std::string vertex_shader_path;
+        std::string fragment_shader_path;
+    };
 
-    bool createPipeline(Renderer* renderer);
+    const std::string& fragmentShaderPath() const { return m_fragment_shader_path; }
+    const std::string& vertexShaderPath() const { return m_vertex_shader_path; }
 
-    const std::string& fragmentShader() const { return m_fragment_shader_path; }
-    const std::string& vertexShader() const { return m_vertex_shader_path; }
-    const Shared<Pipeline>& pipeline() const { return m_pipeline; }
+    Scoped<Pipeline> createPipeline(GE::Renderer* renderer, pipeline_config_t config = {}) const;
 
-    static Scoped<PipelineResource> create(const ResourceID& id,
-                                           const std::string& vertex_shader_path,
-                                           const std::string& fragment_shader_path);
+    static constexpr Group GROUP{Group::PIPELINES};
 
 private:
+    PipelineResource(const std::string& package, const config_t& config);
+
     std::string m_vertex_shader_path;
     std::string m_fragment_shader_path;
 
     Shared<Shader> m_vertex_shader;
     Shared<Shader> m_fragment_shader;
-    Shared<Pipeline> m_pipeline;
+};
+
+class PipelineResource::Factory
+{
+    friend Package;
+    static Shared<PipelineResource> create(const std::string& package, const config_t& config);
 };
 
 } // namespace GE::Assets

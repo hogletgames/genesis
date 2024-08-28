@@ -40,29 +40,28 @@
 #include "genesis/gui/widgets.h"
 
 using namespace GE::GUI;
+using namespace GE::Assets;
 
 namespace LE {
 
 AddPipelineResourceWindow::AddPipelineResourceWindow(LevelEditorContext* ctx)
-    : WindowBase{NAME}
-    , m_ctx{ctx}
+    : AddResourceWindowBase{NAME, ctx}
 {}
 
 void AddPipelineResourceWindow::onRender()
 {
     WidgetNode node{&m_window};
-    node.call<InputText>("Package", m_id.package());
-    node.call<InputText>("Group", m_id.group());
-    node.call<InputText>("Name", m_id.name());
+    renderPackageCombobox(&node);
+    node.call<InputText>("Name", &m_resource_name);
     if (node.call<Button>("Vertex Shader")) {
         m_vertex_shader = openSingleFile("vert");
-        *m_id.name() = GE::FS::stem(m_vertex_shader);
+        m_resource_name = GE::FS::stem(m_vertex_shader);
     }
     node.call<SameLine>();
     node.call<InputText>("", &m_vertex_shader);
     if (node.call<Button>("Fragment Shader")) {
         m_fragment_shader = openSingleFile("frag");
-        *m_id.name() = GE::FS::stem(m_fragment_shader);
+        m_resource_name = GE::FS::stem(m_fragment_shader);
     }
     node.call<SameLine>();
     node.call<InputText>("", &m_fragment_shader);
@@ -73,15 +72,24 @@ void AddPipelineResourceWindow::onRender()
 
 void AddPipelineResourceWindow::addResource()
 {
-    auto resource = GE::Assets::PipelineResource::create(m_id, m_vertex_shader, m_fragment_shader);
-
-    if (resource && resource->createPipeline(m_ctx->sceneFbo()->renderer())) {
-        m_ctx->assets()->add(std::move(resource));
-        close();
+    auto* package = m_ctx->assets()->package(m_package_name);
+    if (package == nullptr) {
+        m_error_signal(GE_FMTSTR("Package '{}' not found", m_package_name));
         return;
     }
 
-    m_error_signal("Failed to create material resource");
+    PipelineResource::config_t config{};
+    config.name = m_resource_name;
+    config.vertex_shader_path = m_vertex_shader;
+    config.fragment_shader_path = m_fragment_shader;
+
+    auto resource = package->createResource<PipelineResource>(config);
+    if (resource == nullptr) {
+        m_error_signal(GE_FMTSTR("Failed to create pipeline resource '{}'", m_resource_name));
+        return;
+    }
+
+    close();
 }
 
 } // namespace LE

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,18 +30,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "pipeline_initializer.h"
-#include "pipeline_resource.h"
+#include "add_resource_window_base.h"
+#include "level_editor_context.h"
 
-namespace GE::Assets {
+#include "genesis/assets/package.h"
+#include "genesis/gui/widgets.h"
 
-PipelineInitializer::PipelineInitializer(Renderer *renderer)
-    : m_renderer{renderer}
-{}
+using namespace GE::GUI;
+using namespace GE::Assets;
 
-void PipelineInitializer::visit(PipelineResource *resource)
+namespace LE {
+
+std::vector<std::string_view> getPackageNames(LevelEditorContext* ctx)
 {
-    resource->createPipeline(m_renderer);
+    auto packages = ctx->assets()->allPackages();
+    std::vector<std::string_view> package_names(packages.size());
+    std::transform(packages.cbegin(), packages.cend(), package_names.begin(),
+                   [](const auto* package) { return std::string_view{package->name()}; });
+
+    return package_names;
 }
 
-} // namespace GE::Assets
+AddResourceWindowBase::AddResourceWindowBase(std::string_view name, LevelEditorContext* ctx)
+    : WindowBase{name}
+    , m_ctx{ctx}
+{}
+
+void AddResourceWindowBase::renderPackageCombobox(WidgetNode* node)
+{
+    auto package_names = getPackageNames(m_ctx);
+
+    if (m_package_name.empty() && !package_names.empty()) {
+        m_package_name = package_names.front();
+    }
+
+    ComboBox packages_combobox{"Package", package_names, m_package_name};
+    node->subNode(&packages_combobox);
+    if (packages_combobox.selectedItem() != m_package_name) {
+        m_package_name = packages_combobox.selectedItem();
+    }
+}
+
+} // namespace LE

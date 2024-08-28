@@ -99,9 +99,10 @@ void ComponentsPanel::draw(WidgetNode *node, GE::Scene::CameraComponent *camera)
 
 void ComponentsPanel::draw(WidgetNode *node, MaterialComponent *material)
 {
-    auto material_id = material->materialID().id();
+    auto material_id = material->materialID().asString();
 
-    node->call<Text>("Material: %s (%s)", material_id.c_str(), isLoaded(material->material));
+    node->call<Text>("Material: %s (%s)", material_id.c_str(),
+                     isLoaded(material->pipeline_resource));
     if (node->call<Button>("Load")) {
         material->loadMaterial(m_ctx->assets());
     }
@@ -124,8 +125,8 @@ void ComponentsPanel::draw(WidgetNode *node, TransformComponent *transform)
 
 void ComponentsPanel::draw(WidgetNode *node, SpriteComponent *sprite)
 {
-    auto mesh_id = sprite->meshID().id();
-    auto texture_id = sprite->textureID().id();
+    auto mesh_id = sprite->meshID().asString();
+    auto texture_id = sprite->textureID().asString();
 
     node->call<Text>("Mesh: %s (%s)", mesh_id.data(), isLoaded(sprite->mesh));
     node->call<Text>("Texture: %s (%s)", texture_id.data(), isLoaded(sprite->texture));

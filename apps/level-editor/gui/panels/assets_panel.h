@@ -34,13 +34,17 @@
 
 #include <genesis/assets/registry.h>
 #include <genesis/assets/resource_id.h>
-#include <genesis/assets/resource_visitor.h>
+#include <genesis/core/deferred_commands.h>
 #include <genesis/gui/window/window_base.h>
 
 #include <boost/signals2/signal.hpp>
 
 namespace GE::Assets {
+class MeshResource;
+class Package;
+class PipelineResource;
 class Registry;
+class TextureResource;
 } // namespace GE::Assets
 
 namespace GE::GUI {
@@ -49,12 +53,26 @@ class WidgetNode;
 
 namespace LE {
 
-class GE_API AssetsPanel: public GE::GUI::WindowBase, GE::Assets::ResourceVisitor
+class DeferredAssetsPanelCommands: public GE::DeferredCommands<void()>
+{
+public:
+    explicit DeferredAssetsPanelCommands(GE::Assets::Registry* assets)
+        : m_assets{assets}
+    {}
+
+    void removePackage(const std::string& name);
+    void removeResource(const GE::Assets::ResourceID& id);
+
+private:
+    GE::Assets::Registry* m_assets{nullptr};
+};
+
+class GE_API AssetsPanel: public GE::GUI::WindowBase
 {
 public:
     using AddResourceSignal = boost::signals2::signal<void()>;
 
-    explicit AssetsPanel(GE::Assets::Registry* registry);
+    explicit AssetsPanel(GE::Assets::Registry* assets);
 
     void onRender() override;
 
@@ -65,25 +83,25 @@ public:
     static constexpr auto NAME{"Assets"};
 
 private:
-    using ResourceID = GE::Assets::ResourceID;
-    using Registry = GE::Assets::Registry;
-    using ResourceIDs = Registry::ResourceIDs;
-    using ResourceIDIt = ResourceIDs::const_iterator;
-
     void updateWindowParameters();
 
     void drawContextMenu(GE::GUI::WidgetNode* node);
     void drawAssets(GE::GUI::WidgetNode* node);
-    ResourceIDIt drawPackage(ResourceIDIt begin, ResourceIDIt end, std::string_view package);
-    AssetsPanel::ResourceIDIt drawGroup(ResourceIDIt begin, ResourceIDIt end,
-                                        std::string_view package, std::string_view group);
+    void drawPackage(GE::GUI::WidgetNode* node, const GE::Assets::Package& package);
+    void drawResource(GE::GUI::WidgetNode* node,
+                      const GE::Shared<GE::Assets::MeshResource>& resource);
+    void drawResource(GE::GUI::WidgetNode* node,
+                      const GE::Shared<GE::Assets::PipelineResource>& resource);
+    void drawResource(GE::GUI::WidgetNode* node,
+                      const GE::Shared<GE::Assets::TextureResource>& resource);
 
-    void visit(GE::Assets::MeshResource* resource) override;
-    void visit(GE::Assets::PipelineResource* resource) override;
-    void visit(GE::Assets::TextureResource* resource) override;
+    template<typename T>
+    void drawResources(GE::GUI::WidgetNode* node, const GE::Assets::Package& package);
 
-    GE::Assets::Registry* m_registry{nullptr};
+    GE::Assets::Registry* m_assets{nullptr};
     GE::Vec2 m_window_size{0.0f, 0.0f};
+
+    DeferredAssetsPanelCommands m_commands;
 
     AddResourceSignal m_add_mesh_resource_signal;
     AddResourceSignal m_add_pipeline_resource_signal;

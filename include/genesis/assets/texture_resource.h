@@ -40,21 +40,34 @@
 
 namespace GE::Assets {
 
+class Package;
+
 class GE_API TextureResource: public ResourceBase
 {
 public:
-    TextureResource(const ResourceID& id, std::string filepath);
+    class Factory;
 
-    void accept(ResourceVisitor* visitor) override;
+    struct config_t {
+        std::string name;
+        std::string filepath;
+    };
 
-    const GE::Shared<Texture>& texture() const { return m_texture; }
+    const Shared<Texture>& texture() const { return m_texture; }
     const std::string& filepath() const { return m_filepath; }
 
-    static Scoped<TextureResource> create(const ResourceID& id, const std::string& filepath);
+    static constexpr Group GROUP{Group::TEXTURES};
 
 private:
+    TextureResource(const std::string& package, const config_t& config);
+
     std::string m_filepath;
-    GE::Shared<Texture> m_texture;
+    Shared<Texture> m_texture;
+};
+
+class TextureResource::Factory
+{
+    friend Package;
+    static Shared<TextureResource> create(const std::string& package, const config_t& config);
 };
 
 } // namespace GE::Assets

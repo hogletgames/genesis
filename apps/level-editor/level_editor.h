@@ -64,6 +64,7 @@ public:
 private:
     bool createFramebuffer();
     void createSceneRenderer();
+    void createEntityPicker();
     void connectSignals();
     void initializeProject();
 

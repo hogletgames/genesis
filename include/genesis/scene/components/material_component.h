@@ -38,30 +38,23 @@
 namespace GE::Scene {
 
 struct MaterialComponent {
-    Shared<Pipeline> material;
+    Shared<Assets::PipelineResource> pipeline_resource;
 
     static constexpr std::string_view NAME{"Material"};
-
-    bool isValid() const { return material != nullptr; }
 
     const Assets::ResourceID& materialID() const { return m_material_id; }
     void setMaterialID(Assets::ResourceID id) { m_material_id = std::move(id); }
 
     bool loadMaterial(Assets::Registry* assets);
 
-public:
+private:
     Assets::ResourceID m_material_id;
 };
 
 inline bool MaterialComponent::loadMaterial(Assets::Registry* assets)
 {
-    if (const auto* resource = assets->get<Assets::PipelineResource>(m_material_id);
-        resource != nullptr) {
-        material = resource->pipeline();
-        return true;
-    }
-
-    return false;
+    pipeline_resource = assets->get<Assets::PipelineResource>(m_material_id);
+    return pipeline_resource != nullptr;
 }
 
 } // namespace GE::Scene

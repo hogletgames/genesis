@@ -32,37 +32,23 @@
 
 #pragma once
 
-#include <genesis/assets/resource_id.h>
-#include <genesis/gui/widgets/window.h>
-#include <genesis/gui/window/window_base.h>
-
-#include <boost/signals2/signal.hpp>
+#include "gui/windows/add_resource_window_base.h"
 
 namespace LE {
 
-class LevelEditorContext;
-
-class GE_API AddMeshResourceWindow: public GE::GUI::WindowBase
+class GE_API AddMeshResourceWindow: public AddResourceWindowBase
 {
 public:
-    using ErrorSignal = boost::signals2::signal<void(std::string_view)>;
-
     explicit AddMeshResourceWindow(LevelEditorContext* ctx);
 
     void onRender() override;
-
-    ErrorSignal* errorSignal() { return &m_error_signal; }
 
     static constexpr auto NAME{"Add Mesh Resource"};
 
 private:
     void addResource();
 
-    LevelEditorContext* m_ctx{nullptr};
-    GE::Assets::ResourceID m_id{"genesis", "meshes", "unknown"};
     std::string m_mesh_path;
-
-    ErrorSignal m_error_signal;
 };
 
 } // namespace LE
