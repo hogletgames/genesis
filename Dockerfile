@@ -18,7 +18,7 @@ FROM ubuntu:focal AS genesis-image
 
 # Arguments
 ARG GCC_VER=11   \
-    CLANG_VER=16
+    CLANG_VER=19
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
