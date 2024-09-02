@@ -41,7 +41,8 @@ RUN --mount=type=cache,target=/var/cache/apt \
         make git patch libgtk-3-dev \
 # Configure git
     && git config --add --system user.name "hogletgames" \
-    && git config --add --system user.email "hogletgames@gmail.com"
+    && git config --add --system user.email "hogletgames@gmail.com" \
+    && git config --add --system safe.directory "*"
 
 # SDL2 dependencies
 RUN --mount=type=cache,target=/var/cache/apt \
