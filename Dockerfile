@@ -2,10 +2,9 @@
 FROM ubuntu:focal AS cmake-builder
 
 # Install build tools
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        build-essential ca-certificates git libssl-dev \
-# Clean-up atp cache
-    && rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
+        build-essential ca-certificates git libssl-dev
 
 # Build and install CMake
 RUN git clone --depth 1 --branch v3.17.4 https://github.com/Kitware/CMake /tmp/cmake \
@@ -18,15 +17,17 @@ RUN git clone --depth 1 --branch v3.17.4 https://github.com/Kitware/CMake /tmp/c
 FROM ubuntu:focal AS genesis-image
 
 # Arguments
-ARG DEBIAN_FRONTEND="noninteractive" \
-    GCC_VER=11 \
+ARG GCC_VER=11   \
     CLANG_VER=16
+
+ENV DEBIAN_FRONTEND="noninteractive"
 
 # Install cmake
 COPY --from=cmake-builder /opt/cmake/ /usr/local/
 
 # Instal essential packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
         gpg-agent software-properties-common wget \
 # GCC
     && apt-add-repository ppa:ubuntu-toolchain-r/test \
@@ -38,25 +39,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential gcc-${GCC_VER} g++-${GCC_VER} \
         clang-format-${CLANG_VER} clang-tidy-${CLANG_VER} \
         make git patch libgtk-3-dev \
-# Clean-up atp cache
-    && rm -rf /var/lib/apt/lists/* \
 # Configure git
     && git config --add --system user.name "hogletgames" \
     && git config --add --system user.email "hogletgames@gmail.com"
 
 # SDL2 dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
         libx11-dev libsamplerate-dev libasound2-dev libjack-dev libpulse-dev libsndio-dev \
         libxcursor-dev libxinerama-dev libxi-dev libxrandr-dev libxss-dev libxxf86vm-dev \
-        libdbus-1-dev \
-# Clean-up atp cache
-    && rm -rf /var/lib/apt/lists/*
+        libdbus-1-dev
 
 # Vulkan dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        libwayland-dev \
-# Clean-up atp cache
-    && rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
+        libwayland-dev
 
 ENV CC="gcc-${GCC_VER}" \
     CXX="g++-${GCC_VER}" \
