@@ -40,7 +40,7 @@
 namespace GE::GUI {
 
 struct PopupFlag {
-    enum Flags
+    enum Flags : uint16_t
     {
         NONE = 0,
         MOUSE_BUTTON_LEFT = 0,

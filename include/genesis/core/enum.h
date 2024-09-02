@@ -49,14 +49,6 @@ namespace GE {
 template<typename T, typename Ret = void>
 using EnableIfIsEnum = std::enable_if_t<std::is_enum_v<T>, Ret>;
 
-using magic_enum::bitwise_operators::operator~;
-using magic_enum::bitwise_operators::operator|;
-using magic_enum::bitwise_operators::operator&;
-using magic_enum::bitwise_operators::operator^;
-using magic_enum::bitwise_operators::operator|=;
-using magic_enum::bitwise_operators::operator&=;
-using magic_enum::bitwise_operators::operator^=;
-
 template<typename EnumType, typename = EnableIfIsEnum<EnumType>>
 std::string toString(EnumType value)
 {

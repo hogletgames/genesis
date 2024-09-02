@@ -68,7 +68,7 @@ std::optional<args_t> parseArgs(int argc, char** argv)
     } catch (const docopt::DocoptExitHelp& e) {
         args.show_help = true;
     } catch (const std::exception& e) {
-        std::cerr << "Failed to parse arguments: '" << e.what() << "'" << std::endl;
+        std::cerr << "Failed to parse arguments: '" << e.what() << "'\n";
         return {};
     }
 
@@ -87,12 +87,12 @@ int main(int argc, char** argv)
     auto args = parseArgs(argc, argv);
 
     if (!args.has_value()) {
-        std::cerr << USAGE << std::endl;
+        std::cerr << USAGE;
         return EXIT_FAILURE;
     }
 
     if (args->show_help) {
-        std::cout << USAGE << std::endl;
+        std::cout << USAGE;
         return EXIT_SUCCESS;
     }
 

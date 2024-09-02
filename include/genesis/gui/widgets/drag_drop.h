@@ -47,12 +47,12 @@ class GE_API DragDropPayload
 public:
     using Flags = int;
 
-    enum Flag
+    enum Flag : uint8_t
     {
         NONE = 0,
-        BEFORE_DELIVERY = bit(10),
-        NO_DRAW_DEFAULT_RECT = bit(11),
-        NO_PREVIEW_TOOLTIP = bit(12),
+        BEFORE_DELIVERY = bit<uint8_t>(10),
+        NO_DRAW_DEFAULT_RECT = bit<uint8_t>(11),
+        NO_PREVIEW_TOOLTIP = bit<uint8_t>(12),
         PEEK_ONLY = BEFORE_DELIVERY | NO_DRAW_DEFAULT_RECT,
     };
 
@@ -95,15 +95,15 @@ class GE_API DragDropSource: public Widget
 public:
     using Flags = int;
 
-    enum Flag
+    enum Flag : uint8_t
     {
         NONE = 0,
-        NO_PREVIEW_TOOLTIP = bit(0),
-        NO_DISABLE_HOVER = bit(1),
-        NO_HOLD_TO_OPENOTHERS = bit(2),
-        ALLOW_NULL_ID = bit(3),
-        EXTERN = bit(4),
-        AUTO_EXPIRE_PAYLOAD = bit(5),
+        NO_PREVIEW_TOOLTIP = bit<uint8_t>(0),
+        NO_DISABLE_HOVER = bit<uint8_t>(1),
+        NO_HOLD_TO_OPENOTHERS = bit<uint8_t>(2),
+        ALLOW_NULL_ID = bit<uint8_t>(3),
+        EXTERN = bit<uint8_t>(4),
+        AUTO_EXPIRE_PAYLOAD = bit<uint8_t>(5),
     };
 
     DragDropSource(const DragDropPayload& payload, std::string_view dragging_text,

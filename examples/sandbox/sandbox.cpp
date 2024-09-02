@@ -58,7 +58,8 @@ Usage:
 
 Options:
     -h, --help                  Show this help
-    -e, --example <example>     A name of an example [default: triangle])";
+    -e, --example <example>     A name of an example [default: triangle]
+)";
 
 constexpr GE::Logger::Level LOG_LEVEL{GE::Logger::Level::TRACE};
 constexpr GE::Graphics::API RENDER_API{GE::Graphics::API::VULKAN};
@@ -74,10 +75,10 @@ args_t parseArgs(int argc, char** argv)
         parsed_args = docopt::docopt_parse(USAGE, {argv + 1, argv + argc}, true, false);
         args.layer = parsed_args["--example"].asString();
     } catch (const docopt::DocoptExitHelp& e) {
-        std::cout << USAGE << std::endl;
+        std::cout << USAGE;
         exit(EXIT_SUCCESS); // NOLINT(concurrency-mt-unsafe)
     } catch (const std::exception& e) {
-        std::cerr << "Failed to parse arguments: " << e.what() << std::endl;
+        std::cerr << "Failed to parse arguments: '" << e.what() << "'\n";
         exit(EXIT_FAILURE); // NOLINT(concurrency-mt-unsafe)
     }
 

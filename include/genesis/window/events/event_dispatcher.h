@@ -49,7 +49,7 @@ public:
     {}
 
     template<typename EventType>
-    bool dispatch(Callback<EventType> callback)
+    bool dispatch(const Callback<EventType>& callback)
     {
         if (m_event->getDescriptor() == EventType::getStaticDescriptor() && !m_event->handled()) {
             auto* callback_event = static_cast<EventType*>(m_event);

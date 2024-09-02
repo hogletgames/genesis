@@ -78,7 +78,7 @@ enum class TextureFilter : uint8_t
     LINEAR_MIPMAP_LINEAR
 };
 
-enum class TextureWrap : uint32_t
+enum class TextureWrap : uint8_t
 {
     AUTO = 0,
     CLAMP_TO_EDGE,

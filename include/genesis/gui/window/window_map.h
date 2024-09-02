@@ -69,6 +69,7 @@ private:
 };
 
 template<typename... Args>
+// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward)
 void WindowMap::insertWindows(Args&&... windows)
 {
     (insert(std::move(windows)), ...);

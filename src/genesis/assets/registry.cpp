@@ -70,7 +70,7 @@ void Registry::removePackage(const std::string& name)
 void Registry::removeResource(const ResourceID& id)
 {
     if (auto it = m_packages.find(id.package()); it != m_packages.end()) {
-        return it->second.removeResource(id);
+        it->second.removeResource(id);
     }
 }
 

@@ -40,6 +40,7 @@ using namespace GE::GUI;
 using namespace GE::Assets;
 
 namespace LE {
+namespace {
 
 std::vector<std::string_view> getPackageNames(LevelEditorContext* ctx)
 {
@@ -50,6 +51,8 @@ std::vector<std::string_view> getPackageNames(LevelEditorContext* ctx)
 
     return package_names;
 }
+
+} // namespace
 
 AddResourceWindowBase::AddResourceWindowBase(std::string_view name, LevelEditorContext* ctx)
     : WindowBase{name}

@@ -46,7 +46,7 @@ namespace {
 
 VkDebugUtilsMessageSeverityFlagsEXT toDebugMessageSeverity(std::string_view severity)
 {
-    enum Severity
+    enum Severity : uint16_t
     {
         SEVERITY_ERROR = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
         SEVERITY_WARN = SEVERITY_ERROR | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT,

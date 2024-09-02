@@ -95,7 +95,7 @@ std::unordered_map<U, T> swapKeyAndValue(const std::unordered_map<T, U>& map)
 }
 
 template<typename Container, typename... Args>
-Container jointContainers(Container&& first, Args&&... others)
+Container jointContainers(Container&& first, const Args&... others)
 {
     Container result{std::forward<Container>(first)};
     (result.insert(result.end(), others.begin(), others.end()), ...);

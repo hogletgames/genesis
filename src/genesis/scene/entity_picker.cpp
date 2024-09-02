@@ -107,7 +107,7 @@ Entity EntityPicker::getEntityByPosition(const Vec2& position)
     Vec2 inverted_position = {position.x, texture_size.y - position.y - 1};
 
     const auto* pixels = static_cast<const int32_t*>(texture);
-    size_t index = inverted_position.y * texture_size.x + inverted_position.x;
+    size_t index = (inverted_position.y * texture_size.x) + inverted_position.x;
     int32_t entity_id = pixels[index];
 
     if (entity_id == ENTITY_ID_NONE) {
