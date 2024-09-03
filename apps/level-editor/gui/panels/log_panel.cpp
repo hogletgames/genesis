@@ -103,7 +103,7 @@ private:
         m_lines.push_back(fmt::to_string(formatted));
     }
 
-    void flush_() override{};
+    void flush_() override {};
 
     mutable std::mutex m_lines_mtx;
     LogBuffer m_lines;

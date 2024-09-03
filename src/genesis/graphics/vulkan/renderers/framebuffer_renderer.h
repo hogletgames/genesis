@@ -49,7 +49,7 @@ public:
     void endFrame() override;
     void swapBuffers() override;
 
-    void onEvent([[maybe_unused]] Event *event) override{};
+    void onEvent([[maybe_unused]] Event *event) override {};
 
     Vec2 size() const override;
 
