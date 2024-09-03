@@ -49,7 +49,7 @@ public:
     using CancelSingal = boost::signals2::signal<void()>;
     using ErrorSignal = boost::signals2::signal<void(std::string_view)>;
 
-    enum Type
+    enum Type : uint8_t
     {
         SINGLE_FILE,
         MULTIPLE_FILES,

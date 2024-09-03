@@ -33,12 +33,12 @@
 #pragma once
 
 #include <genesis/core/export.h>
-#include <genesis/core/utils.h>
 
 #include <functional>
 
 namespace GE {
 
+// clang-format off
 template<typename T, typename... Args>
 class GE_API Beginner
 {
@@ -46,8 +46,9 @@ public:
     explicit Beginner(Args&... args) { T::begin(std::forward<Args>(args)...); }
     ~Beginner() { T::end(); }
 };
+// clang-format on
 
-class Defer
+class GE_API Defer
 {
 public:
     using DeferredFunc = std::function<void()>;

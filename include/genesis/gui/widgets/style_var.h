@@ -40,7 +40,7 @@ namespace GE::GUI {
 class StyleVar: public NonCopyable
 {
 public:
-    enum Index
+    enum Index : uint8_t
     {
         ALPHA,
         DISABLTYLED_ALPHA,

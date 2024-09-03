@@ -45,7 +45,7 @@ clang-format:
 	bash tools/clang_format.sh --clang-format-bin $(CLANG_FORMAT_BIN)
 
 .PHONY: clang-tidy
-clang-tidy: CMAKE_OPTIONS += -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DGE_BUILD_EXAMPLES:BOOL=ON
+clang-tidy: CMAKE_OPTIONS += -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DGE_BUILD_EXAMPLES:BOOL=ON -DGE_BUILD_APPS:BOOL=ON
 clang-tidy: generate_makefiles
 	$(MAKE) -C $(BUILD_DIR) sdl_headers_copy
 	$(RUN_CLANG_TIDY_BIN) -p $(BUILD_DIR) -j$$(nproc)

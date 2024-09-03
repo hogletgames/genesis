@@ -2,9 +2,11 @@ Checks:             '*,
                     -altera-id-dependent-backward-branch,
                     -altera-struct-pack-align,
                     -altera-unroll-loops,
+                    -boost-use-ranges,
                     -bugprone-easily-swappable-parameters,
                     -bugprone-implicit-widening-of-multiplication-result,
                     -bugprone-narrowing-conversions,
+                    -bugprone-suspicious-stringview-data-usage,
                     -bugprone-unchecked-optional-access,
                     -cert-dcl50-cpp,
                     -cert-err58-cpp,
@@ -39,11 +41,14 @@ Checks:             '*,
                     -hicpp-uppercase-literal-suffix,
                     -hicpp-use-auto,
                     -hicpp-vararg,
+                    -llvm-header-guard,
                     -llvmlibc-callee-namespace,
                     -llvmlibc-implementation-in-namespace,
-                    -llvm-header-guard,
+                    -llvmlibc-inline-function-decl,
                     -llvmlibc-restrict-system-libc-headers,
                     -misc-const-correctness,
+                    -misc-header-include-cycle,
+                    -misc-include-cleaner,
                     -misc-non-private-member-variables-in-classes,
                     -modernize-avoid-bind,
                     -modernize-use-nodiscard,
@@ -53,8 +58,9 @@ Checks:             '*,
                     -readability-identifier-length,
                     -readability-uppercase-literal-suffix'
 WarningsAsErrors:   '*'
-HeaderFilterRegex:  'include/genesis/.*/.*\.h$'
+HeaderFilterRegex:  'include/genesis/.*\.h'
 FormatStyle:        'file'
+UseColor:           true
 CheckOptions:
   - {key: cppcoreguidelines-avoid-magic-numbers.IgnoreAllFloatingPointValues, value: true }
   - {key: cppcoreguidelines-avoid-magic-numbers.IgnorePowersOf2IntegerValues, value: true }

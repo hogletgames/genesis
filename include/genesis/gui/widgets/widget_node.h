@@ -69,8 +69,8 @@ public:
     }
 
     template<typename T, typename... Args>
-    auto call(Args&&... args)
-        -> std::enable_if_t<std::is_same_v<decltype(T::call(args...)), bool>, bool>
+    auto
+    call(Args&&... args) -> std::enable_if_t<std::is_same_v<decltype(T::call(args...)), bool>, bool>
     {
         if (isOpened()) {
             return T::call(std::forward<Args>(args)...);

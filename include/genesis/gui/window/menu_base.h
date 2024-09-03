@@ -39,8 +39,8 @@ namespace GE::GUI {
 class GE_API MenuBase: public IMenu
 {
 public:
-    void onUpdate([[maybe_unused]] Timestamp ts) override{};
-    void onEvent([[maybe_unused]] Event* event) override{};
+    void onUpdate([[maybe_unused]] Timestamp ts) override {};
+    void onEvent([[maybe_unused]] Event* event) override {};
 };
 
 } // namespace GE::GUI

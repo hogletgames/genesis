@@ -36,6 +36,7 @@
 #include "genesis/core/utils.h"
 
 #include <SDL.h>
+#include <magic_enum.hpp>
 
 namespace {
 
@@ -234,6 +235,7 @@ std::unordered_map<GE::KeyModFlags, SDL_Keymod> getToKeyModMap()
 template<typename DstFlags, typename Map, typename SrsFlags>
 DstFlags convertBits(const Map& map, SrsFlags bits)
 {
+    using magic_enum::bitwise_operators::operator|=;
     DstFlags ret{};
 
     for (auto [from_bit, to_bit] : map) {
@@ -302,7 +304,7 @@ MouseButton InputController::fromNativeButton(uint8_t button) const
 bool InputController::isButtonPressed(MouseButton button) const
 {
     auto mouse_state = SDL_GetMouseState(nullptr, nullptr);
-    // NOLINTNEXTLINE(clang-analyzer-core.UndefinedBinaryOperatorResult)
+    // NOLINTNEXTLINE(clang-analyzer-core.UndefinedBinaryOperatorResult,clang-analyzer-core.BitwiseShift)
     auto sdl_mouse_button = SDL_BUTTON(toNativeButton(button));
     return (mouse_state & sdl_mouse_button) != 0;
 }

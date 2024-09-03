@@ -114,7 +114,7 @@ std::optional<GE::Application::settings_t> Options::load(std::string_view option
     std::ifstream fin(options_filepath.data());
 
     if (!fin) {
-        std::cerr << "Failed to open configuration file: '" << options_filepath << "'" << std::endl;
+        std::cerr << "Failed to open configuration file: '" << options_filepath << "'\n";
         return {};
     }
 
@@ -126,7 +126,7 @@ std::optional<GE::Application::settings_t> Options::load(std::string_view option
         return json.get<GE::Application::settings_t>();
     } catch (const std::exception& e) {
         std::cerr << "Failed to parse configuration '" << options_filepath << "': '" << e.what()
-                  << "'" << std::endl;
+                  << "'\n";
     }
 
     return {};

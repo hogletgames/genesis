@@ -68,7 +68,7 @@ bool Logger::initialize(std::string name)
     try {
         m_logger = spdlog::stdout_color_mt(name);
     } catch (const spdlog::spdlog_ex& e) {
-        std::cerr << "Failed to create logger '" << name << "': " << e.what() << std::endl;
+        std::cerr << "Failed to create logger '" << name << "': '" << e.what() << "'\n";
         return false;
     }
 

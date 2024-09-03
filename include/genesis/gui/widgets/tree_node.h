@@ -42,7 +42,7 @@ namespace GE::GUI {
 class GE_API TreeNode: public Widget
 {
 public:
-    enum Flag : int
+    enum Flag : uint16_t
     {
         NONE = 0,
         SELECTED = bit(0),

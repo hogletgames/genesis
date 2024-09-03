@@ -45,7 +45,7 @@ public:
     using Flags = int;
     using Items = std::vector<std::string_view>;
 
-    enum Flag
+    enum Flag : uint8_t
     {
         NONE = 0,
         POPUP_ALIGN_LEFT = bit(0),
