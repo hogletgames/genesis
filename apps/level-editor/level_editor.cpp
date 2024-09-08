@@ -185,6 +185,8 @@ void LevelEditor::loadSettings()
     if (m_ctx.settings()->currentProject()->name().empty()) {
         initializeProject();
     }
+
+    m_ctx.cameraController()->setCamera(m_ctx.settings()->appSettings().camera());
 }
 
 bool LevelEditor::saveSettings()

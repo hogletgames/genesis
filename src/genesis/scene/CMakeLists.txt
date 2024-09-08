@@ -16,6 +16,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/camera/projection_camera.h
     ${INCLUDE_DIR}/camera/view_projection_camera.h
     ${INCLUDE_DIR}/camera/vp_camera_controller.h
+    ${INCLUDE_DIR}/camera/yaml_convert.h
     ${INCLUDE_DIR}/components/camera_component.h
     ${INCLUDE_DIR}/components/material_component.h
     ${INCLUDE_DIR}/components/relationship_components.h

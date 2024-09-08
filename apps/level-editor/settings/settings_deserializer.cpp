@@ -36,6 +36,8 @@
 
 #include <fstream>
 
+#include <yaml-cpp/yaml.h>
+
 namespace LE {
 namespace {
 
@@ -75,11 +77,25 @@ bool SettingsDeserializer::deserialize(const std::string &filepath)
         return false;
     }
 
-    m_settings->setProjectPaths(node["projects"].as<Settings::ProjectPaths>());
+    try {
+        m_settings->setAppSettings(node["app_settings"].as<AppSettings>());
+    } catch (const std::exception &e) {
+        GE_WARN("Failed to load app settings: {}", e.what());
+    }
 
-    if (auto current_project = node["current_project"].as<std::string>();
-        !current_project.empty()) {
-        return m_settings->setCurrentProject(current_project);
+    try {
+        m_settings->setProjectPaths(node["projects"].as<Settings::ProjectPaths>());
+    } catch (const std::exception &e) {
+        GE_WARN("Failed to load projects settings: {}", e.what());
+    }
+
+    try {
+        if (auto current_project = node["current_project"].as<std::string>();
+            !current_project.empty()) {
+            return m_settings->setCurrentProject(current_project);
+        }
+    } catch (const std::exception &e) {
+        GE_WARN("Failed to current project settings: {}", e.what());
     }
 
     return true;

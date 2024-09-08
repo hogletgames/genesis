@@ -37,7 +37,8 @@
 #include <genesis/assets/resource_id.h>
 #include <genesis/assets/texture_resource.h>
 
-#include <yaml-cpp/yaml.h>
+#include <yaml-cpp/node/convert.h>
+#include <yaml-cpp/node/node.h>
 
 namespace YAML {
 

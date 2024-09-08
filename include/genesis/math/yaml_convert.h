@@ -34,7 +34,8 @@
 
 #include <genesis/math/types.h>
 
-#include <yaml-cpp/yaml.h>
+#include <yaml-cpp/node/convert.h>
+#include <yaml-cpp/node/node.h>
 
 namespace YAML {
 

@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include "settings/app_settings.h"
 #include "settings/project_settings.h"
 #include "settings/settings.h"
 #include "settings/settings_deserializer.h"

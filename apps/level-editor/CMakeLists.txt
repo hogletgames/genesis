@@ -20,6 +20,7 @@ list(APPEND LEVEL_EDITOR_SOURCES
     gui/windows/add_pipeline_resources_window.cpp
     gui/windows/add_resource_window_base.cpp
     gui/windows/add_texture_resource_window.cpp
+    settings/app_settings.cpp
     settings/project_settings.cpp
     settings/settings.cpp
     settings/settings_deserializer.cpp
@@ -54,6 +55,7 @@ list(APPEND LEVEL_EDITOR_HEADERS
     gui/windows/add_pipeline_resources_window.h
     gui/windows/add_resource_window_base.h
     gui/windows/add_texture_resource_window.h
+    settings/app_settings.h
     settings/project_settings.h
     settings/settings.h
     settings/settings_deserializer.h

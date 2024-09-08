@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include "app_settings.h"
 #include "project_settings.h"
 
 #include <genesis/core/export.h>
@@ -48,6 +49,9 @@ class GE_API Settings
 public:
     using ProjectPaths = std::map<std::string, std::string>;
 
+    void setAppSettings(const AppSettings& settings) { m_app_settings = settings; }
+    const AppSettings& appSettings() const { return m_app_settings; }
+
     ProjectSettings* currentProject() { return &m_current_project; }
     const ProjectPaths& projectPaths() const { return m_projects; }
 
@@ -59,6 +63,7 @@ public:
     ProjectSettings& createProject(const std::string& name);
 
 private:
+    AppSettings m_app_settings;
     ProjectSettings m_current_project;
     ProjectPaths m_projects;
 };

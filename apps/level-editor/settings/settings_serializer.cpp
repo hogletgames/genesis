@@ -53,6 +53,7 @@ bool SettingsSerializer::serialize(const std::string &filepath)
 
 bool SettingsSerializer::serializeSettings(YAML::Node *node)
 {
+    (*node)["app_settings"] = m_settings->appSettings();
     (*node)["current_project"] = m_settings->currentProject()->name();
     (*node)["projects"] = m_settings->projectPaths();
     return true;
