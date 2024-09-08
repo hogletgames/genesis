@@ -70,14 +70,12 @@ void ProjectionCamera::setType(ProjectionCamera::Type type)
 void ProjectionCamera::setOrthoOptions(const ortho_options_t& options)
 {
     m_ortho_options = options;
-    m_type = ORTHOGRAPHIC;
     calculateProjection();
 }
 
 void ProjectionCamera::setPerspectiveOptions(const perspective_options_t& options)
 {
     m_perspective_options = options;
-    m_type = PERSPECTIVE;
     calculateProjection();
 }
 
