@@ -34,9 +34,11 @@
 
 #include <genesis/assets/yaml_convert.h>
 #include <genesis/math/yaml_convert.h>
+#include <genesis/scene/camera/yaml_convert.h>
 #include <genesis/scene/components.h>
 
-#include <yaml-cpp/yaml.h>
+#include <yaml-cpp/node/convert.h>
+#include <yaml-cpp/node/node.h>
 
 namespace YAML {
 
@@ -52,27 +54,7 @@ struct convert<GE::Scene::CameraComponent> {
         }
 
         camera.fixed_aspect_ratio = node["fixed_aspect_ratio"].as<bool>();
-        auto projection_node = node["projection"];
-
-        auto ortho_node = projection_node["orthographic_options"];
-        GE::Scene::ProjectionCamera::ortho_options_t ortho_options{
-            ortho_node["size"].as<float>(),
-            ortho_node["near"].as<float>(),
-            ortho_node["far"].as<float>(),
-        };
-        camera.camera.setOrthoOptions(ortho_options);
-
-        auto perspective_node = projection_node["perspective_options"];
-        GE::Scene::ProjectionCamera::perspective_options_t perspective_options{
-            perspective_node["fov"].as<float>(),
-            perspective_node["near"].as<float>(),
-            perspective_node["far"].as<float>(),
-        };
-        camera.camera.setPerspectiveOptions(perspective_options);
-
-        auto projection_type = projection_node["type"].as<std::string>();
-        camera.camera.setType(GE::Scene::toProjectionType(projection_type));
-
+        camera.camera = node.as<GE::Scene::ProjectionCamera>();
         return true;
     }
 
@@ -81,21 +63,7 @@ struct convert<GE::Scene::CameraComponent> {
         YAML::Node node;
         node["type"] = TYPE.data();
         node["fixed_aspect_ratio"] = camera.fixed_aspect_ratio;
-
-        auto projection_node = node["projection"];
-        projection_node["type"] = GE::toString(camera.camera.type());
-
-        const auto& ortho_options = camera.camera.orthographicOptions();
-        auto ortho_node = projection_node["orthographic_options"];
-        ortho_node["size"] = ortho_options.size;
-        ortho_node["near"] = ortho_options.near;
-        ortho_node["far"] = ortho_options.far;
-
-        const auto& perspective_options = camera.camera.perspectiveOptions();
-        auto perspective_node = projection_node["perspective_options"];
-        perspective_node["fov"] = perspective_options.fov;
-        perspective_node["near"] = perspective_options.near;
-        perspective_node["far"] = perspective_options.far;
+        node["camera"] = camera.camera;
 
         return node;
     }
