@@ -60,8 +60,8 @@ void RendererBase::renderEntity(GE::Renderer* renderer, Pipeline* pipeline, cons
     }
 
     auto entity_transform = entity.get<TransformComponent>().transform();
-    auto parent_transform = parentalTransforms(entity);
-    auto mvp = m_camera->viewProjection() * entity_transform * parent_transform;
+    auto parent_transform = parentTransform(entity);
+    auto mvp = m_camera->viewProjection() * parent_transform * entity_transform;
 
     auto* cmd = renderer->command();
     cmd->bind(pipeline);
@@ -91,17 +91,18 @@ bool RendererBase::isValid(std::string_view entity_name, Pipeline* material, Tex
     return true;
 }
 
-Mat4 parentalTransforms(const Entity& entity)
+Mat4 parentTransform(const Entity& entity)
 {
-    Mat4 parental_transform{1.0f};
+    Mat4 parent_transform{1.0f};
     auto parent_entity_node = EntityNode{entity}.parentNode();
 
     while (!parent_entity_node.isNull()) {
-        parental_transform *= parent_entity_node.entity().get<TransformComponent>().transform();
+        auto transform = parent_entity_node.entity().get<TransformComponent>().transform();
+        parent_transform = transform * parent_transform;
         parent_entity_node = parent_entity_node.parentNode();
     }
 
-    return parental_transform;
+    return parent_transform;
 }
 
 } // namespace GE::Scene

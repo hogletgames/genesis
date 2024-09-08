@@ -63,6 +63,6 @@ protected:
     const ViewProjectionCamera* m_camera{nullptr};
 };
 
-Mat4 parentalTransforms(const Entity& entity);
+Mat4 parentTransform(const Entity& entity);
 
 } // namespace GE::Scene
