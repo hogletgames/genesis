@@ -57,7 +57,7 @@ class ViewProjectionCamera;
 class GE_API VPCameraController
 {
 public:
-    using VPCameraPtr = Shared<ViewProjectionCamera>;
+    using VPCamera = ViewProjectionCamera;
 
     enum Mode : uint8_t
     {
@@ -66,17 +66,17 @@ public:
         MODE_SCROLL_ZOOM_BIT = bit(2),
     };
 
-    explicit VPCameraController(VPCameraPtr camera);
+    explicit VPCameraController(Shared<VPCamera> camera = makeShared<VPCamera>());
     ~VPCameraController();
 
     void onUpdate(Timestamp ts);
     void onEvent(Event* event);
 
-    void setCamera(VPCameraPtr camera);
+    void setCamera(Shared<VPCamera> camera);
     void setViewport(const Vec2& viewport);
 
-    VPCameraPtr& camera() { return m_camera; }
-    const VPCameraPtr& camera() const { return m_camera; }
+    Shared<VPCamera>& camera() { return m_camera; }
+    const Shared<VPCamera>& camera() const { return m_camera; }
     Mode mode() const { return m_mode; }
 
 private:
@@ -88,7 +88,7 @@ private:
     void rotate();
     void zoom(float delta);
 
-    VPCameraPtr m_camera;
+    Shared<VPCamera> m_camera;
     Mode m_mode{MODE_NONE};
     Vec2 m_mouse_offset{0.0f};
 };

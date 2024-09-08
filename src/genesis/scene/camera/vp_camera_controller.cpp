@@ -56,7 +56,7 @@ GE::Scene::VPCameraController::Mode toCameraControlModeBit(GE::MouseButton mouse
 
 namespace GE::Scene {
 
-VPCameraController::VPCameraController(VPCameraPtr camera)
+VPCameraController::VPCameraController(Shared<VPCamera> camera)
     : m_camera{std::move(camera)}
 {}
 
@@ -86,7 +86,7 @@ void VPCameraController::onEvent(Event* event)
         toEventHandler(&VPCameraController::onMouseScrolled, this));
 }
 
-void VPCameraController::setCamera(VPCameraPtr camera)
+void VPCameraController::setCamera(Shared<VPCamera> camera)
 {
     m_camera = std::move(camera);
 }
