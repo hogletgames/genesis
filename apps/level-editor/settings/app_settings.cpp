@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,58 +30,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
-
 #include "app_settings.h"
-#include "project_settings.h"
-#include "settings.h"
 
-#include <genesis/scene/camera/yaml_convert.h>
+namespace LE {
 
-#include <yaml-cpp/node/convert.h>
-#include <yaml-cpp/node/node.h>
+AppSettings& AppSettings::setCamera(const GE::Shared<Camera>& camera)
+{
+    m_camera = camera;
+    return *this;
+}
 
-namespace YAML {
-
-template<>
-struct convert<LE::AppSettings> {
-    static bool decode(const Node& node, LE::AppSettings& app_settings)
-    {
-        auto camera = GE::makeShared<GE::Scene::ViewProjectionCamera>();
-        *camera = node["camera"].as<GE::Scene::ViewProjectionCamera>();
-
-        app_settings.setCamera(camera);
-        return true;
-    }
-
-    static Node encode(const LE::AppSettings& project)
-    {
-        Node node;
-        node["camera"] = *project.camera();
-        return node;
-    }
-};
-
-template<>
-struct convert<LE::ProjectSettings> {
-    static bool decode(const Node& node, LE::ProjectSettings& project)
-    {
-        project.setName(node["name"].as<std::string>())
-            .setProjectPath(node["project_path"].as<std::string>())
-            .setAssetsPath(node["assets_path"].as<std::string>())
-            .setScenePath(node["scene_path"].as<std::string>());
-        return true;
-    }
-
-    static Node encode(const LE::ProjectSettings& project)
-    {
-        Node node;
-        node["name"] = project.name();
-        node["project_path"] = project.projectPath();
-        node["assets_path"] = project.assetsPath();
-        node["scene_path"] = project.scenePath();
-        return node;
-    }
-};
-
-} // namespace YAML
+} // namespace LE

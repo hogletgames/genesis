@@ -70,9 +70,7 @@ private:
 
     GE::Assets::Registry m_assets;
     GE::Scene::Scene m_scene;
-    GE::Shared<GE::Scene::ViewProjectionCamera> m_camera{
-        GE::makeShared<GE::Scene::ViewProjectionCamera>()};
-    GE::Scene::VPCameraController m_camera_controller{m_camera};
+    GE::Scene::VPCameraController m_camera_controller;
     GE::Scene::Entity m_selected_entity;
 };
 
