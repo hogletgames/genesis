@@ -31,7 +31,7 @@
  */
 
 #include "drag_drop.h"
-
+#include "private/flag_utils.h"
 #include "widgets/text.h"
 
 #include "genesis/core/asserts.h"
@@ -39,62 +39,44 @@
 
 #include <imgui.h>
 
+#include <array>
+#include <utility>
+
 namespace GE::GUI {
 namespace {
 
 ImGuiDragDropFlags fromPayloadFlags(DragDropPayload::Flags flags)
 {
-    ImGuiDragDropFlags imgui_flags{ImGuiDragDropFlags_None};
+    constexpr std::array<std::pair<DragDropPayload::Flag, ImGuiDragDropFlags_>, 3>
+        To_IMGUI_DRAG_DROP_FLAGS = {
+            std::make_pair(DragDropPayload::BEFORE_DELIVERY,
+                           ImGuiDragDropFlags_AcceptBeforeDelivery),
+            std::make_pair(DragDropPayload::NO_DRAW_DEFAULT_RECT,
+                           ImGuiDragDropFlags_AcceptNoDrawDefaultRect),
+            std::make_pair(DragDropPayload::NO_PREVIEW_TOOLTIP,
+                           ImGuiDragDropFlags_AcceptNoPreviewTooltip),
+        };
 
-    if (checkBits<DragDropPayload::Flags>(flags, DragDropPayload::BEFORE_DELIVERY)) {
-        imgui_flags =
-            setBits<ImGuiDragDropFlags>(imgui_flags, ImGuiDragDropFlags_AcceptBeforeDelivery);
-    }
-    if (checkBits<DragDropPayload::Flags>(flags, DragDropPayload::NO_DRAW_DEFAULT_RECT)) {
-        imgui_flags =
-            setBits<ImGuiDragDropFlags>(imgui_flags, ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
-    }
-    if (checkBits<DragDropPayload::Flags>(flags, DragDropPayload::NO_PREVIEW_TOOLTIP)) {
-        imgui_flags =
-            setBits<ImGuiDragDropFlags>(imgui_flags, ImGuiDragDropFlags_AcceptNoPreviewTooltip);
-    }
-
-    return imgui_flags;
+    return toImGuiFlags<ImGuiDragDropFlags>(To_IMGUI_DRAG_DROP_FLAGS, flags);
 }
 
 ImGuiDragDropFlags fromSourceFlags(DragDropSource::Flags flags)
 {
-    ImGuiDragDropFlags imgui_flags{ImGuiDragDropFlags_None};
+    constexpr std::array<std::pair<DragDropSource::Flag, ImGuiDragDropFlags_>, 6>
+        TO_IMGUI_DRAG_DROP_FLAGS = {
+            std::make_pair(DragDropSource::NO_PREVIEW_TOOLTIP,
+                           ImGuiDragDropFlags_SourceNoPreviewTooltip),
+            std::make_pair(DragDropSource::NO_DISABLE_HOVER,
+                           ImGuiDragDropFlags_SourceNoDisableHover),
+            std::make_pair(DragDropSource::NO_HOLD_TO_OPENOTHERS,
+                           ImGuiDragDropFlags_SourceNoHoldToOpenOthers),
+            std::make_pair(DragDropSource::ALLOW_NULL_ID, ImGuiDragDropFlags_SourceAllowNullID),
+            std::make_pair(DragDropSource::EXTERN, ImGuiDragDropFlags_SourceExtern),
+            std::make_pair(DragDropSource::AUTO_EXPIRE_PAYLOAD,
+                           ImGuiDragDropFlags_SourceAutoExpirePayload),
+        };
 
-    if (checkBits<DragDropSource::Flags>(flags, DragDropSource::NO_PREVIEW_TOOLTIP)) {
-        imgui_flags =
-            setBits<ImGuiDragDropFlags>(imgui_flags, ImGuiDragDropFlags_SourceNoPreviewTooltip);
-    }
-    if (checkBits<DragDropSource::Flags>(flags, DragDropSource::NO_PREVIEW_TOOLTIP)) {
-        imgui_flags =
-            setBits<ImGuiDragDropFlags>(imgui_flags, ImGuiDragDropFlags_SourceNoPreviewTooltip);
-    }
-    if (checkBits<DragDropSource::Flags>(flags, DragDropSource::NO_DISABLE_HOVER)) {
-        imgui_flags =
-            setBits<ImGuiDragDropFlags>(imgui_flags, ImGuiDragDropFlags_SourceNoDisableHover);
-    }
-    if (checkBits<DragDropSource::Flags>(flags, DragDropSource::NO_HOLD_TO_OPENOTHERS)) {
-        imgui_flags =
-            setBits<ImGuiDragDropFlags>(imgui_flags, ImGuiDragDropFlags_SourceNoHoldToOpenOthers);
-    }
-    if (checkBits<DragDropSource::Flags>(flags, DragDropSource::ALLOW_NULL_ID)) {
-        imgui_flags =
-            setBits<ImGuiDragDropFlags>(imgui_flags, ImGuiDragDropFlags_SourceAllowNullID);
-    }
-    if (checkBits<DragDropSource::Flags>(flags, DragDropSource::EXTERN)) {
-        imgui_flags = setBits<ImGuiDragDropFlags>(imgui_flags, ImGuiDragDropFlags_SourceExtern);
-    }
-    if (checkBits<DragDropSource::Flags>(flags, DragDropSource::AUTO_EXPIRE_PAYLOAD)) {
-        imgui_flags =
-            setBits<ImGuiDragDropFlags>(imgui_flags, ImGuiDragDropFlags_SourceAutoExpirePayload);
-    }
-
-    return imgui_flags;
+    return toImGuiFlags<ImGuiDragDropFlags>(TO_IMGUI_DRAG_DROP_FLAGS, flags);
 }
 
 } // namespace
