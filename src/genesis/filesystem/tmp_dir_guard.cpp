@@ -43,7 +43,8 @@ namespace {
 
 std::string tmpDirPath()
 {
-    return boost::filesystem::unique_path().string();
+    using namespace boost::filesystem;
+    return (temp_directory_path() / unique_path()).string();
 }
 
 } // namespace
