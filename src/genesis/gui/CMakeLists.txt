@@ -67,6 +67,7 @@ list(APPEND GUI_HEADERS
     ${INCLUDE_DIR}/window/modal_windows.h
     ${INCLUDE_DIR}/window/window_base.h
     ${INCLUDE_DIR}/window/window_map.h
+    private/flag_utils.h
     private/types.h
     )
 
