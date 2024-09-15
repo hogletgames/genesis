@@ -87,11 +87,6 @@ Entity SceneDeserializer::loadEntities(Scene *scene, const YAML::Node &node)
 
     for (uint32_t i{1}; i < node.size(); i++) {
         auto entity = loadEntity(scene, node[i]);
-
-        if (auto children_node = node[i]["children"]; children_node.IsDefined()) {
-            EntityNode{entity}.appendChild(loadEntities(scene, children_node));
-        }
-
         EntityNode{last_entity}.insert(entity);
         last_entity = entity;
     }
@@ -99,6 +94,7 @@ Entity SceneDeserializer::loadEntities(Scene *scene, const YAML::Node &node)
     return first_entity;
 }
 
+// NOLINTNEXTLINE(misc-no-recursion)
 Entity SceneDeserializer::loadEntity(Scene *scene, const YAML::Node &node)
 {
     auto entity = scene->createEntity();
@@ -107,6 +103,10 @@ Entity SceneDeserializer::loadEntity(Scene *scene, const YAML::Node &node)
         if (!loadComponent(&entity, component_node)) {
             GE_CORE_ERR("Failed to load components for an entity");
         }
+    }
+
+    if (auto children_node = node["children"]; children_node.IsDefined()) {
+        EntityNode{entity}.appendChild(loadEntities(scene, children_node));
     }
 
     return entity;

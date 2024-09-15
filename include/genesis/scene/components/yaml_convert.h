@@ -45,7 +45,7 @@ namespace YAML {
 template<>
 struct convert<GE::Scene::CameraComponent> {
     using Component = GE::Scene::CameraComponent;
-    static constexpr auto TYPE{Component ::NAME};
+    static constexpr auto TYPE{Component::NAME};
 
     static bool decode(const Node& node, Component& camera)
     {
