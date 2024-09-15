@@ -53,7 +53,7 @@ VkBlendFactor toVkBlendFactor(BlendFactor factor)
         case BlendFactor::ONE_MINUS_CONSTANT_COLOR: return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR;
         case BlendFactor::CONSTANT_ALPHA: return VK_BLEND_FACTOR_CONSTANT_ALPHA;
         case BlendFactor::ONE_MINUS_CONSTANT_ALPHA: return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
-        default: GE_CORE_ASSERT("Unsupported blendign factor: {}", factor);
+        default: GE_CORE_ASSERT("Unsupported blending factor: {}", toString(factor));
     }
 
     return VK_BLEND_FACTOR_ZERO;
@@ -67,7 +67,7 @@ VkBlendOp toVkBlendOp(BlendOp op)
         case BlendOp::REVERSE_SUBTRACT: return VK_BLEND_OP_REVERSE_SUBTRACT;
         case BlendOp::MIN: return VK_BLEND_OP_MIN;
         case BlendOp::MAX: return VK_BLEND_OP_MAX;
-        default: GE_CORE_ASSERT("Unsupported blendign op: {}", op);
+        default: GE_CORE_ASSERT("Unsupported blending op: {}", toString(op));
     }
 
     return VK_BLEND_OP_ADD;

@@ -89,7 +89,7 @@ ShaderCache ShaderPrecompiler::compileShader(Shader::Type type, const std::strin
     auto kind = toShaderKind(type);
 
     if (!kind.has_value()) {
-        GE_CORE_ERR("Unsupported Shader Type: {}", type);
+        GE_CORE_ERR("Unsupported Shader Type: {}", toString(type));
         return {};
     }
 
