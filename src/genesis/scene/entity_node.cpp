@@ -60,7 +60,7 @@ EntityNode::EntityNode(const Entity& entity)
     : m_entity{entity}
 {}
 
-EntityNode& EntityNode::insert(const Entity& entity)
+EntityNode EntityNode::insert(const Entity& entity)
 {
     GE_CORE_ASSERT(!isNull(), "Entity cannot be Null");
     GE_CORE_ASSERT(m_entity != entity, "Cannot append entity to itself");
@@ -78,11 +78,10 @@ EntityNode& EntityNode::insert(const Entity& entity)
 
     node().next_node = entity.nativeHandle();
     moveTailToNextNode();
-
-    return *this;
+    return inserted_entity;
 }
 
-EntityNode& EntityNode::appendChild(const Entity& child_entity)
+EntityNode EntityNode::appendChild(const Entity& child_entity)
 {
     GE_CORE_ASSERT(!isNull(), "Parent entity cannot be Null");
     GE_CORE_ASSERT(!child_entity.isNull(), "Child entity cannot be Null");
@@ -97,7 +96,7 @@ EntityNode& EntityNode::appendChild(const Entity& child_entity)
     child_node.eject();
     child_node.node().parent_node = m_entity.nativeHandle();
     node().child_node = child_entity.nativeHandle();
-    return *this;
+    return child_node;
 }
 
 EntityNode EntityNode::prevNode() const

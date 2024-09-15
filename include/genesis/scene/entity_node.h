@@ -45,8 +45,8 @@ public:
     EntityNode() = default;
     explicit EntityNode(const Entity& entity);
 
-    EntityNode& insert(const Entity& entity);
-    EntityNode& appendChild(const Entity& child_entity);
+    EntityNode insert(const Entity& entity);
+    EntityNode appendChild(const Entity& child_entity);
 
     EntityNode prevNode() const;
     EntityNode nextNode() const;

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,48 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "tmp_dir_guard.h"
+#pragma once
 
-#include "genesis/core/log.h"
+#include <gmock/gmock.h>
 
-#include <boost/filesystem.hpp>
+namespace GE::Tests {
 
-#include <filesystem>
+using testing::DescribeMatcher;
 
-namespace GE::FS {
-namespace {
-
-std::string tmpDirPath()
+MATCHER_P(isTagComponent, tag,
+          std::string{negation ? "isn't" : "is"} + " a 'Tag' component whose tag " +
+              DescribeMatcher<std::string>(tag))
 {
-    using namespace boost::filesystem;
-    return (temp_directory_path() / unique_path()).string();
-}
+    using testing::ExplainMatchResult;
 
-} // namespace
-
-TmpDirGuard::TmpDirGuard()
-    : m_path{tmpDirPath()}
-
-{
-    std::error_code error;
-
-    if (std::filesystem::create_directory(m_path, error); error) {
-        GE_CORE_ERR("Failed to create tmp dir: {}", error.message());
-        m_path.clear();
-    }
-}
-
-TmpDirGuard::~TmpDirGuard()
-{
-    if (m_path.empty()) {
-        return;
+    if (!ExplainMatchResult(tag, arg.tag, result_listener)) {
+        *result_listener << "actual tag: '" << arg.tag << "'";
+        return false;
     }
 
-    std::error_code error;
-
-    if (std::filesystem::remove_all(m_path, error); error) {
-        GE_CORE_ERR("Failed to remove tmp dir: {}", error.message());
-    }
+    return true;
 }
 
-} // namespace GE::FS
+} // namespace GE::Tests
