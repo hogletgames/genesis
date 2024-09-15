@@ -910,7 +910,7 @@ void HelloTriangleApplication::pickPhysicalDevice()
             VkPhysicalDeviceProperties device_properties{};
             vkGetPhysicalDeviceProperties(m_physical_device, &device_properties);
             GE_INFO("'{}' has been chosen as GPU, MSAA: {}", device_properties.deviceName,
-                    m_msaa_samples);
+                    GE::toString(m_msaa_samples));
 
             break;
         }

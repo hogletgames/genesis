@@ -86,7 +86,7 @@ int renderAPIToWindowFlag(GE::Graphics::API api)
     int flag = GE::getValue(api_to_flag, api, default_flag);
 
     if (flag == default_flag) {
-        GE_CORE_ERR("Failed to get SDL Window Flag: unsupported API '{}'", api);
+        GE_CORE_ERR("Failed to get SDL Window Flag: unsupported API '{}'", toString(api));
     }
 
     return flag;
