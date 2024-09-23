@@ -14,6 +14,8 @@ resources:
       vertex_shader_path: assets/genesis/pipelines/sprite.vert
       fragment_shader_path: assets/genesis/pipelines/wb_oit_accumulation.frag
   MESHES:
+    - name: circle
+      filepath: assets/genesis/meshes/circle.obj
     - name: square
       filepath: assets/genesis/meshes/square.obj
   TEXTURES:

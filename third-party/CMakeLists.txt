@@ -22,6 +22,12 @@ set(ENABLE_CTEST OFF)
 set(SHADERC_SKIP_TESTS ON)
 set(ALLOW_EXTERNAL_SPIRV_TOOLS ON)
 
+# Box2D
+set(BOX2D_BUILD_UNIT_TESTS OFF)
+set(BOX2D_BUILD_TESTBED OFF)
+set(BOX2D_BUILD_DOCS OFF)
+set(BOX2D_USER_SETTINGS OFF)
+
 # Variables
 set(DEPS_DIR ${FETCHCONTENT_BASE_DIR})
 
@@ -34,7 +40,7 @@ FetchContent_MakeAvailable(fmt)
 # glm
 FetchContent_Declare(glm
     GIT_REPOSITORY https://github.com/hogletgames/glm.git
-    GIT_TAG 0.9.9.8)
+    GIT_TAG 1.0.1)
 FetchContent_MakeAvailable(glm)
 
 # magic_enum
@@ -70,27 +76,27 @@ FetchContent_GetProperties(imgui)
 if (NOT imgui_POPULATED)
     FetchContent_Populate(imgui)
 
-    add_Library(imgui STATIC
+    add_Library(ge-imgui STATIC
         ${imgui_SOURCE_DIR}/imgui.cpp
         ${imgui_SOURCE_DIR}/imgui_draw.cpp
         ${imgui_SOURCE_DIR}/imgui_demo.cpp
         ${imgui_SOURCE_DIR}/imgui_tables.cpp
         ${imgui_SOURCE_DIR}/imgui_widgets.cpp)
-    target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+    target_include_directories(ge-imgui PUBLIC ${imgui_SOURCE_DIR})
 
-    add_library(imgui-vulkan STATIC
+    add_library(ge-imgui-vulkan STATIC
         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
         ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp)
-    target_link_libraries(imgui-vulkan PUBLIC
-        imgui
+    target_link_libraries(ge-imgui-vulkan PUBLIC
+        ge-imgui
         SDL2-static
         Vulkan::Headers
         Vulkan::Loader
         )
-    target_include_directories(imgui-vulkan PUBLIC ${imgui_SOURCE_DIR}/backends)
+    target_include_directories(ge-imgui-vulkan PUBLIC ${imgui_SOURCE_DIR}/backends)
 
     add_executable(imgui_sdl_vulkan_example ${imgui_SOURCE_DIR}/examples/example_sdl2_vulkan/main.cpp)
-    target_link_libraries(imgui_sdl_vulkan_example PRIVATE imgui-vulkan)
+    target_link_libraries(imgui_sdl_vulkan_example PRIVATE ge-imgui-vulkan)
     target_compile_definitions(imgui_sdl_vulkan_example PRIVATE _DEBUG)
 endif ()
 
@@ -109,7 +115,7 @@ if (NOT imguizmo_POPULATED)
         ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
         ${imguizmo_SOURCE_DIR}/ImSequencer.cpp
         )
-    target_link_libraries(ImGuizmo PUBLIC imgui)
+    target_link_libraries(ImGuizmo PUBLIC ge-imgui)
     target_include_directories(ImGuizmo PUBLIC ${imguizmo_SOURCE_DIR})
 endif ()
 
@@ -236,6 +242,12 @@ FetchContent_Declare(Vulkan-Headers
     GIT_REPOSITORY https://github.com/hogletgames/Vulkan-Headers.git
     GIT_TAG vulkan-sdk-1.3.268.0)
 FetchContent_MakeAvailable(Vulkan-Headers)
+
+# box2d
+FetchContent_Declare(box2d
+    GIT_REPOSITORY https://github.com/hogletgames/box2d.git
+    GIT_TAG v3.0.0)
+FetchContent_MakeAvailable(box2d)
 
 # Apple dependencies
 if (APPLE)

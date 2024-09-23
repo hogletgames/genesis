@@ -31,15 +31,50 @@
  */
 
 #include "window.h"
+#include "private/flag_utils.h"
 #include "private/types.h"
+
+#include <vector>
 
 #include <imgui.h>
 
 namespace GE::GUI {
+namespace {
+
+ImGuiWindowFlags toImGuiWindowFlags(Window::Flags flags)
+{
+    static const std::vector<std::pair<Window::Flag, ImGuiWindowFlags_>> TO_IMGUI_FLAGS = {
+        {Window::NONE, ImGuiWindowFlags_None},
+        {Window::NO_TITLE_BAR, ImGuiWindowFlags_NoTitleBar},
+        {Window::NO_RESIZE, ImGuiWindowFlags_NoResize},
+        {Window::NO_MOVE, ImGuiWindowFlags_NoMove},
+        {Window::NO_SCROLLBAR, ImGuiWindowFlags_NoScrollbar},
+        {Window::NO_SCROLL_WITH_MOUSE, ImGuiWindowFlags_NoScrollWithMouse},
+        {Window::NO_COLLAPSE, ImGuiWindowFlags_NoCollapse},
+        {Window::ALWAYS_AUTO_RESIZE, ImGuiWindowFlags_AlwaysAutoResize},
+        {Window::NO_BACKGROUND, ImGuiWindowFlags_NoBackground},
+        {Window::NO_SAVED_SETTINGS, ImGuiWindowFlags_NoSavedSettings},
+        {Window::NO_MOUSE_INPUTS, ImGuiWindowFlags_NoMouseInputs},
+        {Window::MENU_BAR, ImGuiWindowFlags_MenuBar},
+        {Window::HORIZONTAL_SCROLLBAR, ImGuiWindowFlags_HorizontalScrollbar},
+        {Window::NO_FOCUS_ON_APPEARING, ImGuiWindowFlags_NoFocusOnAppearing},
+        {Window::NO_BRING_TO_FRONT_ON_FOCUS, ImGuiWindowFlags_NoBringToFrontOnFocus},
+        {Window::ALWAYS_VERTICAL_SCROLLBAR, ImGuiWindowFlags_AlwaysVerticalScrollbar},
+        {Window::ALWAYS_HORIZONTAL_SCROLLBAR, ImGuiWindowFlags_AlwaysHorizontalScrollbar},
+        {Window::NO_NAV_INPUTS, ImGuiWindowFlags_NoNavInputs},
+        {Window::NO_NAV_FOCUS, ImGuiWindowFlags_NoNavFocus},
+        {Window::UNSAVED_DOCUMENT, ImGuiWindowFlags_UnsavedDocument},
+        {Window::NO_DOCKING, ImGuiWindowFlags_NoDocking},
+    };
+
+    return toImGuiFlags<ImGuiWindowFlags>(TO_IMGUI_FLAGS, flags);
+}
+
+} // namespace
 
 Window::Window(std::string_view title, bool* is_open, Flags flags)
 {
-    setBeginFunc([title, is_open, flags] {
+    setBeginFunc([title, is_open, flags = toImGuiWindowFlags(flags)] {
         if (is_open != nullptr && !*is_open) {
             return false;
         }
@@ -75,6 +110,16 @@ Vec2 Window::size() const
 Vec2 Window::availableRegion() const
 {
     return toVec2(ImGui::GetContentRegionAvail());
+}
+
+Vec2 Window::contentRegionMin() const
+{
+    return toVec2(ImGui::GetWindowContentRegionMin());
+}
+
+Vec2 Window::contentRegionMax() const
+{
+    return toVec2(ImGui::GetWindowContentRegionMax());
 }
 
 float Window::aspectRatio() const

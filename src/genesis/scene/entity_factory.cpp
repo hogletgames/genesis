@@ -49,7 +49,7 @@ Entity EntityFactory::createCamera(std::string_view name)
     auto entity = m_scene->createEntity(name);
     entity.add<CameraComponent>();
 
-    appentToTail(entity);
+    appendToTail(entity);
     return entity;
 }
 
@@ -65,7 +65,7 @@ Entity EntityFactory::createSquare(std::string_view name)
     auto& material = entity.add<MaterialComponent>();
     material.setMaterialID({"genesis", Assets::Group::PIPELINES, "sprite"});
 
-    appentToTail(entity);
+    appendToTail(entity);
     return entity;
 }
 
@@ -74,25 +74,25 @@ Entity EntityFactory::createCircle(std::string_view name)
     auto entity = m_scene->createEntity(name);
 
     auto& sprite = entity.add<SpriteComponent>();
-    sprite.setMeshID({"genesis", Assets::Group::MESHES, "square"});
+    sprite.setMeshID({"genesis", Assets::Group::MESHES, "circle"});
     sprite.setTextureID({"genesis", Assets::Group::TEXTURES, "circle"});
     sprite.loadAll(m_assets);
 
     auto& material = entity.add<MaterialComponent>();
     material.setMaterialID({"genesis", Assets::Group::PIPELINES, "sprite"});
 
-    appentToTail(entity);
+    appendToTail(entity);
     return entity;
 }
 
 Entity EntityFactory::createEmptyEntity(std::string_view name)
 {
     auto entity = m_scene->createEntity(name);
-    appentToTail(entity);
+    appendToTail(entity);
     return entity;
 }
 
-void EntityFactory::appentToTail(const Entity& entity)
+void EntityFactory::appendToTail(const Entity& entity)
 {
     if (auto tail_entity = m_scene->tailEnity(); tail_entity != entity) {
         EntityNode{tail_entity}.insert(entity);

@@ -36,6 +36,7 @@
 #include "image.h"
 #include "pipeline.h"
 #include "pipeline_barrier.h"
+#include "pipeline_config.h"
 #include "swap_chain.h"
 #include "utils.h"
 

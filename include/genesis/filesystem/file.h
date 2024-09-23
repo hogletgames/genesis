@@ -40,6 +40,6 @@ namespace GE::FS {
 
 GE_API bool exists(std::string_view filepath);
 GE_API bool createDir(std::string_view filepath);
-GE_API bool removeDir(std::string_view filepath);
+GE_API bool removeAll(std::string_view filepath);
 
 } // namespace GE::FS

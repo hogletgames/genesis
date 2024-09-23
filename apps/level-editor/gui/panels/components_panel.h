@@ -38,13 +38,20 @@ namespace GE::GUI {
 class WidgetNode;
 } // namespace GE::GUI
 
+namespace GE::P2D {
+struct body_shape_config_base_t;
+} // namespace GE::P2D
+
 namespace GE::Scene {
 class Entity;
+struct BoxCollider2DComponent;
 struct CameraComponent;
 struct MaterialComponent;
+struct CircleCollider2DComponent;
+struct RigidBody2DComponent;
+struct SpriteComponent;
 struct TagComponent;
 struct TransformComponent;
-struct SpriteComponent;
 } // namespace GE::Scene
 
 namespace LE {
@@ -62,6 +69,8 @@ public:
 
 private:
     void drawEntityComponents(GE::Scene::Entity* entity);
+    void drawAddNewComponents(GE::GUI::WidgetNode* node, GE::Scene::Entity* entity);
+
     template<typename Component>
     void draw(GE::Scene::Entity* entity);
     void draw(GE::GUI::WidgetNode* node, GE::Scene::CameraComponent* camera);
@@ -69,6 +78,10 @@ private:
     void draw(GE::GUI::WidgetNode* node, GE::Scene::TagComponent* tag);
     void draw(GE::GUI::WidgetNode* node, GE::Scene::TransformComponent* transform);
     void draw(GE::GUI::WidgetNode* node, GE::Scene::SpriteComponent* sprite);
+    void draw(GE::GUI::WidgetNode* node, GE::Scene::RigidBody2DComponent* rigid_body);
+    void draw(GE::GUI::WidgetNode* node, GE::P2D::body_shape_config_base_t* shape_config);
+    void draw(GE::GUI::WidgetNode* node, GE::Scene::BoxCollider2DComponent* collider);
+    void draw(GE::GUI::WidgetNode* node, GE::Scene::CircleCollider2DComponent* collider);
 
     LevelEditorContext* m_ctx{nullptr};
 };

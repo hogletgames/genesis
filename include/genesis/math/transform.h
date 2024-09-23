@@ -32,9 +32,11 @@
 
 #pragma once
 
+#include <genesis/math/trigonometric.h>
 #include <genesis/math/types.h>
 
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
 namespace GE {
@@ -42,5 +44,30 @@ namespace GE {
 using glm::rotate;
 using glm::scale;
 using glm::translate;
+
+inline Mat4 makeTransform3D(const Vec3& translation, const Vec3& rotation,
+                            const Vec3& scale = Vec3{1.0f})
+{
+    return GE::translate(Mat4{1.0f}, translation) * toMat4(Quat{rotation}) * GE::scale(scale);
+}
+
+inline Mat4 makeTransform2D(const Vec2& translation, float rotation_z,
+                            const Vec2& scale = Vec2{1.0f, 1.0f})
+{
+    return makeTransform3D(Vec3{translation, 0.0f}, Vec3{0.0f, 0.0f, rotation_z},
+                           Vec3{scale, 1.0f});
+}
+
+inline std::tuple<Vec3, Vec3, Vec3> decompose(const Mat4& transform)
+{
+    Vec3 scale;
+    Quat orientation;
+    Vec3 translation;
+    Vec3 skew;
+    Vec4 perspective;
+
+    glm::decompose(transform, scale, orientation, translation, skew, perspective);
+    return {translation, eulerAngles(orientation), scale};
+}
 
 } // namespace GE

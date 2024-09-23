@@ -56,7 +56,7 @@ public:
     Entity createEmptyEntity(std::string_view name);
 
 private:
-    void appentToTail(const Entity& entity);
+    void appendToTail(const Entity& entity);
 
     Scene* m_scene{nullptr};
     Assets::Registry* m_assets{nullptr};

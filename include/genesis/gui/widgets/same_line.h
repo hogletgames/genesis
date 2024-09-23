@@ -40,4 +40,11 @@ public:
     static void call(float offset_from_start_x = 0.0f, float spacing_w = -1.0f);
 };
 
+class PushItemWidth
+{
+public:
+    explicit PushItemWidth(float width);
+    ~PushItemWidth();
+};
+
 } // namespace GE::GUI

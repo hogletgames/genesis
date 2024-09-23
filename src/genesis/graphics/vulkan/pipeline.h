@@ -37,11 +37,10 @@
 
 #include <vulkan/vulkan.h>
 
-#include <vector>
-
 namespace GE {
-struct push_constant_t;
 class Shader;
+struct pipeline_config_t;
+struct push_constant_t;
 } // namespace GE
 
 namespace GE::Vulkan {
@@ -49,23 +48,7 @@ namespace GE::Vulkan {
 class DescriptorPool;
 class Device;
 class PipelineResources;
-
-struct pipeline_config_t: GE::pipeline_config_t {
-    VkPipelineCache pipeline_cache{VK_NULL_HANDLE};
-    std::vector<VkFormat> color_formats{VK_FORMAT_UNDEFINED};
-    VkFormat depth_format{VK_FORMAT_UNDEFINED};
-    VkFrontFace front_face{VK_FRONT_FACE_COUNTER_CLOCKWISE};
-    VkSampleCountFlagBits msaa_samples{VK_SAMPLE_COUNT_1_BIT};
-    Shared<DescriptorPool> descriptor_pool{};
-
-    VkPipelineViewportStateCreateInfo viewport_state{};
-    VkPipelineInputAssemblyStateCreateInfo input_assembly_state{};
-    VkPipelineRasterizationStateCreateInfo rasterization_state{};
-    VkPipelineMultisampleStateCreateInfo multisample_state{};
-    VkPipelineDepthStencilStateCreateInfo depth_stencil_state{};
-    std::vector<VkDynamicState> dynamic_state_list{};
-    VkPipelineDynamicStateCreateInfo dynamic_state{};
-};
+struct pipeline_config_t;
 
 class Pipeline: public GE::Pipeline
 {
@@ -85,6 +68,7 @@ public:
     void pushConstant(GPUCommandQueue* queue, const std::string& name, double value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec2& value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec3& value) override;
+    void pushConstant(GPUCommandQueue* queue, const std::string& name, const Vec4& value) override;
     void pushConstant(GPUCommandQueue* queue, const std::string& name, const Mat4& value) override;
 
     NativeHandle nativeHandle() const override { return m_pipeline; }

@@ -32,45 +32,32 @@
 
 #pragma once
 
-#include <genesis/core/export.h>
+#include <genesis/core/memory.h>
+#include <genesis/physics2d/rigid_body.h>
 
-#include <cstdint>
+#include <string_view>
 
-enum class BlendFactor : uint8_t
-{
-    ZERO,
-    ONE,
-    SRC_COLOR,
-    ONE_MINUS_SRC_COLOR,
-    DST_COLOR,
-    ONE_MINUS_DST_COLOR,
-    SRC_ALPHA,
-    ONE_MINUS_SRC_ALPHA,
-    DST_ALPHA,
-    ONE_MINUS_DST_ALPHA,
-    CONSTANT_COLOR,
-    ONE_MINUS_CONSTANT_COLOR,
-    CONSTANT_ALPHA,
-    ONE_MINUS_CONSTANT_ALPHA
+namespace GE::Scene {
+
+struct RigidBody2DComponent {
+    P2D::RigidBody::Type body_type{P2D::RigidBody::Type::STATIC};
+    bool fixed_rotation{false};
+
+    Scoped<P2D::RigidBody> body;
+
+    static constexpr std::string_view NAME{"Rigidbody 2D"};
 };
 
-enum class BlendOp : uint8_t
-{
-    ADD,
-    SUBTRACT,
-    REVERSE_SUBTRACT,
-    MIN,
-    MAX
+struct BoxCollider2DComponent: P2D::box_body_shape_config_t {
+    bool show_collider{false};
+
+    static constexpr std::string_view NAME{"Box Collider 2D"};
 };
 
-struct GE_API blending_t {
-    bool enabled{true};
+struct CircleCollider2DComponent: P2D::circle_body_shape_config_t {
+    bool show_collider{false};
 
-    BlendFactor src_color_factor{BlendFactor::SRC_ALPHA};
-    BlendFactor dst_color_factor{BlendFactor::ONE_MINUS_SRC_ALPHA};
-    BlendOp color_op{BlendOp::ADD};
-
-    BlendFactor src_alpha_factor{BlendFactor::SRC_ALPHA};
-    BlendFactor dst_alpha_factor{BlendFactor::ONE_MINUS_SRC_ALPHA};
-    BlendOp alpha_op{BlendOp::ADD};
+    static constexpr std::string_view NAME{"Circle Collider 2D"};
 };
+
+} // namespace GE::Scene

@@ -41,7 +41,18 @@ namespace GE::GUI {
 class Button
 {
 public:
+    Button() = delete;
     static bool call(std::string_view label, Vec2 size = {});
+};
+
+class ImageButton
+{
+public:
+    ImageButton() = delete;
+    static bool call(std::string_view str_id, void* texture_id, const Vec2& image_size,
+                     const Vec2& uv0 = {0.0f, 0.0f}, const Vec2& uv1 = {1.0f, 1.0f},
+                     const Vec4& bg_col = Vec4{0.0f, 0.0f, 0.0f, 0.0f},
+                     const Vec4& tint_col = Vec4{1.0f, 1.0f, 1.0f, 1.0f});
 };
 
 } // namespace GE::GUI

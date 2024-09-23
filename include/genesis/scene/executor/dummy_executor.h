@@ -32,13 +32,24 @@
 
 #pragma once
 
-#include <genesis/graphics/blending.h>
+#include <genesis/scene/executor/iexecutor.h>
 
-#include <vulkan/vulkan.h>
+namespace GE::Scene {
 
-namespace GE::Vulkan {
+class Scene;
 
-GE_API VkBlendFactor toVkBlendFactor(BlendFactor factor);
-GE_API VkBlendOp toVkBlendOp(BlendOp op);
+class GE_API DummyExecutor: public IExecutor
+{
+public:
+    void onUpdate([[maybe_unused]] Timestamp timestamp) override {}
 
-} // namespace GE::Vulkan
+    void pause() override {}
+    void resume() override {}
+
+    std::string_view type() const override { return TYPE; }
+    bool isPaused() const override { return true; }
+
+    static constexpr std::string_view TYPE{"Dummy"};
+};
+
+} // namespace GE::Scene

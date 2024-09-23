@@ -1,5 +1,6 @@
 # CMake build image
 FROM ubuntu:focal AS cmake-builder
+ARG CMAKE_VER="v3.22.1"
 
 # Install build tools
 RUN --mount=type=cache,target=/var/cache/apt \
@@ -7,7 +8,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
         build-essential ca-certificates git libssl-dev
 
 # Build and install CMake
-RUN git clone --depth 1 --branch v3.17.4 https://github.com/Kitware/CMake /tmp/cmake \
+RUN git clone --depth 1 --branch "${CMAKE_VER}" https://github.com/Kitware/CMake /tmp/cmake \
     && mkdir -p /tmp/cmake/build && cd /tmp/cmake/build \
     && ../bootstrap --parallel=$(nproc) --prefix=/opt/cmake \
     && make -j$(nproc) && make install \

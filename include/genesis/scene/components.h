@@ -34,6 +34,7 @@
 
 #include <genesis/scene/components/camera_component.h>
 #include <genesis/scene/components/material_component.h>
+#include <genesis/scene/components/physics2d_components.h>
 #include <genesis/scene/components/relationship_components.h>
 #include <genesis/scene/components/sprite_component.h>
 #include <genesis/scene/components/tag_component.h>

@@ -49,8 +49,7 @@ struct TransformComponent {
 
 inline Mat4 TransformComponent::transform() const
 {
-    return GE::translate(Mat4{1.0f}, translation) * GE::toMat4(Quat{rotation}) *
-           GE::scale(Mat4{1.0f}, scale);
+    return makeTransform3D(translation, rotation, scale);
 }
 
 } // namespace GE::Scene

@@ -7,7 +7,6 @@ list(APPEND GRAPHICS_VULKAN_SOURCES
     renderers/framebuffer_renderer.cpp
     renderers/renderer_base.cpp
     renderers/window_renderer.cpp
-    blending.cpp
     descriptor_pool.cpp
     device.cpp
     framebuffer.cpp
@@ -18,6 +17,7 @@ list(APPEND GRAPHICS_VULKAN_SOURCES
     instance.cpp
     pipeline.cpp
     pipeline_barrier.cpp
+    pipeline_config.cpp
     pipeline_resources.cpp
     sdl_gui_context.cpp
     sdl_gui_event_handler.cpp
@@ -37,7 +37,6 @@ list(APPEND GRAPHICS_VULKAN_HEADERS
     renderers/framebuffer_renderer.h
     renderers/renderer_base.h
     renderers/window_renderer.h
-    blending.h
     command_buffer.h
     descriptor_pool.h
     device.h
@@ -49,6 +48,7 @@ list(APPEND GRAPHICS_VULKAN_HEADERS
     instance.h
     pipeline.h
     pipeline_barrier.h
+    pipeline_config.h
     pipeline_resources.h
     sdl_gui_context.h
     sdl_gui_event_handler.h
@@ -73,7 +73,7 @@ ge_add_module(graphics-vulkan
         Vulkan::Headers
         Vulkan::Loader
     PRIVATE_DEPS
-        imgui-vulkan
+        ge-imgui-vulkan
         SDL2::SDL2-static
         shaderc
         spirv-cross-cpp

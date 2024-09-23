@@ -30,6 +30,7 @@
 - [EnTT](https://github.com/skypjack/entt) ([MIT](https://github.com/skypjack/entt/blob/master/LICENSE))
 - [nativefiledialog](https://github.com/mlabbe/nativefiledialog) ([zlib](https://github.com/mlabbe/nativefiledialog/blob/master/LICENSE))
 - [nlohmann_json](https://github.com/nlohmann/json) ([MIT](https://github.com/nlohmann/json/blob/develop/LICENSE.MIT))
+- [box2d](https://github.com/erincatto/box2d) ([MIT](https://github.com/erincatto/box2d/blob/main/LICENSE))
 
 ### To build manually
 

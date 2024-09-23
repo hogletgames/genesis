@@ -42,9 +42,11 @@ namespace GE::GUI {
 class GE_API WindowBase: public IWindow
 {
 public:
-    explicit WindowBase(std::string_view name)
+    explicit WindowBase(std::string_view name, Window::Flags flags = Window::NONE,
+                        bool is_open = false)
         : m_name{name}
-        , m_window{m_name, &m_is_open}
+        , m_is_open{is_open}
+        , m_window{m_name, &m_is_open, flags}
     {}
 
     void onUpdate([[maybe_unused]] Timestamp ts) override {}

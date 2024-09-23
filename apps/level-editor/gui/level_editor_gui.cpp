@@ -44,6 +44,7 @@ namespace LE {
 LevelEditorGUI::LevelEditorGUI(LevelEditorContext* ctx)
     : m_ctx{ctx}
     , m_menu_bar{this}
+    , m_toolbar{m_ctx}
 {
     createPanels();
     createWindows();
@@ -69,6 +70,7 @@ void LevelEditorGUI::onRender()
 {
     GE::Beginner<GE::GUI::Renderer> gui_begin;
     m_menu_bar.onRender();
+    m_toolbar.onRender();
     m_panels.onRender();
     m_windows.onRender();
     m_modals.onRender();

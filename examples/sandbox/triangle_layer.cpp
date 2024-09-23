@@ -34,7 +34,7 @@
 
 #include "genesis/core/asserts.h"
 #include "genesis/graphics/graphics.h"
-#include "genesis/graphics/pipeline.h"
+#include "genesis/graphics/pipeline_config.h"
 #include "genesis/graphics/render_command.h"
 #include "genesis/graphics/shader.h"
 #include "genesis/graphics/vertex_buffer.h"

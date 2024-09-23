@@ -67,6 +67,7 @@ private:
 
     void renderOpaqueEntities(GE::Renderer* renderer, const Scene& scene);
     void renderTransparentEntities(GE::Renderer* renderer, const Scene& scene);
+    void renderPhysicsColliders(const Scene& scene);
     void composeScene(GE::Renderer* renderer);
 
     Scoped<Framebuffer> m_wb_oit_fbo;

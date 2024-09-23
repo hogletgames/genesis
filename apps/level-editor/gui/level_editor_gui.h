@@ -34,6 +34,7 @@
 
 #include "gui/main_menu/menu_bar.h"
 #include "gui/panels/viewport_panel.h"
+#include "gui/toolbar/toolbar.h"
 
 #include <genesis/gui/window/modal_windows.h>
 #include <genesis/gui/window/window_map.h>
@@ -74,6 +75,7 @@ private:
 
     LevelEditorContext* m_ctx{nullptr};
     MenuBar m_menu_bar;
+    Toolbar m_toolbar;
     GE::GUI::WindowMap m_panels;
     GE::GUI::WindowMap m_windows;
     GE::GUI::ModalWindows m_modals;

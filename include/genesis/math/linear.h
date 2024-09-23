@@ -33,9 +33,11 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
 namespace GE {
 
+using glm::affineInverse;
 using glm::inverse;
 using glm::normalize;
 using glm::transpose;

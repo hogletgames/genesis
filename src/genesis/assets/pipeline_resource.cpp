@@ -34,7 +34,7 @@
 #include "assets_exception.h"
 
 #include "genesis/core/log.h"
-#include "genesis/graphics/pipeline.h"
+#include "genesis/graphics/pipeline_config.h"
 #include "genesis/graphics/renderer.h"
 #include "genesis/graphics/shader.h"
 

@@ -54,10 +54,12 @@ using UVec4 = glm::uvec4;
 
 template<size_t columns, size_t rows, typename T>
 using Mat = glm::mat<columns, rows, T>;
+using Mat3 = glm::mat3;
 using Mat4 = glm::mat4;
 
 using Quat = glm::quat;
 
+using glm::quat_cast;
 using glm::toMat4;
 using glm::value_ptr;
 

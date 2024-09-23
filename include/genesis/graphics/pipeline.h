@@ -34,28 +34,13 @@
 
 #include <genesis/core/interface.h>
 #include <genesis/core/memory.h>
-#include <genesis/graphics/blending.h>
-#include <genesis/graphics/shader.h>
 #include <genesis/math/types.h>
-
-#include <variant>
-#include <vector>
 
 namespace GE {
 
 class GPUCommandQueue;
 class Texture;
 class UniformBuffer;
-
-struct pipeline_config_t {
-    using BlendingCondig = std::variant<blending_t, std::vector<blending_t>>;
-
-    Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
-    Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
-    BlendingCondig blending{blending_t{false}};
-    bool depth_test_enable{true};
-    bool depth_write_enable{true};
-};
 
 class Pipeline: public Interface
 {
@@ -76,6 +61,8 @@ public:
                               const Vec2& value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
                               const Vec3& value) = 0;
+    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
+                              const Vec4& value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
                               const Mat4& value) = 0;
 

@@ -56,7 +56,7 @@ bool createDir(std::string_view filepath)
     return true;
 }
 
-bool removeDir(std::string_view filepath)
+bool removeAll(std::string_view filepath)
 {
     std::error_code error;
 

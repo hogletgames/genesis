@@ -1,0 +1,13 @@
+name: level_editor
+resources:
+  TEXTURES:
+    - name: pause_button
+      filepath: apps/level-editor/assets/textures/pause_button.png
+    - name: play_button
+      filepath: apps/level-editor/assets/textures/play_button.png
+    - name: simulate_button
+      filepath: apps/level-editor/assets/textures/simulate_button.png
+    - name: step_button
+      filepath: apps/level-editor/assets/textures/step_button.png
+    - name: stop_button
+      filepath: apps/level-editor/assets/textures/stop_button.png
