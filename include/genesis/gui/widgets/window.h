@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <genesis/core/bit.h>
 #include <genesis/gui/widgets/widget.h>
 #include <genesis/math/types.h>
 
@@ -43,6 +44,34 @@ class GE_API Window: public Widget
 {
 public:
     using Flags = int;
+
+    enum Flag : uint8_t
+    {
+        NONE = 0,
+        NO_TITLE_BAR = bit<uint8_t>(0),
+        NO_RESIZE = bit<uint8_t>(1),
+        NO_MOVE = bit<uint8_t>(2),
+        NO_SCROLLBAR = bit<uint8_t>(3),
+        NO_SCROLL_WITH_MOUSE = bit<uint8_t>(4),
+        NO_COLLAPSE = bit<uint8_t>(5),
+        ALWAYS_AUTO_RESIZE = bit<uint8_t>(6),
+        NO_BACKGROUND = bit<uint8_t>(7),
+        NO_SAVED_SETTINGS = bit<uint8_t>(8),
+        NO_MOUSE_INPUTS = bit<uint8_t>(9),
+        MENU_BAR = bit<uint8_t>(10),
+        HORIZONTAL_SCROLLBAR = bit<uint8_t>(11),
+        NO_FOCUS_ON_APPEARING = bit<uint8_t>(12),
+        NO_BRING_TO_FRONT_ON_FOCUS = bit<uint8_t>(13),
+        ALWAYS_VERTICAL_SCROLLBAR = bit<uint8_t>(14),
+        ALWAYS_HORIZONTAL_SCROLLBAR = bit<uint8_t>(15),
+        NO_NAV_INPUTS = bit<uint8_t>(16),
+        NO_NAV_FOCUS = bit<uint8_t>(17),
+        UNSAVED_DOCUMENT = bit<uint8_t>(18),
+        NO_DOCKING = bit<uint8_t>(19),
+        NO_NAV = NO_NAV_INPUTS | NO_NAV_FOCUS,
+        NO_DECORATION = NO_TITLE_BAR | NO_RESIZE | NO_SCROLLBAR | NO_COLLAPSE,
+        NO_INPUTS = NO_MOUSE_INPUTS | NO_NAV_INPUTS | NO_NAV_FOCUS,
+    };
 
     explicit Window(std::string_view title, bool* is_open = nullptr, Flags flags = 0);
 
