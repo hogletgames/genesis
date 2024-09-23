@@ -137,7 +137,7 @@ bool SceneDeserializer::loadComponent(Entity *entity, const YAML::Node &node)
 {
     using Loader = std::function<void(Entity *, const YAML::Node &)>;
 
-    static const std::unordered_map<std::string, Loader> LOADERS = {
+    const std::unordered_map<std::string, Loader> LOADERS = {
         ADD_LOADER(CameraComponent),
         ADD_MEM_FN_LOADER(MaterialComponent),
         ADD_LOADER(RigidBody2DComponent),
