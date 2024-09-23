@@ -109,11 +109,16 @@ void ComponentsPanel::draw(Entity *entity)
     auto flags = TreeNode::DEFAULT_OPEN | TreeNode::FRAMED | TreeNode::SPAN_AVAIL_WIDTH |
                  TreeNode::ALLOW_ITEM_OVERLAP | TreeNode::FRAME_PADDING;
 
-    auto tree_node = WidgetNode::create<TreeNode>(Component::NAME, flags);
-    draw(&tree_node, &entity->get<Component>());
+    auto node = WidgetNode::create<TreeNode>(Component::NAME, flags);
+    draw(&node, &entity->get<Component>());
+
+    auto popup_context = WidgetNode::create<PopupContextWindow>(Component::NAME);
+    if (popup_context.template call<MenuItem>(GE_FMTSTR("Remove '{}'", Component::NAME))) {
+        entity->remove<Component>();
+    }
 }
 
-void ComponentsPanel::draw(WidgetNode *node, GE::Scene::CameraComponent *camera)
+void ComponentsPanel::draw(WidgetNode *node, CameraComponent *camera)
 {
     bool is_primary_camera = *m_ctx->selectedEntity() == m_ctx->scene()->mainCamera();
 
