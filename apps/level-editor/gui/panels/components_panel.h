@@ -62,6 +62,8 @@ public:
 
 private:
     void drawEntityComponents(GE::Scene::Entity* entity);
+    void drawAddNewComponents(GE::GUI::WidgetNode* node, GE::Scene::Entity* entity);
+
     template<typename Component>
     void draw(GE::Scene::Entity* entity);
     void draw(GE::GUI::WidgetNode* node, GE::Scene::CameraComponent* camera);

@@ -51,6 +51,12 @@ const char *isLoaded(const GE::Shared<T> &resource)
     return resource != nullptr ? "loaded" : "null";
 }
 
+template<typename T>
+bool isNewComponentSuitable(const Entity &entity)
+{
+    return !entity.has<T>();
+}
+
 } // namespace
 
 ComponentsPanel::ComponentsPanel(LevelEditorContext *ctx)
@@ -63,6 +69,7 @@ void ComponentsPanel::onRender()
     WidgetNode node{&m_window};
     if (!m_ctx->selectedEntity()->isNull()) {
         drawEntityComponents(m_ctx->selectedEntity());
+        drawAddNewComponents(&node, m_ctx->selectedEntity());
     }
 }
 
@@ -72,6 +79,26 @@ void ComponentsPanel::drawEntityComponents(Entity *entity)
         using Component = std::decay_t<decltype(component)>;
         if (entity->has<Component>()) {
             draw<Component>(entity);
+        }
+    });
+}
+
+void ComponentsPanel::drawAddNewComponents(WidgetNode *node, Entity *entity)
+{
+    constexpr std::string_view ADD_COMPONENT_POPUP{"add_component_popup"};
+
+    if (node->call<Button>("Add component")) {
+        node->call<OpenPopup>(ADD_COMPONENT_POPUP);
+    }
+
+    auto add_component_popup = WidgetNode::create<Popup>(ADD_COMPONENT_POPUP);
+    GE::forEachType<ComponentList>([&add_component_popup, entity](const auto &component) {
+        using Component = std::decay_t<decltype(component)>;
+
+        if (isNewComponentSuitable<Component>(*entity) &&
+            add_component_popup.call<MenuItem>(Component::NAME)) {
+            entity->add<Component>();
+            CloseCurrentPopup::call();
         }
     });
 }
