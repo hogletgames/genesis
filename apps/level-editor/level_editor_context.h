@@ -39,12 +39,17 @@
 #include <genesis/scene/camera/view_projection_camera.h>
 #include <genesis/scene/camera/vp_camera_controller.h>
 #include <genesis/scene/entity_picker.h>
+#include <genesis/scene/executor/dummy_executor.h>
 #include <genesis/scene/renderer.h>
 #include <genesis/scene/scene.h>
 
 namespace GE {
 class Framebuffer;
 } // namespace GE
+
+namespace GE::P2D {
+class World;
+} // namespace GE::P2D
 
 namespace LE {
 
@@ -55,10 +60,12 @@ public:
     GE::Scoped<GE::Framebuffer>& sceneFbo() { return m_scene_fbo; }
     GE::Scoped<GE::Scene::IRenderer>& sceneRenderer() { return m_scene_renderer; }
     GE::Scoped<GE::Scene::EntityPicker>& entityPicker() { return m_entity_picker; }
+    GE::Scoped<GE::P2D::World>& world() { return m_world; }
     GE::Assets::Registry* assets() { return &m_assets; }
     GE::Scene::Scene* scene() { return &m_scene; }
     GE::Scene::VPCameraController* cameraController() { return &m_camera_controller; }
     GE::Scene::Entity* selectedEntity() { return &m_selected_entity; }
+    GE::Scoped<GE::Scene::IExecutor>& sceneExecutor() { return m_scene_executor; }
 
     void resetSelectedEntity() { m_selected_entity = {}; }
 
@@ -68,10 +75,12 @@ private:
     GE::Scoped<GE::Scene::IRenderer> m_scene_renderer;
     GE::Scoped<GE::Scene::EntityPicker> m_entity_picker;
 
+    GE::Scoped<GE::P2D::World> m_world;
     GE::Assets::Registry m_assets;
     GE::Scene::Scene m_scene;
     GE::Scene::VPCameraController m_camera_controller;
     GE::Scene::Entity m_selected_entity;
+    GE::Scoped<GE::Scene::IExecutor> m_scene_executor{GE::makeScoped<GE::Scene::DummyExecutor>()};
 };
 
 } // namespace LE
