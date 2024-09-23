@@ -41,9 +41,15 @@
 #include "genesis/graphics/renderer.h"
 
 namespace GE::Scene {
+namespace {
+
+constexpr Vec4 COLLIDER_COLOR{0.0f, 1.0f, 0.0f, 1.0f};
+
+} // namespace
 
 RendererBase::RendererBase(GE::Renderer* renderer, const ViewProjectionCamera* camera)
     : m_renderer{renderer}
+    , m_primitives_renderer{m_renderer}
     , m_camera{camera}
 {}
 
@@ -68,6 +74,56 @@ void RendererBase::renderEntity(GE::Renderer* renderer, Pipeline* pipeline, cons
     cmd->bind(pipeline, "u_Sprite", *texture);
     cmd->pushConstant(pipeline, "pc.mvp", mvp);
     cmd->draw(*mesh);
+}
+
+void RendererBase::renderPhysics2DColliders(const Entity& entity)
+{
+    if (entity.has<CircleCollider2DComponent>()) {
+        renderCircleCollider2D(entity);
+    }
+
+    if (entity.has<BoxCollider2DComponent>()) {
+        renderBoxCollider2D(entity);
+    }
+}
+
+void RendererBase::renderCircleCollider2D(const Entity& entity)
+{
+    const auto& collider = entity.get<CircleCollider2DComponent>();
+    if (!collider.show_collider) {
+        return;
+    }
+
+    auto entity_transform = parentTransform(entity) * entity.get<TransformComponent>().transform();
+    auto [entity_translation, entity_rotation, entity_scale] = decompose(entity_transform);
+    float scale_max = std::max(entity_scale.x, entity_scale.y);
+
+    constexpr float COLLIDER_ANGLE{0.0f};
+    Vec2 collider_size{collider.radius * 2.0f, collider.radius * 2.0f};
+
+    auto transform =
+        m_camera->viewProjection() *
+        makeTransform2D(entity_translation, entity_rotation.z, Vec2{scale_max, scale_max}) *
+        makeTransform2D(collider.offset, COLLIDER_ANGLE, collider_size);
+
+    m_primitives_renderer.renderCircle(transform, COLLIDER_COLOR);
+}
+
+void RendererBase::renderBoxCollider2D(const Entity& entity)
+{
+    const auto& collider = entity.get<BoxCollider2DComponent>();
+    if (!collider.show_collider) {
+        return;
+    }
+
+    auto entity_transform = parentTransform(entity) * entity.get<TransformComponent>().transform();
+    auto [entity_translation, entity_rotation, entity_scale] = decompose(entity_transform);
+
+    auto transform = m_camera->viewProjection() *
+                     makeTransform2D(entity_translation, entity_rotation.z, entity_scale) *
+                     makeTransform2D(collider.center, collider.angle, collider.size);
+
+    m_primitives_renderer.renderSquare(transform, COLLIDER_COLOR);
 }
 
 bool RendererBase::isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
