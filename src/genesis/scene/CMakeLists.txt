@@ -27,6 +27,7 @@ list(APPEND SCENE_HEADERS
     ${INCLUDE_DIR}/components/transform_component.h
     ${INCLUDE_DIR}/components/yaml_convert.h
     ${INCLUDE_DIR}/executor/dummy_executor.h
+    ${INCLUDE_DIR}/executor/executor_factory.h
     ${INCLUDE_DIR}/executor/iexecutor.h
     ${INCLUDE_DIR}/executor/runtime2d_executor.h
     ${INCLUDE_DIR}/renderer/irenderer.h
@@ -47,6 +48,7 @@ list(APPEND SCENE_SOURCES
     camera/projection_camera.cpp
     camera/view_projection_camera.cpp
     camera/vp_camera_controller.cpp
+    executor/executor_factory.cpp
     executor/runtime2d_executor.cpp
     renderer/plain_renderer.cpp
     renderer/renderer_base.cpp

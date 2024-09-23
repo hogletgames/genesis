@@ -32,7 +32,43 @@
 
 #pragma once
 
-#include <genesis/scene/executor/dummy_executor.h>
-#include <genesis/scene/executor/executor_factory.h>
+#include <genesis/core/export.h>
+#include <genesis/core/memory.h>
 #include <genesis/scene/executor/iexecutor.h>
-#include <genesis/scene/executor/runtime2d_executor.h>
+
+#include <functional>
+#include <unordered_map>
+
+namespace GE::Assets {
+class Registry;
+} // namespace GE::Assets
+
+namespace GE::P2D {
+class World;
+} // namespace GE::P2D
+
+namespace GE::Scene {
+
+class Scene;
+
+class GE_API ExecutorFactory
+{
+public:
+    ExecutorFactory(Scene* scene, Assets::Registry* assets, P2D::World* world);
+
+    Scoped<IExecutor> create(std::string_view type);
+
+    bool saveScene();
+    bool restoreScene();
+
+private:
+    using FactoryMethod = std::function<Scoped<IExecutor>()>;
+
+    Scene* m_scene{nullptr};
+    Assets::Registry* m_assets{nullptr};
+    P2D::World* m_world{nullptr};
+    std::string m_saved_scene_path;
+    std::unordered_map<std::string_view, FactoryMethod> m_factory_methods;
+};
+
+} // namespace GE::Scene
