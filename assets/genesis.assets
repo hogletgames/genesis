@@ -1,2 +1,3 @@
 packages:
   - assets/genesis/genesis.assetspkg
+  - apps/level-editor/assets/level_editor.assetspkg
