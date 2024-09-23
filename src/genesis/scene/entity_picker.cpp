@@ -53,6 +53,11 @@ constexpr int32_t toInt32(Entity::NativeHandle entityHandle)
     return static_cast<int32_t>(entityHandle);
 }
 
+inline bool isPositionInBounds(const Vec2& position, const Vec2& bounds)
+{
+    return position.x >= 0 && position.x <= bounds.x && position.y >= 0 && position.y <= bounds.y;
+}
+
 } // namespace
 
 EntityPicker::EntityPicker(Scene* scene, const Assets::Registry& assets,
@@ -89,9 +94,9 @@ Entity EntityPicker::getEntityByPosition(const Vec2& position)
 {
     auto texture_size = m_entity_id_fbo->colorTexture(0).size();
 
-    if (position.x > texture_size.x || position.y > texture_size.y) {
-        GE_CORE_ERR("Incorrect mouse position, texture size={}, mouse position={}",
-                    GE::toString(texture_size), GE::toString(position));
+    if (!isPositionInBounds(position, texture_size)) {
+        GE_CORE_ERR("Incorrect mouse position, mouse position={}, texture size={}",
+                    GE::toString(position), GE::toString(texture_size));
         return {};
     }
 
@@ -156,7 +161,7 @@ void EntityPicker::renderEntityId(const Entity& entity)
 {
     auto* pipeline = m_entity_id_pipeline.get();
     auto* mesh = entity.get<SpriteComponent>().mesh.get();
-    auto mvp = m_camera->viewProjection() * parentalTransforms(entity) *
+    auto mvp = m_camera->viewProjection() * parentTransform(entity) *
                entity.get<TransformComponent>().transform();
 
     auto* cmd = m_entity_id_fbo->renderer()->command();
