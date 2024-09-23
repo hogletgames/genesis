@@ -74,7 +74,7 @@ Entity EntityFactory::createCircle(std::string_view name)
     auto entity = m_scene->createEntity(name);
 
     auto& sprite = entity.add<SpriteComponent>();
-    sprite.setMeshID({"genesis", Assets::Group::MESHES, "square"});
+    sprite.setMeshID({"genesis", Assets::Group::MESHES, "circle"});
     sprite.setTextureID({"genesis", Assets::Group::TEXTURES, "circle"});
     sprite.loadAll(m_assets);
 
