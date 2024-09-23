@@ -66,6 +66,7 @@ LevelEditor::~LevelEditor()
 bool LevelEditor::initialize()
 {
     loadSettings();
+    initializeProject();
 
     if (!createFramebuffer()) {
         GE_ERR("Failed to create scene framebuffer");
@@ -75,7 +76,6 @@ bool LevelEditor::initialize()
     m_ctx.world() = GE::P2D::World::create(GRAVITY);
     m_gui = GE::makeScoped<LevelEditorGUI>(&m_ctx);
     connectSignals();
-    initializeProject();
     createSceneRenderer();
     createEntityPicker();
     return true;
