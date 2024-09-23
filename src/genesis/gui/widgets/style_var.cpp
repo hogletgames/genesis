@@ -75,6 +75,71 @@ ImGuiStyleVar toImGui(StyleVar::Index idx)
     return getValue(TO_IMGUI, idx);
 }
 
+ImGuiCol toImGui(StyleColor::Index idx)
+{
+    using Index = StyleColor::Index;
+
+    static const std::unordered_map<Index, ImGuiStyleVar> TO_IMGUI = {
+        {Index::TEXT, ImGuiCol_Text},
+        {Index::TEXT_DISABLED, ImGuiCol_TextDisabled},
+        {Index::WINDOW_BG, ImGuiCol_WindowBg},
+        {Index::CHILD_BG, ImGuiCol_ChildBg},
+        {Index::POPUP_BG, ImGuiCol_PopupBg},
+        {Index::BORDER, ImGuiCol_Border},
+        {Index::BORDER_SHADOW, ImGuiCol_BorderShadow},
+        {Index::FRAME_BG, ImGuiCol_FrameBg},
+        {Index::FRAME_BG_HOVERED, ImGuiCol_FrameBgHovered},
+        {Index::FRAME_BG_ACTIVE, ImGuiCol_FrameBgActive},
+        {Index::TITLE_BG, ImGuiCol_TitleBg},
+        {Index::TITLE_BG_ACTIVE, ImGuiCol_TitleBgActive},
+        {Index::TITLE_BG_COLLAPSED, ImGuiCol_TitleBgCollapsed},
+        {Index::MENU_BAR_BG, ImGuiCol_MenuBarBg},
+        {Index::SCROLLBAR_BG, ImGuiCol_ScrollbarBg},
+        {Index::SCROLLBAR_GRAB, ImGuiCol_ScrollbarGrab},
+        {Index::SCROLLBAR_GRAB_HOVERED, ImGuiCol_ScrollbarGrabHovered},
+        {Index::SCROLLBAR_GRAB_ACTIVE, ImGuiCol_ScrollbarGrabActive},
+        {Index::CHECK_MARK, ImGuiCol_CheckMark},
+        {Index::SLIDER_GRAB, ImGuiCol_SliderGrab},
+        {Index::SLIDER_GRAB_ACTIVE, ImGuiCol_SliderGrabActive},
+        {Index::BUTTON, ImGuiCol_Button},
+        {Index::BUTTON_HOVERED, ImGuiCol_ButtonHovered},
+        {Index::BUTTON_ACTIVE, ImGuiCol_ButtonActive},
+        {Index::HEADER, ImGuiCol_Header},
+        {Index::HEADER_HOVERED, ImGuiCol_HeaderHovered},
+        {Index::HEADER_ACTIVE, ImGuiCol_HeaderActive},
+        {Index::SEPARATOR, ImGuiCol_Separator},
+        {Index::SEPARATOR_HOVERED, ImGuiCol_SeparatorHovered},
+        {Index::SEPARATOR_ACTIVE, ImGuiCol_SeparatorActive},
+        {Index::RESIZE_GRIP, ImGuiCol_ResizeGrip},
+        {Index::RESIZE_GRIP_HOVERED, ImGuiCol_ResizeGripHovered},
+        {Index::RESIZE_GRIP_ACTIVE, ImGuiCol_ResizeGripActive},
+        {Index::TAB, ImGuiCol_Tab},
+        {Index::TAB_HOVERED, ImGuiCol_TabHovered},
+        {Index::TAB_ACTIVE, ImGuiCol_TabActive},
+        {Index::TAB_UNFOCUSED, ImGuiCol_TabUnfocused},
+        {Index::TAB_UNFOCUSED_ACTIVE, ImGuiCol_TabUnfocusedActive},
+        {Index::DOCKING_PREVIEW, ImGuiCol_DockingPreview},
+        {Index::DOCKING_EMPTY_BG, ImGuiCol_DockingEmptyBg},
+        {Index::PLOT_LINES, ImGuiCol_PlotLines},
+        {Index::PLOT_LINES_HOVERED, ImGuiCol_PlotLinesHovered},
+        {Index::PLOT_HISTOGRAM, ImGuiCol_PlotHistogram},
+        {Index::PLOT_HISTOGRAM_HOVERED, ImGuiCol_PlotHistogramHovered},
+        {Index::TABLE_HEADERBG, ImGuiCol_TableHeaderBg},
+        {Index::TABLE_BORDER_STRONG, ImGuiCol_TableBorderStrong},
+        {Index::TABLE_BORDER_LIGHT, ImGuiCol_TableBorderLight},
+        {Index::TABLE_ROW_BG, ImGuiCol_TableRowBg},
+        {Index::TABLE_ROW_BG_ALT, ImGuiCol_TableRowBgAlt},
+        {Index::TEXT_SELECTED_BG, ImGuiCol_TextSelectedBg},
+        {Index::DRAG_DROP_TARGET, ImGuiCol_DragDropTarget},
+        {Index::NAV_HIGHLIGHT, ImGuiCol_NavHighlight},
+        {Index::NAV_WINDOWING_HIGHLIGHT, ImGuiCol_NavWindowingHighlight},
+        {Index::NAV_WINDOWING_DIM_BG, ImGuiCol_NavWindowingDimBg},
+        {Index::MODAL_WINDOW_DIM_BG, ImGuiCol_ModalWindowDimBg},
+    };
+
+    return getValue(TO_IMGUI, idx);
+}
+
 } // namespace
 
 StyleVar::StyleVar(Index idx, float value)
@@ -90,6 +155,29 @@ StyleVar::StyleVar(Index idx, const Vec2& value)
 StyleVar::~StyleVar()
 {
     ImGui::PopStyleVar();
+}
+
+StyleColor::StyleColor(Index idx, uint32_t value)
+{
+    ImGui::PushStyleColor(toImGui(idx), value);
+}
+
+StyleColor::StyleColor(Index idx, const Vec4& value)
+{
+    ImGui::PushStyleColor(toImGui(idx), toImVec4(value));
+}
+
+StyleColor::~StyleColor()
+{
+    ImGui::PopStyleColor();
+}
+
+std::array<Vec4, StyleColor::COUNT> getStyleColors()
+{
+    std::array<Vec4, StyleColor::COUNT> result{};
+    auto* colors = ImGui::GetStyle().Colors;
+    std::transform(colors, colors + ImGuiCol_COUNT, result.begin(), &toVec4);
+    return result;
 }
 
 } // namespace GE::GUI

@@ -45,12 +45,17 @@ inline ImVec2 toImVec2(const Vec2& vec)
     return {vec.x, vec.y};
 }
 
+inline ImVec4 toImVec4(const Vec4& vec)
+{
+    return {vec.x, vec.y, vec.z, vec.w};
+}
+
 inline Vec2 toVec2(const ImVec2& vec)
 {
     return {vec.x, vec.y};
 }
 
-inline ImVec4 toImVec4(const Vec4& vec)
+inline Vec4 toVec4(const ImVec4& vec)
 {
     return {vec.x, vec.y, vec.z, vec.w};
 }
