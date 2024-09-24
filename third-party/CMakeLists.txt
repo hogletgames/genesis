@@ -1,5 +1,6 @@
-include(FetchContent)
 include(ExternalProject)
+include(FetchContent)
+include(FindPkgConfig)
 
 cmake_host_system_information(RESULT GE_NPROC QUERY NUMBER_OF_LOGICAL_CORES)
 
@@ -248,6 +249,69 @@ FetchContent_Declare(box2d
     GIT_REPOSITORY https://github.com/hogletgames/box2d.git
     GIT_TAG v3.0.0)
 FetchContent_MakeAvailable(box2d)
+
+# mono
+FetchContent_Declare(mono
+    GIT_REPOSITORY https://github.com/hogletgames/mono.git
+    GIT_TAG mono-6.12.0.206)
+FetchContent_GetProperties(mono)
+if(NOT mono_source_POPULATED)
+    FetchContent_Populate(mono)
+    # Override the PKG_CONFIG_PATH to use the mono we just built
+    set(SAVE_PKG_CONFIG_PATH $ENV{PKG_CONFIG_PATH})
+    set(ENV{PKG_CONFIG_PATH} ${mono_BINARY_DIR}/lib/pkgconfig)
+
+    # Try to find mono if it is already installed
+    pkg_check_modules(Mono IMPORTED_TARGET mono-2)
+
+    # Build mono from scratch if it is not found
+    if (NOT Mono_FOUND)
+        # Configure mono
+        execute_process(
+            COMMAND ./autogen.sh --prefix=${mono_BINARY_DIR}
+            WORKING_DIRECTORY ${mono_SOURCE_DIR}
+            RESULT_VARIABLE result
+        )
+        if(result)
+            message(FATAL_ERROR "Configuration of Mono failed")
+        endif()
+
+        # Fetch mono runtime
+        execute_process(
+            COMMAND make get-monolite-latest
+            WORKING_DIRECTORY ${mono_SOURCE_DIR}
+            RESULT_VARIABLE result
+        )
+        if(result)
+            message(FATAL_ERROR "Fetching of Mono Runtime failed")
+        endif()
+
+        # Build mono
+        execute_process(
+            COMMAND make -j${GE_NPROC}
+            WORKING_DIRECTORY ${mono_SOURCE_DIR}
+            RESULT_VARIABLE result
+        )
+        if(result)
+            message(FATAL_ERROR "Building Mono failed")
+        endif()
+
+        # Install mono
+        execute_process(
+            COMMAND make install
+            WORKING_DIRECTORY ${mono_SOURCE_DIR}
+            RESULT_VARIABLE result
+        )
+        if(result)
+            message(FATAL_ERROR "Installing Mono failed")
+        endif()
+
+        pkg_check_modules(Mono REQUIRED IMPORTED_TARGET mono-2)
+    endif()
+
+    # Restore the PKG_CONFIG_PATH
+    set(ENV{PKG_CONFIG_PATH} ${SAVE_PKG_CONFIG_PATH})
+endif()
 
 # Apple dependencies
 if (APPLE)
