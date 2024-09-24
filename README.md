@@ -31,6 +31,7 @@
 - [nativefiledialog](https://github.com/mlabbe/nativefiledialog) ([zlib](https://github.com/mlabbe/nativefiledialog/blob/master/LICENSE))
 - [nlohmann_json](https://github.com/nlohmann/json) ([MIT](https://github.com/nlohmann/json/blob/develop/LICENSE.MIT))
 - [box2d](https://github.com/erincatto/box2d) ([MIT](https://github.com/erincatto/box2d/blob/main/LICENSE))
+- [mono](https://github.com/mono/mono) ([MIT](https://github.com/mono/mono/blob/main/LICENSE))
 
 ### To build manually
 

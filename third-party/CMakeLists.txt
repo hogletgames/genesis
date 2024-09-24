@@ -1,5 +1,6 @@
-include(FetchContent)
 include(ExternalProject)
+include(FetchContent)
+include(FindPkgConfig)
 
 cmake_host_system_information(RESULT GE_NPROC QUERY NUMBER_OF_LOGICAL_CORES)
 
@@ -248,6 +249,22 @@ FetchContent_Declare(box2d
     GIT_REPOSITORY https://github.com/hogletgames/box2d.git
     GIT_TAG v3.0.0)
 FetchContent_MakeAvailable(box2d)
+
+# mono
+FetchContent_Declare(mono
+    GIT_REPOSITORY https://github.com/hogletgames/mono.git
+    GIT_TAG mono-6.12.0.206)
+FetchContent_GetProperties(mono)
+if(NOT mono_source_POPULATED)
+    FetchContent_Populate(mono)
+
+    if (NOT EXISTS "${mono_BINARY_DIR}/lib/pkgconfig")
+        include(${PROJECT_SOURCE_DIR}/cmake/GeMonoHelpers.cmake)
+        ge_build_mono(SOURCE_DIR ${mono_SOURCE_DIR} INSTALL_DIR ${mono_BINARY_DIR})
+    endif ()
+
+    set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:${mono_BINARY_DIR}/lib/pkgconfig")
+endif()
 
 # Apple dependencies
 if (APPLE)
