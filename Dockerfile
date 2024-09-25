@@ -57,6 +57,12 @@ RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
         libwayland-dev
 
+# Mono build depencencies
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
+         autoconf automake libtool gettext
+
+# Environment
 ENV CC="gcc-${GCC_VER}" \
     CXX="g++-${GCC_VER}" \
     CLANG_FORMAT_BIN="clang-format-${CLANG_VER}" \

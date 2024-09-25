@@ -257,60 +257,13 @@ FetchContent_Declare(mono
 FetchContent_GetProperties(mono)
 if(NOT mono_source_POPULATED)
     FetchContent_Populate(mono)
-    # Override the PKG_CONFIG_PATH to use the mono we just built
-    set(SAVE_PKG_CONFIG_PATH $ENV{PKG_CONFIG_PATH})
-    set(ENV{PKG_CONFIG_PATH} ${mono_BINARY_DIR}/lib/pkgconfig)
 
-    # Try to find mono if it is already installed
-    pkg_check_modules(Mono IMPORTED_TARGET mono-2)
+    if (NOT EXISTS "${mono_BINARY_DIR}/lib/pkgconfig")
+        include(GeMonoHelpers)
+        ge_build_mono(SOURCE_DIR ${mono_SOURCE_DIR} INSTALL_DIR ${mono_BINARY_DIR})
+    endif ()
 
-    # Build mono from scratch if it is not found
-    if (NOT Mono_FOUND)
-        # Configure mono
-        execute_process(
-            COMMAND ./autogen.sh --prefix=${mono_BINARY_DIR}
-            WORKING_DIRECTORY ${mono_SOURCE_DIR}
-            RESULT_VARIABLE result
-        )
-        if(result)
-            message(FATAL_ERROR "Configuration of Mono failed")
-        endif()
-
-        # Fetch mono runtime
-        execute_process(
-            COMMAND make get-monolite-latest
-            WORKING_DIRECTORY ${mono_SOURCE_DIR}
-            RESULT_VARIABLE result
-        )
-        if(result)
-            message(FATAL_ERROR "Fetching of Mono Runtime failed")
-        endif()
-
-        # Build mono
-        execute_process(
-            COMMAND make -j${GE_NPROC}
-            WORKING_DIRECTORY ${mono_SOURCE_DIR}
-            RESULT_VARIABLE result
-        )
-        if(result)
-            message(FATAL_ERROR "Building Mono failed")
-        endif()
-
-        # Install mono
-        execute_process(
-            COMMAND make install
-            WORKING_DIRECTORY ${mono_SOURCE_DIR}
-            RESULT_VARIABLE result
-        )
-        if(result)
-            message(FATAL_ERROR "Installing Mono failed")
-        endif()
-
-        pkg_check_modules(Mono REQUIRED IMPORTED_TARGET mono-2)
-    endif()
-
-    # Restore the PKG_CONFIG_PATH
-    set(ENV{PKG_CONFIG_PATH} ${SAVE_PKG_CONFIG_PATH})
+    set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:${mono_BINARY_DIR}/lib/pkgconfig")
 endif()
 
 # Apple dependencies

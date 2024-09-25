@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 project(genesis VERSION 0.0.0 LANGUAGES C CXX)
+
 
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "Build type is empty, configuring as 'Release'")
@@ -14,6 +15,8 @@ option(GE_BUILD_EXAMPLES "Build examples" OFF)
 option(GE_BUILD_TESTS "Build tests" OFF)
 
 # CMake modules
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
+
 include(cmake/AddModule.cmake)
 include(cmake/ApplyPatch.cmake)
 include(cmake/BuildType.cmake)
@@ -42,9 +45,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Add third-party dependencies first to make sure everything installed correctly before configuring
+# the project
+add_subdirectory(third-party)
+
 # Subdirectories
 add_subdirectory(src)
-add_subdirectory(third-party)
 
 if (GE_BUILD_APPS)
     add_subdirectory(apps)
