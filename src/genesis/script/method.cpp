@@ -30,14 +30,61 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "method.h"
+#include "invoke_result.h"
 
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/invoke_result.h>
-#include <genesis/script/method.h>
-#include <genesis/script/object.h>
-#include <genesis/script/string_type.h>
-#include <genesis/script/type_traits.h>
+#include "genesis/core/format.h"
+#include "genesis/core/log.h"
+
+#include <mono/metadata/appdomain.h>
+#include <mono/metadata/object.h>
+
+#include <string_view>
+
+namespace GE::Script {
+namespace {
+
+MonoObject* makeException(std::string_view message)
+{
+    auto* exception = mono_string_new(mono_domain_get(), message.data());
+    return reinterpret_cast<MonoObject*>(exception);
+}
+
+} // namespace
+
+int Method::paramCount() const
+{
+    if (!isValid()) {
+        GE_CORE_ERR("Trying to get param count for an invalid method");
+        return 0;
+    }
+
+    auto* signature = mono_method_signature(m_method);
+    if (signature == nullptr) {
+        GE_CORE_ERR("Failed to get signature for method: {}", mono_method_get_name(m_method));
+        return 0;
+    }
+
+    return mono_signature_get_param_count(signature);
+}
+
+InvokeResult Method::invoke(void** args, int args_count)
+{
+    if (!isValid()) {
+        GE_CORE_ERR("Trying to get param count for invalid method");
+        return {nullptr, makeException("Invalid method")};
+    }
+
+    if (args_count != paramCount()) {
+        auto error_string =
+            GE_FMTSTR("Invalid args count: expected={}, got={}", paramCount(), args_count);
+        GE_CORE_ERR(error_string);
+        return {nullptr, makeException(error_string)};
+    }
+
+    MonoObject* exception{nullptr};
+    auto* result = mono_runtime_invoke(m_method, m_object, args, &exception);
+    return InvokeResult{result, exception};
+}
+
+} // namespace GE::Script
