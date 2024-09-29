@@ -1,6 +1,5 @@
 include(ExternalProject)
 include(FetchContent)
-include(FindPkgConfig)
 
 cmake_host_system_information(RESULT GE_NPROC QUERY NUMBER_OF_LOGICAL_CORES)
 
