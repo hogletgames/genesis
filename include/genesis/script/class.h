@@ -35,13 +35,16 @@
 #include <genesis/core/export.h>
 #include <genesis/script/class_type.h>
 
+#include <string_view>
+
 extern "C" {
 typedef struct _MonoClass MonoClass;
 }
 
 namespace GE::Script {
 
-class Assembly;
+class Method;
+
 class Object;
 
 class GE_API Class
@@ -51,6 +54,7 @@ public:
 
     bool isValid() const { return m_class != nullptr; }
     ClassType type() const;
+    Method method(std::string_view name, int param_count = -1) const;
 
     Object newObject() const;
 
