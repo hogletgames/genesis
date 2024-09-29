@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,14 +32,4 @@
 
 #pragma once
 
-#include <genesis/app.h>
-#include <genesis/assets.h>
-#include <genesis/core.h>
-#include <genesis/filesystem.h>
-#include <genesis/graphics.h>
-#include <genesis/gui.h>
-#include <genesis/math.h>
-#include <genesis/physics2d.h>
-#include <genesis/scene.h>
-#include <genesis/script.h>
-#include <genesis/window.h>
+#include <genesis/script/type_traits.h>
