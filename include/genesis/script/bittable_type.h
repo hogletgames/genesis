@@ -32,9 +32,45 @@
 
 #pragma once
 
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
+#include <genesis/core/export.h>
 #include <genesis/script/class_type_traits.h>
-#include <genesis/script/object.h>
-#include <genesis/script/type_traits.h>
+
+#include <optional>
+
+namespace GE::Script {
+
+class Object;
+
+class GE_API BaseBittableType
+{
+protected:
+    static ClassType objectType(const Object& object);
+    static void* unboxObject(const Object& object);
+};
+
+template<typename T>
+class GE_API BittableType: public BaseBittableType
+{
+public:
+    explicit BittableType(T value)
+        : m_value{value}
+    {}
+
+    explicit BittableType(const Object& object)
+    {
+        if (objectType(object) == CLASS_TYPE<T>) {
+            using DecayedType = std::decay_t<T>;
+            m_value = *static_cast<const DecayedType*>(unboxObject(object));
+        }
+    }
+
+    bool isValid() const { return m_value.has_value(); }
+
+    std::optional<T> value() const { return m_value; }
+    void* asMethodArg() { return &m_value.value(); }
+
+private:
+    std::optional<T> m_value;
+};
+
+} // namespace GE::Script
