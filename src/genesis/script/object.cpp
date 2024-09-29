@@ -32,6 +32,7 @@
 
 #include "object.h"
 #include "class.h"
+#include "method.h"
 
 #include "genesis/core/log.h"
 
@@ -44,6 +45,22 @@ Object::~Object()
     if (m_object != nullptr) {
         mono_gchandle_free(m_gc_handle);
     }
+}
+
+Method Object::method(std::string_view name, int param_count) const
+{
+    if (!isValid()) {
+        GE_CORE_ERR("Trying to get method '{}' from invalid object", name);
+        return Method{};
+    }
+
+    auto* method = mono_class_get_method_from_name(m_class, name.data(), param_count);
+    if (method == nullptr) {
+        GE_CORE_ERR("Method '{}' not found", name);
+        return Method{};
+    }
+
+    return Method{method, m_object};
 }
 
 Class Object::getClass() const
