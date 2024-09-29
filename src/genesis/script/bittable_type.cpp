@@ -30,11 +30,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "bittable_type.h"
+#include "class.h"
+#include "object.h"
 
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/object.h>
-#include <genesis/script/type_traits.h>
+#include "genesis/core/enum.h"
+#include "genesis/core/log.h"
+
+#include <mono/metadata/object.h>
+
+namespace GE::Script {
+
+ClassType BaseBittableType::objectType(const Object& object)
+{
+    return object.getClass().type();
+}
+
+void* BaseBittableType::unboxObject(const Object& object)
+{
+    return object.unbox();
+}
+
+} // namespace GE::Script
