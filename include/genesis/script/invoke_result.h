@@ -32,11 +32,48 @@
 
 #pragma once
 
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
+#include <genesis/core/export.h>
 #include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/invoke_result.h>
 #include <genesis/script/object.h>
-#include <genesis/script/string_type.h>
-#include <genesis/script/type_traits.h>
+
+#include <optional>
+#include <string>
+
+extern "C" {
+typedef struct _MonoObject MonoObject;
+}
+
+namespace GE::Script {
+
+class GE_API InvokeResult
+{
+public:
+    template<typename T>
+    std::optional<T> as() const;
+
+    ClassType type() const { return Object{m_result}.type(); }
+
+    operator bool() const { return m_error_message.empty(); }
+    std::string_view errorMessage() const { return m_error_message; }
+
+private:
+    friend class Method;
+
+    InvokeResult(MonoObject* result, MonoObject* exception)
+        : m_result{result}
+        , m_error_message{asString(exception)}
+    {}
+
+    std::string asString(MonoObject* exception);
+
+    MonoObject* m_result{nullptr};
+    std::string m_error_message;
+};
+
+template<typename T>
+std::optional<T> InvokeResult::as() const
+{
+    return Object{m_result}.as<T>();
+}
+
+} // namespace GE::Script
