@@ -30,13 +30,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "invoke_result.h"
 
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/invoke_result.h>
-#include <genesis/script/object.h>
-#include <genesis/script/string_type.h>
-#include <genesis/script/type_traits.h>
+namespace GE::Script {
+
+std::string InvokeResult::asString(MonoObject* exception)
+{
+    if (auto exception_message = Object{exception}.as<std::string>();
+        exception_message.has_value()) {
+        return exception_message.value();
+    }
+
+    return {};
+}
+
+} // namespace GE::Script
