@@ -32,7 +32,33 @@
 
 #pragma once
 
-#include <genesis/script/class.h>
+#include <genesis/core/export.h>
 #include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/type_traits.h>
+
+extern "C" {
+typedef struct _MonoClass MonoClass;
+}
+
+namespace GE::Script {
+
+class Assembly;
+
+class GE_API Class
+{
+public:
+    Class() = default;
+
+    bool isValid() const { return m_class != nullptr; }
+    ClassType type() const;
+
+private:
+    friend Assembly;
+
+    explicit Class(MonoClass* klass)
+        : m_class{klass}
+    {}
+
+    MonoClass* m_class{nullptr};
+};
+
+} // namespace GE::Script
