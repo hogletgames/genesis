@@ -32,12 +32,56 @@
 
 #pragma once
 
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
+#include <genesis/core/export.h>
 #include <genesis/script/invoke_result.h>
-#include <genesis/script/method.h>
-#include <genesis/script/object.h>
-#include <genesis/script/string_type.h>
-#include <genesis/script/type_traits.h>
+
+#include <array>
+#include <tuple>
+
+extern "C" {
+typedef struct _MonoObject MonoObject;
+typedef struct _MonoMethod MonoMethod;
+}
+
+namespace GE::Script {
+
+class GE_API Method
+{
+public:
+    Method() = default;
+
+    bool isValid() const { return m_method != nullptr; }
+
+    int paramCount() const;
+
+    template<typename... Args>
+    InvokeResult operator()(Args&&... args);
+
+private:
+    friend class Class;
+    friend class Object;
+
+    explicit Method(MonoMethod* method, MonoObject* object = nullptr)
+        : m_method{method}
+        , m_object{object}
+    {}
+
+    InvokeResult invoke(void** args, int args_count);
+
+    MonoMethod* m_method{nullptr};
+    MonoObject* m_object{nullptr};
+};
+
+template<typename... Args>
+InvokeResult Method::operator()(Args&&... args)
+{
+    auto get_arg_pointers = [](auto&&... arguments) {
+        return std::array<void*, sizeof...(arguments)>{arguments.asMethodArg()...};
+    };
+
+    std::tuple arg_tuple{ToScriptType<Args>{args}...};
+    auto method_args = std::apply(get_arg_pointers, arg_tuple);
+    return invoke(method_args.data(), method_args.size());
+}
+
+} // namespace GE::Script

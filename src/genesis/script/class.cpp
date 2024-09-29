@@ -31,7 +31,10 @@
  */
 
 #include "class.h"
+#include "method.h"
 #include "object.h"
+
+#include "genesis/core/log.h"
 
 #include <mono/metadata/appdomain.h>
 #include <mono/metadata/class.h>
@@ -88,6 +91,22 @@ ClassType toType(int mono_type)
 ClassType Class::type() const
 {
     return toType(mono_type_get_type(mono_class_get_type(m_class)));
+}
+
+Method Class::method(std::string_view name, int param_count) const
+{
+    if (!isValid()) {
+        GE_CORE_ERR("Trying to get method '{}' from invalid object", name);
+        return Method{};
+    }
+
+    auto* method = mono_class_get_method_from_name(m_class, name.data(), param_count);
+    if (method == nullptr) {
+        GE_CORE_ERR("Method '{}' not found", name);
+        return Method{};
+    }
+
+    return Method{method};
 }
 
 Object Class::newObject() const

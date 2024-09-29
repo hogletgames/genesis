@@ -55,6 +55,7 @@ public:
 
     bool isValid() const { return m_object != nullptr; }
 
+    Method method(std::string_view name, int param_count = -1) const;
     Class getClass() const;
     ClassType type() const;
     void* unbox() const;
