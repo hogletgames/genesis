@@ -42,9 +42,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Add third-party dependencies first to make sure everything installed correctly before configuring
+# the project
+add_subdirectory(third-party)
+
 # Subdirectories
 add_subdirectory(src)
-add_subdirectory(third-party)
 
 if (GE_BUILD_APPS)
     add_subdirectory(apps)
