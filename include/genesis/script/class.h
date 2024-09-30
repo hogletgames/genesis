@@ -42,6 +42,7 @@ typedef struct _MonoClass MonoClass;
 namespace GE::Script {
 
 class Assembly;
+class Object;
 
 class GE_API Class
 {
@@ -51,8 +52,11 @@ public:
     bool isValid() const { return m_class != nullptr; }
     ClassType type() const;
 
+    Object newObject() const;
+
 private:
-    friend Assembly;
+    friend class Assembly;
+    friend class Object;
 
     explicit Class(MonoClass* klass)
         : m_class{klass}
