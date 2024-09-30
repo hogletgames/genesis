@@ -32,13 +32,39 @@
 
 #pragma once
 
-#include <genesis/script/assembly.h>
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/invoke_result.h>
-#include <genesis/script/method.h>
-#include <genesis/script/object.h>
-#include <genesis/script/string_type.h>
-#include <genesis/script/type_traits.h>
+#include <genesis/core/export.h>
+
+#include <string_view>
+
+extern "C" {
+typedef struct _MonoAssembly MonoAssembly;
+typedef struct _MonoDomain MonoDomain;
+typedef struct _MonoImage MonoImage;
+}
+
+namespace GE::Script {
+
+class Class;
+
+class GE_API Assembly
+{
+public:
+    bool isValid() const { return m_domain != nullptr && m_assembly != nullptr; }
+
+    bool load(std::string_view assembly_path);
+
+    Class getClass(std::string_view class_namespace, std::string_view class_name) const;
+
+private:
+    friend class ScriptingEngine;
+
+    explicit Assembly(MonoDomain* domain)
+        : m_domain{domain}
+    {}
+
+    MonoDomain* m_domain{nullptr};
+    MonoAssembly* m_assembly{nullptr};
+    MonoImage* m_image{nullptr};
+};
+
+} // namespace GE::Script
