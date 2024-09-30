@@ -32,10 +32,38 @@
 
 #pragma once
 
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/object.h>
-#include <genesis/script/string_type.h>
-#include <genesis/script/type_traits.h>
+#include <genesis/core/export.h>
+
+#include <optional>
+#include <string>
+
+extern "C" {
+typedef struct _MonoString MonoString;
+}
+
+namespace GE::Script {
+
+class Object;
+
+class GE_API StringType
+{
+public:
+    explicit StringType(const Object& object);
+
+    explicit StringType(std::string_view string);
+
+    ~StringType();
+
+    bool isValid() const { return m_string != nullptr; }
+
+    std::optional<std::string> value() const;
+    void* asMethodArg() { return m_string; }
+
+private:
+    void updateGCHandle(MonoString* mono_string);
+
+    MonoString* m_string{nullptr};
+    uint32_t m_gc_handle{0};
+};
+
+} // namespace GE::Script
