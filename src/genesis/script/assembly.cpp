@@ -30,15 +30,44 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "assembly.h"
+#include "class.h"
 
-#include <genesis/script/assembly.h>
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/invoke_result.h>
-#include <genesis/script/method.h>
-#include <genesis/script/object.h>
-#include <genesis/script/string_type.h>
-#include <genesis/script/type_traits.h>
+#include "genesis/core/log.h"
+
+#include <mono/metadata/appdomain.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/class.h>
+
+namespace GE::Script {
+
+bool Assembly::load(std::string_view assembly_path)
+{
+    if (m_domain == nullptr) {
+        GE_CORE_ERR("Trying to load assembly '{}' into invalid domain", assembly_path);
+        return false;
+    }
+
+    if (m_assembly = mono_domain_assembly_open(m_domain, assembly_path.data());
+        m_assembly == nullptr) {
+        GE_CORE_ERR("Failed to load '{}' assembly", assembly_path);
+        return false;
+    }
+
+    m_image = mono_assembly_get_image(m_assembly);
+    return true;
+}
+
+Class Assembly::getClass(std::string_view class_namespace, std::string_view class_name) const
+{
+    if (auto* klass = mono_class_from_name(m_image, class_namespace.data(), class_name.data());
+        klass != nullptr) {
+        return Class{klass};
+    }
+
+    GE_CORE_ERR("Failed to get class from name: namespace='{}', class='{}'", class_namespace,
+                class_name);
+    return Class{};
+}
+
+} // namespace GE::Script
