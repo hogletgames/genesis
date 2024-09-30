@@ -31,6 +31,7 @@
  */
 
 #include "class.h"
+#include "object.h"
 
 #include <mono/metadata/appdomain.h>
 #include <mono/metadata/class.h>
@@ -87,6 +88,13 @@ ClassType toType(int mono_type)
 ClassType Class::type() const
 {
     return toType(mono_type_get_type(mono_class_get_type(m_class)));
+}
+
+Object Class::newObject() const
+{
+    auto* object = mono_object_new(mono_domain_get(), m_class);
+    mono_runtime_object_init(object);
+    return Object{object, m_class};
 }
 
 } // namespace GE::Script

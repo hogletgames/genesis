@@ -32,8 +32,52 @@
 
 #pragma once
 
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/object.h>
+#include <genesis/core/export.h>
 #include <genesis/script/type_traits.h>
+
+#include <optional>
+
+extern "C" {
+typedef struct _MonoObject MonoObject;
+typedef struct _MonoClass MonoClass;
+}
+
+namespace GE::Script {
+
+class Class;
+class Method;
+
+class GE_API Object
+{
+public:
+    Object() = default;
+    ~Object();
+
+    bool isValid() const { return m_object != nullptr; }
+
+    Class getClass() const;
+    ClassType type() const;
+    void* unbox() const;
+    MonoObject* nativeHandle() const { return m_object; }
+
+    template<typename T>
+    std::optional<T> as() const;
+
+private:
+    friend class Class;
+    friend class InvokeResult;
+
+    explicit Object(MonoObject* object, MonoClass* klass = nullptr);
+
+    MonoObject* m_object{nullptr};
+    MonoClass* m_class{nullptr};
+    uint32_t m_gc_handle{0};
+};
+
+template<typename T>
+std::optional<T> Object::as() const
+{
+    return isValid() ? ToScriptType<T>{*this}.value() : std::nullopt;
+}
+
+} // namespace GE::Script

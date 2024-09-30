@@ -30,10 +30,50 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "object.h"
+#include "class.h"
 
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/object.h>
-#include <genesis/script/type_traits.h>
+#include "genesis/core/log.h"
+
+#include <mono/metadata/object.h>
+
+namespace GE::Script {
+
+Object::~Object()
+{
+    if (m_object != nullptr) {
+        mono_gchandle_free(m_gc_handle);
+    }
+}
+
+Class Object::getClass() const
+{
+    return Class{m_class};
+}
+
+ClassType Object::type() const
+{
+    return Class{m_class}.type();
+}
+
+void* Object::unbox() const
+{
+    if (isValid()) {
+        return mono_object_unbox(m_object);
+    }
+
+    GE_CORE_ERR("Trying to unbox invalid object");
+    return nullptr;
+}
+
+Object::Object(MonoObject* object, MonoClass* klass)
+    : m_object{object}
+    , m_class{klass}
+{
+    if (m_object != nullptr && m_class == nullptr) {
+        m_class = mono_object_get_class(m_object);
+        m_gc_handle = mono_gchandle_new(m_object, 0);
+    }
+}
+
+} // namespace GE::Script
