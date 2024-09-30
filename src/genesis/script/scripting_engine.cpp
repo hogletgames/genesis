@@ -30,16 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "scripting_engine.h"
+#include "assembly.h"
 
-#include <genesis/script/assembly.h>
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/invoke_result.h>
-#include <genesis/script/method.h>
-#include <genesis/script/object.h>
-#include <genesis/script/scripting_engine.h>
-#include <genesis/script/string_type.h>
-#include <genesis/script/type_traits.h>
+#include <mono/jit/jit.h>
+
+namespace GE::Script {
+
+bool ScriptingEngine::initialize(std::string_view domain_name, std::string_view runtime_version)
+{
+    s_domain = mono_jit_init_version(domain_name.data(), runtime_version.data());
+    return s_domain != nullptr;
+}
+
+void ScriptingEngine::shutdown()
+{
+    mono_jit_cleanup(s_domain);
+    s_domain = nullptr;
+}
+
+Assembly ScriptingEngine::createAssembly()
+{
+    return Assembly{s_domain};
+}
+
+} // namespace GE::Script

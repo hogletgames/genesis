@@ -32,14 +32,31 @@
 
 #pragma once
 
-#include <genesis/script/assembly.h>
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/invoke_result.h>
-#include <genesis/script/method.h>
-#include <genesis/script/object.h>
-#include <genesis/script/scripting_engine.h>
-#include <genesis/script/string_type.h>
-#include <genesis/script/type_traits.h>
+#include <string_view>
+
+extern "C" {
+typedef struct _MonoDomain MonoDomain;
+}
+
+namespace GE::Script {
+
+class Assembly;
+
+class ScriptingEngine
+{
+public:
+    ScriptingEngine() = delete;
+
+    static bool initialize(std::string_view domain_name,
+                           std::string_view runtime_version = DEFAULT_RUNTIME_VERSION);
+    static void shutdown();
+
+    static Assembly createAssembly();
+
+    static constexpr std::string_view DEFAULT_RUNTIME_VERSION{"v4.0.30319"};
+
+private:
+    inline static MonoDomain* s_domain{nullptr};
+};
+
+} // namespace GE::Script
