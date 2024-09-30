@@ -7,11 +7,13 @@ list(APPEND SCRIPT_HEADERS
     ${INCLUDE_DIR}/class.h
     ${INCLUDE_DIR}/class_type.h
     ${INCLUDE_DIR}/class_type_traits.h
+    ${INCLUDE_DIR}/object.h
     ${INCLUDE_DIR}/type_traits.h
     )
 
 list(APPEND SCRIPT_SOURCES
     class.cpp
+    object.cpp
     )
 
 ge_add_module(script
