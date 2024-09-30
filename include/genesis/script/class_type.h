@@ -32,6 +32,47 @@
 
 #pragma once
 
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/type_traits.h>
+namespace GE::Script {
+
+enum class ClassType
+{
+    UNKNOWN = 0,
+    END,
+    VOID,
+    BOOLEAN,
+    CHAR,
+    I1,
+    U1,
+    I2,
+    U2,
+    I4,
+    U4,
+    I8,
+    U8,
+    R4,
+    R8,
+    STRING,
+    PTR,
+    BYREF,
+    VALUETYPE,
+    CLASS,
+    VAR,
+    ARRAY,
+    GENERICINST,
+    TYPEDBYREF,
+    I,
+    U,
+    FNPTR,
+    OBJECT,
+    SZARRAY,
+    MVAR,
+    CMOD_REQD,
+    CMOD_OPT,
+    INTERNAL,
+    MODIFIER,
+    SENTINEL,
+    PINNED,
+    ENUM
+};
+
+} // namespace GE::Script
