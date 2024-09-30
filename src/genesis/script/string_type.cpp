@@ -30,12 +30,65 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "string_type.h"
+#include "class.h"
+#include "object.h"
 
-#include <genesis/script/bittable_type.h>
-#include <genesis/script/class.h>
-#include <genesis/script/class_type.h>
-#include <genesis/script/class_type_traits.h>
-#include <genesis/script/object.h>
-#include <genesis/script/string_type.h>
-#include <genesis/script/type_traits.h>
+#include "genesis/core/enum.h"
+#include "genesis/core/log.h"
+
+#include <mono/metadata/appdomain.h>
+#include <mono/metadata/object.h>
+
+namespace GE::Script {
+
+StringType::StringType(const Object& object)
+{
+    if (!object.isValid()) {
+        GE_CORE_ERR("Trying to create a string from an invalid object");
+        return;
+    }
+
+    if (auto type = object.type(); type != ClassType::STRING) {
+        GE_CORE_ERR("Trying to create a string from object with type={}", toString(type));
+        return;
+    }
+
+    m_string = reinterpret_cast<MonoString*>(object.nativeHandle());
+    updateGCHandle(m_string);
+}
+
+StringType::StringType(std::string_view string)
+{
+    m_string = mono_string_new(mono_domain_get(), string.data());
+    updateGCHandle(m_string);
+}
+
+StringType::~StringType()
+{
+    if (m_string != nullptr) {
+        mono_gchandle_free(m_gc_handle);
+    }
+}
+
+std::optional<std::string> StringType::value() const
+{
+    char* string = mono_string_to_utf8(m_string);
+    if (string == nullptr) {
+        GE_CORE_ERR("Failed to convert string to UTF-8");
+        return {};
+    }
+
+    size_t string_length = mono_string_length(m_string);
+    std::string result{string, string_length};
+    mono_free(string);
+
+    return result;
+}
+
+void StringType::updateGCHandle(MonoString* mono_string)
+{
+    m_gc_handle = mono_gchandle_new(reinterpret_cast<MonoObject*>(mono_string), 0);
+}
+
+} // namespace GE::Script

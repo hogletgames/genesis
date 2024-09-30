@@ -33,7 +33,9 @@
 #pragma once
 
 #include <genesis/script/bittable_type.h>
+#include <genesis/script/string_type.h>
 
+#include <string>
 #include <type_traits>
 
 namespace GE::Script {
@@ -99,6 +101,16 @@ struct type_traits_t<bool> {
 template<>
 struct type_traits_t<char> {
     using ScriptType = BittableType<char>;
+};
+
+template<>
+struct type_traits_t<std::string> {
+    using ScriptType = StringType;
+};
+
+template<>
+struct type_traits_t<std::string_view> {
+    using ScriptType = StringType;
 };
 
 template<typename T>
