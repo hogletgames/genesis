@@ -4,6 +4,7 @@ pkg_check_modules(Mono REQUIRED IMPORTED_TARGET mono-2)
 set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/script)
 
 list(APPEND SCRIPT_HEADERS
+    ${INCLUDE_DIR}/assembly.h
     ${INCLUDE_DIR}/bittable_type.h
     ${INCLUDE_DIR}/class.h
     ${INCLUDE_DIR}/class_type.h
@@ -16,6 +17,7 @@ list(APPEND SCRIPT_HEADERS
     )
 
 list(APPEND SCRIPT_SOURCES
+    assembly.cpp
     bittable_type.cpp
     class.cpp
     invoke_result.cpp
