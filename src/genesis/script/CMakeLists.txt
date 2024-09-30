@@ -4,6 +4,8 @@ pkg_check_modules(Mono REQUIRED IMPORTED_TARGET mono-2)
 set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/script)
 
 list(APPEND SCRIPT_HEADERS
+    ${INCLUDE_DIR}/class_type.h
+    ${INCLUDE_DIR}/class_type_traits.h
     ${INCLUDE_DIR}/type_traits.h
     )
 
