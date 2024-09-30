@@ -12,6 +12,7 @@ list(APPEND SCRIPT_HEADERS
     ${INCLUDE_DIR}/invoke_result.h
     ${INCLUDE_DIR}/method.h
     ${INCLUDE_DIR}/object.h
+    ${INCLUDE_DIR}/scripting_engine.h
     ${INCLUDE_DIR}/string_type.h
     ${INCLUDE_DIR}/type_traits.h
     )
@@ -23,6 +24,7 @@ list(APPEND SCRIPT_SOURCES
     invoke_result.cpp
     method.cpp
     object.cpp
+    scripting_engine.cpp
     string_type.cpp
     )
 
