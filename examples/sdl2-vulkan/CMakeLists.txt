@@ -4,9 +4,8 @@ ge_add_executable(sdl2_vulkan_example
         genesis::core
         glm
         SDL2::SDL2-static
-        shaderc_shared
+        shaderc_combined
         stb-image
         tinyobjloader
-        Vulkan::Headers
-        Vulkan::Loader
+        Vulkan::Vulkan
     )

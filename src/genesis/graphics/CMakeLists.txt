@@ -52,7 +52,7 @@ ge_add_module(graphics
         genesis::math
     PRIVATE_DEPS
         genesis::graphics-vulkan
-        shaderc
+        shaderc_combined
         spirv-cross-cpp
         stb-image
         tinyobjloader
