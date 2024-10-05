@@ -1,24 +1,103 @@
 #!/usr/bin/env bash
 
-VULKAN_SDK_VERSION="1.3.268.0"
-EXPECTED_SHA256="d23343736247828ff5b3b6b1b7fd83a72b5df1a54b2527ae3663cebdfee75842"
+set -e
 
-VULKAN_SDK_ARCHIVE_NAME="vulkansdk-linux-x86_64-${VULKAN_SDK_VERSION}.tar.xz"
-VULKAN_SDK_URL="https://sdk.lunarg.com/sdk/download/${VULKAN_SDK_VERSION}/linux/${VULKAN_SDK_ARCHIVE_NAME}"
-VULKAN_SDK_DOWNLOAD_DEST="/tmp/vulkan-sdk.tar.xz"
-VULKAN_SDK_INSTALL_DEST="/opt/vulkan-sdk"
+function git_clone() {
+  local URL="${1}"
+  local SRC_DIR="${2}"
+  local VERSION="${3}"
 
-# Download the Vulkan SDK
-wget -O "${VULKAN_SDK_DOWNLOAD_DEST}" "${VULKAN_SDK_URL}"
+  git clone --depth 1 --branch "${VERSION}" "${URL}" "${SRC_DIR}"
+}
 
-# Verify the SHA256 checksum
-sha256 -c "${EXPECTED_SHA256}" "${VULKAN_SDK_DOWNLOAD_DEST}"
+function cmake_install() {
+  local SRC_DIR="${1}"
+  local INSTALL_PREFIX="${2}"
+  local CMAKE_OPTIONS="${3}"
 
-# Extract the Vulkan SDK
-tar -xf "${VULKAN_SDK_DOWNLOAD_DEST}" -C /opt
+  local BUILD_DIR="${SRC_DIR}/build"
 
-# Append to the user's .bashrc
-echo "source ${VULKAN_SDK_INSTALL_DEST}/${VULKAN_SDK_VERSION}/setup-env.sh" >> ~/.bashrc
+  cmake -S "${SRC_DIR}" -B "${BUILD_DIR}" \
+    --install-prefix "${INSTALL_PREFIX}"  \
+    -G "Unix Makefiles"                   \
+    ${CMAKE_OPTIONS}
+  cmake --build "${BUILD_DIR}" --parallel "$(nproc)" --config Release
+  cmake --install "${BUILD_DIR}" --config Release
+}
 
-# Cleanup
-rm "${VULKAN_SDK_DOWNLOAD_DEST}"
+function install_package() {
+  local NAME="${1}"
+  local VERSION="${2}"
+  local INSTALL_PREFIX="${3}"
+  local CMAKE_OPTIONS="${4}"
+
+  local SRC_DIR="/tmp/${NAME}"
+
+  git_clone "https://github.com/hogletgames/${NAME}.git" "${SRC_DIR}" "${VERSION}"
+  cmake_install "${SRC_DIR}" "${INSTALL_PREFIX}" "${CMAKE_OPTIONS}"
+  rm -rf "${SRC_DIR}"
+}
+
+function install_spirv_tools() {
+  local VERSION="${1}"
+  local INSTALL_PREFIX="${2}"
+
+  local SRC_DIR="/tmp/SPIRV-Tools"
+  local BUILD_DIR="${SRC_DIR}/build"
+
+  # Clone the project and its dependencies
+  git_clone "https://github.com/hogletgames/SPIRV-Tools.git" "${SRC_DIR}" "${VERSION}"
+  git_clone                                             \
+    "https://github.com/hogletgames/SPIRV-Headers.git"  \
+    "${SRC_DIR}/external/spirv-headers"                 \
+    "${VERSION}"
+
+  # Build and install the project
+  cmake_install "${SRC_DIR}" "${INSTALL_PREFIX}" "-DSPIRV_SKIP_TESTS=ON"
+
+  # Clean up
+  rm -rf "${SRC_DIR}"
+}
+
+function install_shaderc() {
+  local VERSION="${1}"
+  local INSTALL_PREFIX="${2}"
+
+  local SRC_DIR="/tmp/shaderc"
+  local BUILD_DIR="${SRC_DIR}/build"
+
+  git_clone "https://github.com/hogletgames/shaderc.git" "${SRC_DIR}" "${VERSION}"
+  python3 "${SRC_DIR}/utils/git-sync-deps"
+  cmake_install         \
+    "${SRC_DIR}"        \
+    "${INSTALL_PREFIX}" \
+    "-DSHADERC_SKIP_TESTS=ON -DSHADERC_SKIP_EXAMPLES=ON"
+
+  rm -rf "${SRC_DIR}"
+}
+
+function main() {
+  USAGE="Usage: $0 <VULKAN_SDK_VERSION> <INSTALL_PREFIX>"
+
+  VULKAN_SDK_VERSION="vulkan-sdk-${1}"
+  INSTALL_PREFIX="${2}"
+
+  if [[ -z "${VULKAN_SDK_VERSION}" ]] || [[ -z "${INSTALL_PREFIX}" ]]; then
+    echo "${USAGE}"
+    exit 1
+  fi
+
+  install_package "Vulkan-Headers" "${VULKAN_SDK_VERSION}" "${INSTALL_PREFIX}"
+  install_package "Vulkan-Loader" "${VULKAN_SDK_VERSION}" "${INSTALL_PREFIX}"
+  install_package "SPIRV-Headers" "${VULKAN_SDK_VERSION}" "${INSTALL_PREFIX}"
+  install_spirv_tools "${VULKAN_SDK_VERSION}" "${INSTALL_PREFIX}"
+  install_package "SPIRV-Cross" "${VULKAN_SDK_VERSION}" "${INSTALL_PREFIX}"
+  install_package             \
+    "Vulkan-ValidationLayers" \
+    "${VULKAN_SDK_VERSION}"   \
+    "${INSTALL_PREFIX}"       \
+    "-DCMAKE_BUILD_TYPE=Release -DUPDATE_DEPS=ON"
+  install_shaderc "v2023.7" "${INSTALL_PREFIX}"
+}
+
+main "${@}"

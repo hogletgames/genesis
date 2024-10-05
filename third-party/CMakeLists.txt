@@ -1,6 +1,7 @@
-include(FetchContent)
 include(ExternalProject)
+include(FetchContent)
 
+# Get number of logical cores
 cmake_host_system_information(RESULT GE_NPROC QUERY NUMBER_OF_LOGICAL_CORES)
 
 # CMake options
@@ -15,12 +16,6 @@ set(YAML_CPP_BUILD_TOOLS OFF)
 set(YAML_BUILD_SHARED_LIBS OFF)
 set(YAML_CPP_INSTALL OFF)
 set(YAML_CPP_FORMAT_SOURCE OFF)
-
-# Vulkan SDK
-set(UPDATE_DEPS ON)
-set(ENABLE_CTEST OFF)
-set(SHADERC_SKIP_TESTS ON)
-set(ALLOW_EXTERNAL_SPIRV_TOOLS ON)
 
 # Box2D
 set(BOX2D_BUILD_UNIT_TESTS OFF)
@@ -90,8 +85,7 @@ if (NOT imgui_POPULATED)
     target_link_libraries(ge-imgui-vulkan PUBLIC
         ge-imgui
         SDL2-static
-        Vulkan::Headers
-        Vulkan::Loader
+        Vulkan::Vulkan
         )
     target_include_directories(ge-imgui-vulkan PUBLIC ${imgui_SOURCE_DIR}/backends)
 
@@ -279,8 +273,4 @@ if (GE_BUILD_TESTS)
         GIT_REPOSITORY https://github.com/hogletgames/googletest.git
         GIT_TAG release-1.12.1)
     FetchContent_MakeAvailable(googletest)
-endif ()
-
-if (NOT GE_DISABLE_DEBUG)
-    add_dependencies(vulkan vvl)
 endif ()
