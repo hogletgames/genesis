@@ -69,7 +69,7 @@ ge_add_executable(level_editor
     SOURCES ${LEVEL_EDITOR_SOURCES} ${LEVEL_EDITOR_HEADERS}
     INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
     PRIVATE_DEPS
-        Boost::circular_buffer
+        Boost::boost
         docopt_s
         genesis::genesis
         nlohmann_json::nlohmann_json

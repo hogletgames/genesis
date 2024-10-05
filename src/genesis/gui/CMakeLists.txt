@@ -78,7 +78,7 @@ ge_add_module(gui
         ${INCLUDE_DIR}/widgets
         ${CMAKE_CURRENT_SOURCE_DIR}
     PUBLIC_DEPS
-        Boost::signals2
+        Boost::boost
         genesis::app
     PRIVATE_DEPS
         genesis::graphics

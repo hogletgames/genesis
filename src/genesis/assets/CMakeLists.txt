@@ -33,5 +33,5 @@ ge_add_module(assets
         genesis::graphics
         yaml-cpp::yaml-cpp
     PRIVATE_DEPS
-        Boost::uuid
+        Boost::boost
     )

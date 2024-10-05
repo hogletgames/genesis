@@ -133,12 +133,6 @@ FetchContent_Declare(docopt.cpp
     GIT_TAG v0.6.3)
 FetchContent_MakeAvailable(docopt.cpp)
 
-# boost
-FetchContent_Declare(boost
-    GIT_REPOSITORY https://github.com/boostorg/boost.git
-    GIT_TAG boost-1.82.0)
-FetchContent_MakeAvailable(boost)
-
 # yaml-cpp
 FetchContent_Declare(yaml-cpp
     GIT_REPOSITORY https://github.com/hogletgames/yaml-cpp.git
