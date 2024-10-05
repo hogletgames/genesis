@@ -99,17 +99,17 @@ build/examples/sandbox/sandbox -e gui
 
 ### genesis build options
 
-| Make                 | CMake                | Default value     | Description                                                                       |
-|----------------------|----------------------|-------------------|-----------------------------------------------------------------------------------|
-| `BUILD_TYPE`         | `CMAKE_BUILD_TYPE`   | `Release`         | Project build types: `Release`, `Debug`, `RelWithDebInfo`, `ASAN`, `USAN`, `TSAN` |
-| `BUILD_STATIC`       | `GE_STATIC`          | `OFF`             | Build static library                                                              |
-| `DISABLE_ASSERTS`    | `GE_DISABLE_ASSERTS` | `OFF`             | Exclude asserts from final binary                                                 |
-| `BUILD_APPS`         | `GE_BUILD_APPS`      | `OFF`             | Build applications                                                                |
-| `BUILD_EXAMPLES`     | `GE_BUILD_EXAMPLES`  | `OFF`             | Build examples                                                                    |
-| `BUILD_TESTS`        | `GE_BUILD_TESTS`     | `OFF`             | Build tests                                                                       |
-| `CLANG_FORMAT_BIN`   | -                    | `clang-format`    | Path to `clang-format` binary                                                     |
-| `RUN_CLANG_TIDY_BIN` | -                    | `run-clang-tidy`  | Path to `run-clang-tidy` tool                                                     |
-| `DOCKER_CMD`         | -                    | `make -j$(nproc)` | Command which will be executed by `make docker_run`                               |
+| Make                 | CMake                | Default value     | Description                                                                        |
+|----------------------|----------------------|-------------------|------------------------------------------------------------------------------------|
+| `BUILD_TYPE`         | `CMAKE_BUILD_TYPE`   | `Release`         | Project build types: `Release`, `Debug`, `RelWithDebInfo`, `ASAN`, `UBSAN`, `TSAN` |
+| `BUILD_STATIC`       | `GE_STATIC`          | `OFF`             | Build static library                                                               |
+| `DISABLE_ASSERTS`    | `GE_DISABLE_ASSERTS` | `OFF`             | Exclude asserts from final binary                                                  |
+| `BUILD_APPS`         | `GE_BUILD_APPS`      | `OFF`             | Build applications                                                                 |
+| `BUILD_EXAMPLES`     | `GE_BUILD_EXAMPLES`  | `OFF`             | Build examples                                                                     |
+| `BUILD_TESTS`        | `GE_BUILD_TESTS`     | `OFF`             | Build tests                                                                        |
+| `CLANG_FORMAT_BIN`   | -                    | `clang-format`    | Path to `clang-format` binary                                                      |
+| `RUN_CLANG_TIDY_BIN` | -                    | `run-clang-tidy`  | Path to `run-clang-tidy` tool                                                      |
+| `DOCKER_CMD`         | -                    | `make -j$(nproc)` | Command which will be executed by `make docker_run`                                |
 
 ### Licence
 
