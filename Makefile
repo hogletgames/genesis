@@ -78,4 +78,4 @@ docker_build: docker_run
 # Tests
 .PHONY: test
 test:
-	$(MAKE) -C $(BUILD_DIR) test
+	cd $(BUILD_DIR) && ctest --output-on-failure -j$$(nproc)
