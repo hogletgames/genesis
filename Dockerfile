@@ -2,7 +2,7 @@
 FROM ubuntu:focal AS cmake-builder
 ARG CMAKE_VER="v3.22.1"
 
-RUN --mount=type=cache,target=/var/cache/apt \
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
         build-essential ca-certificates git libssl-dev
 
@@ -20,7 +20,7 @@ ENV DEBIAN_FRONTEND="noninteractive"
 
 COPY --from=cmake-builder /opt/cmake/ /usr/local/
 
-RUN --mount=type=cache,target=/var/cache/apt \
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
 # Essential build tools
         build-essential ca-certificates git pkg-config python3 \
@@ -33,7 +33,7 @@ RUN --mount=type=bind,source=./tools,dst=/tmp/tools \
 # Boost library builder
 FROM ubuntu:focal AS boost-builder
 
-RUN --mount=type=cache,target=/var/cache/apt \
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
         build-essential ca-certificates wget
 
@@ -55,7 +55,7 @@ COPY --from=vulkan-sdk-builder /opt/vulkan-sdk /opt/vulkan-sdk
 COPY --from=boost-builder /opt/boost /opt/boost
 
 # Instal essential packages
-RUN --mount=type=cache,target=/var/cache/apt \
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
         gpg-agent software-properties-common wget vim \
 # GCC
@@ -74,7 +74,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
     && git config --add --system safe.directory "*"
 
 # SDL2 dependencies
-RUN --mount=type=cache,target=/var/cache/apt \
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
         libx11-dev libsamplerate-dev libasound2-dev libjack-dev libpulse-dev libsndio-dev \
         libxcursor-dev libxinerama-dev libxi-dev libxrandr-dev libxss-dev libxxf86vm-dev \
