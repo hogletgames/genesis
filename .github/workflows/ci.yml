@@ -38,6 +38,12 @@ jobs:
             disable-asserts: ON
           - build-type: Debug
             disable-asserts: OFF
+          - build-type: ASAN
+            disable-asserts: OFF
+          - build-type: UBSAN
+            disable-asserts: OFF
+          - build-type: TSAN
+            disable-asserts: OFF
     env:
       BUILD_TYPE: ${{ matrix.build-type }}
       DISABLE_ASSERTS: ${{ matrix.disable-asserts }}
