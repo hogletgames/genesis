@@ -70,12 +70,11 @@ ge_add_module(graphics-vulkan
         genesis::graphics
         genesis::math
         genesis::window
-        Vulkan::Headers
-        Vulkan::Loader
+        Vulkan::Vulkan
     PRIVATE_DEPS
         ge-imgui-vulkan
         SDL2::SDL2-static
-        shaderc
+        shaderc_combined
         spirv-cross-cpp
         stb-image
     )

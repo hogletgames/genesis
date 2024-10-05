@@ -1,6 +1,7 @@
-include(FetchContent)
 include(ExternalProject)
+include(FetchContent)
 
+# Get number of logical cores
 cmake_host_system_information(RESULT GE_NPROC QUERY NUMBER_OF_LOGICAL_CORES)
 
 # CMake options
@@ -15,12 +16,6 @@ set(YAML_CPP_BUILD_TOOLS OFF)
 set(YAML_BUILD_SHARED_LIBS OFF)
 set(YAML_CPP_INSTALL OFF)
 set(YAML_CPP_FORMAT_SOURCE OFF)
-
-# Vulkan SDK
-set(UPDATE_DEPS ON)
-set(ENABLE_CTEST OFF)
-set(SHADERC_SKIP_TESTS ON)
-set(ALLOW_EXTERNAL_SPIRV_TOOLS ON)
 
 # Box2D
 set(BOX2D_BUILD_UNIT_TESTS OFF)
@@ -90,8 +85,7 @@ if (NOT imgui_POPULATED)
     target_link_libraries(ge-imgui-vulkan PUBLIC
         ge-imgui
         SDL2-static
-        Vulkan::Headers
-        Vulkan::Loader
+        Vulkan::Vulkan
         )
     target_include_directories(ge-imgui-vulkan PUBLIC ${imgui_SOURCE_DIR}/backends)
 
@@ -139,12 +133,6 @@ FetchContent_Declare(docopt.cpp
     GIT_TAG v0.6.3)
 FetchContent_MakeAvailable(docopt.cpp)
 
-# boost
-FetchContent_Declare(boost
-    GIT_REPOSITORY https://github.com/boostorg/boost.git
-    GIT_TAG boost-1.82.0)
-FetchContent_MakeAvailable(boost)
-
 # yaml-cpp
 FetchContent_Declare(yaml-cpp
     GIT_REPOSITORY https://github.com/hogletgames/yaml-cpp.git
@@ -190,87 +178,11 @@ FetchContent_Declare(nlohmann_json
     URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
 FetchContent_MakeAvailable(nlohmann_json)
 
-# Vulkan-Loader
-FetchContent_Declare(Vulkan-Loader
-    GIT_REPOSITORY https://github.com/hogletgames/Vulkan-Loader.git
-    GIT_TAG vulkan-sdk-1.3.268.0)
-ge_change_build_type(Release)
-FetchContent_MakeAvailable(Vulkan-Loader)
-ge_restore_build_type()
-
-# glslang
-FetchContent_Declare(glslang
-    GIT_REPOSITORY https://github.com/hogletgames/glslang.git
-    GIT_TAG vulkan-sdk-1.3.268.0)
-FetchContent_MakeAvailable(glslang)
-
-# SPIRV-Headers
-FetchContent_Declare(SPIRV-Headers
-    GIT_REPOSITORY https://github.com/hogletgames/SPIRV-Headers.git
-    GIT_TAG vulkan-sdk-1.3.268.0)
-FetchContent_MakeAvailable(SPIRV-Headers)
-
-# SPIRV-Tools
-FetchContent_Declare(SPIRV-Tools
-    GIT_REPOSITORY https://github.com/hogletgames/SPIRV-Tools.git
-    GIT_TAG vulkan-sdk-1.3.268.0)
-FetchContent_MakeAvailable(SPIRV-Tools)
-target_compile_options(SPIRV-Tools-opt PRIVATE $<$<CONFIG:USAN>:-fno-sanitize=vptr>)
-
-# SPIRV-Cross
-FetchContent_Declare(SPIRV-Cross
-    GIT_REPOSITORY https://github.com/hogletgames/SPIRV-Cross.git
-    GIT_TAG vulkan-sdk-1.3.268.0)
-FetchContent_MakeAvailable(SPIRV-Cross)
-
-# Vulkan-ValidationLayers
-FetchContent_Declare(Vulkan-ValidationLayers
-    GIT_REPOSITORY https://github.com/hogletgames/Vulkan-ValidationLayers.git
-    GIT_TAG vulkan-sdk-1.3.268.0)
-ge_change_build_type(Release)
-FetchContent_MakeAvailable(Vulkan-ValidationLayers)
-ge_restore_build_type()
-
-# shaderc
-FetchContent_Declare(shaderc
-    GIT_REPOSITORY https://github.com/hogletgames/shaderc.git
-    GIT_TAG v2023.7)
-FetchContent_MakeAvailable(shaderc)
-
-# Vulkan-Headers
-FetchContent_Declare(Vulkan-Headers
-    GIT_REPOSITORY https://github.com/hogletgames/Vulkan-Headers.git
-    GIT_TAG vulkan-sdk-1.3.268.0)
-FetchContent_MakeAvailable(Vulkan-Headers)
-
 # box2d
 FetchContent_Declare(box2d
     GIT_REPOSITORY https://github.com/hogletgames/box2d.git
     GIT_TAG v3.0.0)
 FetchContent_MakeAvailable(box2d)
-
-# Apple dependencies
-if (APPLE)
-    # MoltenVK
-    FetchContent_Declare(MoltenVK
-        GIT_REPOSITORY https://github.com/hogletgames/MoltenVK.git
-        GIT_TAG v1.2.8)
-    FetchContent_GetProperties(MoltenVK)
-    if (NOT moltenvk_POPULATED)
-        FetchContent_Populate(MoltenVK)
-
-        set(MOLTENVK_ICD ${moltenvk_SOURCE_DIR}/Package/Latest/MoltenVK/dynamic/dylib/macOS/MoltenVK_icd.json)
-        add_custom_command(OUTPUT ${MOLTENVK_ICD}
-            COMMAND ./fetchDependencies -v --macos
-            COMMAND make -j${GE_NPROC} macos
-            WORKING_DIRECTORY ${moltenvk_SOURCE_DIR}
-            BYPRODUCTS ${MOLTENVK_ICD}
-            VERBATIM)
-
-        add_custom_target(MoltenVkIcd DEPENDS ${MOLTENVK_ICD})
-        add_dependencies(vulkan MoltenVkIcd)
-    endif()
-endif ()
 
 # Project dependencies
 if (GE_BUILD_TESTS)
@@ -279,8 +191,4 @@ if (GE_BUILD_TESTS)
         GIT_REPOSITORY https://github.com/hogletgames/googletest.git
         GIT_TAG release-1.12.1)
     FetchContent_MakeAvailable(googletest)
-endif ()
-
-if (NOT GE_DISABLE_DEBUG)
-    add_dependencies(vulkan vvl)
 endif ()

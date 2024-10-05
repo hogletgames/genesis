@@ -1,10 +1,13 @@
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 project(genesis VERSION 0.0.0 LANGUAGES C CXX)
 
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "Build type is empty, configuring as 'Release'")
     set(CMAKE_BUILD_TYPE "Release")
 endif ()
+
+# Configure custom find modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/find-modules")
 
 # CMake options
 option(GE_STATIC "Build static library" OFF)
@@ -41,6 +44,12 @@ message(STATUS "Build tests: ${GE_BUILD_TESTS}")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Find required packages
+find_package(Boost "1.82" COMPONENTS filesystem REQUIRED)
+find_package(ge-shaderc_combined REQUIRED)
+find_package(ge-spirv-cross REQUIRED)
+find_package(Vulkan REQUIRED)
 
 # Subdirectories
 add_subdirectory(src)

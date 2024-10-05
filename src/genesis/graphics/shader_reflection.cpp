@@ -34,7 +34,7 @@
 
 #include "genesis/core/utils.h"
 
-#include <spirv_cross.hpp>
+#include <spirv_cross/spirv_cross.hpp>
 
 using AttrType = GE::shader_attribute_t::BaseType;
 using DescType = GE::resource_descriptor_t::Type;
