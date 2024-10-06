@@ -80,7 +80,7 @@ bool SceneDeserializer::deserialize(const std::string &config_filepath)
 
         if (auto version = node["scene"]["serialization_version"].as<uint32_t>();
             version < Scene::SERIALIZATION_VERSION) {
-            GE_CORE_ERR("Inconcistent serialization version: {}, expected: {}", version,
+            GE_CORE_ERR("Inconsistent serialization version: {}, expected: {}", version,
                         Scene::SERIALIZATION_VERSION);
             return false;
         }

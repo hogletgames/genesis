@@ -15,7 +15,6 @@ RUN git clone --depth 1 --branch "${CMAKE_VER}" https://github.com/Kitware/CMake
 # Vulkan SDK builder
 FROM ubuntu:focal AS vulkan-sdk-builder
 ARG VULKAN_SDK_VER="1.3.268.0"
-
 ENV DEBIAN_FRONTEND="noninteractive"
 
 COPY --from=cmake-builder /opt/cmake/ /usr/local/
@@ -27,8 +26,8 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
 # Vulkan SDK dependencies
         libx11-dev libxrandr-dev libwayland-dev xorg-dev
 
-RUN --mount=type=bind,source=./tools,dst=/tmp/tools \
-    bash /tmp/tools/install_vulkan_sdk_linux.sh "${VULKAN_SDK_VER}" "/opt/vulkan-sdk"
+COPY tools/install_vulkan_sdk_linux.sh /tmp/tools/install_vulkan_sdk_linux.sh
+RUN bash /tmp/tools/install_vulkan_sdk_linux.sh "${VULKAN_SDK_VER}" "/opt/vulkan-sdk"
 
 # Boost library builder
 FROM ubuntu:focal AS boost-builder
@@ -37,8 +36,8 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
         build-essential ca-certificates wget
 
-RUN --mount=type=bind,source=./tools,dst=/tmp/tools \
-    bash /tmp/tools/install_boost_linux.sh "/opt/boost"
+COPY tools/install_boost_linux.sh /tmp/tools/install_boost_linux.sh
+RUN bash /tmp/tools/install_boost_linux.sh "/opt/boost"
 
 # Genesis image
 FROM ubuntu:focal AS genesis-image
@@ -73,6 +72,19 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     && git config --add --system user.email "hogletgames@gmail.com" \
     && git config --add --system safe.directory "*"
 
+# Install mono
+ARG MONO_SOURCE_STABLE="deb [signed-by=/usr/share/keyrings/mono-official-archive-keyring.gpg] https://download.mono-project.com/repo/ubuntu stable-focal main"
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    apt-get install -y gnupg \
+    && gpg --homedir /tmp \
+        --no-default-keyring \
+        --keyring /usr/share/keyrings/mono-official-archive-keyring.gpg \
+        --keyserver hkp://keyserver.ubuntu.com:80 \
+        --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
+    && echo "${MONO_SOURCE_STABLE}" | tee /etc/apt/sources.list.d/mono-official-stable.list \
+    && apt-get update && apt-get install -y --no-install-recommends \
+        mono-devel mono-complete
+
 # SDL2 dependencies
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
@@ -80,10 +92,10 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
         libxcursor-dev libxinerama-dev libxi-dev libxrandr-dev libxss-dev libxxf86vm-dev \
         libdbus-1-dev
 
+# Environment
 ENV CC="gcc-${GCC_VER}" \
     CXX="g++-${GCC_VER}" \
     CLANG_FORMAT_BIN="clang-format-${CLANG_VER}" \
     RUN_CLANG_TIDY_BIN="run-clang-tidy-${CLANG_VER}" \
     VULKAN_SDK="/opt/vulkan-sdk" \
-    PKG_CONFIG_PATH="/opt/vulkan-sdk/lib/pkgconfig" \
     BOOST_ROOT="/opt/boost"
