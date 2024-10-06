@@ -98,6 +98,4 @@ ENV CC="gcc-${GCC_VER}" \
     CLANG_FORMAT_BIN="clang-format-${CLANG_VER}" \
     RUN_CLANG_TIDY_BIN="run-clang-tidy-${CLANG_VER}" \
     VULKAN_SDK="/opt/vulkan-sdk" \
-    PKG_CONFIG_PATH="/opt/mono/lib/pkgconfig" \
-    BOOST_ROOT="/opt/boost" \
-    MONO_ROOT="/opt/mono"
+    BOOST_ROOT="/opt/boost"
