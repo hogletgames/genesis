@@ -85,7 +85,7 @@ jobs:
       - name: clang-format
         run: make clang-format
       - name: clang-tidy
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
         env:
           BUILD_TYPE: ${{ matrix.build-type }}
         run: make clang-tidy
