@@ -39,23 +39,6 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
 COPY tools/install_boost_linux.sh /tmp/tools/install_boost_linux.sh
 RUN bash /tmp/tools/install_boost_linux.sh "/opt/boost"
 
-# Mono library builder
-FROM ubuntu:focal AS mono-builder
-ARG MONO_VER="mono-6.12.0.206"
-ENV DEBIAN_FRONTEND="noninteractive"
-
-COPY --from=cmake-builder /opt/cmake/ /usr/local/
-
-RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
-    apt-get update && apt-get install -y --no-install-recommends \
-# Essential build tools
-        build-essential ca-certificates git python3 wget \
-# Mono dependencies
-        autoconf automake libtool gettext
-
-COPY tools/install_mono_linux.sh /tmp/tools/install_mono_linux.sh
-RUN bash /tmp/tools/install_mono_linux.sh "${MONO_VER}" "/opt/mono"
-
 # Genesis image
 FROM ubuntu:focal AS genesis-image
 
@@ -69,7 +52,6 @@ ENV DEBIAN_FRONTEND="noninteractive"
 COPY --from=cmake-builder /opt/cmake/ /usr/local/
 COPY --from=vulkan-sdk-builder /opt/vulkan-sdk /opt/vulkan-sdk
 COPY --from=boost-builder /opt/boost /opt/boost
-COPY --from=mono-builder /opt/mono /opt/mono
 
 # Instal essential packages
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
@@ -90,6 +72,19 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     && git config --add --system user.email "hogletgames@gmail.com" \
     && git config --add --system safe.directory "*"
 
+# Install mono
+ARG MONO_SOURCE_STABLE="deb [signed-by=/usr/share/keyrings/mono-official-archive-keyring.gpg] https://download.mono-project.com/repo/ubuntu stable-focal main"
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    apt-get install -y gnupg \
+    && gpg --homedir /tmp \
+        --no-default-keyring \
+        --keyring /usr/share/keyrings/mono-official-archive-keyring.gpg \
+        --keyserver hkp://keyserver.ubuntu.com:80 \
+        --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
+    && echo "${MONO_SOURCE_STABLE}" | tee /etc/apt/sources.list.d/mono-official-stable.list \
+    && apt-get update && apt-get install -y --no-install-recommends \
+        mono-devel mono-complete
+
 # SDL2 dependencies
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
@@ -103,6 +98,4 @@ ENV CC="gcc-${GCC_VER}" \
     CLANG_FORMAT_BIN="clang-format-${CLANG_VER}" \
     RUN_CLANG_TIDY_BIN="run-clang-tidy-${CLANG_VER}" \
     VULKAN_SDK="/opt/vulkan-sdk" \
-    PKG_CONFIG_PATH="/opt/mono/lib/pkgconfig" \
-    BOOST_ROOT="/opt/boost" \
-    MONO_ROOT="/opt/mono"
+    BOOST_ROOT="/opt/boost"
