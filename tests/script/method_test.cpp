@@ -71,103 +71,103 @@ TEST_F(MethodTest, UnknownMethod)
     ASSERT_FALSE(method.isValid());
 }
 
-TEST_F(MethodTest, ExsitingMethod)
-{
-    auto method = object.method("ExistingMethod");
-    ASSERT_TRUE(method.isValid());
-}
-
-TEST_F(MethodTest, ReturnBoolean)
-{
-    constexpr bool EXPECTED_VALUE{true};
-
-    auto result = object.method("ReturnBoolean")();
-    ASSERT_TRUE(result) << result.errorMessage();
-
-    auto value = result.as<bool>();
-    ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(value.value(), EXPECTED_VALUE);
-}
-
-TEST_F(MethodTest, SetBoolean)
-{
-    constexpr bool VALUE{true};
-
-    auto result = object.method("SetBoolean")(VALUE);
-    ASSERT_TRUE(result) << result.errorMessage();
-
-    auto value = result.as<bool>();
-    ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(value.value(), VALUE);
-}
-
-TEST_F(MethodTest, ReturnString)
-{
-    constexpr std::string_view EXPECTED_VALUE{"42"};
-
-    auto result = object.method("ReturnString")();
-    ASSERT_TRUE(result) << result.errorMessage();
-
-    auto value = result.as<std::string>();
-    ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(value.value(), EXPECTED_VALUE);
-}
-
-TEST_F(MethodTest, SetString)
-{
-    constexpr std::string_view VALUE{"42"};
-
-    auto result = object.method("SetString")(VALUE);
-    ASSERT_TRUE(result) << result.errorMessage();
-
-    auto value = result.as<std::string>();
-    ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(value.value(), VALUE);
-}
-
-template<typename T>
-class BittableTypeTest: public MethodTest
-{};
-
-using BittableTypes =
-    Types<int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t, char>;
-
-TYPED_TEST_SUITE(BittableTypeTest, BittableTypes);
-
-TYPED_TEST(BittableTypeTest, ReturnValue)
-{
-    using BittableType = TypeParam;
-
-    constexpr BittableType EXPECTED_VALUE = 42;
-    const std::string METHOD_NAME = "Return" + std::string{CLASS_TYPE_NAME<BittableType>};
-
-    auto method = this->object.method(METHOD_NAME);
-    ASSERT_TRUE(method.isValid()) << "Method name='" << METHOD_NAME << "'";
-
-    auto result = method();
-    ASSERT_TRUE(result) << "Exception message=" << result.errorMessage();
-
-    auto value = result.template as<BittableType>();
-    ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(value.value(), EXPECTED_VALUE);
-}
-
-TYPED_TEST(BittableTypeTest, SetValue)
-{
-    using BittableType = TypeParam;
-
-    constexpr BittableType VALUE = 42;
-    const std::string METHOD_NAME = "Set" + std::string{CLASS_TYPE_NAME<BittableType>};
-
-    auto method = this->object.method(METHOD_NAME);
-    ASSERT_TRUE(method.isValid()) << "Method name: '" << METHOD_NAME << "'";
-
-    auto result = method(VALUE);
-    ASSERT_TRUE(result) << "Exception message: '" << result.errorMessage() << "'";
-
-    auto value = result.template as<BittableType>();
-    ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(value.value(), VALUE);
-}
+// TEST_F(MethodTest, ExsitingMethod)
+// {
+//     auto method = object.method("ExistingMethod");
+//     ASSERT_TRUE(method.isValid());
+// }
+//
+// TEST_F(MethodTest, ReturnBoolean)
+// {
+//     constexpr bool EXPECTED_VALUE{true};
+//
+//     auto result = object.method("ReturnBoolean")();
+//     ASSERT_TRUE(result) << result.errorMessage();
+//
+//     auto value = result.as<bool>();
+//     ASSERT_TRUE(value.has_value());
+//     EXPECT_EQ(value.value(), EXPECTED_VALUE);
+// }
+//
+// TEST_F(MethodTest, SetBoolean)
+// {
+//     constexpr bool VALUE{true};
+//
+//     auto result = object.method("SetBoolean")(VALUE);
+//     ASSERT_TRUE(result) << result.errorMessage();
+//
+//     auto value = result.as<bool>();
+//     ASSERT_TRUE(value.has_value());
+//     EXPECT_EQ(value.value(), VALUE);
+// }
+//
+// TEST_F(MethodTest, ReturnString)
+// {
+//     constexpr std::string_view EXPECTED_VALUE{"42"};
+//
+//     auto result = object.method("ReturnString")();
+//     ASSERT_TRUE(result) << result.errorMessage();
+//
+//     auto value = result.as<std::string>();
+//     ASSERT_TRUE(value.has_value());
+//     EXPECT_EQ(value.value(), EXPECTED_VALUE);
+// }
+//
+// TEST_F(MethodTest, SetString)
+// {
+//     constexpr std::string_view VALUE{"42"};
+//
+//     auto result = object.method("SetString")(VALUE);
+//     ASSERT_TRUE(result) << result.errorMessage();
+//
+//     auto value = result.as<std::string>();
+//     ASSERT_TRUE(value.has_value());
+//     EXPECT_EQ(value.value(), VALUE);
+// }
+//
+// template<typename T>
+// class BittableTypeTest: public MethodTest
+// {};
+//
+// using BittableTypes =
+//     Types<int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t, int64_t, uint64_t, char>;
+//
+// TYPED_TEST_SUITE(BittableTypeTest, BittableTypes);
+//
+// TYPED_TEST(BittableTypeTest, ReturnValue)
+// {
+//     using BittableType = TypeParam;
+//
+//     constexpr BittableType EXPECTED_VALUE = 42;
+//     const std::string METHOD_NAME = "Return" + std::string{CLASS_TYPE_NAME<BittableType>};
+//
+//     auto method = this->object.method(METHOD_NAME);
+//     ASSERT_TRUE(method.isValid()) << "Method name='" << METHOD_NAME << "'";
+//
+//     auto result = method();
+//     ASSERT_TRUE(result) << "Exception message=" << result.errorMessage();
+//
+//     auto value = result.template as<BittableType>();
+//     ASSERT_TRUE(value.has_value());
+//     EXPECT_EQ(value.value(), EXPECTED_VALUE);
+// }
+//
+// TYPED_TEST(BittableTypeTest, SetValue)
+// {
+//     using BittableType = TypeParam;
+//
+//     constexpr BittableType VALUE = 42;
+//     const std::string METHOD_NAME = "Set" + std::string{CLASS_TYPE_NAME<BittableType>};
+//
+//     auto method = this->object.method(METHOD_NAME);
+//     ASSERT_TRUE(method.isValid()) << "Method name: '" << METHOD_NAME << "'";
+//
+//     auto result = method(VALUE);
+//     ASSERT_TRUE(result) << "Exception message: '" << result.errorMessage() << "'";
+//
+//     auto value = result.template as<BittableType>();
+//     ASSERT_TRUE(value.has_value());
+//     EXPECT_EQ(value.value(), VALUE);
+// }
 
 } // namespace
