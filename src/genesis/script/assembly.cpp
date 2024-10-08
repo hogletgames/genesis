@@ -41,6 +41,11 @@
 
 namespace GE::Script {
 
+Assembly::~Assembly()
+{
+    close();
+}
+
 bool Assembly::load(std::string_view assembly_path)
 {
     if (m_domain == nullptr) {
@@ -56,6 +61,15 @@ bool Assembly::load(std::string_view assembly_path)
 
     m_image = mono_assembly_get_image(m_assembly);
     return true;
+}
+
+void Assembly::close()
+{
+    if (m_assembly != nullptr) {
+        // mono_assembly_close(m_assembly);
+        m_assembly = nullptr;
+        m_image = nullptr;
+    }
 }
 
 Class Assembly::getClass(std::string_view class_namespace, std::string_view class_name) const

@@ -49,9 +49,12 @@ class Class;
 class GE_API Assembly
 {
 public:
+    ~Assembly();
+
     bool isValid() const { return m_domain != nullptr && m_assembly != nullptr; }
 
     bool load(std::string_view assembly_path);
+    void close();
 
     Class getClass(std::string_view class_namespace, std::string_view class_name) const;
 
