@@ -80,10 +80,18 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
         libxcursor-dev libxinerama-dev libxi-dev libxrandr-dev libxss-dev libxxf86vm-dev \
         libdbus-1-dev
 
-ENV CC="gcc-${GCC_VER}" \
+# Install .NET
+ARG DOTNET_INSTALL_DIR="/opt/dotnet"
+RUN wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh \
+    && bash /tmp/dotnet-install.sh --channel 8.0 --install-dir "${DOTNET_INSTALL_DIR}" \
+    && rm /tmp/dotnet-install.sh
+
+ENV PATH="${DOTNET_INSTALL_DIR}:$PATH" \
+    CC="gcc-${GCC_VER}" \
     CXX="g++-${GCC_VER}" \
     CLANG_FORMAT_BIN="clang-format-${CLANG_VER}" \
     RUN_CLANG_TIDY_BIN="run-clang-tidy-${CLANG_VER}" \
     VULKAN_SDK="/opt/vulkan-sdk" \
     PKG_CONFIG_PATH="/opt/vulkan-sdk/lib/pkgconfig" \
-    BOOST_ROOT="/opt/boost"
+    BOOST_ROOT="/opt/boost" \
+    DOTNET_ROOT="${DOTNET_INSTALL_DIR}"
