@@ -1,3 +1,5 @@
 build
+examples/dotnet/dotnet-script/bin
+examples/dotnet/dotnet-script/obj
 imgui.ini
 
