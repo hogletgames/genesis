@@ -1,32 +1,22 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace GeExamples
+namespace DotNetExample
 {
 
     public static class UnmanagedCode
     {
+        public delegate void PrintDelegate(string message);
+
         [UnmanagedCallersOnly]
-        public static int HelloWorld()
+        public static void HelloWorld()
         {
-            Console.WriteLine("Hello, World!");
-            return 123;
+            Console.WriteLine("Hello from C#!");
         }
 
-        public static IntPtr Object_Ctr()
+        public static void Print(string message)
         {
-            var obj = new Object();
-            GCHandle handle = GCHandle.Alloc(obj);
-            return GCHandle.ToIntPtr(handle);
-        }
-
-        public static void Object_Dtr(IntPtr objPtr)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(objPtr);
-            if (handle.IsAllocated)
-            {
-                handle.Free();
-            }
+            Console.WriteLine(message);
         }
     }
 

@@ -30,14 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "genesis/core/format.h"
 #include "genesis/core/log.h"
+#include "genesis/filesystem/filepath.h"
 
 #include <coreclr_delegates.h>
 #include <hostfxr.h>
-#include <nethost.h>
 
-#include <array>
-#include <filesystem>
 #include <iostream>
 #include <string>
 
@@ -53,16 +52,117 @@ int32_t hostfxr_close(const hostfxr_handle host_context_handle);
 
 int32_t hostfxr_get_runtime_delegate(const hostfxr_handle host_context_handle,
                                      hostfxr_delegate_type type, void **delegate);
-}
+
+} // extern "C"
 
 namespace {
 
-std::string_view RUNTIMECONFIG_JSON{"examples/dotnet/configs/dotnet_example.runtimeconfig.json"};
-
-void dotNetErrorWriter(const char *error)
+class ScriptingRuntimeContext
 {
-    GE_ERR("[.NET]: {}", error);
-}
+public:
+    ScriptingRuntimeContext()
+    {
+        GE_INFO("Configure the error writer");
+        hostfxr_set_error_writer(&ScriptingRuntimeContext::errorWriter);
+    }
+
+    ~ScriptingRuntimeContext() { shutdown(); }
+
+    bool initialize(std::string_view runtime_config)
+    {
+        GE_INFO("Initializing 'hostfxr' context");
+
+        if (int rc =
+                hostfxr_initialize_for_runtime_config(runtime_config.data(), nullptr, &m_context);
+            rc != 0 || m_context == nullptr) {
+            GE_ERR("Failed to initialize 'hostfxr' context: {:#08x}", static_cast<uint32_t>(rc));
+            return false;
+        }
+
+        GE_INFO("'hostfxr' context initialized");
+        return loadAssemblyFnDelegate() && loadGetFunctionPointerFnDelegate();
+    }
+
+    void shutdown()
+    {
+        if (m_context != nullptr) {
+            hostfxr_close(m_context);
+            m_context = nullptr;
+        }
+    }
+
+    bool loadAssembly(std::string_view assembly_path)
+    {
+        GE_INFO("Loading assembly: '{}'", assembly_path);
+
+        if (int rc = m_load_assembly(assembly_path.data(), nullptr, nullptr); rc != 0) {
+            GE_ERR("Failed to load assembly: {:#08x}", static_cast<uint32_t>(rc));
+            return false;
+        }
+
+        GE_INFO("Assembly loaded");
+        return true;
+    }
+
+    template<typename Func>
+    bool getFunctionPointer(std::string_view type_name, std::string_view method_name, Func **func,
+                            std::string_view delegate_type_name = {})
+    {
+        const char_t *method_type = delegate_type_name.empty() ? UNMANAGEDCALLERSONLY_METHOD
+                                                               : delegate_type_name.data();
+
+        GE_INFO("Loading function pointer: '{}'", method_name);
+
+        if (int rc = m_get_function_pointer(type_name.data(), method_name.data(), method_type,
+                                            nullptr, nullptr, reinterpret_cast<void **>(func));
+            rc != 0 || *func == nullptr) {
+            GE_ERR("Failed to load '{}' pointer: {:#08x}", method_name, static_cast<uint32_t>(rc));
+            return false;
+        }
+
+        GE_INFO("'{}' function loaded", method_name);
+        return true;
+    }
+
+private:
+    static void errorWriter(const char_t *error) { GE_ERR("[.NET]: {}", error); }
+
+    bool loadAssemblyFnDelegate()
+    {
+        GE_INFO("Loading 'load_assembly_fn' delegate");
+
+        if (int rc = hostfxr_get_runtime_delegate(m_context, hdt_load_assembly,
+                                                  reinterpret_cast<void **>(&m_load_assembly));
+            rc != 0 || m_load_assembly == nullptr) {
+            GE_ERR("Failed to get 'load_assembly' delegate: {:#08x}", static_cast<uint32_t>(rc));
+            return false;
+        }
+
+        GE_INFO("'load_assembly_fn' delegate loaded");
+        return true;
+    }
+
+    bool loadGetFunctionPointerFnDelegate()
+    {
+        GE_INFO("Loading 'get_function_pointer' delegate");
+
+        if (int rc =
+                hostfxr_get_runtime_delegate(m_context, hdt_get_function_pointer,
+                                             reinterpret_cast<void **>(&m_get_function_pointer));
+            rc != 0 || m_get_function_pointer == nullptr) {
+            GE_ERR("Failed to get 'get_function_pointer' delegate: {:#08x}",
+                   static_cast<uint32_t>(rc));
+            return false;
+        }
+
+        GE_INFO("'get_function_pointer' delegate loaded");
+        return true;
+    }
+
+    hostfxr_handle m_context{nullptr};
+    load_assembly_fn m_load_assembly{nullptr};
+    get_function_pointer_fn m_get_function_pointer{nullptr};
+};
 
 } // namespace
 
@@ -79,77 +179,41 @@ int main()
         return EXIT_FAILURE;
     }
 
-    // Load library
+    // Initialize the context
 
-    // constexpr size_t PATH_BUFFER_SIZE{256};
-    // std::array<char, PATH_BUFFER_SIZE> path_buffer{};
-    // size_t path_size{0};
+    constexpr std::string_view RUNTIMECONFIG_JSON{
+        "examples/dotnet/configs/dotnet_example.runtimeconfig.json"};
+    const std::string ASSEMBLY_PATH{GE::FS::joinPath(DOTNET_EXAMPLE_DLL_DIR, "DotNetExample.dll")};
 
-    // if (::get_hostfxr_path(path_buffer.data(), &path_size, nullptr) != 0) {
-    //     GE_ERR("Failed to get 'hostfxr' path");
-    //     return EXIT_FAILURE;
-    // }
-
-    // Set a callback for error messages
-
-    hostfxr_set_error_writer(&dotNetErrorWriter);
-
-    // Initialize hostfxr
-
-    hostfxr_initialize_parameters init_params{};
-    init_params.size = sizeof(hostfxr_initialize_parameters);
-    init_params.host_path = nullptr;
-    init_params.dotnet_root = nullptr;
-
-    hostfxr_handle hostfxr_ctx{nullptr};
-
-    if (int rc =
-            hostfxr_initialize_for_runtime_config(RUNTIMECONFIG_JSON.data(), nullptr, &hostfxr_ctx);
-        rc != 0 || hostfxr_ctx == nullptr) {
-        GE_ERR("Failed to initialize 'hostfxr' context: {:x}", rc);
+    ScriptingRuntimeContext context;
+    if (!context.initialize(RUNTIMECONFIG_JSON) || !context.loadAssembly(ASSEMBLY_PATH)) {
         return EXIT_FAILURE;
     }
 
-    // Get the "load assembly" delegate
+    // Load and invoke 'HelloWorld()' method
 
-    load_assembly_and_get_function_pointer_fn loadAssemblyAndGetFunctionPointer{};
-    if (int rc = hostfxr_get_runtime_delegate(
-            hostfxr_ctx, hdt_load_assembly_and_get_function_pointer,
-            reinterpret_cast<void **>(&loadAssemblyAndGetFunctionPointer));
-        rc != 0 || loadAssemblyAndGetFunctionPointer == nullptr) {
-        GE_ERR("Failed to get 'load_assembly_and_get_function_pointer' delegate: {:#08x}", rc);
-        hostfxr_close(hostfxr_ctx);
+    constexpr std::string_view UNMANAGED_CODE_TYPE{"DotNetExample.UnmanagedCode, DotNetExample"};
+    constexpr std::string_view HELLO_WORLD_NAME{"HelloWorld"};
+
+    void (*helloWorld)(){nullptr};
+    if (!context.getFunctionPointer(UNMANAGED_CODE_TYPE, HELLO_WORLD_NAME, &helloWorld)) {
         return EXIT_FAILURE;
     }
 
-    // Load the assembly and get the function pointer
+    helloWorld();
 
-    constexpr std::string_view ASSEMBLY_PATH =
-        "/Users/dmitryshilnenkov/Documents/projects/hogletgames/genesis/build/examples/dotnet/"
-        "DotNetExample/DotNetExample.dll";
-    constexpr std::string_view TYPE_NAME = "GeExamples.UnmanagedCode";
-    constexpr std::string_view METHOD_NAME = "HelloWorld";
-    // constexpr std::string_view DELEGATE_TYPE_NAME = "Ge.Examples+HelloWorldDelegate";
+    // Load and invoke 'Print(string)' method
 
-    using HelloWorldFn = int (*)();
-    HelloWorldFn helloWorld{nullptr};
+    constexpr std::string_view PRINT_NAME{"Print"};
+    constexpr std::string_view PRINT_DELEGATE_NAME{
+        "DotNetExample.UnmanagedCode+PrintDelegate, DotNetExample"};
 
-    if (int rc = loadAssemblyAndGetFunctionPointer(ASSEMBLY_PATH.data(), TYPE_NAME.data(),
-                                                   METHOD_NAME.data(), UNMANAGEDCALLERSONLY_METHOD,
-                                                   nullptr, reinterpret_cast<void **>(&helloWorld));
-        rc != 0) {
-        GE_ERR("Failed to load 'HelloWorld' function: {:#010x}", static_cast<uint32_t>(rc));
-        hostfxr_close(hostfxr_ctx);
+    void (*print)(const char_t *message){nullptr};
+    if (!context.getFunctionPointer(UNMANAGED_CODE_TYPE, PRINT_NAME, &print, PRINT_DELEGATE_NAME)) {
         return EXIT_FAILURE;
     }
 
-    // Invoke 'HelloWorld' function
+    print("Hello from C++!");
 
-    int helloWorldResult = helloWorld();
-    GE_INFO("HelloWorld() returned: {}", helloWorldResult);
-
-    // Cleanup and exit
-
-    hostfxr_close(hostfxr_ctx);
     return EXIT_SUCCESS;
 }

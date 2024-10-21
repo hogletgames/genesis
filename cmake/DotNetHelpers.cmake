@@ -23,7 +23,7 @@ function(ge_dotnet_build CSPROJ_FILE)
     add_custom_command(
         OUTPUT ${GE_DOTNET_OUTPUT}
         COMMAND dotnet format ${CSPROJ_FILE}
-        COMMAND dotnet build ${CSPROJ_FILE} --output ${GE_DOTNET_OUTPUT}
+        COMMAND dotnet build -c Release ${CSPROJ_FILE} --output ${GE_DOTNET_OUTPUT}
         BYPRODUCTS ${GE_DOTNET_OUTPUT}
         DEPENDS ${DOTNET_PROJECT_DIR}
         COMMENT "Building '${DOTNET_PROJECT_NAME}'..."

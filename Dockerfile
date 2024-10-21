@@ -94,4 +94,5 @@ ENV PATH="${DOTNET_INSTALL_DIR}:$PATH" \
     VULKAN_SDK="/opt/vulkan-sdk" \
     PKG_CONFIG_PATH="/opt/vulkan-sdk/lib/pkgconfig" \
     BOOST_ROOT="/opt/boost" \
-    DOTNET_ROOT="${DOTNET_INSTALL_DIR}"
+    DOTNET_ROOT="${DOTNET_INSTALL_DIR}" \
+    DOTNET_CLI_HOME="/tmp/DOTNET_CLI_HOME"
