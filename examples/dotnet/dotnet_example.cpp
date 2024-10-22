@@ -192,7 +192,7 @@ int main()
 
     // Load and invoke 'HelloWorld()' method
 
-    constexpr std::string_view UNMANAGED_CODE_TYPE{"DotNetExample.UnmanagedCode, DotNetExample"};
+    constexpr std::string_view UNMANAGED_CODE_TYPE{"Ge.Examples.UnmanagedCode, DotNetExample"};
     constexpr std::string_view HELLO_WORLD_NAME{"HelloWorld"};
 
     void (*helloWorld)(){nullptr};
@@ -206,7 +206,7 @@ int main()
 
     constexpr std::string_view PRINT_NAME{"Print"};
     constexpr std::string_view PRINT_DELEGATE_NAME{
-        "DotNetExample.UnmanagedCode+PrintDelegate, DotNetExample"};
+        "Ge.Examples.UnmanagedCode+PrintDelegate, DotNetExample"};
 
     void (*print)(const char_t *message){nullptr};
     if (!context.getFunctionPointer(UNMANAGED_CODE_TYPE, PRINT_NAME, &print, PRINT_DELEGATE_NAME)) {
@@ -214,6 +214,49 @@ int main()
     }
 
     print("Hello from C++!");
+
+    // Creat an object
+
+    constexpr std::string_view UNMANAGED_OBJECT_TYPE{"Ge.Examples.UnmanagedObject, DotNetExample"};
+    constexpr std::string_view OBJECT_CREATE_NAME{"Create"};
+    constexpr std::string_view OBJECT_CREATE_DELEGATE_NAME{
+        "Ge.Examples.UnmanagedObject+CreateDelegate, DotNetExample"};
+
+    void *(*ObjectCreate)(const char_t *name){nullptr};
+    if (!context.getFunctionPointer(UNMANAGED_OBJECT_TYPE, OBJECT_CREATE_NAME, &ObjectCreate,
+                                    OBJECT_CREATE_DELEGATE_NAME)) {
+        return EXIT_FAILURE;
+    }
+
+    void *object = ObjectCreate("MyObject");
+
+    // Print the object's name
+
+    constexpr std::string_view OBJECT_PRINT_NAME_NAME{"PrintName"};
+    constexpr std::string_view OBJECT_PRINT_NAME_DELEGATE_NAME{
+        "Ge.Examples.UnmanagedObject+PrintNameDelegate, DotNetExample"};
+
+    void (*ObjectPrintName)(const void *object){nullptr};
+    if (!context.getFunctionPointer(UNMANAGED_OBJECT_TYPE, OBJECT_PRINT_NAME_NAME, &ObjectPrintName,
+                                    OBJECT_PRINT_NAME_DELEGATE_NAME)) {
+        return EXIT_FAILURE;
+    }
+
+    ObjectPrintName(object);
+
+    // Destroy object
+
+    constexpr std::string_view OBJECT_DESTROY_NAME{"Destroy"};
+    constexpr std::string_view OBJECT_DESTROY_DELEGATE_NAME{
+        "Ge.Examples.UnmanagedObject+DestroyDelegate, DotNetExample"};
+
+    void (*ObjectDestroy)(void *object){nullptr};
+    if (!context.getFunctionPointer(UNMANAGED_OBJECT_TYPE, OBJECT_DESTROY_NAME, &ObjectDestroy,
+                                    OBJECT_DESTROY_DELEGATE_NAME)) {
+        return EXIT_FAILURE;
+    }
+
+    ObjectDestroy(object);
 
     return EXIT_SUCCESS;
 }

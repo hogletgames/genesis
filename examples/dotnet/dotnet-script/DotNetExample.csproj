@@ -2,10 +2,5 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <SelfContained>false</SelfContained>
   </PropertyGroup>
-  <ItemGroup>
-    <CodeFiles Include="UnmanagedObject.cs"/>
-  </ItemGroup>
 </Project>

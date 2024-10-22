@@ -30,38 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
-using System.Runtime.InteropServices;
+#pragma once
 
-namespace Ge.Examples
+#include <genesis/core/export.h>
+
+#include <string>
+
+namespace GE::Examples {
+
+class GE_API Object
 {
+public:
+    explicit Object(std::string_view name);
+    ~Object();
 
-    public static class UnmanagedObject
-    {
-        public delegate IntPtr CreateDelegate(string name);
-        public static IntPtr Create(string name)
-        {
-            GCHandle handle = GCHandle.Alloc(new Object(name), GCHandleType.Normal);
-            IntPtr handlePtr = GCHandle.ToIntPtr(handle);
-            return handlePtr;
-        }
+    std::string_view name() const { return m_name; }
+    void setName(std::string_view name) { m_name = std::string{name}; }
 
-        public delegate void DestroyDelegate(IntPtr obj);
-        public static void Destroy(IntPtr obj)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            handle.Free();
-        }
+    void printName() const;
 
-        public delegate void PrintNameDelegate(IntPtr obj);
-        public static void PrintName(IntPtr obj)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            if (handle.Target is Object target)
-            {
-                target.PrintName();
-            }
-        }
-    }
+private:
+    std::string m_name;
+};
 
-}
+} // namespace GE::Examples

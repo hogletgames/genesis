@@ -30,38 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
-using System.Runtime.InteropServices;
+#include "object.h"
 
-namespace Ge.Examples
+#include "genesis/core/log.h"
+
+namespace GE::Examples {
+
+Object::Object(std::string_view name)
+    : m_name{std::string{name}}
 {
-
-    public static class UnmanagedObject
-    {
-        public delegate IntPtr CreateDelegate(string name);
-        public static IntPtr Create(string name)
-        {
-            GCHandle handle = GCHandle.Alloc(new Object(name), GCHandleType.Normal);
-            IntPtr handlePtr = GCHandle.ToIntPtr(handle);
-            return handlePtr;
-        }
-
-        public delegate void DestroyDelegate(IntPtr obj);
-        public static void Destroy(IntPtr obj)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            handle.Free();
-        }
-
-        public delegate void PrintNameDelegate(IntPtr obj);
-        public static void PrintName(IntPtr obj)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            if (handle.Target is Object target)
-            {
-                target.PrintName();
-            }
-        }
-    }
-
+    GE_INFO("'{}' has been created", m_name);
 }
+
+Object::~Object()
+{
+    GE_INFO("'{}' has been destroyed", m_name);
+}
+
+void Object::printName() const
+{
+    GE_INFO("My name is '{}'", m_name);
+}
+
+} // namespace GE::Examples

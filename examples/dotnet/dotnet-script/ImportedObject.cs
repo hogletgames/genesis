@@ -36,32 +36,16 @@ using System.Runtime.InteropServices;
 namespace Ge.Examples
 {
 
-    public static class UnmanagedObject
+    public static class ImportedObject
     {
-        public delegate IntPtr CreateDelegate(string name);
-        public static IntPtr Create(string name)
-        {
-            GCHandle handle = GCHandle.Alloc(new Object(name), GCHandleType.Normal);
-            IntPtr handlePtr = GCHandle.ToIntPtr(handle);
-            return handlePtr;
-        }
+        [DllImport("ge-dotnet-example-bindings")]
+        public static extern IntPtr object_create(string name);
 
-        public delegate void DestroyDelegate(IntPtr obj);
-        public static void Destroy(IntPtr obj)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            handle.Free();
-        }
+        [DllImport("ge-dotnet-example-bindings")]
+        public static extern void object_destroy(IntPtr obj);
 
-        public delegate void PrintNameDelegate(IntPtr obj);
-        public static void PrintName(IntPtr obj)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            if (handle.Target is Object target)
-            {
-                target.PrintName();
-            }
-        }
+        [DllImport("ge-dotnet-example-bindings")]
+        public static extern void object_print_name(IntPtr obj);
     }
 
 }

@@ -31,37 +31,29 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 
 namespace Ge.Examples
 {
 
-    public static class UnmanagedObject
+    public class Object
     {
-        public delegate IntPtr CreateDelegate(string name);
-        public static IntPtr Create(string name)
+        public Object(string name)
         {
-            GCHandle handle = GCHandle.Alloc(new Object(name), GCHandleType.Normal);
-            IntPtr handlePtr = GCHandle.ToIntPtr(handle);
-            return handlePtr;
+            _instance = ImportedObject.object_create(name);
         }
 
-        public delegate void DestroyDelegate(IntPtr obj);
-        public static void Destroy(IntPtr obj)
+        ~Object()
         {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            handle.Free();
+            ImportedObject.object_destroy(_instance);
         }
 
-        public delegate void PrintNameDelegate(IntPtr obj);
-        public static void PrintName(IntPtr obj)
+        public void PrintName()
         {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            if (handle.Target is Object target)
-            {
-                target.PrintName();
-            }
+            ImportedObject.object_print_name(_instance);
         }
+
+
+        private IntPtr _instance;
     }
 
 }

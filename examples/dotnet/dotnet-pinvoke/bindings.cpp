@@ -30,38 +30,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
-using System.Runtime.InteropServices;
+#include "bindings.h"
+#include "object.h"
 
-namespace Ge.Examples
+#include "genesis/core/memory.h"
+
+struct object_t {
+    GE::Scoped<GE::Examples::Object> pimpl;
+};
+
+object_t* object_create(const char* name)
 {
+    return new object_t{GE::makeScoped<GE::Examples::Object>(name)};
+}
 
-    public static class UnmanagedObject
-    {
-        public delegate IntPtr CreateDelegate(string name);
-        public static IntPtr Create(string name)
-        {
-            GCHandle handle = GCHandle.Alloc(new Object(name), GCHandleType.Normal);
-            IntPtr handlePtr = GCHandle.ToIntPtr(handle);
-            return handlePtr;
-        }
+void object_destroy(object_t* object)
+{
+    delete object;
+}
 
-        public delegate void DestroyDelegate(IntPtr obj);
-        public static void Destroy(IntPtr obj)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            handle.Free();
-        }
-
-        public delegate void PrintNameDelegate(IntPtr obj);
-        public static void PrintName(IntPtr obj)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            if (handle.Target is Object target)
-            {
-                target.PrintName();
-            }
-        }
+int object_get_name(const object_t* object, char* name_buff, int buff_size)
+{
+    if (name_buff == nullptr || buff_size <= 0) {
+        return 0;
     }
 
+    auto name = object->pimpl->name();
+    int name_length = std::min<int>(name.size(), buff_size - 1);
+
+    name.copy(name_buff, name_length);
+    name_buff[name_length] = '\0';
+    return name_length;
+}
+
+void object_set_name(object_t* object, const char* name)
+{
+    object->pimpl->setName(name);
+}
+
+void object_print_name(const object_t* object)
+{
+    object->pimpl->printName();
 }

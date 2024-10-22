@@ -30,38 +30,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
-using System.Runtime.InteropServices;
+#pragma once
 
-namespace Ge.Examples
-{
+#include <genesis/core/export.h>
 
-    public static class UnmanagedObject
-    {
-        public delegate IntPtr CreateDelegate(string name);
-        public static IntPtr Create(string name)
-        {
-            GCHandle handle = GCHandle.Alloc(new Object(name), GCHandleType.Normal);
-            IntPtr handlePtr = GCHandle.ToIntPtr(handle);
-            return handlePtr;
-        }
+#include <stddef.h>
 
-        public delegate void DestroyDelegate(IntPtr obj);
-        public static void Destroy(IntPtr obj)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            handle.Free();
-        }
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
-        public delegate void PrintNameDelegate(IntPtr obj);
-        public static void PrintName(IntPtr obj)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            if (handle.Target is Object target)
-            {
-                target.PrintName();
-            }
-        }
-    }
+struct object_t;
 
+GE_API_EXPORT object_t* object_create(const char* name);
+GE_API_EXPORT void object_destroy(object_t* object);
+GE_API_EXPORT int object_get_name(const object_t* object, char* name_buff, int buff_size);
+void object_set_name(object_t* object, const char* name);
+GE_API_EXPORT void object_print_name(const object_t* object);
+
+#ifdef __cplusplus
 }
+#endif // __cplusplus

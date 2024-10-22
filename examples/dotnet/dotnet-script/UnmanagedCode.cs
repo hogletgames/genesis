@@ -36,31 +36,19 @@ using System.Runtime.InteropServices;
 namespace Ge.Examples
 {
 
-    public static class UnmanagedObject
+    public static class UnmanagedCode
     {
-        public delegate IntPtr CreateDelegate(string name);
-        public static IntPtr Create(string name)
+        public delegate void PrintDelegate(string message);
+
+        [UnmanagedCallersOnly]
+        public static void HelloWorld()
         {
-            GCHandle handle = GCHandle.Alloc(new Object(name), GCHandleType.Normal);
-            IntPtr handlePtr = GCHandle.ToIntPtr(handle);
-            return handlePtr;
+            Console.WriteLine("Hello from C#!");
         }
 
-        public delegate void DestroyDelegate(IntPtr obj);
-        public static void Destroy(IntPtr obj)
+        public static void Print(string message)
         {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            handle.Free();
-        }
-
-        public delegate void PrintNameDelegate(IntPtr obj);
-        public static void PrintName(IntPtr obj)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(obj);
-            if (handle.Target is Object target)
-            {
-                target.PrintName();
-            }
+            Console.WriteLine(message);
         }
     }
 
