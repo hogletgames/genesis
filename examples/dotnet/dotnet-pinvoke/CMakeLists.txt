@@ -4,6 +4,9 @@ add_library(ge-dotnet-example-pinvoke STATIC
     )
 target_include_directories(ge-dotnet-example-pinvoke PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(ge-dotnet-example-pinvoke PRIVATE genesis::core)
+set_target_properties(ge-dotnet-example-pinvoke PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    )
 
 add_library(ge-dotnet-example-bindings SHARED
     bindings.cpp

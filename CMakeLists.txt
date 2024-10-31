@@ -44,11 +44,11 @@ message(STATUS "Build tests: ${GE_BUILD_TESTS}")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Find required packages
 find_package(Boost "1.82" COMPONENTS filesystem REQUIRED)
 find_package(ge-nethost REQUIRED)
-find_package(ge-hostfxr REQUIRED)
 find_package(ge-shaderc_combined REQUIRED)
 find_package(ge-spirv-cross REQUIRED)
 find_package(Vulkan REQUIRED)

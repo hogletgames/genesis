@@ -40,6 +40,7 @@ namespace Ge.Examples
     {
         public delegate void PrintDelegate(string message);
 
+
         [UnmanagedCallersOnly]
         public static void HelloWorld()
         {

@@ -3,10 +3,10 @@ include(${PROJECT_SOURCE_DIR}/cmake/DotNetHelpers.cmake)
 ge_add_executable(dotnet_example
     SOURCES dotnet_example.cpp
     PRIVATE_DEPS
+        dl
         ge-dotnet-example-pinvoke
         ge-dotnet-example-bindings
         genesis::core
-        hostfxr
         nethost
     )
 

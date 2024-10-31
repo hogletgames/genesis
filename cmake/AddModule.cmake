@@ -52,6 +52,11 @@ function(_ge_set_target_options TARGET)
         PRIVATE
             ${THIS_PRIVATE_DEF}
         )
+
+    set_target_properties(${TARGET} PROPERTIES
+        POSITION_INDEPENDENT_CODE ON
+        )
+
     _ge_set_target_platform(${TARGET})
 endfunction()
 
