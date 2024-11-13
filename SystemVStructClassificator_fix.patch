@@ -1,0 +1,14 @@
+diff --git a/src/coreclr/tools/Common/JitInterface/SystemVStructClassificator.cs b/src/coreclr/tools/Common/JitInterface/SystemVStructClassificator.cs
+index 943f23ce1..b060dc984 100644
+--- a/src/coreclr/tools/Common/JitInterface/SystemVStructClassificator.cs
++++ b/src/coreclr/tools/Common/JitInterface/SystemVStructClassificator.cs
+@@ -6,8 +6,8 @@
+ using ILCompiler;
+ using Internal.TypeSystem;
+ using System.Runtime.CompilerServices;
+-using static Internal.JitInterface.SYSTEMV_AMD64_CORINFO_STRUCT_REG_PASSING_DESCRIPTOR;
+ using static Internal.JitInterface.SystemVClassificationType;
++using static Internal.JitInterface.SYSTEMV_AMD64_CORINFO_STRUCT_REG_PASSING_DESCRIPTOR;
+ 
+ namespace Internal.JitInterface
+ {

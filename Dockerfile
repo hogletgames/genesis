@@ -40,6 +40,25 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
 RUN --mount=type=bind,source=./tools,dst=/tmp/tools \
     bash /tmp/tools/install_boost_linux.sh "/opt/boost"
 
+# .NET builder
+FROM ubuntu:focal AS dotnet-builder
+
+ENV DEBIAN_FRONTEND="noninteractive"
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+
+COPY --from=cmake-builder /opt/cmake/ /usr/local/
+
+RUN ulimit -n 8192
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
+        build-essential ca-certificates clang git llvm python3 wget zlib1g-dev \
+        libkrb5-dev libssl-dev libicu-dev liblttng-ust-dev locale \
+    && apt-get clean
+
+RUN git clone --depth 1 --branch "v9.0.0" https://github.com/dotnet/runtime.git /tmp/dotnet
+# RUN cd /tmp/dotnet && ./build.sh --configuration Debug --restore --build
+WORKDIR /tmp/dotnet
+
 # Genesis image
 FROM ubuntu:focal AS genesis-image
 
@@ -78,12 +97,12 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
         libx11-dev libsamplerate-dev libasound2-dev libjack-dev libpulse-dev libsndio-dev \
         libxcursor-dev libxinerama-dev libxi-dev libxrandr-dev libxss-dev libxxf86vm-dev \
-        libdbus-1-dev
+        libdbus-1-dev valgrind
 
 # Install .NET
 ARG DOTNET_INSTALL_DIR="/opt/dotnet"
 RUN wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh \
-    && bash /tmp/dotnet-install.sh --channel 8.0 --install-dir "${DOTNET_INSTALL_DIR}" \
+    && bash /tmp/dotnet-install.sh --channel 9.0 --install-dir "${DOTNET_INSTALL_DIR}" \
     && rm /tmp/dotnet-install.sh
 
 ENV PATH="${DOTNET_INSTALL_DIR}:$PATH" \

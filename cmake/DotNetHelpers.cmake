@@ -1,7 +1,7 @@
 find_package(ge-dotnet REQUIRED)
 
-function(ge_dotnet_build CSPROJ_FILE)
-    cmake_parse_arguments(GE_DOTNET "" "TARGET;OUTPUT" "" ${ARGN})
+function(ge_dotnet_build TARGET CSPROJ_FILE)
+    cmake_parse_arguments(GE_DOTNET "" "OUTPUT" "" ${ARGN})
 
     get_filename_component(CSPROJ_FILE ${CSPROJ_FILE} ABSOLUTE)
 
@@ -12,22 +12,19 @@ function(ge_dotnet_build CSPROJ_FILE)
     get_filename_component(DOTNET_PROJECT_NAME ${CSPROJ_FILE} NAME_WE)
     get_filename_component(DOTNET_PROJECT_DIR ${CSPROJ_FILE} DIRECTORY)
 
-    if (NOT GE_DOTNET_TARGET)
-        set(GE_DOTNET_TARGET ${DOTNET_PROJECT_NAME})
-    endif ()
-
     if (NOT GE_DOTNET_OUTPUT)
         set(GE_DOTNET_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${DOTNET_PROJECT_NAME})
     endif ()
 
+    set(OUTPUT_DLL ${GE_DOTNET_OUTPUT}/${DOTNET_PROJECT_NAME}.dll)
+
     add_custom_command(
-        OUTPUT ${GE_DOTNET_OUTPUT}
+        OUTPUT ${OUTPUT_DLL}
         COMMAND dotnet format ${CSPROJ_FILE}
         COMMAND dotnet build -c Release ${CSPROJ_FILE} --output ${GE_DOTNET_OUTPUT}
-        BYPRODUCTS ${GE_DOTNET_OUTPUT}
-        DEPENDS ${DOTNET_PROJECT_DIR}
+        BYPRODUCTS ${OUTPUT_DLL}
         COMMENT "Building '${DOTNET_PROJECT_NAME}'..."
         )
 
-    add_custom_target(${GE_DOTNET_TARGET} DEPENDS ${GE_DOTNET_OUTPUT})
+    add_custom_target(${TARGET} DEPENDS ${OUTPUT_DLL})
 endfunction()

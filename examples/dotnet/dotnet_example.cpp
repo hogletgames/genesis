@@ -95,7 +95,7 @@ public:
         }
 
         GE_INFO("'hostfxr' context initialized");
-        return loadAssemblyFnDelegate() && loadGetFunctionPointerFnDelegate();
+        return loadAssemblyFnDelegate() && false;// && loadGetFunctionPointerFnDelegate();
     }
 
     void shutdown()
