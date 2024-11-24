@@ -5,8 +5,8 @@ ge_mono_create_assembly(GeScriptTests.dll
     )
 
 list(APPEND SCRIPT_TEST_SRC
+    main.cpp
     method_test.cpp
-    scripting_engine_environment_main.cpp
     )
 
 add_executable(genesis_script_test ${SCRIPT_TEST_SRC})
@@ -14,6 +14,7 @@ target_include_directories(genesis_script_test PRIVATE ${CMAKE_CURRENT_SOURCE_DI
 target_link_libraries(genesis_script_test PRIVATE
     genesis::filesystem
     genesis::script
+    gmock
     gtest
     )
 add_dependencies(genesis_script_test GeScriptTests.dll)

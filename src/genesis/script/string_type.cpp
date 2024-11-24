@@ -49,12 +49,14 @@ StringType::StringType(const Object& object)
         return;
     }
 
-    if (auto type = object.type(); type != ClassType::STRING) {
-        GE_CORE_ERR("Trying to create a string from object with type={}", toString(type));
+    MonoObject* exception{nullptr};
+    m_string = mono_object_to_string(object.nativeHandle(), &exception);
+
+    if (exception != nullptr) {
+        GE_CORE_ERR("Failed to convert an object to string");
         return;
     }
 
-    m_string = reinterpret_cast<MonoString*>(object.nativeHandle());
     updateGCHandle(m_string);
 }
 
@@ -73,6 +75,11 @@ StringType::~StringType()
 
 std::optional<std::string> StringType::value() const
 {
+    if (!isValid()) {
+        GE_CORE_ERR("Trying to get value from an invalid string");
+        return {};
+    }
+
     char* string = mono_string_to_utf8(m_string);
     if (string == nullptr) {
         GE_CORE_ERR("Failed to convert string to UTF-8");

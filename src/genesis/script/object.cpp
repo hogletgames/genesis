@@ -36,6 +36,7 @@
 
 #include "genesis/core/log.h"
 
+#include <mono/metadata/appdomain.h>
 #include <mono/metadata/object.h>
 
 namespace GE::Script {
@@ -50,27 +51,16 @@ Object::~Object()
 Method Object::method(std::string_view name, int param_count) const
 {
     if (!isValid()) {
-        GE_CORE_ERR("Trying to get method '{}' from invalid object", name);
-        return Method{};
+        GE_CORE_ERR("Trying to get method '{}' for invalid object", name);
+        return {};
     }
 
-    auto* method = mono_class_get_method_from_name(m_class, name.data(), param_count);
-    if (method == nullptr) {
-        GE_CORE_ERR("Method '{}' not found", name);
-        return Method{};
+    auto method = m_class.method(name, param_count);
+    if (method.isValid() && method.isInstance()) {
+        MethodAccessor::setMethodInstance(&method, m_object);
     }
 
-    return Method{method, m_object};
-}
-
-Class Object::getClass() const
-{
-    return Class{m_class};
-}
-
-ClassType Object::type() const
-{
-    return Class{m_class}.type();
+    return method;
 }
 
 void* Object::unbox() const
@@ -85,12 +75,40 @@ void* Object::unbox() const
 
 Object::Object(MonoObject* object, MonoClass* klass)
     : m_object{object}
-    , m_class{klass}
+    , m_class{ClassAccessor::createClass(klass)}
 {
-    if (m_object != nullptr && m_class == nullptr) {
-        m_class = mono_object_get_class(m_object);
-        m_gc_handle = mono_gchandle_new(m_object, 0);
+    if (m_object == nullptr) {
+        return;
     }
+
+    if (!m_class.isValid()) {
+        m_class = ClassAccessor::createClass(mono_object_get_class(m_object));
+    }
+
+    m_gc_handle = mono_gchandle_new(m_object, 0);
+}
+
+void Object::boxValue(void* value, ClassType class_type)
+{
+    auto* domain = mono_get_root_domain();
+    if (domain == nullptr) {
+        GE_CORE_ERR("Failed get root domain to box value");
+        return;
+    }
+
+    auto* mono_class = toNativeClass(class_type);
+    if (mono_class == nullptr) {
+        GE_CORE_ERR("Failed to get Mono Class to box value of type {}", toString(class_type));
+        return;
+    }
+
+    m_object = mono_value_box(mono_domain_get(), mono_class, value);
+    m_class = ClassAccessor::createClass(mono_class);
+}
+
+Object ObjectAccessor::createObject(MonoObject* object, MonoClass* klass)
+{
+    return Object{object, klass};
 }
 
 } // namespace GE::Script

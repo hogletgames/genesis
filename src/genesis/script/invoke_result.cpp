@@ -34,14 +34,23 @@
 
 namespace GE::Script {
 
-std::string InvokeResult::asString(MonoObject* exception)
+std::string InvokeResult::asString(MonoObject* exception) const
 {
-    if (auto exception_message = Object{exception}.as<std::string>();
+    if (exception == nullptr) {
+        return {};
+    }
+
+    if (auto exception_message = ObjectAccessor::createObject(exception).as<std::string>();
         exception_message.has_value()) {
         return exception_message.value();
     }
 
     return {};
+}
+
+InvokeResult InvokeResultAccessor::createInvokeResult(MonoObject* result, MonoObject* exception)
+{
+    return InvokeResult{result, exception};
 }
 
 } // namespace GE::Script

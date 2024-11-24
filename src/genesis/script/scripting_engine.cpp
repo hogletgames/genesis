@@ -34,65 +34,119 @@
 #include "assembly.h"
 
 #include "genesis/core/log.h"
-#include "genesis/core/timestamp.h"
+#include "genesis/core/memory.h"
 
 #include <mono/jit/jit.h>
+
+#include <mutex>
+#include <unordered_set>
 
 namespace GE::Script {
 namespace {
 
-int memory_counter{0};
+// A temporary solution to allocate memory for Mono runtime and gracefully free it at shutdown
 
-void* malloc(size_t bytes)
+class AllocatorVTable
 {
-    void* memory = std::malloc(bytes);
-    GE_CORE_INFO("[{:03d}] Allocating: malloc(), bytes={}, memory=0x{:p}", ++memory_counter, bytes,
-                 memory);
-    return memory;
-}
+public:
+    static void initialize()
+    {
+        s_instance = Scoped<AllocatorVTable>{new AllocatorVTable{}};
+        s_instance->setMonoAllocatorVTable();
+    }
 
-void* realloc(void* buff, size_t bytes)
-{
-    void* memory = std::realloc(buff, bytes);
-    GE_CORE_INFO("[{:03d}] Allocating: realloc(), buff={}, bytes={}, memory=0x{:p}", memory_counter,
-                 buff, bytes, memory);
-    return memory;
-}
+    static void shutdown()
+    {
+        if (s_instance) {
+            s_instance->freeAllocatedMemory();
+            s_instance.reset();
+        }
+    }
 
-void* calloc(size_t count, size_t size)
-{
-    void* memory = std::calloc(count, size);
-    GE_CORE_INFO("[{:03d}] Allocating: calloc() count={}, size={}, memory=0x{:p}", ++memory_counter,
-                 count, size, memory);
-    return memory;
-}
+private:
+    AllocatorVTable() = default;
 
-void free(void* memory)
-{
-    GE_CORE_INFO("[{:03d}] Free memory=0x{:p}", --memory_counter, memory);
-    std::free(memory);
-}
+    void setMonoAllocatorVTable()
+    {
+        MonoAllocatorVTable allocator_vtable{MONO_ALLOCATOR_VTABLE_VERSION,
+                                             &AllocatorVTable::malloc, &AllocatorVTable::realloc,
+                                             &AllocatorVTable::free, &AllocatorVTable::calloc};
+        mono_set_allocator_vtable(&allocator_vtable);
+    }
+
+    void freeAllocatedMemory()
+    {
+        for (auto* memory : m_allocated_memory) {
+            std::free(memory);
+        }
+
+        m_allocated_memory.clear();
+    }
+
+    void insertMemory(void* memory)
+    {
+        std::lock_guard lock(m_allocated_memory_mutex);
+        m_allocated_memory.insert(memory);
+    }
+
+    void eraseMemory(void* memory)
+    {
+        std::lock_guard lock(m_allocated_memory_mutex);
+        m_allocated_memory.erase(memory);
+    }
+
+    static void* malloc(size_t bytes)
+    {
+        void* memory = std::malloc(bytes);
+        s_instance->insertMemory(memory);
+        return memory;
+    }
+
+    static void* calloc(size_t count, size_t size)
+    {
+        void* memory = std::calloc(count, size);
+        s_instance->insertMemory(memory);
+        return memory;
+    }
+
+    static void* realloc(void* buff, size_t bytes)
+    {
+        void* memory = std::realloc(buff, bytes);
+        s_instance->eraseMemory(buff);
+        s_instance->insertMemory(memory);
+        return memory;
+    }
+
+    static void free(void* memory)
+    {
+        s_instance->eraseMemory(memory);
+        std::free(memory);
+    }
+
+    static inline Scoped<AllocatorVTable> s_instance;
+
+    std::mutex m_allocated_memory_mutex;
+    std::unordered_set<void*> m_allocated_memory;
+};
 
 } // namespace
 
 bool ScriptingEngine::initialize(std::string_view domain_name, std::string_view runtime_version)
 {
-    MonoAllocatorVTable allocator_vtable{MONO_ALLOCATOR_VTABLE_VERSION, malloc, realloc, free,
-                                         calloc};
-    mono_set_allocator_vtable(&allocator_vtable);
-    new char[1]; // To trigger the memory leak detection
+    GE_CORE_INFO("Initializing '{}' Mono runtime with version '{}'", domain_name, runtime_version);
 
+    AllocatorVTable::initialize();
     s_domain = mono_jit_init_version(domain_name.data(), runtime_version.data());
     return s_domain != nullptr;
 }
 
 void ScriptingEngine::shutdown()
 {
-    constexpr Timestamp TIMEOUT{1.0};
+    GE_CORE_INFO("Shutting down Mono runtime");
 
-    mono_domain_finalize(s_domain, TIMEOUT.ms());
     mono_jit_cleanup(s_domain);
     s_domain = nullptr;
+    AllocatorVTable::shutdown();
 }
 
 Assembly ScriptingEngine::createAssembly()

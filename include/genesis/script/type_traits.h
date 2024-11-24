@@ -113,7 +113,12 @@ struct type_traits_t<std::string_view> {
     using ScriptType = StringType;
 };
 
+template<>
+struct type_traits_t<const char*> {
+    using ScriptType = StringType;
+};
+
 template<typename T>
-using ToScriptType = typename type_traits_t<std::decay_t<T>>::ScriptType;
+using SCRIPT_TYPE = typename type_traits_t<std::decay_t<T>>::ScriptType;
 
 } // namespace GE::Script

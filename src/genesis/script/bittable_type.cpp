@@ -31,19 +31,22 @@
  */
 
 #include "bittable_type.h"
-#include "class.h"
 #include "object.h"
 
 #include "genesis/core/enum.h"
 #include "genesis/core/log.h"
 
-#include <mono/metadata/object.h>
-
 namespace GE::Script {
 
-ClassType BaseBittableType::objectType(const Object& object)
+bool BaseBittableType::validateUnboxingObject(const Object& object, ClassType expected_type)
 {
-    return object.getClass().type();
+    if (auto object_type = object.type(); object_type != expected_type) {
+        GE_CORE_ERR("Trying to unbox object of type '{}' to type '{}'", toString(object_type),
+                    toString(expected_type));
+        return false;
+    }
+
+    return true;
 }
 
 void* BaseBittableType::unboxObject(const Object& object)

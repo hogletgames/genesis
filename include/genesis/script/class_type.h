@@ -32,12 +32,15 @@
 
 #pragma once
 
+#include <genesis/core/export.h>
+
+typedef struct _MonoClass MonoClass;
+
 namespace GE::Script {
 
 enum class ClassType
 {
     UNKNOWN = 0,
-    END,
     VOID,
     BOOLEAN,
     CHAR,
@@ -74,5 +77,9 @@ enum class ClassType
     PINNED,
     ENUM
 };
+
+GE_API ClassType toClassType(int mono_type);
+GE_API MonoClass* toNativeClass(ClassType class_type);
+GE_API bool hasImplicitConversion(ClassType fromType, ClassType toType);
 
 } // namespace GE::Script
