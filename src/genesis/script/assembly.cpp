@@ -66,7 +66,6 @@ bool Assembly::load(std::string_view assembly_path)
 void Assembly::close()
 {
     if (m_assembly != nullptr) {
-        // mono_assembly_close(m_assembly);
         m_assembly = nullptr;
         m_image = nullptr;
     }
@@ -76,12 +75,12 @@ Class Assembly::getClass(std::string_view class_namespace, std::string_view clas
 {
     if (auto* klass = mono_class_from_name(m_image, class_namespace.data(), class_name.data());
         klass != nullptr) {
-        return Class{klass};
+        return ClassAccessor::createClass(klass);
     }
 
     GE_CORE_ERR("Failed to get class from name: namespace='{}', class='{}'", class_namespace,
                 class_name);
-    return Class{};
+    return {};
 }
 
 } // namespace GE::Script

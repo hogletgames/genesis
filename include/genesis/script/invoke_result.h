@@ -45,35 +45,47 @@ typedef struct _MonoObject MonoObject;
 
 namespace GE::Script {
 
+class InvokeResultAccessor;
+class Method;
+
 class GE_API InvokeResult
 {
 public:
     template<typename T>
     std::optional<T> as() const;
 
-    ClassType type() const { return Object{m_result}.type(); }
+    ClassType type() const { return m_result.type(); }
 
-    operator bool() const { return m_error_message.empty(); }
+    operator bool() const { return hasError(); }
+    bool hasError() const { return !m_error_message.empty(); }
     std::string_view errorMessage() const { return m_error_message; }
 
 private:
-    friend class Method;
+    friend class InvokeResultAccessor;
 
     InvokeResult(MonoObject* result, MonoObject* exception)
-        : m_result{result}
+        : m_result{ObjectAccessor::createObject(result)}
         , m_error_message{asString(exception)}
     {}
 
-    std::string asString(MonoObject* exception);
+    std::string asString(MonoObject* exception) const;
 
-    MonoObject* m_result{nullptr};
+    Object m_result;
     std::string m_error_message;
 };
 
 template<typename T>
 std::optional<T> InvokeResult::as() const
 {
-    return Object{m_result}.as<T>();
+    return m_result.as<T>();
 }
+
+class InvokeResultAccessor
+{
+private:
+    friend class Method;
+
+    static InvokeResult createInvokeResult(MonoObject* result, MonoObject* exception);
+};
 
 } // namespace GE::Script

@@ -21,6 +21,7 @@ list(APPEND SCRIPT_SOURCES
     assembly.cpp
     bittable_type.cpp
     class.cpp
+    class_type.cpp
     invoke_result.cpp
     method.cpp
     object.cpp

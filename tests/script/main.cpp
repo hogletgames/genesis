@@ -44,7 +44,10 @@ class ScriptingEngineEnvironment: public testing::Environment
 public:
     void SetUp() override
     {
-        GE::Log::initialize({});
+        GE::Log::settings_t settings;
+        settings.core_log_level = GE::Logger::Level::ERROR;
+        settings.client_log_level = GE::Logger::Level::ERROR;
+        GE::Log::initialize(settings);
         ASSERT_TRUE(GE::Script::ScriptingEngine::initialize(TEST_DOMAIN_NAME));
     }
 

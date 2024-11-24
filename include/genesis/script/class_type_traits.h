@@ -119,6 +119,16 @@ struct class_type_traits_t<std::string> {
     static constexpr ClassType CLASS_TYPE{ClassType::STRING};
 };
 
+template<>
+struct class_type_traits_t<std::string_view> {
+    static constexpr ClassType CLASS_TYPE{ClassType::STRING};
+};
+
+template<>
+struct class_type_traits_t<const char*> {
+    static constexpr ClassType CLASS_TYPE{ClassType::STRING};
+};
+
 template<typename T>
 constexpr ClassType CLASS_TYPE{class_type_traits_t<std::decay_t<T>>::CLASS_TYPE};
 

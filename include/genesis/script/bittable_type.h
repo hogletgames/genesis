@@ -44,7 +44,7 @@ class Object;
 class GE_API BaseBittableType
 {
 protected:
-    static ClassType objectType(const Object& object);
+    static bool validateUnboxingObject(const Object& object, ClassType expected_type);
     static void* unboxObject(const Object& object);
 };
 
@@ -58,8 +58,8 @@ public:
 
     explicit BittableType(const Object& object)
     {
-        if (objectType(object) == CLASS_TYPE<T>) {
-            using DecayedType = std::decay_t<T>;
+        using DecayedType = std::decay_t<T>;
+        if (validateUnboxingObject(object, CLASS_TYPE<DecayedType>)) {
             m_value = *static_cast<const DecayedType*>(unboxObject(object));
         }
     }

@@ -43,8 +43,9 @@ typedef struct _MonoClass MonoClass;
 
 namespace GE::Script {
 
+class Assembly;
+class ClassAccessor;
 class Method;
-
 class Object;
 
 class GE_API Class
@@ -59,14 +60,22 @@ public:
     Object newObject() const;
 
 private:
-    friend class Assembly;
-    friend class Object;
+    friend class ClassAccessor;
 
     explicit Class(MonoClass* klass)
         : m_class{klass}
     {}
 
     MonoClass* m_class{nullptr};
+};
+
+class ClassAccessor
+{
+private:
+    friend class Assembly;
+    friend class Object;
+
+    static Class createClass(MonoClass* klass);
 };
 
 } // namespace GE::Script

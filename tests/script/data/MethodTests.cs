@@ -30,10 +30,182 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
+
 namespace Ge.Tests {
 
-    public class MethodTest {
-        static public void ExistingMethod() {}
+    public class ClassMethodsTest {
+        public static void ExistingMethod() {}
+
+        public static bool ReturnBoolean()
+        {
+            return false;
+        }
+
+        public static bool SetBoolean(bool value)
+        {
+            return value;
+        }
+
+        public static string ReturnString()
+        {
+            return "43";
+        }
+
+        public static string SetString(string value)
+        {
+            return value;
+        }
+
+
+        public static sbyte ReturnSByte() {
+            return 43;
+        }
+
+        public static sbyte SetSByte(sbyte value) {
+            return value;
+        }
+
+        public static byte ReturnByte() {
+            return 43;
+        }
+
+        public static byte SetByte(byte value) {
+            return value;
+        }
+
+        public static short ReturnInt16()
+        {
+            return 43;
+        }
+
+        public static short SetInt16(short value)
+        {
+            return value;
+        }
+
+        public static ushort ReturnUInt16()
+        {
+            return 43;
+        }
+
+        public static ushort SetUInt16(ushort value)
+        {
+            return value;
+        }
+
+        public static int ReturnInt32()
+        {
+            return 43;
+        }
+
+        public static int SetInt32(int value)
+        {
+            return value;
+        }
+
+        public static uint ReturnUInt32()
+        {
+            return 43;
+        }
+
+        public static uint SetUInt32(uint value)
+        {
+            return value;
+        }
+
+        public static long ReturnInt64()
+        {
+            return 43;
+        }
+
+        public static long SetInt64(long value)
+        {
+            return value;
+        }
+
+        public static ulong ReturnUInt64()
+        {
+            return 43;
+        }
+
+        public static ulong SetUInt64(ulong value)
+        {
+            return value;
+        }
+
+        public static float ReturnFloat()
+        {
+            return 43f;
+        }
+
+        public static float SetFloat(float value)
+        {
+            return value;
+        }
+
+        public static double ReturnDouble()
+        {
+            return 43;
+        }
+
+        public static double SetDouble(double value)
+        {
+            return value;
+        }
+
+        public static char ReturnChar()
+        {
+            return '+'; // 43
+        }
+
+        public static char SetChar(char value)
+        {
+            return value;
+        }
+
+        public static void zeroArgs()
+        {}
+
+        public static void oneArg(int a)
+        {}
+
+        public static void twoArgs(int a, int b)
+        {}
+
+        public static string staticMethod()
+        {
+            return "ClassMethodsTest::staticMethod";
+        }
+
+        public string instanceMethod()
+        {
+            return "ClassMethodsTest::instanceMethod";
+        }
+    }
+
+    public class ObjectMethodsTest {
+        public static void ExistingMethod() {}
+
+        public bool ReturnBoolean()
+        {
+            return true;
+        }
+
+        public bool SetBoolean(bool value)
+        {
+            return value;
+        }
+
+        public string ReturnString()
+        {
+            return "42";
+        }
+
+        public string SetString(string value)
+        {
+            return value;
+        }
 
         public sbyte ReturnSByte() {
             return 42;
@@ -131,16 +303,6 @@ namespace Ge.Tests {
             return value;
         }
 
-        public bool ReturnBoolean()
-        {
-            return true;
-        }
-
-        public bool SetBoolean(bool value)
-        {
-            return value;
-        }
-
         public char ReturnChar()
         {
             return '*'; // 42
@@ -151,14 +313,29 @@ namespace Ge.Tests {
             return value;
         }
 
-        public string ReturnString()
+        public void zeroArgs()
+        {}
+
+        public void oneArg(int a)
+        {}
+
+        public void twoArgs(int a, int b)
+        {}
+
+        public static string staticMethod()
         {
-            return "42";
+            return "ObjectMethodsTest::staticMethod";
         }
 
-        public string SetString(string value)
+        public static string instanceMethod()
         {
-            return value;
+            return "ObjectMethodsTest::instanceMethod";
+        }
+
+        public double shortIntDouble(short a, int b, double c)
+        {
+            Console.WriteLine($"shortIntDouble: {a}, {b}, {c}");
+            return a + b + c;
         }
     }
 

@@ -37,6 +37,7 @@
 
 #include <array>
 #include <tuple>
+#include <vector>
 
 extern "C" {
 typedef struct _MonoObject MonoObject;
@@ -45,6 +46,10 @@ typedef struct _MonoMethod MonoMethod;
 
 namespace GE::Script {
 
+class Class;
+class MethodAccessor;
+class Object;
+
 class GE_API Method
 {
 public:
@@ -52,36 +57,54 @@ public:
 
     bool isValid() const { return m_method != nullptr; }
 
+    bool isInstance() const;
     int paramCount() const;
+    std::vector<ClassType> paramTypes() const;
+    std::string_view name() const;
 
     template<typename... Args>
-    InvokeResult operator()(Args&&... args);
+    InvokeResult operator()(Args&&... args) const;
 
 private:
-    friend class Class;
-    friend class Object;
+    friend class MethodAccessor;
 
-    explicit Method(MonoMethod* method, MonoObject* object = nullptr)
+    explicit Method(MonoMethod* method)
         : m_method{method}
-        , m_object{object}
     {}
 
-    InvokeResult invoke(void** args, int args_count);
+    bool validateArguments(const ClassType* arg_types, int arg_types_count) const;
+    InvokeResult invoke(void** args, int args_count, const ClassType* arg_types,
+                        int arg_types_count) const;
+
+    void setObject(MonoObject* object) { m_object = object; }
+    static InvokeResult createInvalidInvokeResult(std::string_view error_message);
 
     MonoMethod* m_method{nullptr};
     MonoObject* m_object{nullptr};
 };
 
 template<typename... Args>
-InvokeResult Method::operator()(Args&&... args)
+InvokeResult Method::operator()(Args&&... args) const
 {
     auto get_arg_pointers = [](auto&&... arguments) {
         return std::array<void*, sizeof...(arguments)>{arguments.asMethodArg()...};
     };
 
-    std::tuple arg_tuple{ToScriptType<Args>{args}...};
+    std::tuple arg_tuple{SCRIPT_TYPE<Args>{args}...};
     auto method_args = std::apply(get_arg_pointers, arg_tuple);
-    return invoke(method_args.data(), method_args.size());
+    constexpr std::array<ClassType, sizeof...(args)> arg_types{CLASS_TYPE<Args>...};
+
+    return invoke(method_args.data(), method_args.size(), arg_types.data(), arg_types.size());
 }
+
+class MethodAccessor
+{
+private:
+    friend class Class;
+    friend class Object;
+
+    static Method createMethod(MonoMethod* method);
+    static void setMethodInstance(Method* method, MonoObject* object);
+};
 
 } // namespace GE::Script

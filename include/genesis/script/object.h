@@ -33,6 +33,7 @@
 #pragma once
 
 #include <genesis/core/export.h>
+#include <genesis/script/class.h>
 #include <genesis/script/type_traits.h>
 
 #include <optional>
@@ -45,40 +46,69 @@ typedef struct _MonoClass MonoClass;
 namespace GE::Script {
 
 class Class;
+class InvokeResult;
 class Method;
+class ObjectAccessor;
 
 class GE_API Object
 {
 public:
+    template<typename T>
+    explicit Object(T&& value);
+
     Object() = default;
     ~Object();
 
-    bool isValid() const { return m_object != nullptr; }
+    bool isValid() const { return m_class.isValid() && m_object != nullptr; }
 
     Method method(std::string_view name, int param_count = -1) const;
-    Class getClass() const;
-    ClassType type() const;
+    const Class& getClass() const { return m_class; }
+    ClassType type() const { return m_class.type(); }
     void* unbox() const;
     MonoObject* nativeHandle() const { return m_object; }
+
+    template<typename T>
+    bool boxValue(T value);
 
     template<typename T>
     std::optional<T> as() const;
 
 private:
-    friend class Class;
-    friend class InvokeResult;
+    friend class ObjectAccessor;
 
     explicit Object(MonoObject* object, MonoClass* klass = nullptr);
+    bool boxValue(void* value, ClassType class_type);
 
     MonoObject* m_object{nullptr};
-    MonoClass* m_class{nullptr};
+    Class m_class;
     uint32_t m_gc_handle{0};
 };
 
 template<typename T>
+Object::Object(T&& value)
+{
+    boxValue(std::forward<T>(value));
+}
+
+template<typename T>
+bool Object::boxValue(T value)
+{
+    return boxValue(&value, CLASS_TYPE<T>);
+}
+
+template<typename T>
 std::optional<T> Object::as() const
 {
-    return isValid() ? ToScriptType<T>{*this}.value() : std::nullopt;
+    return isValid() ? SCRIPT_TYPE<T>{*this}.value() : std::nullopt;
 }
+
+class ObjectAccessor
+{
+private:
+    friend class Class;
+    friend class InvokeResult;
+
+    static Object createObject(MonoObject* object, MonoClass* klass = nullptr);
+};
 
 } // namespace GE::Script
