@@ -41,12 +41,18 @@
 #include <dlfcn.h>
 #include <iostream>
 #include <string>
+#include <thread>
 
 namespace {
 
 void *loadLibrary(std::string_view library_path)
 {
     return dlopen(library_path.data(), RTLD_LAZY);
+}
+
+void closeLibrary(void *library)
+{
+    dlclose(library);
 }
 
 template<typename Func>
@@ -95,16 +101,21 @@ public:
         }
 
         GE_INFO("'hostfxr' context initialized");
-        return loadAssemblyFnDelegate() && false;// && loadGetFunctionPointerFnDelegate();
+        return loadLoadAssemblyFnDelegate(); // && loadGetFunctionPointerFnDelegate();
     }
 
     void shutdown()
     {
-        if (m_context != nullptr) {
+        if (m_context != nullptr && m_hostfxr_close != nullptr) {
             GE_INFO("Close 'hostfxr' context");
             m_hostfxr_close(m_context);
             m_context = nullptr;
         }
+
+        if (m_hostfxr_library != nullptr) {
+            closeLibrary(m_hostfxr_library);
+            m_hostfxr_library = nullptr;
+        };
     }
 
     bool loadAssembly(std::string_view assembly_path)
@@ -158,18 +169,21 @@ private:
 
     bool loadHostfxrFunctions(std::string_view hostfxr_path)
     {
-        auto *library = loadLibrary(hostfxr_path);
-        if (library == nullptr) {
+        m_hostfxr_library = loadLibrary(hostfxr_path);
+        if (m_hostfxr_library == nullptr) {
             GE_ERR("Failed to load 'hostfxr' library: {}", hostfxr_path);
             return false;
         }
 
-        if (!loadFunction(&m_hostfxr_initialize_for_runtime_config, library,
+        if (!loadFunction(&m_hostfxr_initialize_for_runtime_config, m_hostfxr_library,
                           "hostfxr_initialize_for_runtime_config") ||
-            !loadFunction(&m_hostfxr_close, library, "hostfxr_close") ||
-            !loadFunction(&m_hostfxr_set_error_writer, library, "hostfxr_set_error_writer") ||
-            !loadFunction(&m_hostfxr_get_runtime_delegate, library,
-                          "hostfxr_get_runtime_delegate")) {
+            !loadFunction(&m_hostfxr_close, m_hostfxr_library, "hostfxr_close") ||
+            !loadFunction(&m_hostfxr_set_error_writer, m_hostfxr_library,
+                          "hostfxr_set_error_writer") ||
+            !loadFunction(&m_hostfxr_get_runtime_delegate, m_hostfxr_library,
+                          "hostfxr_get_runtime_delegate") ||
+            !loadFunction(&m_hostfxr_get_runtime_properties, m_hostfxr_library,
+                          "hostfxr_get_runtime_properties")) {
             GE_ERR("Failed to load 'hostfxr' functions");
             return false;
         }
@@ -177,9 +191,9 @@ private:
         return true;
     }
 
-    bool loadAssemblyFnDelegate()
+    bool loadLoadAssemblyFnDelegate()
     {
-        GE_INFO("Loading 'load_assembly_fn' delegate");
+        GE_INFO("Loading 'load_assembly' delegate");
 
         if (int rc = m_hostfxr_get_runtime_delegate(m_context, hdt_load_assembly,
                                                     reinterpret_cast<void **>(&m_load_assembly));
@@ -188,7 +202,7 @@ private:
             return false;
         }
 
-        GE_INFO("'load_assembly_fn' delegate loaded");
+        GE_INFO("'load_assembly' delegate loaded");
         return true;
     }
 
@@ -209,14 +223,50 @@ private:
         return true;
     }
 
+    bool loadLoadAssemblyAndGetFunctionPointerFnDelegate()
+    {
+        GE_INFO("Loading 'load_assembly_and_get_function_pointer' delegate");
+
+        if (int rc = m_hostfxr_get_runtime_delegate(
+                m_context, hdt_load_assembly_and_get_function_pointer,
+                reinterpret_cast<void **>(&m_load_assembly_and_get_function_pointer));
+            rc != 0 || m_load_assembly_and_get_function_pointer == nullptr) {
+            GE_ERR("Failed to get 'get_function_pointer' delegate: {:#08x}",
+                   static_cast<uint32_t>(rc));
+            return false;
+        }
+
+        GE_INFO("'load_assembly_and_get_function_pointer' delegate loaded");
+        return true;
+    }
+
+    bool getRuntimeProperties()
+    {
+        size_t count{0};
+        m_hostfxr_get_runtime_properties(m_context, &count, nullptr, nullptr);
+
+        std::vector<const char_t *> keys(count);
+        std::vector<const char_t *> values(count);
+        m_hostfxr_get_runtime_properties(m_context, &count, keys.data(), values.data());
+
+        for (size_t i = 0; i < count; ++i) {
+            GE_INFO("{:02}) {}={}", i + 1, keys[i], values[i]);
+        }
+
+        return true;
+    }
+
+    void *m_hostfxr_library{nullptr};
     hostfxr_initialize_for_runtime_config_fn m_hostfxr_initialize_for_runtime_config{nullptr};
     hostfxr_close_fn m_hostfxr_close{nullptr};
     hostfxr_set_error_writer_fn m_hostfxr_set_error_writer{nullptr};
     hostfxr_get_runtime_delegate_fn m_hostfxr_get_runtime_delegate{nullptr};
+    hostfxr_get_runtime_properties_fn m_hostfxr_get_runtime_properties{nullptr};
 
     hostfxr_handle m_context{nullptr};
     load_assembly_fn m_load_assembly{nullptr};
     get_function_pointer_fn m_get_function_pointer{nullptr};
+    load_assembly_and_get_function_pointer_fn m_load_assembly_and_get_function_pointer{nullptr};
 };
 
 } // namespace
@@ -246,6 +296,8 @@ int main()
     ) {
         return EXIT_FAILURE;
     }
+
+    context.shutdown();
 
     // Load and invoke 'HelloWorld()' method
 
@@ -317,5 +369,6 @@ int main()
     //
     // ObjectDestroy(object);
 
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     return EXIT_SUCCESS;
 }

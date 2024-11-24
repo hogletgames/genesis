@@ -68,6 +68,10 @@ docker_run:
 		-u $$(id -u):$$(id -g) \
 		-e CMAKE_OPTIONS="$(CMAKE_OPTIONS)" \
 		-e BUILD_DIR="$(BUILD_DIR)/docker" \
+		-e ASAN_OPTIONS=alloc_dealloc_mismatch=1:detect_leaks=1:print_leak_check_report=1 \
+		-e COMPlus_EnableDiagnostics=1 \
+		-e COMPlus_Logging=1 \
+		-e COMPlus_LogToConsole=1 \
 		$(DOCKER_IMAGE_NAME) \
 		bash -c "$(DOCKER_CMD)"
 
