@@ -8,20 +8,19 @@ BUILD_TESTS         ?= OFF
 SRC_DIR             := $(PWD)
 BUILD_DIR           ?= build
 
-CMAKE_OPTIONS       ?= -Wno-dev \
-                       -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) \
-                       -DGE_STATIC=$(BUILD_STATIC) \
-                       -DGE_DISABLE_ASSERTS=$(DISABLE_ASSERTS) \
-                       -DGE_BUILD_APPS=$(BUILD_APPS) \
-                       -DGE_BUILD_EXAMPLES=$(BUILD_EXAMPLES) \
-                       -DGE_BUILD_TESTS=$(BUILD_TESTS)
+CMAKE_OPTIONS       ?= -DCMAKE_BUILD_TYPE:STRING=$(BUILD_TYPE)                 \
+                       -DGE_STATIC:BOOL=$(BUILD_STATIC)                        \
+                       -DGE_DISABLE_ASSERTS:BOOL=$(DISABLE_ASSERTS)            \
+                       -DGE_BUILD_APPS:BOOL=$(BUILD_APPS)                      \
+                       -DGE_BUILD_EXAMPLES:BOOL=$(BUILD_EXAMPLES)              \
+                       -DGE_BUILD_TESTS:BOOL=$(BUILD_TESTS)
 
 CLANG_FORMAT_BIN    ?= clang-format
 RUN_CLANG_TIDY_BIN  ?= run-clang-tidy
 
-DOCKER_IMAGE_NAME   := genesis-engine-image
-DOCKER_CONTAINER    := genesis_engine
-DOCKER_CMD          ?= make -j$$(nproc)
+export DOCKER_BUILDKIT=1
+export UID=$(shell id -u)
+export GID=$(shell id -g)
 
 # Building project
 .PHONY: all
@@ -45,7 +44,9 @@ clang-format:
 	bash tools/clang_format.sh --clang-format-bin $(CLANG_FORMAT_BIN)
 
 .PHONY: clang-tidy
-clang-tidy: CMAKE_OPTIONS += -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DGE_BUILD_EXAMPLES:BOOL=ON -DGE_BUILD_APPS:BOOL=ON
+clang-tidy: CMAKE_OPTIONS += -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON           \
+                             -DGE_BUILD_EXAMPLES:BOOL=ON                       \
+                             -DGE_BUILD_APPS:BOOL=ON
 clang-tidy: generate_makefiles
 	$(MAKE) -C $(BUILD_DIR) sdl_headers_copy
 	$(RUN_CLANG_TIDY_BIN) -p $(BUILD_DIR) -j$$(nproc)
@@ -53,27 +54,27 @@ clang-tidy: generate_makefiles
 # Docker
 .PHONY: docker_initialize
 docker_initialize:
-	DOCKER_BUILDKIT=1 docker build --target genesis-image -t $(DOCKER_IMAGE_NAME) $(PWD)
-
-.PHONY: docker_cleenup
-docker_cleanup:
-	docker image rm -f $(DOCKER_IMAGE_NAME)
-
-.PHONY: docker_run
-docker_run:
-	docker run --rm \
-		-ti \
-		-v $(PWD):$(PWD) \
-		-w $(PWD) \
-		-u $$(id -u):$$(id -g) \
-		-e CMAKE_OPTIONS="$(CMAKE_OPTIONS)" \
-		-e BUILD_DIR="$(BUILD_DIR)/docker" \
-		$(DOCKER_IMAGE_NAME) \
-		bash -c "$(DOCKER_CMD)"
+	docker-compose build
 
 .PHONY: docker_build
-docker_build: DOCKER_CMD = make -j$$(nproc)
-docker_build: docker_run
+docker_build:
+	CMAKE_OPTIONS="$(CMAKE_OPTIONS)"                                           \
+	    docker-compose run                                                     \
+	        --rm                                                               \
+	        --remove-orphans                                                   \
+	        build-env
+
+.PHONY: docker_env_up
+docker_env_up:
+	docker-compose up --detach --remove-orphans -d runtime-env
+
+.PHONY: docker_down
+docker_env_down:
+	docker-compose down runtime-env
+
+.PHONY: docker_env_attach
+docker_env_attach:
+	docker-compose exec runtime-env bash
 
 # Tests
 .PHONY: test
