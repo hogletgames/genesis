@@ -40,15 +40,18 @@ make -j$(nproc)
 ### To build using Docker
 
 ```bash
-make docker_initialize  # Create Docker image
-make docker_build       # Build project inside Docker container
-make docker_cleanup     # Remove docker container (optional)
+make docker_initialize # Create Docker images
+make docker_build      # Build the project inside the build-env container
 ```
 
-### To run custom command inside docker container
+### Using the runtime-env docker-compose service
 
 ```bash
-make DOCKER_CMD="make clang-tidy" docker_run
+make docker_initialize # Create Docker images 
+make docker_env_up     # Run the runtime-env service in the background
+make docker_env_attach # Attach to the runtime-env container
+# Run any command inside the runtime-env service
+make docker_env_down    # Stop the runtime-env container
 ```
 
 You can use `CLANG_FORMAT_BIN` and `RUN_CLANG_TIDY_BIN` `make` options to pass
@@ -109,7 +112,6 @@ build/examples/sandbox/sandbox -e gui
 | `BUILD_TESTS`        | `GE_BUILD_TESTS`     | `OFF`             | Build tests                                                                        |
 | `CLANG_FORMAT_BIN`   | -                    | `clang-format`    | Path to `clang-format` binary                                                      |
 | `RUN_CLANG_TIDY_BIN` | -                    | `run-clang-tidy`  | Path to `run-clang-tidy` tool                                                      |
-| `DOCKER_CMD`         | -                    | `make -j$(nproc)` | Command which will be executed by `make docker_run`                                |
 
 ### Licence
 
