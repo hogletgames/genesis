@@ -36,21 +36,48 @@
 #include "genesis/core/enum.h"
 #include "genesis/core/log.h"
 
+#include <mono/metadata/appdomain.h>
+#include <mono/metadata/object.h>
+
 namespace GE::Script {
 
-bool BaseBittableType::validateUnboxingObject(const Object& object, ClassType expected_type)
+Object BaseBittableType::asObject() const
 {
-    if (auto object_type = object.type(); object_type != expected_type) {
-        GE_CORE_ERR("Trying to unbox object of type '{}' to type '{}'", toString(object_type),
-                    toString(expected_type));
-        return false;
-    }
-
-    return true;
+    return ObjectAccessor::createObject(m_object);
 }
 
-void* BaseBittableType::unboxObject(const Object& object)
+BaseBittableType::BaseBittableType(const Object& object)
 {
+    m_object = object.nativeHandle();
+}
+
+BaseBittableType::BaseBittableType(void* value, ClassType type)
+{
+    auto* mono_class = toNativeClass(type);
+
+    if (mono_class == nullptr) {
+        GE_CORE_ERR("Failed to get Mono Class to box value of type {}", toString(type));
+        return;
+    }
+
+    m_object = mono_value_box(mono_domain_get(), mono_class, value);
+}
+
+void* BaseBittableType::unboxObject(ClassType type) const
+{
+    auto object = asObject();
+
+    if (!object.isValid()) {
+        GE_CORE_ERR("Unboxing invalid object");
+        return nullptr;
+    }
+
+    if (object.type() != type) {
+        GE_CORE_ERR("Incorrect type of object, expected: '{}', actual: '{}'", toString(type),
+                    toString(object.type()));
+        return nullptr;
+    }
+
     return object.unbox();
 }
 

@@ -93,6 +93,16 @@ std::optional<std::string> StringType::value() const
     return result;
 }
 
+Object StringType::asObject() const
+{
+    if (!isValid()) {
+        GE_CORE_ERR("Trying to create an object from an invalid string");
+        return {};
+    }
+
+    return ObjectAccessor::createObject(reinterpret_cast<MonoObject*>(m_string));
+}
+
 void StringType::updateGCHandle(MonoString* mono_string)
 {
     m_gc_handle = mono_gchandle_new(reinterpret_cast<MonoObject*>(mono_string), 0);

@@ -36,8 +36,7 @@
 #include <genesis/script/invoke_result.h>
 
 #include <array>
-#include <tuple>
-#include <vector>
+#include <span>
 
 extern "C" {
 typedef struct _MonoObject MonoObject;
@@ -72,9 +71,8 @@ private:
         : m_method{method}
     {}
 
-    bool validateArguments(const ClassType* arg_types, int arg_types_count) const;
-    InvokeResult invoke(void** args, int args_count, const ClassType* arg_types,
-                        int arg_types_count) const;
+    bool validateArguments(std::span<Object> args) const;
+    InvokeResult invoke(std::span<Object> args) const;
 
     void setObject(MonoObject* object) { m_object = object; }
     static InvokeResult createInvalidInvokeResult(std::string_view error_message);
@@ -86,15 +84,8 @@ private:
 template<typename... Args>
 InvokeResult Method::operator()(Args&&... args) const
 {
-    auto get_arg_pointers = [](auto&&... arguments) {
-        return std::array<void*, sizeof...(arguments)>{arguments.asMethodArg()...};
-    };
-
-    std::tuple arg_tuple{SCRIPT_TYPE<Args>{args}...};
-    auto method_args = std::apply(get_arg_pointers, arg_tuple);
-    constexpr std::array<ClassType, sizeof...(args)> arg_types{CLASS_TYPE<Args>...};
-
-    return invoke(method_args.data(), method_args.size(), arg_types.data(), arg_types.size());
+    std::array<Object, sizeof...(args)> arguments{Object{args}...};
+    return invoke(arguments);
 }
 
 class MethodAccessor

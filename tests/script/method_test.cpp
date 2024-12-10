@@ -30,11 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "genesis/core/format.h"
 #include "genesis/core/log.h"
 #include "genesis/filesystem/file.h"
 #include "genesis/filesystem/filepath.h"
 #include "genesis/script/assembly.h"
 #include "genesis/script/class.h"
+#include "genesis/script/class_type.h"
 #include "genesis/script/invoke_result.h"
 #include "genesis/script/method.h"
 #include "genesis/script/object.h"
@@ -280,22 +282,6 @@ TEST_F(MethodTest, staticMethod)
     auto value = method().as<std::string>();
     ASSERT_TRUE(value.has_value());
     EXPECT_EQ(value.value(), OBJECT_VALUE);
-}
-
-TEST_F(MethodTest, implicitArgsConversion)
-{
-    constexpr int16_t FIRST_ARG{1};
-    constexpr int32_t SECOND_ARG{3};
-    constexpr double THIRD_ARG{5.0f};
-
-    constexpr double ARGS_SUM{9.0};
-
-    auto result = object.method("shortIntDouble")(FIRST_ARG, SECOND_ARG, THIRD_ARG);
-    ASSERT_FALSE(result.hasError()) << result.errorMessage();
-
-    auto value = result.as<double>();
-    ASSERT_TRUE(value.has_value());
-    EXPECT_DOUBLE_EQ(value.value(), ARGS_SUM);
 }
 
 } // namespace

@@ -37,40 +37,50 @@
 
 #include <optional>
 
+extern "C" {
+typedef struct _MonoObject MonoObject;
+}
+
 namespace GE::Script {
 
 class Object;
 
 class GE_API BaseBittableType
 {
+public:
+    bool isValid() const { return m_object != nullptr; }
+    Object asObject() const;
+
 protected:
-    static bool validateUnboxingObject(const Object& object, ClassType expected_type);
-    static void* unboxObject(const Object& object);
+    explicit BaseBittableType(const Object& object);
+    BaseBittableType(void* value, ClassType type);
+
+    void* unboxObject(ClassType type) const;
+
+private:
+    MonoObject* m_object{nullptr};
 };
 
 template<typename T>
 class GE_API BittableType: public BaseBittableType
 {
 public:
-    explicit BittableType(T value)
-        : m_value{value}
+    explicit BittableType(const Object& object)
+        : BaseBittableType{object}
     {}
 
-    explicit BittableType(const Object& object)
+    explicit BittableType(T value)
+        : BaseBittableType{&value, CLASS_TYPE<T>}
+    {}
+
+    std::optional<T> value() const
     {
-        using DecayedType = std::decay_t<T>;
-        if (validateUnboxingObject(object, CLASS_TYPE<DecayedType>)) {
-            m_value = *static_cast<const DecayedType*>(unboxObject(object));
+        if (void* value = unboxObject(CLASS_TYPE<T>); value != nullptr) {
+            return *static_cast<const T*>(value);
         }
+
+        return {};
     }
-
-    bool isValid() const { return m_value.has_value(); }
-
-    std::optional<T> value() const { return m_value; }
-    void* asMethodArg() { return &m_value.value(); }
-
-private:
-    std::optional<T> m_value;
 };
 
 } // namespace GE::Script

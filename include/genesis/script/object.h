@@ -45,30 +45,30 @@ typedef struct _MonoClass MonoClass;
 
 namespace GE::Script {
 
+class BaseBittableType;
 class Class;
 class InvokeResult;
 class Method;
 class ObjectAccessor;
+class StringType;
 
 class GE_API Object
 {
 public:
-    template<typename T>
-    explicit Object(T&& value);
-
     Object() = default;
     ~Object();
 
+    template<typename T>
+    explicit Object(T&& value);
+
     bool isValid() const { return m_class.isValid() && m_object != nullptr; }
 
-    Method method(std::string_view name, int param_count = -1) const;
-    const Class& getClass() const { return m_class; }
+    const Class& klass() const { return m_class; }
     ClassType type() const { return m_class.type(); }
+    Method method(std::string_view name, int param_count = -1) const;
+
     void* unbox() const;
     MonoObject* nativeHandle() const { return m_object; }
-
-    template<typename T>
-    bool boxValue(T value);
 
     template<typename T>
     std::optional<T> as() const;
@@ -77,7 +77,7 @@ private:
     friend class ObjectAccessor;
 
     explicit Object(MonoObject* object, MonoClass* klass = nullptr);
-    bool boxValue(void* value, ClassType class_type);
+    bool createObject(ClassType type);
 
     MonoObject* m_object{nullptr};
     Class m_class;
@@ -87,13 +87,7 @@ private:
 template<typename T>
 Object::Object(T&& value)
 {
-    boxValue(std::forward<T>(value));
-}
-
-template<typename T>
-bool Object::boxValue(T value)
-{
-    return boxValue(&value, CLASS_TYPE<T>);
+    *this = SCRIPT_TYPE<T>{value}.asObject();
 }
 
 template<typename T>
@@ -105,8 +99,10 @@ std::optional<T> Object::as() const
 class ObjectAccessor
 {
 private:
+    friend class BaseBittableType;
     friend class Class;
     friend class InvokeResult;
+    friend class StringType;
 
     static Object createObject(MonoObject* object, MonoClass* klass = nullptr);
 };

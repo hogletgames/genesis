@@ -40,6 +40,9 @@
 #include <mono/metadata/appdomain.h>
 #include <mono/metadata/object.h>
 
+#include <algorithm>
+#include <vector>
+
 namespace GE::Script {
 namespace {
 
@@ -160,23 +163,23 @@ std::string_view Method::name() const
     return isValid() ? mono_method_get_name(m_method) : std::string_view{};
 }
 
-bool Method::validateArguments(const ClassType* arg_types, int arg_types_count) const
+bool Method::validateArguments(std::span<Object> args) const
 {
     GE_CORE_ASSERT(isValid(), "Trying to validate args using invalid method");
 
     auto param_types = paramTypes();
 
-    if (arg_types_count != static_cast<int>(param_types.size())) {
+    if (args.size() != param_types.size()) {
         GE_CORE_ERR("Invalid args count for '{}' method: expected={}, got={}", name(),
-                    param_types.size(), arg_types_count);
+                    param_types.size(), args.size());
         return false;
     }
 
-    for (int i{0}; i < arg_types_count; i++) {
-        if (arg_types[i] != param_types[i]) {
+    for (uint32_t i{0}; i < args.size(); i++) {
+        if (args[i].type() != param_types[i]) {
             GE_CORE_ERR("Argument of type '{}' doesn't match the parameter arg of '{}' type, "
                         "argument index: {}",
-                        toString(arg_types[i]), toString(param_types[i]), i);
+                        toString(args[i].type()), toString(param_types[i]), i);
             return false;
         }
     }
@@ -184,11 +187,8 @@ bool Method::validateArguments(const ClassType* arg_types, int arg_types_count) 
     return true;
 }
 
-InvokeResult Method::invoke(void** args, int args_count, const ClassType* arg_types,
-                            int arg_types_count) const
+InvokeResult Method::invoke(std::span<Object> args) const
 {
-    GE_CORE_ASSERT(arg_types_count == args_count, "Argument count must match argument type count");
-
     if (!isValid()) {
         std::string_view error_message = "Invoking invalid method";
         GE_CORE_ERR(error_message);
@@ -202,14 +202,24 @@ InvokeResult Method::invoke(void** args, int args_count, const ClassType* arg_ty
         return createInvalidInvokeResult(error_message);
     }
 
-    if (!validateArguments(arg_types, arg_types_count)) {
+    if (!validateArguments(args)) {
         auto error_message = GE_FMTSTR("Passed invalid arguments to '{}' method", name());
         GE_CORE_ERR(error_message);
         return createInvalidInvokeResult(error_message);
     }
 
+    std::vector<MonoClass*> classes(args.size());
+    std::ranges::transform(args, classes.begin(),
+                           [](const Object& object) { return object.klass().nativeHandle(); });
+
+    auto* mono_args = mono_array_new(mono_domain_get(), mono_get_object_class(), args.size());
+    for (int i{0}; const auto& arg : args) {
+        mono_array_setref(mono_args, i, arg.nativeHandle());
+        i++;
+    }
+
     MonoObject* exception{nullptr};
-    auto* result = mono_runtime_invoke(m_method, m_object, args, &exception);
+    auto* result = mono_runtime_invoke_array(m_method, m_object, mono_args, &exception);
     return InvokeResultAccessor::createInvokeResult(result, exception);
 }
 

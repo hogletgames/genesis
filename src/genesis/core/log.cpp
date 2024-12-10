@@ -112,8 +112,8 @@ bool Log::initialize(const settings_t& settings)
     core_logger.setLevel(settings.core_log_level);
     client_logger.setLevel(settings.client_log_level);
 
-    GE_CORE_INFO("Log System initialization succeed: core level: {}, client level: {}",
-                 toString(settings.core_log_level), toString(settings.client_log_level));
+    // GE_CORE_INFO("Log System initialization succeed: core level: {}, client level: {}",
+    //              toString(settings.core_log_level), toString(settings.client_log_level));
     return true;
 }
 

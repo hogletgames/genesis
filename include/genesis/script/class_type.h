@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <genesis/core/enum.h>
 #include <genesis/core/export.h>
 
 typedef struct _MonoClass MonoClass;
@@ -83,3 +84,14 @@ GE_API MonoClass* toNativeClass(ClassType class_type);
 GE_API bool hasImplicitConversion(ClassType fromType, ClassType toType);
 
 } // namespace GE::Script
+
+template<>
+struct fmt::formatter<GE::Script::ClassType> {
+    constexpr auto parse(format_parse_context& ctx) const { return ctx.begin(); }
+
+    template<typename FmtContext>
+    constexpr auto format(const GE::Script::ClassType& class_type, FmtContext& ctx) const
+    {
+        return format_to(ctx.out(), "{}", GE::toString(class_type));
+    }
+};
