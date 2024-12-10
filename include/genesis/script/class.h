@@ -57,6 +57,7 @@ public:
     ClassType type() const;
     Method method(std::string_view name, int param_count = -1) const;
 
+    MonoClass* nativeHandle() const { return m_class; };
     Object newObject() const;
 
 private:

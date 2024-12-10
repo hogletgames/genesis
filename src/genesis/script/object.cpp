@@ -88,22 +88,27 @@ Object::Object(MonoObject* object, MonoClass* klass)
     m_gc_handle = mono_gchandle_new(m_object, 0);
 }
 
-void Object::boxValue(void* value, ClassType class_type)
+bool Object::boxValue(void* value, ClassType class_type)
 {
+    if (class_type == ClassType::STRING) {
+
+    }
+
     auto* domain = mono_get_root_domain();
     if (domain == nullptr) {
         GE_CORE_ERR("Failed get root domain to box value");
-        return;
+        return false;
     }
 
     auto* mono_class = toNativeClass(class_type);
     if (mono_class == nullptr) {
         GE_CORE_ERR("Failed to get Mono Class to box value of type {}", toString(class_type));
-        return;
+        return false;
     }
 
     m_object = mono_value_box(mono_domain_get(), mono_class, value);
     m_class = ClassAccessor::createClass(mono_class);
+    return true;
 }
 
 Object ObjectAccessor::createObject(MonoObject* object, MonoClass* klass)

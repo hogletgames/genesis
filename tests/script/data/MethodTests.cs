@@ -332,9 +332,9 @@ namespace Ge.Tests {
             return "ObjectMethodsTest::instanceMethod";
         }
 
-        public double shortIntDouble(short a, int b, double c)
+        public double shortIntDouble(int  a, int b, int c)
         {
-            Console.WriteLine($"shortIntDouble: {a}, {b}, {c}");
+            // Console.WriteLine($"shortIntDouble: {a}, {b}, {c:0.00}");
             return a + b + c;
         }
     }

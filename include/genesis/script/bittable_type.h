@@ -46,31 +46,37 @@ class GE_API BaseBittableType
 protected:
     static bool validateUnboxingObject(const Object& object, ClassType expected_type);
     static void* unboxObject(const Object& object);
+    static Object boxObject(const void* value, ClassType type);
 };
 
 template<typename T>
 class GE_API BittableType: public BaseBittableType
 {
 public:
-    explicit BittableType(T value)
-        : m_value{value}
-    {}
-
-    explicit BittableType(const Object& object)
-    {
-        using DecayedType = std::decay_t<T>;
-        if (validateUnboxingObject(object, CLASS_TYPE<DecayedType>)) {
-            m_value = *static_cast<const DecayedType*>(unboxObject(object));
-        }
-    }
+    explicit BittableType(T value);
+    explicit BittableType(const Object& object);
 
     bool isValid() const { return m_value.has_value(); }
 
     std::optional<T> value() const { return m_value; }
-    void* asMethodArg() { return &m_value.value(); }
+    Object asObject() { return boxObject(&m_value.value(), CLASS_TYPE<std::decay_t<T>>); }
 
 private:
     std::optional<T> m_value;
 };
+
+template<typename T>
+BittableType<T>::BittableType(T value)
+    : m_value{value}
+{}
+
+template<typename T>
+BittableType<T>::BittableType(const Object& object)
+{
+    using DecayedType = std::decay_t<T>;
+    if (validateUnboxingObject(object, CLASS_TYPE<DecayedType>)) {
+        m_value = *static_cast<const DecayedType*>(unboxObject(object));
+    }
+}
 
 } // namespace GE::Script

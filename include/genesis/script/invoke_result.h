@@ -56,7 +56,7 @@ public:
 
     ClassType type() const { return m_result.type(); }
 
-    operator bool() const { return hasError(); }
+    operator bool() const { return m_result.isValid() && !hasError(); }
     bool hasError() const { return !m_error_message.empty(); }
     std::string_view errorMessage() const { return m_error_message; }
 

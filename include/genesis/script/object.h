@@ -49,6 +49,7 @@ class Class;
 class InvokeResult;
 class Method;
 class ObjectAccessor;
+class StringType;
 
 class GE_API Object
 {
@@ -62,7 +63,7 @@ public:
     bool isValid() const { return m_class.isValid() && m_object != nullptr; }
 
     Method method(std::string_view name, int param_count = -1) const;
-    const Class& getClass() const { return m_class; }
+    const Class& klass() const { return m_class; }
     ClassType type() const { return m_class.type(); }
     void* unbox() const;
     MonoObject* nativeHandle() const { return m_object; }
@@ -107,6 +108,7 @@ class ObjectAccessor
 private:
     friend class Class;
     friend class InvokeResult;
+    friend class StringType;
 
     static Object createObject(MonoObject* object, MonoClass* klass = nullptr);
 };

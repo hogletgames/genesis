@@ -57,7 +57,7 @@ public:
     bool isValid() const { return m_string != nullptr; }
 
     std::optional<std::string> value() const;
-    void* asMethodArg() { return m_string; }
+    Object asObject() const;
 
 private:
     void updateGCHandle(MonoString* mono_string);
