@@ -34,6 +34,7 @@
 
 #include <genesis/core/export.h>
 
+#include <fmt/base.h>
 #include <spdlog/spdlog.h>
 
 #include <memory>
@@ -115,10 +116,12 @@ public:
 
 private:
     template<typename... Args>
-    void log(spdlog::level::level_enum level, const char* file, int line, Args&&... args)
+    void log(spdlog::level::level_enum level, const char* file, int line, std::string_view fmt,
+             Args&&... args)
     {
         if (m_logger) {
-            m_logger->log({file, line, nullptr}, level, std::forward<Args>(args)...);
+            m_logger->log({file, line, nullptr}, level, fmt::runtime(fmt),
+                          std::forward<Args>(args)...);
         }
     }
 
