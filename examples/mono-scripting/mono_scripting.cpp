@@ -43,6 +43,7 @@
 #include <mono/utils/mono-publib.h>
 
 #include <numeric>
+#include <optional>
 #include <string>
 #include <unordered_set>
 

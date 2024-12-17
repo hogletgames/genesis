@@ -32,6 +32,7 @@
 
 #include "shader_precompiler.h"
 
+#include "genesis/core/enum.h"
 #include "genesis/core/log.h"
 #include "genesis/filesystem/file_content.h"
 

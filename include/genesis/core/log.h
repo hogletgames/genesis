@@ -32,14 +32,12 @@
 
 #pragma once
 
-#include <genesis/core/enum.h>
 #include <genesis/core/export.h>
 
-#include <fmt/ranges.h>
-#include <spdlog/fmt/bin_to_hex.h>
 #include <spdlog/spdlog.h>
 
 #include <memory>
+#include <string>
 
 #define GE_CORE_CRIT(...)  ::GE::Log::core()->crit(__FILE__, __LINE__, __VA_ARGS__)
 #define GE_CORE_ERR(...)   ::GE::Log::core()->error(__FILE__, __LINE__, __VA_ARGS__)
@@ -56,8 +54,6 @@
 #define GE_TRACE(...) ::GE::Log::client()->trace(__FILE__, __LINE__, __VA_ARGS__)
 
 namespace GE {
-
-using spdlog::to_hex;
 
 class GE_API Logger
 {

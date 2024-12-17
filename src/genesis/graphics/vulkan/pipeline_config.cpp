@@ -33,6 +33,7 @@
 #include "pipeline_config.h"
 
 #include "genesis/core/asserts.h"
+#include "genesis/core/enum.h"
 
 namespace GE::Vulkan {
 

@@ -38,6 +38,7 @@
 
 #include <vulkan/vulkan.h>
 
+#include <optional>
 #include <vector>
 
 namespace GE::Vulkan {
