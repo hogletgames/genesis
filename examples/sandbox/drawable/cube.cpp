@@ -39,17 +39,17 @@ Cube::Cube(Renderer *renderer)
 {
     static const std::vector<vertex_t> VERTICES = {
         // front
-        {{-0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}},  // 0
-        {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}}, // 1
-        {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},  // 2
-        {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},   // 3
+        {.position = {-0.5f, 0.5f, 0.5f}, .color = {1.0f, 0.0f, 0.0f}},  // 0
+        {.position = {-0.5f, -0.5f, 0.5f}, .color = {0.0f, 1.0f, 0.0f}}, // 1
+        {.position = {0.5f, -0.5f, 0.5f}, .color = {0.0f, 0.0f, 1.0f}},  // 2
+        {.position = {0.5f, 0.5f, 0.5f}, .color = {0.0f, 1.0f, 0.0f}},   // 3
         // left
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}}, // 4
-        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},  // 5
+        {.position = {-0.5f, -0.5f, -0.5f}, .color = {0.0f, 0.0f, 1.0f}}, // 4
+        {.position = {-0.5f, 0.5f, -0.5f}, .color = {0.0f, 1.0f, 0.0f}},  // 5
         // bottom
-        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}}, // 6
+        {.position = {0.5f, -0.5f, -0.5f}, .color = {1.0f, 0.0f, 0.0f}}, // 6
         // right
-        {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}}, // 7
+        {.position = {0.5f, 0.5f, -0.5f}, .color = {0.0f, 0.0f, 1.0f}}, // 7
     };
 
     static const std::vector<uint32_t> INDICES = {

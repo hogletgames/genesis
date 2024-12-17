@@ -131,9 +131,15 @@ void EntityPicker::recreateEntityIdFramebuffer(const Vec2& size)
     config.msaa_samples = 1;
     config.attachments = {
         // Entity ID attachment
-        {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D, TextureFormat::R32_INT, IVec4{-1}},
+        {.type = fb_attachment_t::Type::COLOR,
+         .texture_type = TextureType::TEXTURE_2D,
+         .texture_format = TextureFormat::R32_INT,
+         .clear_color = IVec4{-1}},
         // Depth attachment
-        {fb_attachment_t::Type::DEPTH, TextureType::TEXTURE_2D, TextureFormat::D32F, Vec4{}, 1.0f},
+        {.type = fb_attachment_t::Type::DEPTH,
+         .texture_type = TextureType::TEXTURE_2D,
+         .texture_format = TextureFormat::D32F,
+         .clear_depth = 1.0f},
     };
 
     m_entity_id_fbo = Framebuffer::create(config);

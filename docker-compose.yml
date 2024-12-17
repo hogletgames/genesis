@@ -7,7 +7,7 @@ services:
     environment:
       BUILD_DIR: ${BUILD_DIR:-./build}/docker
       CMAKE_OPTIONS: ${CMAKE_OPTIONS:-}
-    user: ${UID:-1000}:${GID:-1000}
+    user: ${USERID:-1000}:${GROUPID:-1000}
     volumes:
       - ${PWD}:${PWD}
     working_dir: ${PWD}
@@ -18,7 +18,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: genesis-image
-    user: ${UID:-1000}:${GID:-1000}
+    user: ${USERID:-1000}:${GROUPID:-1000}
     volumes:
       - ${PWD}:${PWD}
     tty: true

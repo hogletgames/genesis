@@ -103,11 +103,11 @@ struct GE_API blending_t {
 };
 
 struct pipeline_config_t {
-    using BlendingCondig = std::variant<blending_t, std::vector<blending_t>>;
+    using BlendingConfig = std::variant<blending_t, std::vector<blending_t>>;
 
     Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
     Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
-    BlendingCondig blending{blending_t{false}};
+    BlendingConfig blending{blending_t{.enabled = false}};
     PrimitiveTopology primitive_topology{PrimitiveTopology::TRIANGLE_LIST};
     PolygonMode polygon_mode{PolygonMode::FILL};
     bool depth_test_enable{true};

@@ -52,8 +52,11 @@ constexpr int32_t divideMip(int32_t value)
 
 constexpr VkOffset3D toVkOffset3D(const VkExtent3D &extent)
 {
-    return {static_cast<int32_t>(extent.width), static_cast<int32_t>(extent.height),
-            static_cast<int32_t>(extent.depth)};
+    return {
+        .x = static_cast<int32_t>(extent.width),
+        .y = static_cast<int32_t>(extent.height),
+        .z = static_cast<int32_t>(extent.depth),
+    };
 }
 
 constexpr VkOffset3D toVkBlitDstOffset(const VkOffset3D &offset)
@@ -88,13 +91,13 @@ void generateMipLevel(VkCommandBuffer cmd, VkImage image, VkImageMemoryBarrier *
                             VK_PIPELINE_STAGE_TRANSFER_BIT);
 
     VkImageBlit blit{};
-    blit.srcOffsets[0] = {0, 0, 0};
+    blit.srcOffsets[0] = {};
     blit.srcOffsets[1] = mip_offset;
     blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
     blit.srcSubresource.mipLevel = mip_level - 1;
     blit.srcSubresource.baseArrayLayer = 0;
     blit.srcSubresource.layerCount = 1;
-    blit.dstOffsets[0] = {0, 0, 0};
+    blit.dstOffsets[0] = {};
     blit.dstOffsets[1] = toVkBlitDstOffset(mip_offset);
     blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
     blit.dstSubresource.mipLevel = mip_level;
@@ -282,7 +285,7 @@ void Image::copyFromImage(const GE::StagingBuffer &buffer)
     region.imageSubresource.mipLevel = 0;
     region.imageSubresource.baseArrayLayer = 0;
     region.imageSubresource.layerCount = 1;
-    region.imageOffset = {0, 0, 0};
+    region.imageOffset = {};
     region.imageExtent = m_extent;
 
     SingleCommand cmd{m_device, SingleCommand::QUEUE_TRANSFER};

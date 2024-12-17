@@ -34,6 +34,7 @@
 
 #include <genesis/core/asserts.h>
 #include <genesis/core/bit.h>
+#include <genesis/core/concepts.h>
 #include <genesis/core/defer.h>
 #include <genesis/core/enum.h>
 #include <genesis/core/environment_variables.h>

@@ -39,6 +39,8 @@
 #include "genesis/core/enum.h"
 #include "genesis/core/log.h"
 
+#include <algorithm>
+
 namespace {
 
 constexpr uint64_t VULKAN_TIMEOUT_NONE = std::numeric_limits<uint64_t>::max();
@@ -57,8 +59,7 @@ uint32_t imageCountFromCaps(const VkSurfaceCapabilitiesKHR& capabilities)
 
 VkPresentModeKHR choosePresentMode(const std::vector<VkPresentModeKHR>& present_modes)
 {
-    if (std::find(present_modes.begin(), present_modes.end(), VK_PRESENT_MODE_MAILBOX_KHR) !=
-        present_modes.end()) {
+    if (std::ranges::find(present_modes, VK_PRESENT_MODE_MAILBOX_KHR) != present_modes.end()) {
         return VK_PRESENT_MODE_MAILBOX_KHR;
     }
 

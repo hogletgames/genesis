@@ -18,9 +18,9 @@ CMAKE_OPTIONS       ?= -DCMAKE_BUILD_TYPE:STRING=$(BUILD_TYPE)                 \
 CLANG_FORMAT_BIN    ?= clang-format
 RUN_CLANG_TIDY_BIN  ?= run-clang-tidy
 
-export DOCKER_BUILDKIT=1
-export UID=$(shell id -u)
-export GID=$(shell id -g)
+export DOCKER_BUILDKIT := 1
+export USERID          ?= $(shell id -u)
+export GROUPID         ?= $(shell id -g)
 
 # Building project
 .PHONY: all
@@ -54,27 +54,27 @@ clang-tidy: generate_makefiles
 # Docker
 .PHONY: docker_initialize
 docker_initialize:
-	docker-compose build
+	docker compose build
 
 .PHONY: docker_build
 docker_build:
 	CMAKE_OPTIONS="$(CMAKE_OPTIONS)"                                           \
-	    docker-compose run                                                     \
+	    docker compose run                                                     \
 	        --rm                                                               \
 	        --remove-orphans                                                   \
 	        build-env
 
 .PHONY: docker_env_up
 docker_env_up:
-	docker-compose up --detach --remove-orphans -d runtime-env
+	docker compose up --detach --remove-orphans -d runtime-env
 
 .PHONY: docker_down
 docker_env_down:
-	docker-compose down runtime-env
+	docker compose down runtime-env
 
 .PHONY: docker_env_attach
 docker_env_attach:
-	docker-compose exec runtime-env bash
+	docker compose exec runtime-env bash
 
 # Tests
 .PHONY: test

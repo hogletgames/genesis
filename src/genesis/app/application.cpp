@@ -38,6 +38,8 @@
 #include "genesis/window/events/window_events.h"
 #include "genesis/window/input.h"
 
+#include <algorithm>
+
 namespace GE {
 
 bool Application::initialize(const settings_t& settings)
@@ -84,7 +86,7 @@ void Application::detachLayer(const Shared<Layer>& layer)
 {
     auto& layers = get()->m_layers;
 
-    if (auto it = std::find(layers.begin(), layers.end(), layer); it != layers.end()) {
+    if (auto it = std::ranges::find(layers, layer); it != layers.end()) {
         (*it)->onDetached();
         layers.erase(it);
     }

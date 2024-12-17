@@ -51,10 +51,9 @@ VkResult loadInstanceFuncAndCall(const char* func_name, VkInstance instance, Arg
     }
 
     auto* func = reinterpret_cast<FuncPFN>(void_func);
-    using FuncRet = std::result_of_t<FuncPFN(VkInstance, Args...)>;
-    constexpr bool is_return_void = std::is_same_v<FuncRet, void>;
+    using FuncRet = std::invoke_result_t<FuncPFN, VkInstance, Args...>;
 
-    if constexpr (is_return_void) {
+    if constexpr (std::is_void_v<FuncRet>) {
         func(instance, std::forward<Args>(args)...);
     } else {
         return func(instance, std::forward<Args>(args)...);

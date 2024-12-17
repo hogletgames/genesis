@@ -84,7 +84,7 @@ void drawPerspectiveProjection(GE::GUI::WidgetNode* node,
     node->call<GE::GUI::ValueEditor>("Near", &near, 0.1f, 0.0f, 100.0f);
     node->call<GE::GUI::ValueEditor>("Far", &far, 0.1f, 0.0f, 100.0f);
 
-    camera->setPerspectiveOptions({fov, near, far});
+    camera->setPerspectiveOptions({.fov = fov, .near = near, .far = far});
 }
 
 void drawOrthoProjection(GE::GUI::WidgetNode* node,
@@ -95,7 +95,7 @@ void drawOrthoProjection(GE::GUI::WidgetNode* node,
     node->call<GE::GUI::ValueEditor>("Near", &near, 0.1f, 0.0f, 100.f);
     node->call<GE::GUI::ValueEditor>("Far", &far, 0.1f, 0.0f, 100.0f);
 
-    camera->setOrthoOptions({size, near, far});
+    camera->setOrthoOptions({.size = size, .near = near, .far = far});
 }
 
 void drawProjectionOptions(GE::GUI::WidgetNode* node,

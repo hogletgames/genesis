@@ -34,6 +34,7 @@
 #include "device.h"
 #include "vulkan_exception.h"
 
+#include <algorithm>
 #include <array>
 
 namespace {
@@ -114,8 +115,8 @@ VkDescriptorSet DescriptorPool::allocateDescriptorSet(VkDescriptorSetLayout layo
 void DescriptorPool::reset()
 {
     m_cache.clear();
-    std::for_each(m_pools.begin(), m_pools.end(),
-                  [this](auto pool) { vkResetDescriptorPool(m_device->device(), pool, 0); });
+    std::ranges::for_each(
+        m_pools, [this](auto pool) { vkResetDescriptorPool(m_device->device(), pool, 0); });
 }
 
 VkResult DescriptorPool::allocateDescriptorSet(VkDescriptorPool pool, VkDescriptorSetLayout layout,

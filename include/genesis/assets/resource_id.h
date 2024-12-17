@@ -62,6 +62,7 @@ public:
 
     ResourceID& operator=(const ResourceID& other);
     ResourceID& operator=(ResourceID&& other) noexcept;
+    auto operator<=>(const ResourceID& other) const = default;
 
     const std::string& package() const { return m_package; }
     Group group() const { return m_group; }
@@ -125,35 +126,12 @@ inline void ResourceID::move(ResourceID& other)
     m_name = std::move(other.m_name);
 }
 
-inline bool operator<(const ResourceID& lhs, const ResourceID& rhs)
-{
-    auto to_tuple = [](const ResourceID& id) {
-        return std::tuple<const std::string&, const Group&, const std::string&>(
-            id.package(), id.group(), id.name());
-    };
-    return to_tuple(lhs) < to_tuple(rhs);
-}
-
-inline bool operator==(const ResourceID& lhs, const ResourceID& rhs)
-{
-    return !(lhs < rhs) && !(rhs < lhs);
-}
-
-inline bool operator!=(const ResourceID& lhs, const ResourceID& rhs)
-{
-    return !(lhs == rhs);
-}
-
 } // namespace GE::Assets
 
-namespace std {
-
 template<>
-struct hash<GE::Assets::ResourceID> {
-    size_t operator()(const GE::Assets::ResourceID& id) const
+struct std::hash<GE::Assets::ResourceID> {
+    size_t operator()(const GE::Assets::ResourceID& id) const noexcept
     {
         return GE::combinedHash(id.package(), id.group(), id.name());
     }
 };
-
-} // namespace std

@@ -112,8 +112,8 @@ void AssetsPanel::drawAssets(WidgetNode *node)
     }
 
     auto packages = m_assets->allPackages();
-    std::sort(packages.begin(), packages.end(),
-              [](const auto *lhs, const auto *rhs) { return lhs->name() < rhs->name(); });
+    std::ranges::sort(packages,
+                      [](const auto *lhs, const auto *rhs) { return lhs->name() < rhs->name(); });
 
     for (const auto *package : packages) {
         drawPackage(node, *package);

@@ -90,20 +90,14 @@ bool Mesh::populateBuffers(const tinyobj::ObjReader& reader)
     for (const auto& shape : reader.GetShapes()) {
         for (const auto& index : shape.mesh.indices) {
             vertex_t vertex = {
-                {
-                    attrib.vertices[(3 * index.vertex_index) + 0],
-                    attrib.vertices[(3 * index.vertex_index) + 1],
-                    attrib.vertices[(3 * index.vertex_index) + 2],
-                },
-                {
-                    attrib.colors[(3 * index.vertex_index) + 0],
-                    attrib.colors[(3 * index.vertex_index) + 1],
-                    attrib.colors[(3 * index.vertex_index) + 2],
-                },
-                {
-                    attrib.texcoords[(2 * index.texcoord_index) + 0],
-                    attrib.texcoords[(2 * index.texcoord_index) + 1],
-                },
+                .position = {attrib.vertices[(3 * index.vertex_index) + 0],
+                             attrib.vertices[(3 * index.vertex_index) + 1],
+                             attrib.vertices[(3 * index.vertex_index) + 2]},
+                .color = {attrib.colors[(3 * index.vertex_index) + 0],
+                          attrib.colors[(3 * index.vertex_index) + 1],
+                          attrib.colors[(3 * index.vertex_index) + 2]},
+                .tex_coord = {attrib.texcoords[(2 * index.texcoord_index) + 0],
+                              attrib.texcoords[(2 * index.texcoord_index) + 1]},
             };
 
             if (unique_vertices.find(vertex) == unique_vertices.end()) {

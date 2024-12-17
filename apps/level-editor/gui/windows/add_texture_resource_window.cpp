@@ -71,7 +71,11 @@ void AddTextureResourceWindow::addResource()
         return;
     }
 
-    auto resource = package->createResource<TextureResource>({m_resource_name, m_texture_path});
+    auto resource = package->createResource<TextureResource>({
+        .name = m_resource_name,
+        .filepath = m_texture_path,
+    });
+
     if (resource == nullptr) {
         m_error_signal(GE_FMTSTR("Failed to create texture resource '{}'", m_resource_name));
         return;

@@ -48,6 +48,8 @@
 #include "genesis/core/log.h"
 #include "genesis/graphics/gpu_command_queue.h"
 
+#include <algorithm>
+
 namespace GE::Vulkan {
 namespace {
 
@@ -71,20 +73,20 @@ toVkPipelineColorBlendAttachmentState(const blending_t& blending)
 }
 
 std::vector<VkPipelineColorBlendAttachmentState>
-toColorBlendAttacmentStates(const pipeline_config_t::BlendingCondig& blending, uint32_t count)
+toColorBlendAttachmentStates(const pipeline_config_t::BlendingConfig& blending, uint32_t count)
 {
     std::vector<VkPipelineColorBlendAttachmentState> color_blend_attachments(count);
 
     if (std::holds_alternative<blending_t>(blending)) {
-        std::fill(color_blend_attachments.begin(), color_blend_attachments.end(),
-                  toVkPipelineColorBlendAttachmentState(std::get<blending_t>(blending)));
+        std::ranges::fill(color_blend_attachments,
+                          toVkPipelineColorBlendAttachmentState(std::get<blending_t>(blending)));
     } else {
         const auto& blendings = std::get<std::vector<blending_t>>(blending);
         GE_CORE_ASSERT(blendings.size() == count, "Invalid blending config count '{} != {}'",
                        blendings.size(), count);
 
-        std::transform(blendings.cbegin(), blendings.cend(), color_blend_attachments.begin(),
-                       &toVkPipelineColorBlendAttachmentState);
+        std::ranges::transform(blendings, color_blend_attachments.begin(),
+                               &toVkPipelineColorBlendAttachmentState);
     }
 
     return color_blend_attachments;
@@ -311,7 +313,7 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     config.multisample_state.rasterizationSamples = config.msaa_samples;
 
     auto color_blend_attachments =
-        toColorBlendAttacmentStates(config.blending, config.color_formats.size());
+        toColorBlendAttachmentStates(config.blending, config.color_formats.size());
 
     VkPipelineColorBlendStateCreateInfo color_blend_state{};
     color_blend_state.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;

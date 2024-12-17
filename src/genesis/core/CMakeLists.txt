@@ -8,6 +8,7 @@ list(APPEND CORE_SOURCES
 list(APPEND CORE_HEADERS
     ${INCLUDE_DIR}/asserts.h
     ${INCLUDE_DIR}/bit.h
+    ${INCLUDE_DIR}/concepts.h
     ${INCLUDE_DIR}/defer.h
     ${INCLUDE_DIR}/deferred_commands.h
     ${INCLUDE_DIR}/enum.h

@@ -286,7 +286,7 @@ bool Texture2D::setData(const void* data, uint32_t size)
     region.imageSubresource.mipLevel = 0;
     region.imageSubresource.baseArrayLayer = 0;
     region.imageSubresource.layerCount = m_image->layers();
-    region.imageOffset = {0, 0, 0};
+    region.imageOffset = {};
     region.imageExtent = m_image->extent();
 
     StagingBuffer buffer{m_device, size, data};

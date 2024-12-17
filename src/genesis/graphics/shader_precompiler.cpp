@@ -32,6 +32,7 @@
 
 #include "shader_precompiler.h"
 
+#include "genesis/core/enum.h"
 #include "genesis/core/log.h"
 #include "genesis/filesystem/file_content.h"
 
@@ -130,7 +131,7 @@ bool ShaderPrecompiler::saveShaderCache(const ShaderCache &shader_cache,
 
     if (std::ofstream file{filepath, std::ios::binary}; file) {
         file << std::noskipws;
-        std::copy(shader_cache.begin(), shader_cache.end(), std::ostream_iterator<uint32_t>{file});
+        std::ranges::copy(shader_cache, std::ostream_iterator<uint32_t>{file});
         return true;
     }
 

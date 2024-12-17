@@ -32,10 +32,17 @@
 
 #pragma once
 
+#include <genesis/core/concepts.h>
 #include <genesis/core/memory.h>
 #include <genesis/gui/widgets/widget.h>
 
 namespace GE::GUI {
+
+template<typename T, typename ReturnValue, typename... Args>
+concept WidgetCallReturns = requires(Args... args) {
+    T::call(args...);
+    { T::call(args...) } -> std::same_as<ReturnValue>;
+};
 
 class GE_API WidgetNode
 {
@@ -61,7 +68,8 @@ public:
     }
 
     template<typename T, typename... Args>
-    auto call(Args&&... args) -> std::enable_if_t<std::is_void_v<decltype(T::call(args...))>>
+    void call(Args&&... args)
+        requires WidgetCallReturns<T, void, Args...>
     {
         if (isOpened()) {
             T::call(std::forward<Args>(args)...);
@@ -69,8 +77,8 @@ public:
     }
 
     template<typename T, typename... Args>
-    auto call(Args&&... args)
-        -> std::enable_if_t<std::is_same_v<decltype(T::call(args...)), bool>, bool>
+    bool call(Args&&... args)
+        requires WidgetCallReturns<T, bool, Args...>
     {
         if (isOpened()) {
             return T::call(std::forward<Args>(args)...);
@@ -80,8 +88,8 @@ public:
     }
 
     template<typename Func, typename... Args>
-    auto call(Func&& f, Args&&... args)
-        -> std::enable_if_t<std::is_void_v<std::invoke_result_t<Func, Args...>>>
+    void call(Func&& f, Args&&... args)
+        requires FuncReturns<Func, void, Args...>
     {
         if (isOpened()) {
             std::invoke(std::forward<Func>(f), std::forward<Args>(args)...);
@@ -89,8 +97,8 @@ public:
     }
 
     template<typename Func, typename... Args>
-    auto call(Func&& f, Args&&... args)
-        -> std::enable_if_t<std::is_same_v<std::invoke_result_t<Func, Args...>, bool>, bool>
+    bool call(Func&& f, Args&&... args)
+        requires FuncReturns<Func, bool, Args...>
     {
         if (isOpened()) {
             return std::invoke(std::forward<Func>(f), std::forward<Args>(args)...);
