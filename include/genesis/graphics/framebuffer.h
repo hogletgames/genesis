@@ -71,8 +71,12 @@ public:
         uint32_t layers{1};
         uint32_t msaa_samples{1};
         std::vector<fb_attachment_t> attachments = {
-            {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D, TextureFormat::SRGBA8},
-            {fb_attachment_t::Type::DEPTH, TextureType::TEXTURE_2D, TextureFormat::D32F},
+            {.type = fb_attachment_t::Type::COLOR,
+             .texture_type = TextureType::TEXTURE_2D,
+             .texture_format = TextureFormat::SRGBA8},
+            {.type = fb_attachment_t::Type::DEPTH,
+             .texture_type = TextureType::TEXTURE_2D,
+             .texture_format = TextureFormat::D32F},
         };
     };
 

@@ -81,8 +81,7 @@ GE::shader_attribute_t toAttribute(const spirv_cross::Compiler& compiler,
 uint32_t toResourceDescriptorCount(const spirv_cross::SmallVector<uint32_t>& type_array)
 {
     uint32_t count{1};
-    std::for_each(type_array.begin(), type_array.end(),
-                  [&count](uint32_t dim_size) { count *= dim_size; });
+    std::ranges::for_each(type_array, [&count](uint32_t dim_size) { count *= dim_size; });
     return count;
 }
 
@@ -91,11 +90,11 @@ GE::resource_descriptor_t toResourceDescriptors(const spirv_cross::Compiler& com
                                                 DescType type)
 {
     return {
-        resource.name,
-        type,
-        compiler.get_decoration(resource.id, spv::DecorationDescriptorSet),
-        compiler.get_decoration(resource.id, spv::DecorationBinding),
-        toResourceDescriptorCount(compiler.get_type(resource.type_id).array),
+        .name = resource.name,
+        .type = type,
+        .set = compiler.get_decoration(resource.id, spv::DecorationDescriptorSet),
+        .binding = compiler.get_decoration(resource.id, spv::DecorationBinding),
+        .count = toResourceDescriptorCount(compiler.get_type(resource.type_id).array),
     };
 }
 
@@ -118,9 +117,10 @@ GE::push_constant_t toPushConstant(const spirv_cross::Compiler& compiler,
     const auto& member_name = compiler.get_member_name(buffer_type.self, member_index);
 
     return {
-        toPushConstantName(push_constant_buffer, member_name),
-        compiler.type_struct_member_offset(buffer_type, member_index),
-        static_cast<uint32_t>(compiler.get_declared_struct_member_size(buffer_type, member_index)),
+        .name = toPushConstantName(push_constant_buffer, member_name),
+        .offset = compiler.type_struct_member_offset(buffer_type, member_index),
+        .size = static_cast<uint32_t>(
+            compiler.get_declared_struct_member_size(buffer_type, member_index)),
     };
 }
 
@@ -155,8 +155,8 @@ ShaderInputLayout ShaderReflection::inputLayout() const
         attributes.push_back(toAttribute(m_pimpl->compiler, resource));
     }
 
-    std::sort(attributes.begin(), attributes.end(),
-              [](const auto& lhs, const auto& rhs) { return lhs.location < rhs.location; });
+    std::ranges::sort(attributes,
+                      [](const auto& lhs, const auto& rhs) { return lhs.location < rhs.location; });
 
     uint32_t offset{0};
 

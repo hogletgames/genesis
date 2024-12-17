@@ -32,6 +32,8 @@
 
 #include "registry.h"
 
+#include <algorithm>
+
 namespace GE::Assets {
 
 Registry::Registry() = default;
@@ -95,8 +97,8 @@ const Package* Registry::package(const std::string& name) const
 std::vector<const Package*> Registry::allPackages() const
 {
     std::vector<const Package*> packages(m_packages.size());
-    std::transform(m_packages.cbegin(), m_packages.cend(), packages.begin(),
-                   [](const auto& package) { return &package.second; });
+    std::ranges::transform(m_packages, packages.begin(),
+                           [](const auto& package) { return &package.second; });
     return packages;
 }
 
@@ -106,8 +108,7 @@ std::vector<ResourceID> Registry::allResourceIDs()
 
     for (const auto& [package_name, package] : m_packages) {
         auto resource_ids = package.allResourceIDs();
-        std::copy(all_resource_ids.begin(), all_resource_ids.end(),
-                  std::back_inserter(all_resource_ids));
+        std::ranges::copy(all_resource_ids, std::back_inserter(all_resource_ids));
     }
 
     return all_resource_ids;

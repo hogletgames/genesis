@@ -1178,7 +1178,7 @@ void HelloTriangleApplication::createGraphicsPipeline()
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor{};
-    scissor.offset = {0, 0};
+    scissor.offset = {};
     scissor.extent = m_swap_chain_extent;
 
     VkPipelineViewportStateCreateInfo viewport_state{};
@@ -1432,7 +1432,7 @@ void HelloTriangleApplication::loadModel()
         throw std::runtime_error{warn + err};
     }
 
-    std::unordered_map<Vertex, uint32_t> unique_vrtices;
+    std::unordered_map<Vertex, uint32_t> unique_vertices;
 
     for (const auto& shape : shapes) {
         for (const auto& index : shape.mesh.indices) {
@@ -1445,12 +1445,12 @@ void HelloTriangleApplication::loadModel()
                                 1.0 - attrib.texcoords[(2 * index.texcoord_index) + 1]};
             vertex.color = {1.0f, 1.0f, 1.0f};
 
-            if (unique_vrtices.count(vertex) == 0) {
-                unique_vrtices[vertex] = m_vertices.size();
+            if (!unique_vertices.contains(vertex)) {
+                unique_vertices[vertex] = m_vertices.size();
                 m_vertices.push_back(vertex);
             }
 
-            m_indices.push_back(unique_vrtices[vertex]);
+            m_indices.push_back(unique_vertices[vertex]);
         }
     }
 }
@@ -1622,14 +1622,14 @@ void HelloTriangleApplication::createCommandBuffers()
 
         std::array<VkClearValue, 2> clear_values{};
         std::array<float, 4> clear_color = {0.0f, 0.0f, 0.0f, 1.0f};
-        std::copy(clear_color.begin(), clear_color.end(), clear_values[0].color.float32);
-        clear_values[1].depthStencil = {1.0f, 0};
+        std::ranges::copy(clear_color, clear_values[0].color.float32);
+        clear_values[1].depthStencil = {.depth = 1.0f, .stencil = 0};
 
         VkRenderPassBeginInfo render_pass_info{};
         render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         render_pass_info.renderPass = m_render_pass;
         render_pass_info.framebuffer = m_swap_chain_framebuffers[i];
-        render_pass_info.renderArea.offset = {0, 0};
+        render_pass_info.renderArea.offset = {};
         render_pass_info.renderArea.extent = m_swap_chain_extent;
         render_pass_info.pClearValues = clear_values.data();
         render_pass_info.clearValueCount = clear_values.size();
@@ -2000,8 +2000,8 @@ void HelloTriangleApplication::copyBufferToImage(VkImage image, VkBuffer buffer,
     region.imageSubresource.mipLevel = 0;
     region.imageSubresource.baseArrayLayer = 0;
     region.imageSubresource.layerCount = 1;
-    region.imageOffset = {0, 0, 0};
-    region.imageExtent = {size.x, size.y, 1};
+    region.imageOffset = {};
+    region.imageExtent = {.width = size.x, .height = size.y, .depth = 1};
 
     vkCmdCopyBufferToImage(command_buffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
                            &region);
@@ -2052,14 +2052,14 @@ void HelloTriangleApplication::createMipmaps(VkImage image, VkFormat image_forma
         int32_t blit_dest_offset_y = mip_height > 1 ? mip_height / 2 : 1;
 
         VkImageBlit blit{};
-        blit.srcOffsets[0] = {0, 0, 0};
-        blit.srcOffsets[1] = {mip_width, mip_height, 1};
+        blit.srcOffsets[0] = {};
+        blit.srcOffsets[1] = {.x = mip_width, .y = mip_height, .z = 1};
         blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         blit.srcSubresource.mipLevel = i - 1;
         blit.srcSubresource.baseArrayLayer = 0;
         blit.srcSubresource.layerCount = 1;
-        blit.dstOffsets[0] = {0, 0, 0};
-        blit.dstOffsets[1] = {blit_dest_offset_x, blit_dest_offset_y, 1};
+        blit.dstOffsets[0] = {};
+        blit.dstOffsets[1] = {.x = blit_dest_offset_x, .y = blit_dest_offset_y, .z = 1};
         blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         blit.dstSubresource.mipLevel = i;
         blit.dstSubresource.baseArrayLayer = 0;

@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include <cstddef>
+#include <algorithm>
 #include <cstring>
 #include <string>
 
@@ -61,9 +61,7 @@ inline std::string toUpper(std::string_view string)
     std::string result;
     result.resize(string.size());
 
-    std::transform(string.begin(), string.end(), result.begin(),
-                   [](char ch) { return std::toupper(ch); });
-
+    std::ranges::transform(string, result.begin(), [](char ch) { return std::toupper(ch); });
     return result;
 }
 
@@ -72,9 +70,7 @@ inline std::string toLower(std::string_view string)
     std::string result;
     result.resize(string.size());
 
-    std::transform(string.begin(), string.end(), result.begin(),
-                   [](char ch) { return std::tolower(ch); });
-
+    std::ranges::transform(string, result.begin(), [](char ch) { return std::tolower(ch); });
     return result;
 }
 

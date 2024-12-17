@@ -38,9 +38,9 @@ Triangle::Triangle(Renderer* renderer)
     : Shape(renderer)
 {
     static const std::vector<vertex_t> VERTICES = {
-        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
-        {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-        {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        {.position = {-0.5f, -0.5f, 0.0f}, .color = {1.0f, 0.0f, 0.0f}},
+        {.position = {0.5f, -0.5f, 0.0f}, .color = {0.0f, 1.0f, 0.0f}},
+        {.position = {0.0f, 0.5f, 0.0f}, .color = {0.0f, 0.0f, 1.0f}},
     };
 
     static const std::vector<uint32_t> INDICES = {0, 1, 2};

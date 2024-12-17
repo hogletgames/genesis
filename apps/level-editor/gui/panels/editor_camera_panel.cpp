@@ -90,7 +90,7 @@ void EditorCameraPanel::drawPerspectiveProjection(WidgetNode *node)
     node->call<::ValueEditor>("Near", &near, 0.1f, 0.0f, 100.0f);
     node->call<::ValueEditor>("Far", &far, 0.1f, 0.0f, 100.0f);
 
-    m_camera->setPerspectiveOptions({fov, near, far});
+    m_camera->setPerspectiveOptions({.fov = fov, .near = near, .far = far});
 }
 
 void EditorCameraPanel::drawOrthoProjection(WidgetNode *node)
@@ -100,7 +100,7 @@ void EditorCameraPanel::drawOrthoProjection(WidgetNode *node)
     node->call<::ValueEditor>("Near", &near, 0.1f, 0.0f, 100.f);
     node->call<::ValueEditor>("Far", &far, 0.1f, 0.0f, 100.0f);
 
-    m_camera->setOrthoOptions({size, near, far});
+    m_camera->setOrthoOptions({.size = size, .near = near, .far = far});
 }
 
 void EditorCameraPanel::drawProjectionOptions(WidgetNode *node)

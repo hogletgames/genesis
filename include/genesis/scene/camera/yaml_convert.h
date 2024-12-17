@@ -63,9 +63,9 @@ struct convert<GE::Scene::ProjectionCamera::ortho_options_t> {
                        GE::Scene::ProjectionCamera::ortho_options_t& ortho_options)
     {
         ortho_options = {
-            node["size"].as<float>(),
-            node["near"].as<float>(),
-            node["far"].as<float>(),
+            .size = node["size"].as<float>(),
+            .near = node["near"].as<float>(),
+            .far = node["far"].as<float>(),
         };
 
         return true;
@@ -88,9 +88,9 @@ struct convert<GE::Scene::ProjectionCamera::perspective_options_t> {
                        GE::Scene::ProjectionCamera::perspective_options_t& perspective_options)
     {
         perspective_options = {
-            node["fov"].as<float>(),
-            node["near"].as<float>(),
-            node["far"].as<float>(),
+            .fov = node["fov"].as<float>(),
+            .near = node["near"].as<float>(),
+            .far = node["far"].as<float>(),
         };
 
         return true;

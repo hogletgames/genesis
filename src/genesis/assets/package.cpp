@@ -32,6 +32,8 @@
 
 #include "package.h"
 
+#include <algorithm>
+
 namespace GE::Assets {
 namespace {
 
@@ -40,8 +42,8 @@ void appendIds(std::vector<ResourceID>* resource_ids,
                const std::unordered_map<std::string, Shared<T>>& resources)
 {
     resource_ids->reserve(resource_ids->size() + resources.size());
-    std::transform(resources.cbegin(), resources.cend(), std::back_inserter(*resource_ids),
-                   [](const auto& item) { return item.second->id(); });
+    std::ranges::transform(resources, std::back_inserter(*resource_ids),
+                           [](const auto& item) { return item.second->id(); });
 }
 
 } // namespace

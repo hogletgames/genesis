@@ -33,6 +33,7 @@
 #include "input_stage_descriptions.h"
 #include "vulkan_exception.h"
 
+#include <algorithm>
 #include <optional>
 #include <vector>
 
@@ -145,8 +146,7 @@ vertexInputAttributeDescriptions(const ShaderInputLayout& input_layout)
             descriptions.push_back(inputAttributeDescription(attribute));
         } else {
             auto matrix_attributes = matrixInputAttributeDescriptions(attribute);
-            std::copy(matrix_attributes.begin(), matrix_attributes.end(),
-                      std::back_inserter(descriptions));
+            std::ranges::copy(matrix_attributes, std::back_inserter(descriptions));
         }
     }
 

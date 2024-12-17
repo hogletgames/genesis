@@ -36,6 +36,8 @@
 #include "genesis/assets/package.h"
 #include "genesis/gui/widgets.h"
 
+#include <algorithm>
+
 using namespace GE::GUI;
 using namespace GE::Assets;
 
@@ -46,8 +48,8 @@ std::vector<std::string_view> getPackageNames(LevelEditorContext* ctx)
 {
     auto packages = ctx->assets()->allPackages();
     std::vector<std::string_view> package_names(packages.size());
-    std::transform(packages.cbegin(), packages.cend(), package_names.begin(),
-                   [](const auto* package) { return std::string_view{package->name()}; });
+    std::ranges::transform(packages, package_names.begin(),
+                           [](const auto* package) { return std::string_view{package->name()}; });
 
     return package_names;
 }

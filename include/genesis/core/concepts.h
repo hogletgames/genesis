@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2023, Dmitry Shilnenkov
+ * Copyright (c) 2024, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,57 +30,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "add_mesh_resource_window.h"
-#include "level_editor_context.h"
+#pragma once
 
-#include "genesis/assets/mesh_resource.h"
-#include "genesis/filesystem/filepath.h"
-#include "genesis/gui/file_dialog.h"
-#include "genesis/gui/widgets.h"
+#include <concepts>
+#include <functional>
 
-using namespace GE::Assets;
-using namespace GE::GUI;
+namespace GE {
 
-namespace LE {
+template<typename Func, typename ReturnValue, typename... Args>
+concept FuncReturns = requires(Func f, Args... args) {
+    std::invocable<Func, Args...>;
+    { std::invoke(f, args...) } -> std::same_as<ReturnValue>;
+};
 
-AddMeshResourceWindow::AddMeshResourceWindow(LevelEditorContext* ctx)
-    : AddResourceWindowBase{NAME, ctx}
-{}
-
-void AddMeshResourceWindow::onRender()
-{
-    WidgetNode node{&m_window};
-    renderPackageCombobox(&node);
-    node.call<InputText>("Name", &m_resource_name);
-    if (node.call<Button>("Mesh path")) {
-        m_mesh_path = openSingleFile("obj");
-        m_resource_name = GE::FS::stem(m_mesh_path);
-    }
-    node.call<SameLine>();
-    node.call<InputText>("", &m_mesh_path);
-    if (node.call<Button>("Add")) {
-        addResource();
-    }
-}
-
-void AddMeshResourceWindow::addResource()
-{
-    auto* package = m_ctx->assets()->package(m_package_name);
-    if (package == nullptr) {
-        m_error_signal(GE_FMTSTR("Package '{}' not found", m_package_name));
-        return;
-    }
-
-    auto resource = package->createResource<MeshResource>({
-        .name = m_resource_name,
-        .filepath = m_mesh_path,
-    });
-    if (resource == nullptr) {
-        m_error_signal(GE_FMTSTR("Failed to create pipeline resource '{}'", m_resource_name));
-        return;
-    }
-
-    close();
-}
-
-} // namespace LE
+} // namespace GE

@@ -94,9 +94,9 @@ void TriangleLayer::onAttached()
 
     // VBO
     static const std::vector<vertex_t> triangle = {
-        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
-        {{0.5f, -0.5f, 0.0f}, {0.0f, 0.1f, 0.0f}},
-        {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        {.position = {-0.5f, -0.5f, 0.0f}, .color = {1.0f, 0.0f, 0.0f}},
+        {.position = {0.5f, -0.5f, 0.0f}, .color = {0.0f, 0.1f, 0.0f}},
+        {.position = {0.0f, 0.5f, 0.0f}, .color = {0.0f, 0.0f, 1.0f}},
     };
 
     m_vbo = VertexBuffer::create(triangle.size() * sizeof(vertex_t), triangle.data());

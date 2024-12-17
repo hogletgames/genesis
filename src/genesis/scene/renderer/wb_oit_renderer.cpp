@@ -98,13 +98,25 @@ void WeightedBlendedOITRenderer::recreateWbOitFramebuffer(const Vec2& size)
     config.msaa_samples = GE::Graphics::limits().max_msaa;
     config.attachments = {
         // Color attachment
-        {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D, TextureFormat::SRGBA8, Vec4{0.0f}},
+        {.type = fb_attachment_t::Type::COLOR,
+         .texture_type = TextureType::TEXTURE_2D,
+         .texture_format = TextureFormat::SRGBA8,
+         .clear_color = Vec4{0.0f}},
         // Accumulation attachment
-        {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D, TextureFormat::RGBA16F, Vec4{0.0f}},
+        {.type = fb_attachment_t::Type::COLOR,
+         .texture_type = TextureType::TEXTURE_2D,
+         .texture_format = TextureFormat::RGBA16F,
+         .clear_color = Vec4{0.0f}},
         // Reveal attachment
-        {fb_attachment_t::Type::COLOR, TextureType::TEXTURE_2D, TextureFormat::R16F, Vec4{1.0f}},
+        {.type = fb_attachment_t::Type::COLOR,
+         .texture_type = TextureType::TEXTURE_2D,
+         .texture_format = TextureFormat::R16F,
+         .clear_color = Vec4{1.0f}},
         // Depth attachment
-        {fb_attachment_t::Type::DEPTH, TextureType::TEXTURE_2D, TextureFormat::D32F, Vec4{}, 1.0f},
+        {.type = fb_attachment_t::Type::DEPTH,
+         .texture_type = TextureType::TEXTURE_2D,
+         .texture_format = TextureFormat::D32F,
+         .clear_depth = 1.0f},
     };
 
     m_wb_oit_fbo = Framebuffer::create(config);

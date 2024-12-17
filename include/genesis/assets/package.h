@@ -92,11 +92,11 @@ Shared<T> Package::get(const ResourceID& id) const
     }
 
     if constexpr (T::GROUP == Group::PIPELINES) {
-        return m_pipelines.count(id.name()) ? m_pipelines.at(id.name()) : nullptr;
+        return m_pipelines.contains(id.name()) ? m_pipelines.at(id.name()) : nullptr;
     } else if constexpr (T::GROUP == Group::MESHES) {
-        return m_meshes.count(id.name()) ? m_meshes.at(id.name()) : nullptr;
+        return m_meshes.contains(id.name()) ? m_meshes.at(id.name()) : nullptr;
     } else if constexpr (T::GROUP == Group::TEXTURES) {
-        return m_textures.count(id.name()) ? m_textures.at(id.name()) : nullptr;
+        return m_textures.contains(id.name()) ? m_textures.at(id.name()) : nullptr;
     } else {
         static_assert(!std::is_same_v<T, T>, "Invalid resource group");
     }
