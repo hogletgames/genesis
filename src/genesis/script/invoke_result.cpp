@@ -32,16 +32,34 @@
 
 #include "invoke_result.h"
 
-namespace GE::Script {
+#include "genesis/core/defer.h"
 
-std::string InvokeResult::asString(MonoObject* exception)
+#include <mono/metadata/object.h>
+
+namespace GE::Script {
+namespace {
+
+std::string exceptionToString(MonoObject* exception)
 {
-    if (auto exception_message = Object{exception}.as<std::string>();
-        exception_message.has_value()) {
-        return exception_message.value();
+    if (exception == nullptr) {
+        return {};
     }
 
-    return {};
+    MonoString* message_string = mono_object_to_string(exception, nullptr);
+    if (message_string == nullptr) {
+        return "Unknown exception: failed to convert exception to string";
+    }
+
+    char* message = mono_string_to_utf8(message_string);
+    GE_DEFER([message] { mono_free(message); });
+    return std::string{message, static_cast<size_t>(mono_string_length(message_string))};
 }
+
+} // namespace
+
+InvokeResult::InvokeResult(MonoObject* result, MonoObject* exception)
+    : m_result{Object{result}}
+    , m_error_message{exceptionToString(exception)}
+{}
 
 } // namespace GE::Script

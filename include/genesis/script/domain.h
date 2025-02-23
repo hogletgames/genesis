@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2024, Dmitry Shilnenkov
+ * Copyright (c) 2025, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,83 +30,65 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "object.h"
-#include "class.h"
-#include "genesis/core/asserts.h"
-#include "method.h"
+#pragma once
 
-#include "genesis/core/log.h"
+#include <genesis/core/export.h>
 
-#include <mono/metadata/appdomain.h>
-#include <mono/metadata/object.h>
+#include <string_view>
+
+extern "C" {
+typedef struct _MonoDomain MonoDomain;
+}
 
 namespace GE::Script {
 
-Object::Object(MonoObject* object, MonoClass* klass)
-    : m_object{object}
+class Assembly;
+
+class GE_API Domain
 {
-    if (m_object == nullptr) {
-        return;
-    }
+public:
+    enum CreationPolicy : uint8_t
+    {
+        CREATION_POLICY_DO_NOT_SET_AS_CURRENT,
+        CREATION_POLICY_SET_AS_CURRENT,
+    };
 
-    m_class = klass != nullptr ? Class{klass} : Class{mono_object_get_class(object)};
-    m_gc_handle = mono_gchandle_new(m_object, false);
-}
+    explicit Domain(std::string_view name,
+                    CreationPolicy creation_policy = CREATION_POLICY_SET_AS_CURRENT);
+    ~Domain();
 
-Object::Object(const Object& other)
-{
-    if (this != &other) {
-        clone(other.m_object);
-    }
-}
+    Domain(Domain&& other) noexcept = default;
+    Domain& operator=(Domain&& other) noexcept = default;
 
-Object& Object::operator=(const Object& other)
-{
-    if (this != &other) {
-        clone(other.m_object);
-    }
+    Domain(const Domain& other) = delete;
+    Domain& operator=(const Domain& other) noexcept = delete;
 
-    return *this;
-}
+    bool recreate(std::string_view name,
+                  CreationPolicy creation_policy = CREATION_POLICY_SET_AS_CURRENT);
 
-Object::~Object()
-{
-    if (m_object != nullptr) {
-        mono_gchandle_free(m_gc_handle);
-    }
-}
+    bool isCurrent() const;
+    void setAsCurrent() const;
 
-Method Object::method(std::string_view name, int param_count) const
-{
-    if (!isValid()) {
-        GE_CORE_ERR("Trying to get method '{}' for invalid object", name);
-        return {};
-    }
+    bool isValid() const { return m_domain != nullptr; }
+    MonoDomain* nativeHandle() const { return m_domain; }
 
-    return Method{m_class.method(name, param_count).nativeHandle(), *this};
-}
+    static Domain rootDomain();
+    static Domain currentDomain();
 
-void* Object::unbox() const
-{
-    if (isValid()) {
-        return mono_object_unbox(m_object);
-    }
+private:
+    enum UnloadDomainPolicy : uint8_t
+    {
+        UNLOAD_POLICY_UNLOAD,
+        UNLOAD_POLICY_DO_NOT_UNLOAD,
+    };
 
-    GE_CORE_ERR("Trying to unbox invalid object");
-    return nullptr;
-}
+    explicit Domain(MonoDomain* domain,
+                    UnloadDomainPolicy unload_policy = UNLOAD_POLICY_DO_NOT_UNLOAD);
 
-void Object::clone(MonoObject* object)
-{
-    GE_CORE_ASSERT(!isValid(), "Trying to clone a mono object to a non-empty object");
+    void unload();
 
-    if (object == nullptr) {
-        GE_CORE_DBG("Trying to clone a nullptr object");
-        return;
-    }
-
-    m_object = mono_object_clone(object);
-    m_gc_handle = mono_gchandle_new(m_object, false);
-}
+    MonoDomain* m_domain{nullptr};
+    UnloadDomainPolicy m_unload_policy{UNLOAD_POLICY_UNLOAD};
+};
 
 } // namespace GE::Script

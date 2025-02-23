@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2024, Dmitry Shilnenkov
+ * Copyright (c) 2025, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ using System.Runtime.CompilerServices;
 
 namespace Ge.Tests {
 
-    public static class InternalCalls {
+    public static class ClassInternalCalls {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern public static bool GetBoolean();
 
@@ -332,138 +332,6 @@ namespace Ge.Tests {
 
         public static void SetChar(char value) {
             InternalCalls.SetChar(value);
-        }
-    }
-
-    public class ObjectMethodsTest {
-        public static void ExistingMethod() {}
-
-        public bool ReturnBoolean() {
-            return true;
-        }
-
-        public bool SetBoolean(bool value) {
-            return value;
-        }
-
-        public string ReturnString() {
-            return "42";
-        }
-
-        public string SetString(string value) {
-            return value;
-        }
-
-        public sbyte ReturnSByte() {
-            return -42;
-        }
-
-        public sbyte SetSByte(sbyte value) {
-            return value;
-        }
-
-        public byte ReturnByte() {
-            return 42;
-        }
-
-        public byte SetByte(byte value) {
-            return value;
-        }
-
-        public short ReturnInt16() {
-            return -42;
-        }
-
-        public short SetInt16(short value) {
-            return value;
-        }
-
-        public ushort ReturnUInt16() {
-            return 42;
-        }
-
-        public ushort SetUInt16(ushort value) {
-            return value;
-        }
-
-        public int ReturnInt32() {
-            return -42;
-        }
-
-        public int SetInt32(int value) {
-            return value;
-        }
-
-        public uint ReturnUInt32() {
-            return 42;
-        }
-
-        public uint SetUInt32(uint value) {
-            return value;
-        }
-
-        public long ReturnInt64() {
-            return -42;
-        }
-
-        public long SetInt64(long value) {
-            return value;
-        }
-
-        public ulong ReturnUInt64() {
-            return 42;
-        }
-
-        public ulong SetUInt64(ulong value) {
-            return value;
-        }
-
-        public float ReturnSingle() {
-            return 4.2f;
-        }
-
-        public float SetSingle(float value) {
-            return value;
-        }
-
-        public double ReturnDouble() {
-            return 4.2;
-        }
-
-        public double SetDouble(double value) {
-            return value;
-        }
-
-        public char ReturnChar() {
-            return '*'; // 42
-        }
-
-        public char SetChar(char value) {
-            return value;
-        }
-
-        public void ZeroArgs() {}
-
-        public void OneIntArg(int a) {}
-
-        public void TwoIntArgs(int a, int b) {}
-
-        public void IntStringBoolArgs(int a, string b, bool c) {}
-
-        public static string StaticMethod() {
-            return "ObjectMethodsTest::staticMethod";
-        }
-
-        public string InstanceMethod() {
-            return "ObjectMethodsTest::instanceMethod";
-        }
-
-        public string TestException(bool throwException, string message) {
-            if (throwException) {
-                throw new InvalidOperationException(message);
-            }
-
-            return message;
         }
     }
 

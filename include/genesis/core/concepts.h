@@ -43,4 +43,7 @@ concept FuncReturns = requires(Func f, Args... args) {
     { std::invoke(f, args...) } -> std::same_as<ReturnValue>;
 };
 
+template<typename T, typename... Types>
+concept IsOneOf = (std::same_as<T, Types> || ...);
+
 } // namespace GE

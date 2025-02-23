@@ -32,26 +32,38 @@
 
 #include "scripting_engine.h"
 #include "assembly.h"
+#include "domain.h"
+
+#include "genesis/core/asserts.h"
+#include "genesis/core/log.h"
 
 #include <mono/jit/jit.h>
+#include <mono/metadata/loader.h>
 
 namespace GE::Script {
 
 bool ScriptingEngine::initialize(std::string_view domain_name, std::string_view runtime_version)
 {
-    s_domain = mono_jit_init_version(domain_name.data(), runtime_version.data());
-    return s_domain != nullptr;
+    GE_CORE_ASSERT(s_root_domain == nullptr, "Mono runtime has already been initialized");
+    GE_CORE_INFO("Initializing '{}' Mono runtime with version '{}'", domain_name, runtime_version);
+
+    s_root_domain = mono_jit_init_version(domain_name.data(), runtime_version.data());
+    return s_root_domain != nullptr;
 }
 
 void ScriptingEngine::shutdown()
 {
-    mono_jit_cleanup(s_domain);
-    s_domain = nullptr;
+    GE_CORE_ASSERT(s_root_domain != nullptr, "Shutting down uninitialized Mono runtime");
+    GE_CORE_INFO("Shutting down Mono runtime");
+
+    mono_jit_cleanup(s_root_domain);
+    s_root_domain = nullptr;
 }
 
-Assembly ScriptingEngine::createAssembly()
+void ScriptingEngine::addInternalCall(std::string_view method_name, const void* method)
 {
-    return Assembly{s_domain};
+    GE_CORE_DBG("Registering internal call: {}", method_name);
+    mono_add_internal_call(method_name.data(), method);
 }
 
 } // namespace GE::Script

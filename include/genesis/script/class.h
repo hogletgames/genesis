@@ -44,28 +44,24 @@ typedef struct _MonoClass MonoClass;
 namespace GE::Script {
 
 class Method;
-
 class Object;
 
 class GE_API Class
 {
 public:
+    class Factory;
+
     Class() = default;
+    explicit Class(MonoClass* klass);
 
     bool isValid() const { return m_class != nullptr; }
     ClassType type() const;
     Method method(std::string_view name, int param_count = -1) const;
 
+    MonoClass* nativeHandle() const { return m_class; };
     Object newObject() const;
 
 private:
-    friend class Assembly;
-    friend class Object;
-
-    explicit Class(MonoClass* klass)
-        : m_class{klass}
-    {}
-
     MonoClass* m_class{nullptr};
 };
 

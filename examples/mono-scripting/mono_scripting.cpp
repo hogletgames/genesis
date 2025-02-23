@@ -155,7 +155,7 @@ public:
     bool initialize(std::string_view domain_name, std::string_view runtime_version)
     {
         GE_INFO("Initializing '{}' Mono runtime with version '{}'", domain_name, runtime_version);
-        mono_set_dirs("mono-install/lib", "mono-install/etc");
+        // mono_set_dirs("mono-install/lib", "mono-install/etc");
         mono_config_parse(nullptr);
 
         if (m_domain = mono_jit_init_version(domain_name.data(), runtime_version.data());

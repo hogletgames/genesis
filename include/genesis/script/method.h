@@ -36,7 +36,8 @@
 #include <genesis/script/invoke_result.h>
 
 #include <array>
-#include <tuple>
+#include <span>
+#include <vector>
 
 extern "C" {
 typedef struct _MonoObject MonoObject;
@@ -45,43 +46,41 @@ typedef struct _MonoMethod MonoMethod;
 
 namespace GE::Script {
 
+class Object;
+
 class GE_API Method
 {
 public:
     Method() = default;
+    explicit Method(MonoMethod* method);
+    Method(MonoMethod* method, const Object& object);
 
     bool isValid() const { return m_method != nullptr; }
 
+    bool isInstance() const;
     int paramCount() const;
+    std::vector<ClassType> paramTypes() const;
+    std::string_view name() const;
+    Class klass() const;
 
     template<typename... Args>
-    InvokeResult operator()(Args&&... args);
+    InvokeResult operator()(Args&&... args) const;
+
+    MonoMethod* nativeHandle() const { return m_method; };
 
 private:
-    friend class Class;
-    friend class Object;
-
-    explicit Method(MonoMethod* method, MonoObject* object = nullptr)
-        : m_method{method}
-        , m_object{object}
-    {}
-
-    InvokeResult invoke(void** args, int args_count);
+    bool validateArguments(std::span<Object> args) const;
+    InvokeResult invoke(std::span<Object> args) const;
 
     MonoMethod* m_method{nullptr};
     MonoObject* m_object{nullptr};
 };
 
 template<typename... Args>
-InvokeResult Method::operator()(Args&&... args)
+InvokeResult Method::operator()(Args&&... args) const
 {
-    auto get_arg_pointers = [](auto&&... arguments) {
-        return std::array<void*, sizeof...(arguments)>{arguments.asMethodArg()...};
-    };
-
-    std::tuple arg_tuple{ToScriptType<Args>{args}...};
-    auto method_args = std::apply(get_arg_pointers, arg_tuple);
-    return invoke(method_args.data(), method_args.size());
+    std::array<Object, sizeof...(args)> arguments{Object{args}...};
+    return invoke(arguments);
 }
 
 } // namespace GE::Script

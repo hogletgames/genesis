@@ -37,6 +37,8 @@
 #include <genesis/script/class.h>
 #include <genesis/script/class_type.h>
 #include <genesis/script/class_type_traits.h>
+#include <genesis/script/concepts.h>
+#include <genesis/script/domain.h>
 #include <genesis/script/invoke_result.h>
 #include <genesis/script/method.h>
 #include <genesis/script/object.h>

@@ -32,6 +32,8 @@
 
 #include "assembly.h"
 #include "class.h"
+#include "domain.h"
+#include "genesis/core/asserts.h"
 
 #include "genesis/core/log.h"
 
@@ -41,8 +43,19 @@
 
 namespace GE::Script {
 
+Assembly::Assembly(const Domain& domain)
+    : m_domain{domain.nativeHandle()}
+{}
+
+Assembly::~Assembly()
+{
+    reset();
+}
+
 bool Assembly::load(std::string_view assembly_path)
 {
+    GE_CORE_ASSERT(!isValid(), "Assembly has already been loaded");
+
     if (m_domain == nullptr) {
         GE_CORE_ERR("Trying to load assembly '{}' into invalid domain", assembly_path);
         return false;
@@ -51,23 +64,37 @@ bool Assembly::load(std::string_view assembly_path)
     if (m_assembly = mono_domain_assembly_open(m_domain, assembly_path.data());
         m_assembly == nullptr) {
         GE_CORE_ERR("Failed to load '{}' assembly", assembly_path);
+        reset();
         return false;
     }
 
-    m_image = mono_assembly_get_image(m_assembly);
+    if (m_image = mono_assembly_get_image(m_assembly); m_image == nullptr) {
+        GE_CORE_ERR("Failed to load image for '{}' assembly", assembly_path);
+        reset();
+        return false;
+    }
+
+    GE_CORE_DBG("Loaded assembly: '{}'", assembly_path);
     return true;
 }
 
-Class Assembly::getClass(std::string_view class_namespace, std::string_view class_name) const
+Class Assembly::createClass(std::string_view class_namespace, std::string_view class_name) const
 {
     if (auto* klass = mono_class_from_name(m_image, class_namespace.data(), class_name.data());
         klass != nullptr) {
         return Class{klass};
     }
 
-    GE_CORE_ERR("Failed to get class from name: namespace='{}', class='{}'", class_namespace,
+    GE_CORE_ERR("Failed to get class from name: namespace '{}', class '{}'", class_namespace,
                 class_name);
-    return Class{};
+    return {};
+}
+
+void Assembly::reset()
+{
+    m_domain = nullptr;
+    m_assembly = nullptr;
+    m_image = nullptr;
 }
 
 } // namespace GE::Script

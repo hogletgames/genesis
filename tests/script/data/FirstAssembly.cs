@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2024, Dmitry Shilnenkov
+ * Copyright (c) 2025, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,57 +30,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "class.h"
-#include "domain.h"
-#include "method.h"
-#include "object.h"
+using System;
 
-#include "genesis/core/log.h"
+namespace Ge.FirstAssemblyTest {
 
-#include <mono/metadata/class.h>
-#include <mono/metadata/object.h>
-
-namespace GE::Script {
-
-Class::Class(MonoClass* klass)
-    : m_class{klass}
-{}
-
-ClassType Class::type() const
-{
-    if (isValid()) {
-        return toClassType(mono_type_get_type(mono_class_get_type(m_class)));
+    public class FirstTestClass {
+        public int ReturnInt(int value) {
+            return value;
+        }
     }
 
-    return ClassType::UNKNOWN;
 }
-
-Method Class::method(std::string_view name, int param_count) const
-{
-    if (!isValid()) {
-        GE_CORE_ERR("Trying to get method '{}' using invalid class", name);
-        return {};
-    }
-
-    auto* method = mono_class_get_method_from_name(m_class, name.data(), param_count);
-    if (method == nullptr) {
-        GE_CORE_ERR("Method '{}' not found", name);
-        return {};
-    }
-
-    return Method{method};
-}
-
-Object Class::newObject() const
-{
-    if (!isValid()) {
-        GE_CORE_ERR("Trying to create object using invalid class");
-        return {};
-    }
-
-    auto* object = mono_object_new(Domain::currentDomain().nativeHandle(), m_class);
-    mono_runtime_object_init(object);
-    return Object{object, m_class};
-}
-
-} // namespace GE::Script

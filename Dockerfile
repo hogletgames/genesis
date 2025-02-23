@@ -58,16 +58,18 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
         python3
 
 # Clone and build Mono
-ARG MONO_VER="6000.0.9f1"
+ARG MONO_VER="6000.2.0a8"
 RUN git clone https://github.com/hogletgames/mono.git                          \
         --branch "${MONO_VER}"                                                 \
         --depth 1                                                              \
-        /tmp/mono                                                              \
- && cd /tmp/mono                                                               \
- && ./autogen.sh --with-overridable-allocators --prefix=/opt/mono              \
+        --recursive                                                            \
+        /tmp/mono
+# Build Release
+RUN ./autogen.sh --with-overridable-allocators --prefix=/opt/mono              \
  && make get-monolite-latest                                                   \
  && make -j$(nproc)                                                            \
  && make install                                                               \
+# Clean up
  && rm -rf /tmp/mono
 
 # Genesis image

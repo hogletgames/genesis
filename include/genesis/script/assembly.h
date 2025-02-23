@@ -45,22 +45,25 @@ typedef struct _MonoImage MonoImage;
 namespace GE::Script {
 
 class Class;
+class Domain;
 
 class GE_API Assembly
 {
 public:
+    Assembly() = default;
+    explicit Assembly(const Domain& domain);
+    ~Assembly();
+
     bool isValid() const { return m_domain != nullptr && m_assembly != nullptr; }
 
     bool load(std::string_view assembly_path);
 
-    Class getClass(std::string_view class_namespace, std::string_view class_name) const;
+    Class createClass(std::string_view class_namespace, std::string_view class_name) const;
 
 private:
     friend class ScriptingEngine;
 
-    explicit Assembly(MonoDomain* domain)
-        : m_domain{domain}
-    {}
+    void reset();
 
     MonoDomain* m_domain{nullptr};
     MonoAssembly* m_assembly{nullptr};

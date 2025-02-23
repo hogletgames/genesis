@@ -33,6 +33,7 @@
 #pragma once
 
 #include <genesis/script/bittable_type.h>
+#include <genesis/script/concepts.h>
 #include <genesis/script/string_type.h>
 
 #include <string>
@@ -43,77 +44,22 @@ namespace GE::Script {
 template<typename T>
 struct type_traits_t;
 
-template<>
-struct type_traits_t<int8_t> {
-    using ScriptType = BittableType<int8_t>;
+template<IsBittableType T>
+struct type_traits_t<T> {
+    using ScriptType = BittableType<T>;
+    using ValueType = T;
 };
 
-template<>
-struct type_traits_t<uint8_t> {
-    using ScriptType = BittableType<uint8_t>;
-};
-
-template<>
-struct type_traits_t<int16_t> {
-    using ScriptType = BittableType<int16_t>;
-};
-
-template<>
-struct type_traits_t<uint16_t> {
-    using ScriptType = BittableType<uint16_t>;
-};
-
-template<>
-struct type_traits_t<int32_t> {
-    using ScriptType = BittableType<int32_t>;
-};
-
-template<>
-struct type_traits_t<uint32_t> {
-    using ScriptType = BittableType<uint32_t>;
-};
-
-template<>
-struct type_traits_t<int64_t> {
-    using ScriptType = BittableType<int64_t>;
-};
-
-template<>
-struct type_traits_t<uint64_t> {
-    using ScriptType = BittableType<uint64_t>;
-};
-
-template<>
-struct type_traits_t<float> {
-    using ScriptType = BittableType<float>;
-};
-
-template<>
-struct type_traits_t<double> {
-    using ScriptType = BittableType<double>;
-};
-
-template<>
-struct type_traits_t<bool> {
-    using ScriptType = BittableType<bool>;
-};
-
-template<>
-struct type_traits_t<char> {
-    using ScriptType = BittableType<char>;
-};
-
-template<>
-struct type_traits_t<std::string> {
+template<IsStringType T>
+struct type_traits_t<T> {
     using ScriptType = StringType;
-};
-
-template<>
-struct type_traits_t<std::string_view> {
-    using ScriptType = StringType;
+    using ValueType = std::string;
 };
 
 template<typename T>
-using ToScriptType = typename type_traits_t<std::decay_t<T>>::ScriptType;
+using ScriptType = typename type_traits_t<std::decay_t<T>>::ScriptType;
+
+template<typename T>
+using ValueType = typename type_traits_t<std::decay_t<T>>::ValueType;
 
 } // namespace GE::Script

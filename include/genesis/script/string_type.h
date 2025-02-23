@@ -49,15 +49,12 @@ class GE_API StringType
 {
 public:
     explicit StringType(const Object& object);
-
     explicit StringType(std::string_view string);
-
     ~StringType();
 
     bool isValid() const { return m_string != nullptr; }
-
-    std::optional<std::string> value() const;
-    void* asMethodArg() { return m_string; }
+    std::string value() const;
+    Object asObject() const;
 
 private:
     void updateGCHandle(MonoString* mono_string);

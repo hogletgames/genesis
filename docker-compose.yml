@@ -18,6 +18,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: genesis-image
+    environment:
+      BUILD_DIR: ${BUILD_DIR:-./build}/docker
     user: ${USERID:-1000}:${GROUPID:-1000}
     volumes:
       - ${PWD}:${PWD}

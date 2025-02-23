@@ -32,12 +32,12 @@
 
 #include "string_type.h"
 #include "class.h"
+#include "domain.h"
 #include "object.h"
 
-#include "genesis/core/enum.h"
+#include "genesis/core/defer.h"
 #include "genesis/core/log.h"
 
-#include <mono/metadata/appdomain.h>
 #include <mono/metadata/object.h>
 
 namespace GE::Script {
@@ -49,18 +49,20 @@ StringType::StringType(const Object& object)
         return;
     }
 
-    if (auto type = object.type(); type != ClassType::STRING) {
-        GE_CORE_ERR("Trying to create a string from object with type={}", toString(type));
+    MonoObject* exception{nullptr};
+    m_string = mono_object_to_string(object.nativeHandle(), &exception);
+
+    if (exception != nullptr) {
+        GE_CORE_ERR("Failed to convert an object to a string");
         return;
     }
 
-    m_string = reinterpret_cast<MonoString*>(object.nativeHandle());
     updateGCHandle(m_string);
 }
 
 StringType::StringType(std::string_view string)
 {
-    m_string = mono_string_new(mono_domain_get(), string.data());
+    m_string = mono_string_new(Domain::currentDomain().nativeHandle(), string.data());
     updateGCHandle(m_string);
 }
 
@@ -71,19 +73,31 @@ StringType::~StringType()
     }
 }
 
-std::optional<std::string> StringType::value() const
+std::string StringType::value() const
 {
+    if (!isValid()) {
+        GE_CORE_ERR("Trying to get value from an invalid string");
+        return {};
+    }
+
     char* string = mono_string_to_utf8(m_string);
     if (string == nullptr) {
         GE_CORE_ERR("Failed to convert string to UTF-8");
         return {};
     }
 
-    size_t string_length = mono_string_length(m_string);
-    std::string result{string, string_length};
-    mono_free(string);
+    GE_DEFER([string] { mono_free(string); });
+    return {string, static_cast<size_t>(mono_string_length(m_string))};
+}
 
-    return result;
+Object StringType::asObject() const
+{
+    if (!isValid()) {
+        GE_CORE_ERR("Trying to create an object from an invalid string");
+        return {};
+    }
+
+    return Object{reinterpret_cast<MonoObject*>(m_string)};
 }
 
 void StringType::updateGCHandle(MonoString* mono_string)

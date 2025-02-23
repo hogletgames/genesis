@@ -9,6 +9,8 @@ list(APPEND SCRIPT_HEADERS
     ${INCLUDE_DIR}/class.h
     ${INCLUDE_DIR}/class_type.h
     ${INCLUDE_DIR}/class_type_traits.h
+    ${INCLUDE_DIR}/concepts.h
+    ${INCLUDE_DIR}/domain.h
     ${INCLUDE_DIR}/invoke_result.h
     ${INCLUDE_DIR}/method.h
     ${INCLUDE_DIR}/object.h
@@ -21,6 +23,8 @@ list(APPEND SCRIPT_SOURCES
     assembly.cpp
     bittable_type.cpp
     class.cpp
+    class_type.cpp
+    domain.cpp
     invoke_result.cpp
     method.cpp
     object.cpp

@@ -32,12 +32,16 @@
 
 #pragma once
 
+#include <genesis/core/enum.h>
+#include <genesis/core/export.h>
+
+typedef struct _MonoClass MonoClass;
+
 namespace GE::Script {
 
 enum class ClassType
 {
     UNKNOWN = 0,
-    END,
     VOID,
     BOOLEAN,
     CHAR,
@@ -75,4 +79,18 @@ enum class ClassType
     ENUM
 };
 
+GE_API ClassType toClassType(int mono_type);
+GE_API MonoClass* toNativeClass(ClassType class_type);
+
 } // namespace GE::Script
+
+template<>
+struct fmt::formatter<GE::Script::ClassType> {
+    constexpr auto parse(format_parse_context& ctx) const { return ctx.begin(); }
+
+    template<typename FmtContext>
+    constexpr auto format(const GE::Script::ClassType& class_type, FmtContext& ctx) const
+    {
+        return format_to(ctx.out(), "{}", GE::toString(class_type));
+    }
+};

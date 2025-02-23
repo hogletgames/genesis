@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include <genesis/script/domain.h>
+
 #include <string_view>
 
 extern "C" {
@@ -51,12 +53,23 @@ public:
                            std::string_view runtime_version = DEFAULT_RUNTIME_VERSION);
     static void shutdown();
 
-    static Assembly createAssembly();
+    template<typename ReturnType, typename... Signature>
+    static void registerInternalCall(std::string_view method_name,
+                                     ReturnType (*method)(Signature...));
 
     static constexpr std::string_view DEFAULT_RUNTIME_VERSION{"v4.0.30319"};
 
 private:
-    inline static MonoDomain* s_domain{nullptr};
+    static void addInternalCall(std::string_view method_name, const void* method);
+
+    inline static MonoDomain* s_root_domain{nullptr};
 };
+
+template<typename ReturnType, typename... Signature>
+void ScriptingEngine::registerInternalCall(std::string_view method_name,
+                                           ReturnType (*method)(Signature...))
+{
+    addInternalCall(method_name, reinterpret_cast<const void*>(method));
+}
 
 } // namespace GE::Script

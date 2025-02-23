@@ -32,10 +32,13 @@
 
 #pragma once
 
+#include <genesis/core/concepts.h>
 #include <genesis/core/export.h>
 #include <genesis/script/class_type_traits.h>
 
-#include <optional>
+extern "C" {
+typedef struct _MonoObject MonoObject;
+}
 
 namespace GE::Script {
 
@@ -43,34 +46,43 @@ class Object;
 
 class GE_API BaseBittableType
 {
+public:
+    ~BaseBittableType();
+
+    bool isValid() const { return m_object != nullptr; }
+    Object asObject() const;
+
 protected:
-    static ClassType objectType(const Object& object);
-    static void* unboxObject(const Object& object);
+    explicit BaseBittableType(const Object& object);
+    BaseBittableType(void* value, ClassType type);
+
+    void* unboxObject(ClassType type) const;
+
+private:
+    MonoObject* m_object{nullptr};
+    uint32_t m_gc_handle{0};
 };
 
-template<typename T>
+template<IsBittableType T>
 class GE_API BittableType: public BaseBittableType
 {
 public:
-    explicit BittableType(T value)
-        : m_value{value}
+    explicit BittableType(const Object& object)
+        : BaseBittableType{object}
     {}
 
-    explicit BittableType(const Object& object)
+    explicit BittableType(T value)
+        : BaseBittableType{&value, CLASS_TYPE<T>}
+    {}
+
+    T value() const
     {
-        if (objectType(object) == CLASS_TYPE<T>) {
-            using DecayedType = std::decay_t<T>;
-            m_value = *static_cast<const DecayedType*>(unboxObject(object));
+        if (void* value = unboxObject(CLASS_TYPE<T>); value != nullptr) {
+            return *static_cast<const T*>(value);
         }
+
+        return T{};
     }
-
-    bool isValid() const { return m_value.has_value(); }
-
-    std::optional<T> value() const { return m_value; }
-    void* asMethodArg() { return &m_value.value(); }
-
-private:
-    std::optional<T> m_value;
 };
 
 } // namespace GE::Script

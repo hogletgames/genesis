@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2024, Dmitry Shilnenkov
+ * Copyright (c) 2025, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,57 +30,57 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "class.h"
-#include "domain.h"
-#include "method.h"
-#include "object.h"
+#pragma once
 
-#include "genesis/core/log.h"
+#include <genesis/script/concepts.h>
 
-#include <mono/metadata/class.h>
-#include <mono/metadata/object.h>
+#include <type_traits>
 
-namespace GE::Script {
+namespace GE::Tests {
 
-Class::Class(MonoClass* klass)
-    : m_class{klass}
-{}
+template<typename T>
+struct test_values_t;
 
-ClassType Class::type() const
-{
-    if (isValid()) {
-        return toClassType(mono_type_get_type(mono_class_get_type(m_class)));
-    }
+template<std::signed_integral T>
+struct test_values_t<T> {
+    static constexpr T VALUE{-42};
+    static constexpr T ALTERNATIVE_VALUE{-43};
+};
 
-    return ClassType::UNKNOWN;
-}
+template<std::unsigned_integral T>
+struct test_values_t<T> {
+    static constexpr T VALUE{42};
+    static constexpr T ALTERNATIVE_VALUE{43};
+};
 
-Method Class::method(std::string_view name, int param_count) const
-{
-    if (!isValid()) {
-        GE_CORE_ERR("Trying to get method '{}' using invalid class", name);
-        return {};
-    }
+template<std::floating_point T>
+struct test_values_t<T> {
+    static constexpr T VALUE{4.2};
+    static constexpr T ALTERNATIVE_VALUE{4.2};
+};
 
-    auto* method = mono_class_get_method_from_name(m_class, name.data(), param_count);
-    if (method == nullptr) {
-        GE_CORE_ERR("Method '{}' not found", name);
-        return {};
-    }
+template<>
+struct test_values_t<char> {
+    static constexpr char VALUE{'*'};             // 42
+    static constexpr char ALTERNATIVE_VALUE{'+'}; // 43
+};
 
-    return Method{method};
-}
+template<>
+struct test_values_t<bool> {
+    static constexpr bool VALUE{true};
+    static constexpr bool ALTERNATIVE_VALUE{false};
+};
 
-Object Class::newObject() const
-{
-    if (!isValid()) {
-        GE_CORE_ERR("Trying to create object using invalid class");
-        return {};
-    }
+template<Script::IsStringType T>
+struct test_values_t<T> {
+    static constexpr T VALUE{"42"};
+    static constexpr T ALTERNATIVE_VALUE{"43"};
+};
 
-    auto* object = mono_object_new(Domain::currentDomain().nativeHandle(), m_class);
-    mono_runtime_object_init(object);
-    return Object{object, m_class};
-}
+template<typename T>
+constexpr T TESTED_VALUE{test_values_t<std::decay_t<T>>::VALUE};
 
-} // namespace GE::Script
+template<typename T>
+constexpr T TESTED_ALT_VALUE{test_values_t<std::decay_t<T>>::ALTERNATIVE_VALUE};
+
+} // namespace GE::Tests

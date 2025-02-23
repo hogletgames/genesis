@@ -36,7 +36,6 @@
 #include <genesis/script/class_type.h>
 #include <genesis/script/object.h>
 
-#include <optional>
 #include <string>
 
 extern "C" {
@@ -48,32 +47,35 @@ namespace GE::Script {
 class GE_API InvokeResult
 {
 public:
+    InvokeResult(MonoObject* result, MonoObject* exception);
+
     template<typename T>
-    std::optional<T> as() const;
+    bool is() const;
 
-    ClassType type() const { return Object{m_result}.type(); }
+    template<typename T>
+    ValueType<T> as() const;
 
-    operator bool() const { return m_error_message.empty(); }
+    ClassType type() const { return m_result.type(); }
+
+    operator bool() const { return m_result.isValid() && !hasError(); }
+    bool hasError() const { return !m_error_message.empty(); }
     std::string_view errorMessage() const { return m_error_message; }
 
 private:
-    friend class Method;
-
-    InvokeResult(MonoObject* result, MonoObject* exception)
-        : m_result{result}
-        , m_error_message{asString(exception)}
-    {}
-
-    std::string asString(MonoObject* exception);
-
-    MonoObject* m_result{nullptr};
+    Object m_result;
     std::string m_error_message;
 };
 
 template<typename T>
-std::optional<T> InvokeResult::as() const
+bool InvokeResult::is() const
 {
-    return Object{m_result}.as<T>();
+    return m_result.is<T>();
+}
+
+template<typename T>
+ValueType<T> InvokeResult::as() const
+{
+    return m_result.as<T>();
 }
 
 } // namespace GE::Script

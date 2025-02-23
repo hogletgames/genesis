@@ -31,7 +31,7 @@
  */
 
 #include "bittable_type.h"
-#include "class.h"
+#include "domain.h"
 #include "object.h"
 
 #include "genesis/core/enum.h"
@@ -41,13 +41,56 @@
 
 namespace GE::Script {
 
-ClassType BaseBittableType::objectType(const Object& object)
+BaseBittableType::~BaseBittableType()
 {
-    return object.getClass().type();
+    if (isValid()) {
+        mono_gchandle_free(m_gc_handle);
+    }
 }
 
-void* BaseBittableType::unboxObject(const Object& object)
+Object BaseBittableType::asObject() const
 {
+    return Object{m_object};
+}
+
+BaseBittableType::BaseBittableType(const Object& object)
+{
+    if (!object.isValid()) {
+        GE_CORE_ERR("Trying to create a bittalbe type from an invalid object");
+        return;
+    }
+
+    m_object = mono_object_clone(object.nativeHandle());
+    m_gc_handle = mono_gchandle_new(m_object, false);
+}
+
+BaseBittableType::BaseBittableType(void* value, ClassType type)
+{
+    auto* mono_class = toNativeClass(type);
+    if (mono_class == nullptr) {
+        GE_CORE_ERR("Failed to get MonoClass to box value of '{}' type", toString(type));
+        return;
+    }
+
+    m_object = mono_value_box(Domain::currentDomain().nativeHandle(), mono_class, value);
+    m_gc_handle = mono_gchandle_new(m_object, false);
+}
+
+void* BaseBittableType::unboxObject(ClassType type) const
+{
+    auto object = asObject();
+
+    if (!object.isValid()) {
+        GE_CORE_ERR("Unboxing invalid object");
+        return nullptr;
+    }
+
+    if (object.type() != type) {
+        GE_CORE_ERR("Incorrect type of object, expected: '{}', actual: '{}'", toString(type),
+                    toString(object.type()));
+        return nullptr;
+    }
+
     return object.unbox();
 }
 

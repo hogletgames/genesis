@@ -36,6 +36,7 @@ You need to install the following dependencies to build the project:
 ### To build manually
 
 ```bash
+export VULKAN_SDK=/path/to/vulkan_sdk
 make -j$(nproc)
 ```
 

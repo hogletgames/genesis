@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2024, Dmitry Shilnenkov
+ * Copyright (c) 2025, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,57 +30,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "class.h"
-#include "domain.h"
-#include "method.h"
-#include "object.h"
+#pragma once
 
-#include "genesis/core/log.h"
+#include <genesis/core/concepts.h>
 
-#include <mono/metadata/class.h>
-#include <mono/metadata/object.h>
+#include <cstdint>
+#include <string>
+#include <type_traits>
 
 namespace GE::Script {
 
-Class::Class(MonoClass* klass)
-    : m_class{klass}
-{}
+template<typename T>
+concept IsBittableType = IsOneOf<std::decay_t<T>, int8_t, uint8_t, int16_t, uint16_t, int32_t,
+                                 uint32_t, int64_t, uint64_t, float, double, bool, char>;
 
-ClassType Class::type() const
-{
-    if (isValid()) {
-        return toClassType(mono_type_get_type(mono_class_get_type(m_class)));
-    }
-
-    return ClassType::UNKNOWN;
-}
-
-Method Class::method(std::string_view name, int param_count) const
-{
-    if (!isValid()) {
-        GE_CORE_ERR("Trying to get method '{}' using invalid class", name);
-        return {};
-    }
-
-    auto* method = mono_class_get_method_from_name(m_class, name.data(), param_count);
-    if (method == nullptr) {
-        GE_CORE_ERR("Method '{}' not found", name);
-        return {};
-    }
-
-    return Method{method};
-}
-
-Object Class::newObject() const
-{
-    if (!isValid()) {
-        GE_CORE_ERR("Trying to create object using invalid class");
-        return {};
-    }
-
-    auto* object = mono_object_new(Domain::currentDomain().nativeHandle(), m_class);
-    mono_runtime_object_init(object);
-    return Object{object, m_class};
-}
+template<typename T>
+concept IsStringType = IsOneOf<std::decay_t<T>, std::string, std::string_view, const char*>;
 
 } // namespace GE::Script

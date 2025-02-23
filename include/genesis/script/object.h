@@ -33,9 +33,10 @@
 #pragma once
 
 #include <genesis/core/export.h>
+#include <genesis/script/class.h>
 #include <genesis/script/type_traits.h>
 
-#include <optional>
+#include <string_view>
 
 extern "C" {
 typedef struct _MonoObject MonoObject;
@@ -51,34 +52,59 @@ class GE_API Object
 {
 public:
     Object() = default;
+
+    template<typename T>
+    explicit Object(T&& value);
+
+    explicit Object(MonoObject* object, MonoClass* klass = nullptr);
+
+    Object(const Object& other);
+    Object& operator=(const Object& other);
+
+    Object(Object&& other) noexcept = default;
+    Object& operator=(Object&& other) noexcept = default;
+
     ~Object();
 
-    bool isValid() const { return m_object != nullptr; }
+    bool isValid() const { return m_class.isValid() && m_object != nullptr; }
 
+    const Class& klass() const { return m_class; }
+    ClassType type() const { return m_class.type(); }
     Method method(std::string_view name, int param_count = -1) const;
-    Class getClass() const;
-    ClassType type() const;
+
     void* unbox() const;
     MonoObject* nativeHandle() const { return m_object; }
 
     template<typename T>
-    std::optional<T> as() const;
+    bool is() const;
+
+    template<typename T>
+    ValueType<T> as() const;
 
 private:
-    friend class Class;
-    friend class InvokeResult;
-
-    explicit Object(MonoObject* object, MonoClass* klass = nullptr);
+    void clone(MonoObject* object);
 
     MonoObject* m_object{nullptr};
-    MonoClass* m_class{nullptr};
+    Class m_class;
     uint32_t m_gc_handle{0};
 };
 
 template<typename T>
-std::optional<T> Object::as() const
+Object::Object(T&& value)
 {
-    return isValid() ? ToScriptType<T>{*this}.value() : std::nullopt;
+    *this = ScriptType<T>{value}.asObject();
+}
+
+template<typename T>
+bool Object::is() const
+{
+    return isValid() && type() == CLASS_TYPE<T>;
+}
+
+template<typename T>
+ValueType<T> Object::as() const
+{
+    return is<T>() ? ScriptType<T>{*this}.value() : ValueType<T>{};
 }
 
 } // namespace GE::Script

@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "genesis/core/log.h"
 #include "genesis/script/scripting_engine.h"
 
 #include <gtest/gtest.h>
@@ -43,6 +44,10 @@ class ScriptingEngineEnvironment: public testing::Environment
 public:
     void SetUp() override
     {
+        GE::Log::settings_t settings;
+        settings.core_log_level = GE::Logger::Level::ERROR;
+        settings.client_log_level = GE::Logger::Level::ERROR;
+        GE::Log::initialize(settings);
         ASSERT_TRUE(GE::Script::ScriptingEngine::initialize(TEST_DOMAIN_NAME));
     }
 

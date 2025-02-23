@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2024, Dmitry Shilnenkov
+ * Copyright (c) 2025, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,83 +30,84 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "object.h"
-#include "class.h"
-#include "genesis/core/asserts.h"
-#include "method.h"
+#include "domain.h"
 
+#include "genesis/core/defer.h"
 #include "genesis/core/log.h"
 
 #include <mono/metadata/appdomain.h>
-#include <mono/metadata/object.h>
 
 namespace GE::Script {
 
-Object::Object(MonoObject* object, MonoClass* klass)
-    : m_object{object}
+Domain::Domain(std::string_view name, CreationPolicy creation_policy)
 {
-    if (m_object == nullptr) {
-        return;
-    }
-
-    m_class = klass != nullptr ? Class{klass} : Class{mono_object_get_class(object)};
-    m_gc_handle = mono_gchandle_new(m_object, false);
+    recreate(name, creation_policy);
 }
 
-Object::Object(const Object& other)
+Domain::~Domain()
 {
-    if (this != &other) {
-        clone(other.m_object);
-    }
+    unload();
 }
 
-Object& Object::operator=(const Object& other)
+bool Domain::isCurrent() const
 {
-    if (this != &other) {
-        clone(other.m_object);
-    }
-
-    return *this;
+    return mono_domain_get() == m_domain;
 }
 
-Object::~Object()
-{
-    if (m_object != nullptr) {
-        mono_gchandle_free(m_gc_handle);
-    }
-}
-
-Method Object::method(std::string_view name, int param_count) const
-{
-    if (!isValid()) {
-        GE_CORE_ERR("Trying to get method '{}' for invalid object", name);
-        return {};
-    }
-
-    return Method{m_class.method(name, param_count).nativeHandle(), *this};
-}
-
-void* Object::unbox() const
+void Domain::setAsCurrent() const
 {
     if (isValid()) {
-        return mono_object_unbox(m_object);
+        mono_domain_set(m_domain, true);
     }
-
-    GE_CORE_ERR("Trying to unbox invalid object");
-    return nullptr;
 }
 
-void Object::clone(MonoObject* object)
+bool Domain::recreate(std::string_view name, CreationPolicy creation_policy)
 {
-    GE_CORE_ASSERT(!isValid(), "Trying to clone a mono object to a non-empty object");
+    if (isValid()) {
+        unload();
+    }
 
-    if (object == nullptr) {
-        GE_CORE_DBG("Trying to clone a nullptr object");
+    if (m_domain = mono_domain_create_appdomain(const_cast<char*>(name.data()), nullptr);
+        m_domain == nullptr) {
+        GE_CORE_ERR("Failed to create domain '{}'", name);
+        return false;
+    }
+
+    if (creation_policy == CREATION_POLICY_SET_AS_CURRENT) {
+        setAsCurrent();
+    }
+
+    return true;
+}
+
+Domain Domain::rootDomain()
+{
+    return Domain{mono_get_root_domain(), UNLOAD_POLICY_DO_NOT_UNLOAD};
+}
+
+Domain Domain::currentDomain()
+{
+    return Domain{mono_domain_get(), UNLOAD_POLICY_DO_NOT_UNLOAD};
+}
+
+Domain::Domain(MonoDomain* domain, UnloadDomainPolicy unload_policy)
+    : m_domain{domain}
+    , m_unload_policy(unload_policy)
+{}
+
+void Domain::unload()
+{
+    GE_DEFER([this] { m_domain = nullptr; });
+
+    if (!isValid() || m_unload_policy == UNLOAD_POLICY_DO_NOT_UNLOAD) {
         return;
     }
 
-    m_object = mono_object_clone(object);
-    m_gc_handle = mono_gchandle_new(m_object, false);
+    if (isCurrent()) {
+        mono_domain_set(mono_get_root_domain(), true);
+    }
+
+    mono_domain_unload(m_domain);
 }
 
 } // namespace GE::Script
