@@ -1,33 +1,6 @@
-# CMake builder
-FROM ubuntu:focal AS cmake-builder
-
-# Install essential build tools
-RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
-    apt-get update && apt-get install -y --no-install-recommends               \
-        build-essential                                                        \
-        ca-certificates                                                        \
-        git                                                                    \
-        libssl-dev
-
-# Clone and build CMake
-ARG CMAKE_VER="v3.22.1"
-RUN git clone https://github.com/Kitware/CMake                                 \
-        --depth 1                                                              \
-        --branch "${CMAKE_VER}"                                                \
-        /tmp/cmake                                                             \
- && mkdir -p /tmp/cmake/build                                                  \
- && cd /tmp/cmake/build                                                        \
- && ../bootstrap --parallel=$(nproc) --prefix=/opt/cmake                       \
- && make -j$(nproc)                                                            \
- && make install                                                               \
- && rm -rf /tmp/cmake
-
 # Vulkan SDK builder
-FROM ubuntu:focal AS vulkan-sdk-builder
+FROM ubuntu:jammy AS vulkan-sdk-builder
 ENV DEBIAN_FRONTEND="noninteractive"
-
-# Install CMake
-COPY --from=cmake-builder /opt/cmake/ /usr/local/
 
 # Install required packages
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
@@ -35,6 +8,7 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
 # Essential build tools
         build-essential                                                        \
         ca-certificates                                                        \
+        cmake                                                                  \
         git                                                                    \
         pkg-config                                                             \
         python3                                                                \
@@ -52,7 +26,7 @@ RUN bash /tmp/tools/install_vulkan_sdk_linux.sh                                \
         "/opt/vulkan-sdk"
 
 # Boost library builder
-FROM ubuntu:focal AS boost-builder
+FROM ubuntu:jammy AS boost-builder
 
 # Install essential build tools
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
@@ -66,7 +40,7 @@ COPY tools/install_boost_linux.sh /tmp/tools/install_boost_linux.sh
 RUN bash /tmp/tools/install_boost_linux.sh "/opt/boost"
 
 # Mono library builder
-FROM ubuntu:focal AS mono-builder
+FROM ubuntu:jammy AS mono-builder
 ENV DEBIAN_FRONTEND="noninteractive"
 
 # Install essential build tools
@@ -97,13 +71,12 @@ RUN git clone https://github.com/hogletgames/mono.git                          \
  && rm -rf /tmp/mono
 
 # Genesis image
-FROM ubuntu:focal AS genesis-image
+FROM ubuntu:jammy AS genesis-image
 ARG GCC_VER=11                                                                 \
     CLANG_VER=19
 ENV DEBIAN_FRONTEND="noninteractive"
 
 # Install reuqired packages from previous stages
-COPY --from=cmake-builder      /opt/cmake/     /usr/local/
 COPY --from=vulkan-sdk-builder /opt/vulkan-sdk /opt/vulkan-sdk
 COPY --from=boost-builder      /opt/boost      /opt/boost
 COPY --from=mono-builder       /opt/mono       /opt/mono
@@ -119,7 +92,7 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
 # Clang tools
  && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -       \
  && apt-add-repository                                                         \
-        "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-${CLANG_VER} main"\
+        "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-${CLANG_VER} main"\
 # Essential build tools
  && apt-get update && apt-get install -y --no-install-recommends               \
         build-essential                                                        \
@@ -127,6 +100,7 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
         g++-${GCC_VER}                                                         \
         clang-format-${CLANG_VER}                                              \
         clang-tidy-${CLANG_VER}                                                \
+        cmake                                                                  \
         git                                                                    \
         patch                                                                  \
         libgtk-3-dev                                                           \
