@@ -33,8 +33,11 @@
 #pragma once
 
 #include <genesis/core/export.h>
+#include <genesis/core/utils.h>
 
 #include <functional>
+
+#define GE_DEFER(func) ::GE::Defer GE_UNIQUE_NAME(_defer)(func)
 
 namespace GE {
 
@@ -43,7 +46,7 @@ template<typename T, typename... Args>
 class GE_API Beginner
 {
 public:
-    explicit Beginner(Args&... args) { T::begin(std::forward<Args>(args)...); }
+    explicit Beginner(Args&&... args) { T::begin(std::forward<Args>(args)...); }
     ~Beginner() { T::end(); }
 };
 // clang-format on

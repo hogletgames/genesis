@@ -59,7 +59,7 @@
 #define GE_CONCAT(lhs, rhs)      GE_CONCAT_IMPL(lhs, rhs)
 
 // Unique name with a given prefix
-#define GE_UNIQ_NAME(prefix) GE_CONCAT(prefix##_, __COUNTER__)
+#define GE_UNIQUE_NAME(prefix) GE_CONCAT(prefix##_, __COUNTER__)
 
 namespace GE {
 
