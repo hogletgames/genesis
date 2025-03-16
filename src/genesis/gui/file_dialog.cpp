@@ -57,7 +57,7 @@ namespace GE::GUI {
 void FileDialog::showSingleFile(std::string_view default_path, std::string_view filter_list)
 {
     ::nfdchar_t* output_path{nullptr};
-    Defer output_path_defer{[output_path] { std::free(output_path); }};
+    GE_DEFER([output_path] { std::free(output_path); });
 
     auto result = ::NFD_OpenDialog(filter_list.data(), default_path.data(), &output_path);
 
@@ -72,7 +72,7 @@ void FileDialog::showSingleFile(std::string_view default_path, std::string_view 
 void FileDialog::showMultipleFiles(std::string_view default_path, std::string_view filter_list)
 {
     ::nfdpathset_t path_set{};
-    Defer path_set_defer{[&path_set] { ::NFD_PathSet_Free(&path_set); }};
+    GE_DEFER([&path_set] { ::NFD_PathSet_Free(&path_set); });
 
     auto result = ::NFD_OpenDialogMultiple(filter_list.data(), default_path.data(), &path_set);
 
@@ -87,7 +87,7 @@ void FileDialog::showMultipleFiles(std::string_view default_path, std::string_vi
 void FileDialog::showSelectFolder(std::string_view default_path)
 {
     ::nfdchar_t* output_path{nullptr};
-    Defer output_path_defer{[output_path] { std::free(output_path); }};
+    GE_DEFER([output_path] { std::free(output_path); });
 
     auto result = ::NFD_PickFolder(default_path.data(), &output_path);
 
@@ -102,7 +102,7 @@ void FileDialog::showSelectFolder(std::string_view default_path)
 void FileDialog::showSaveFile(std::string_view default_path, std::string_view filter_list)
 {
     ::nfdchar_t* output_path{nullptr};
-    Defer output_path_defer{[output_path] { std::free(output_path); }};
+    GE_DEFER([output_path] { std::free(output_path); });
 
     auto result = ::NFD_SaveDialog(filter_list.data(), default_path.data(), &output_path);
 

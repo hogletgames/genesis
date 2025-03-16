@@ -189,7 +189,7 @@ Scoped<Texture> TextureLoader::load()
     }
 
     auto [texture_data, config] = loadStbiTexture(file_data);
-    Defer texture_data_defer{[data = texture_data] { ::stbi_image_free(data); }};
+    GE_DEFER([texture_data] { ::stbi_image_free(texture_data); });
 
     if (texture_data == nullptr) {
         // NOLINTNEXTLINE(clang-analyzer-unix.Malloc)

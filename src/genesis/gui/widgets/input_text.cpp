@@ -49,7 +49,7 @@ bool InputText::call(std::string_view label, std::string* output, Flags flags)
     std::ranges::copy(*output, buffer.begin());
 
     ImGui::PushID(output);
-    Defer defer{[] { ImGui::PopID(); }};
+    GE_DEFER([] { ImGui::PopID(); });
 
     if (!ImGui::InputText(label.data(), buffer.data(), buffer.size(), flags)) {
         return false;

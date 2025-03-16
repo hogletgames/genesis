@@ -42,7 +42,7 @@ bool ValueEditor::call(std::string_view label, Vec2* value, float v_speed, float
                        std::string_view format, ValueEditor::Flags flags)
 {
     ImGui::PushID(value);
-    Defer defer{[] { ImGui::PopID(); }};
+    GE_DEFER([] { ImGui::PopID(); });
     return ImGui::DragFloat2(label.data(), value_ptr(*value), v_speed, v_min, v_max, format.data(),
                              flags);
 }
@@ -51,7 +51,7 @@ bool ValueEditor::call(std::string_view label, Vec3* value, float v_speed, float
                        std::string_view format, Flags flags)
 {
     ImGui::PushID(value);
-    Defer defer{[] { ImGui::PopID(); }};
+    GE_DEFER([] { ImGui::PopID(); });
     return ImGui::DragFloat3(label.data(), value_ptr(*value), v_speed, v_min, v_max, format.data(),
                              flags);
 }
@@ -60,7 +60,7 @@ bool ValueEditor::call(std::string_view label, float* value, float v_speed, floa
                        float v_max, std::string_view format, ValueEditor::Flags flags)
 {
     ImGui::PushID(value);
-    Defer defer{[] { ImGui::PopID(); }};
+    GE_DEFER([] { ImGui::PopID(); });
     return ImGui::DragFloat(label.data(), value, v_speed, v_min, v_max, format.data(), flags);
 }
 

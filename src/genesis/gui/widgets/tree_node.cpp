@@ -41,7 +41,7 @@ TreeNode::TreeNode(std::string_view label, Flags flags)
 {
     setBeginFunc([label, flags] {
         ImGui::PushID(static_cast<const void*>(label.data()));
-        Defer defer{[] { ImGui::PopID(); }};
+        GE_DEFER([] { ImGui::PopID(); });
         return ImGui::TreeNodeEx(label.data(), flags);
     });
 
