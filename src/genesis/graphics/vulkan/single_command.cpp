@@ -76,13 +76,15 @@ SingleCommand::~SingleCommand()
     submit_info.commandBufferCount = 1;
     submit_info.pCommandBuffers = &m_cmd_buffer;
 
-    if (vkQueueSubmit(getQueue(m_queue_family), 1, &submit_info, VK_NULL_HANDLE) != VK_SUCCESS) {
+    auto queue = getQueue(m_queue_family);
+
+    if (vkQueueSubmit(queue, 1, &submit_info, VK_NULL_HANDLE) != VK_SUCCESS) {
         GE_CORE_WARN("Failed to submit Single Command");
         destroyVkHandles();
         return;
     }
 
-    vkQueueWaitIdle(m_device->graphicsQueue());
+    vkQueueWaitIdle(queue);
     destroyVkHandles();
 }
 
