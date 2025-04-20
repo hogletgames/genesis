@@ -2,7 +2,6 @@ set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/filesystem)
 
 list(APPEND FS_SOURCES
     file.cpp
-    filepath.cpp
     known_folders.cpp
     tmp_dir_guard.cpp
     )
