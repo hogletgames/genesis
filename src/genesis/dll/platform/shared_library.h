@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2025, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,14 +32,13 @@
 
 #pragma once
 
-#include <genesis/app.h>
-#include <genesis/assets.h>
-#include <genesis/core.h>
-#include <genesis/dll.h>
-#include <genesis/filesystem.h>
-#include <genesis/graphics.h>
-#include <genesis/gui.h>
-#include <genesis/math.h>
-#include <genesis/physics2d.h>
-#include <genesis/scene.h>
-#include <genesis/window.h>
+#include <string_view>
+
+namespace GE::Dll::Platform {
+
+void* openLibrary(std::string_view path);
+int closeLibrary(void* library);
+void* getSymbol(void* library, std::string_view name);
+std::string_view getLastError();
+
+} // namespace GE::Dll::Platform
