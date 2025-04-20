@@ -15,7 +15,7 @@ function(ge_add_gtest EXE_NAME)
     endif ()
 
     if (NOT THIS_WORKING_DIRECTORY)
-        set(THIS_WORKING_DIRECTORY ${PROJESOURCE_DIR})
+        set(THIS_WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
     endif ()
 
     add_executable(${EXE_NAME} ${THIS_SOURCES})
