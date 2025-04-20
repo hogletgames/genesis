@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2025, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,14 +32,54 @@
 
 #pragma once
 
-#include <genesis/app.h>
-#include <genesis/assets.h>
-#include <genesis/core.h>
-#include <genesis/dll.h>
-#include <genesis/filesystem.h>
-#include <genesis/graphics.h>
-#include <genesis/gui.h>
-#include <genesis/math.h>
-#include <genesis/physics2d.h>
-#include <genesis/scene.h>
-#include <genesis/window.h>
+#include <genesis/core/asserts.h>
+#include <genesis/core/function_traits.h>
+
+#include <functional>
+#include <string_view>
+
+namespace GE::Dll {
+
+class GE_API SharedLibrary
+{
+public:
+    SharedLibrary() = default;
+    SharedLibrary(const SharedLibrary&) = delete;
+    SharedLibrary(SharedLibrary&&) = default;
+    ~SharedLibrary();
+
+    SharedLibrary& operator=(const SharedLibrary&) = delete;
+    SharedLibrary& operator=(SharedLibrary&&) = default;
+
+    bool open(std::string_view path);
+    void close();
+
+    template<typename Signature>
+    bool loadFunction(std::function<Signature>* function, std::string_view name) const;
+
+    bool isOpen() const { return m_library != nullptr; }
+
+    static std::string platformDependentName(std::string_view name);
+    static std::string path(std::string_view name);
+
+private:
+    void* loadFunctionPtr(std::string_view name) const;
+
+    void* m_library{nullptr};
+};
+
+template<typename Signature>
+bool SharedLibrary::loadFunction(std::function<Signature>* function, std::string_view name) const
+{
+    GE_ASSERT(function != nullptr, "Function pointer is null");
+
+    if (void* loaded_function = loadFunctionPtr(name); loaded_function != nullptr) {
+        using FunctionType = RawFunctionType<std::function<Signature>>;
+        *function = reinterpret_cast<FunctionType>(loaded_function);
+        return true;
+    }
+
+    return false;
+}
+
+} // namespace GE::Dll
