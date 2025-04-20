@@ -32,5 +32,11 @@
 
 #pragma once
 
-#include <genesis/dll/path.h>
-#include <genesis/dll/shared_library.h>
+#include <string>
+
+namespace GE::Dll {
+
+std::string platformDependedLibName(std::string_view library_name);
+std::string libraryPath(std::string_view library_name, std::string_view library_dir = ".");
+
+} // namespace GE::Dll

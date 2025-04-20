@@ -30,7 +30,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "path.h"
+#include "platform/path.h"
 
-#include <genesis/dll/path.h>
-#include <genesis/dll/shared_library.h>
+#include "genesis/filesystem/filepath.h"
+
+namespace GE::Dll {
+
+std::string platformDependedLibName(std::string_view library_name)
+{
+    return Platform::platformDependedLibName(library_name);
+}
+
+std::string libraryPath(std::string_view library_name, std::string_view library_dir)
+{
+    return FS::joinPath(library_dir, platformDependedLibName(library_name));
+}
+
+} // namespace GE::Dll
