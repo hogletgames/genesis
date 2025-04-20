@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2025, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "shared_library.h"
 
-#include <genesis/app.h>
-#include <genesis/assets.h>
-#include <genesis/core.h>
-#include <genesis/dll.h>
-#include <genesis/filesystem.h>
-#include <genesis/graphics.h>
-#include <genesis/gui.h>
-#include <genesis/math.h>
-#include <genesis/physics2d.h>
-#include <genesis/scene.h>
-#include <genesis/window.h>
+#include <dlfcn.h>
+
+namespace GE::Dll::Platform {
+
+void* openLibrary(std::string_view path)
+{
+    return ::dlopen(path.data(), RTLD_LAZY);
+}
+
+int closeLibrary(void* library)
+{
+    return ::dlclose(library);
+}
+
+void* getSymbol(void* library, std::string_view name)
+{
+    return ::dlsym(library, name.data());
+}
+
+std::string_view getLastError()
+{
+    return {::dlerror()};
+}
+
+} // namespace GE::Dll::Platform

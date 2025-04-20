@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2021, Dmitry Shilnenkov
+ * Copyright (c) 2025, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,62 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "shared_library.h"
+#include "platform/shared_library.h"
 
-#include <genesis/app.h>
-#include <genesis/assets.h>
-#include <genesis/core.h>
-#include <genesis/dll.h>
-#include <genesis/filesystem.h>
-#include <genesis/graphics.h>
-#include <genesis/gui.h>
-#include <genesis/math.h>
-#include <genesis/physics2d.h>
-#include <genesis/scene.h>
-#include <genesis/window.h>
+#include "genesis/core/asserts.h"
+#include "genesis/core/log.h"
+
+namespace GE::Dll {
+namespace {
+
+std::string_view lastError()
+{
+    return Platform::getLastError();
+}
+
+} // namespace
+
+SharedLibrary::~SharedLibrary()
+{
+    close();
+}
+
+bool SharedLibrary::open(std::string_view path)
+{
+    GE_ASSERT(!isOpen(), "Library is already opened");
+
+    if (m_library = Platform::openLibrary(path); m_library == nullptr) {
+        GE_CORE_ERR("Failed to open library '{}': '{}'", path, lastError());
+        return false;
+    }
+
+    return true;
+}
+
+void SharedLibrary::close()
+{
+    if (!isOpen()) {
+        return;
+    }
+
+    if (Platform::closeLibrary(m_library) != 0) {
+        GE_CORE_ERR("Failed to close library: '{}'", lastError());
+    }
+
+    m_library = nullptr;
+}
+
+void* SharedLibrary::loadFunctionPtr(std::string_view name) const
+{
+    GE_ASSERT(isOpen(), "Library has not been opened");
+
+    if (void* function = Platform::getSymbol(m_library, name); function != nullptr) {
+        return function;
+    }
+
+    GE_CORE_ERR("Failed to load function '{}': '{}'", name, lastError());
+    return nullptr;
+}
+
+} // namespace GE::Dll
