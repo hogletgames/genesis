@@ -39,37 +39,6 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
 COPY tools/install_boost_linux.sh /tmp/tools/install_boost_linux.sh
 RUN bash /tmp/tools/install_boost_linux.sh "/opt/boost"
 
-# Mono library builder
-FROM ubuntu:jammy AS mono-builder
-ENV DEBIAN_FRONTEND="noninteractive"
-
-# Install essential build tools
-RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
-    apt-get update && apt-get install -y --no-install-recommends               \
-        autoconf                                                               \
-        automake                                                               \
-        build-essential                                                        \
-        ca-certificates                                                        \
-        cmake                                                                  \
-        curl                                                                   \
-        gettext                                                                \
-        git                                                                    \
-        libtool                                                                \
-        python3
-
-# Clone and build Mono
-ARG MONO_VER="6000.0.9f1"
-RUN git clone https://github.com/hogletgames/mono.git                          \
-        --branch "${MONO_VER}"                                                 \
-        --depth 1                                                              \
-        /tmp/mono                                                              \
- && cd /tmp/mono                                                               \
- && ./autogen.sh --with-overridable-allocators --prefix=/opt/mono              \
- && make get-monolite-latest                                                   \
- && make -j$(nproc)                                                            \
- && make install                                                               \
- && rm -rf /tmp/mono
-
 # Genesis image
 FROM ubuntu:jammy AS genesis-image
 ARG GCC_VER=11                                                                 \
@@ -79,7 +48,6 @@ ENV DEBIAN_FRONTEND="noninteractive"
 # Install reuqired packages from previous stages
 COPY --from=vulkan-sdk-builder /opt/vulkan-sdk /opt/vulkan-sdk
 COPY --from=boost-builder      /opt/boost      /opt/boost
-COPY --from=mono-builder       /opt/mono       /opt/mono
 
 # Instal essential packages
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
@@ -132,12 +100,9 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
         libdbus-1-dev
 
 # Environment
-ENV PATH="/opt/mono/bin:${PATH}"                                               \
-    PKG_CONFIG_PATH="/opt/mono/lib/pkgconfig"                                  \
-    CC="gcc-${GCC_VER}"                                                        \
+ENV CC="gcc-${GCC_VER}"                                                        \
     CXX="g++-${GCC_VER}"                                                       \
     CLANG_FORMAT_BIN="clang-format-${CLANG_VER}"                               \
     RUN_CLANG_TIDY_BIN="run-clang-tidy-${CLANG_VER}"                           \
     VULKAN_SDK="/opt/vulkan-sdk"                                               \
     BOOST_ROOT="/opt/boost"                                                    \
-    MONO_PATH="/opt/mono/lib/mono/4.5"
