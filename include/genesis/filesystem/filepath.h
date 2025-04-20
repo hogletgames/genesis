@@ -39,8 +39,20 @@
 
 namespace GE::FS {
 
-GE_API std::string stem(std::string_view filepath);
-GE_API std::string parentPath(std::string_view filepath);
+inline std::string currentDir()
+{
+    return std::filesystem::current_path().string();
+}
+
+inline std::string stem(std::string_view filepath)
+{
+    return std::filesystem::path{filepath}.stem();
+}
+
+inline std::string parentPath(std::string_view filepath)
+{
+    return std::filesystem::path{filepath}.parent_path();
+}
 
 template<typename... Args>
 std::string joinPath(std::string_view path, Args&&... args)
