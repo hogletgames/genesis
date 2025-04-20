@@ -20,6 +20,7 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
 
 # Build and install Vulkan SDK
 ARG VULKAN_SDK_VER="1.3.268.0"
+
 COPY tools/install_vulkan_sdk_linux.sh /tmp/tools/install_vulkan_sdk_linux.sh
 RUN bash /tmp/tools/install_vulkan_sdk_linux.sh                                \
         "${VULKAN_SDK_VER}"                                                    \
@@ -39,6 +40,23 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
 COPY tools/install_boost_linux.sh /tmp/tools/install_boost_linux.sh
 RUN bash /tmp/tools/install_boost_linux.sh "/opt/boost"
 
+# .NET inmage
+FROM ubuntu:jammy AS dotnet-image
+ARG DOTNET_CHANNEL="9.0"
+ARG DOTNET_INSTALL_DIR="/opt/dotnet"
+
+# Install essential packages
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
+    apt-get update && apt-get install -y --no-install-recommends               \
+        ca-certificates                                                        \
+        wget
+
+# Install .NET
+RUN wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh        \
+ && bash /tmp/dotnet-install.sh                                                \
+        --channel "${DOTNET_CHANNEL}"                                          \
+        --install-dir "${DOTNET_INSTALL_DIR}"
+
 # Genesis image
 FROM ubuntu:jammy AS genesis-image
 ARG GCC_VER=11                                                                 \
@@ -48,6 +66,7 @@ ENV DEBIAN_FRONTEND="noninteractive"
 # Install required packages from previous stages
 COPY --from=vulkan-sdk-builder /opt/vulkan-sdk /opt/vulkan-sdk
 COPY --from=boost-builder      /opt/boost      /opt/boost
+COPY --from=dotnet-image       /opt/dotnet     /opt/dotnet
 
 # Instal essential packages
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
@@ -100,9 +119,12 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt                    \
         libdbus-1-dev
 
 # Environment
-ENV CC="gcc-${GCC_VER}"                                                        \
+ENV PATH="/opt/dotnet:${PATH}"                                                 \
+    CC="gcc-${GCC_VER}"                                                        \
     CXX="g++-${GCC_VER}"                                                       \
     CLANG_FORMAT_BIN="clang-format-${CLANG_VER}"                               \
     RUN_CLANG_TIDY_BIN="run-clang-tidy-${CLANG_VER}"                           \
     VULKAN_SDK="/opt/vulkan-sdk"                                               \
     BOOST_ROOT="/opt/boost"                                                    \
+    DOTNET_ROOT="/opt/dotnet"                                                  \
+    DOTNET_CLI_HOME="/tmp/DOTNET_CLI_HOME"
