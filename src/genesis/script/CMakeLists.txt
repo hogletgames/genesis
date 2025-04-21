@@ -5,6 +5,7 @@ list(APPEND SCRIPT_SOURCES
     )
 
 list(APPEND SCRIPT_HEADERS
+    ${INCLUDE_DIR}/delegate_loader.h
     ${INCLUDE_DIR}/host_framework.h
     )
 
