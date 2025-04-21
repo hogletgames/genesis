@@ -53,3 +53,9 @@
 #else
 #define GE_API GE_API_IMPORT
 #endif // GE_EXPORTS
+
+#ifdef GE_PLATFORM_WINDOWS
+#define GE_CALLTYPE __stdcall
+#else
+#define GE_CALLTYPE
+#endif // GE_PLATFORM_WINDOWS
