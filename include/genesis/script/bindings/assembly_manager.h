@@ -32,6 +32,43 @@
 
 #pragma once
 
-#include <genesis/script/bindings.h>
-#include <genesis/script/delegate_loader.h>
-#include <genesis/script/host_framework.h>
+#include <genesis/core/export.h>
+
+#include <functional>
+#include <string_view>
+
+namespace GE::Script::Bindings {
+
+class GE_API AssemblyManager
+{
+public:
+    bool initialize();
+
+    bool loadAssembly(std::string_view path) const;
+    bool unloadAssembly(std::string_view name) const;
+
+    template<typename Signature>
+    bool getDelegate(std::function<Signature>* delegate, std::string_view assembly_name,
+                     std::string_view type_name, std::string_view method_name) const;
+
+private:
+    using LoadAssemblyFn = std::function<bool(const char* path)>;
+    using UnloadAssemblyFn = std::function<bool(const char* name)>;
+    using GetFunctionPointerFn = std::function<void*(
+        const char* assembly_name, const char* type_name, const char* method_name)>;
+
+    void* getFunctionPointer(std::string_view assembly_name, std::string_view type_name,
+                             std::string_view method_name) const;
+
+    LoadAssemblyFn m_load_assembly_fn;
+    UnloadAssemblyFn m_unload_assembly_fn;
+    GetFunctionPointerFn m_get_function_pointer_fn;
+}
+
+template<typename Signature>
+bool AssemblyManager::getDelegate(std::function<Signature>* delegate,
+                                  std::string_view assembly_name, std::string_view type_name,
+                                  std::string_view method_name) const
+{}
+
+} // namespace GE::Script::Bindings
