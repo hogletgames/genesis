@@ -1,8 +1,8 @@
 set(INCLUDE_DIR ${GE_INCLUDE_DIR}/genesis/script)
 
 list(APPEND SCRIPT_SOURCES
-    delegate_loader.cpp
     host_framework.cpp
+    scripting_engine.cpp
     bindings/assembly_manager.cpp
     )
 
@@ -10,6 +10,7 @@ list(APPEND SCRIPT_HEADERS
     ${INCLUDE_DIR}/bindings.h
     ${INCLUDE_DIR}/delegate_loader.h
     ${INCLUDE_DIR}/host_framework.h
+    ${INCLUDE_DIR}/scripting_engine.h
     ${INCLUDE_DIR}/bindings/assembly_manager.h
     )
 

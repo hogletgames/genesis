@@ -1,16 +1,16 @@
 find_package(ge-dotnet REQUIRED)
 
-function(ge_dotnet_build CSPROJ_FILE)
+function(ge_dotnet_build DOTNET_PROJECT_FILE)
     cmake_parse_arguments(THIS "" "TARGET;OUTPUT" "" ${ARGN})
 
-    get_filename_component(CSPROJ_FILE ${CSPROJ_FILE} ABSOLUTE)
+    get_filename_component(DOTNET_PROJECT_FILE ${DOTNET_PROJECT_FILE} ABSOLUTE)
 
-    if (NOT EXISTS ${CSPROJ_FILE})
+    if (NOT EXISTS ${DOTNET_PROJECT_FILE})
         message(FATAL_ERROR "Project file '${PROJECT_FILE}' does not exist")
     endif ()
 
-    get_filename_component(DOTNET_PROJECT_NAME ${CSPROJ_FILE} NAME_WE)
-    get_filename_component(DOTNET_PROJECT_DIR ${CSPROJ_FILE} DIRECTORY)
+    get_filename_component(DOTNET_PROJECT_NAME ${DOTNET_PROJECT_FILE} NAME_WE)
+    get_filename_component(DOTNET_PROJECT_DIR ${DOTNET_PROJECT_FILE} DIRECTORY)
     file(GLOB_RECURSE SOURCE_FILES "${DOTNET_PROJECT_DIR}/*.cs")
 
     if (NOT THIS_TARGET)
@@ -25,23 +25,24 @@ function(ge_dotnet_build CSPROJ_FILE)
 
     # Build project target
     add_custom_command(
-        OUTPUT ${OUTPUT_DLL}
-        COMMAND dotnet build ${CSPROJ_FILE}
+        OUTPUT ${THIS_OUTPUT}
+        COMMAND dotnet build ${DOTNET_PROJECT_FILE}
                     --configuration Release
                     --artifacts-path ${THIS_OUTPUT}/obj
                     --output ${THIS_OUTPUT}
                     --disable-build-servers
         WORKING_DIRECTORY ${DOTNET_PROJECT_DIR}
-        DEPENDS ${SOURCE_FILES} ${CSPROJ_FILE}
-        BYPRODUCTS ${OUTPUT_DLL}
+        DEPENDS ${SOURCE_FILES} ${DOTNET_PROJECT_FILE}
         COMMENT "Building '${THIS_TARGET}'..."
         VERBATIM
         )
-    add_custom_target(${THIS_TARGET} DEPENDS ${OUTPUT_DLL})
+    add_custom_target(${THIS_TARGET} DEPENDS ${THIS_OUTPUT})
+    set(${THIS_TARGET}_BINARY_DIR ${THIS_OUTPUT} CACHE FILEPATH
+        "${THIS_TARGET} output directory" FORCE)
 
     # Format project target
     add_custom_target(${THIS_TARGET}_format
-        COMMAND dotnet format style ${CSPROJ_FILE}
+        COMMAND dotnet format style ${DOTNET_PROJECT_FILE}
                     --verbosity detailed
         WORKING_DIRECTORY ${DOTNET_PROJECT_DIR}
         DEPENDS ${SOURCE_FILES}

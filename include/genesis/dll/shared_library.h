@@ -33,10 +33,10 @@
 #pragma once
 
 #include <genesis/core/asserts.h>
-#include <genesis/core/function_traits.h>
 
 #include <functional>
 #include <string_view>
+#include <type_traits>
 
 namespace GE::Dll {
 
@@ -59,9 +59,6 @@ public:
 
     bool isOpen() const { return m_library != nullptr; }
 
-    static std::string platformDependentName(std::string_view name);
-    static std::string path(std::string_view name);
-
 private:
     void* loadFunctionPtr(std::string_view name) const;
 
@@ -74,8 +71,7 @@ bool SharedLibrary::loadFunction(std::function<Signature>* function, std::string
     GE_ASSERT(function != nullptr, "Function pointer is null");
 
     if (void* loaded_function = loadFunctionPtr(name); loaded_function != nullptr) {
-        using FunctionType = RawFunctionType<std::function<Signature>>;
-        *function = reinterpret_cast<FunctionType>(loaded_function);
+        *function = std::add_pointer_t<Signature>(loaded_function);
         return true;
     }
 

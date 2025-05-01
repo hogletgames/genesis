@@ -31,7 +31,7 @@
  */
 
 #include "bindings/assembly_manager.h"
-#include "delegate_loader.h"
+#include "host_framework.h"
 
 #include "genesis/core/asserts.h"
 #include "genesis/core/log.h"
@@ -40,19 +40,21 @@ namespace GE::Script::Bindings {
 
 bool AssemblyManager::initialize()
 {
+    GE_CORE_ASSERT(HostFramework::isInitialized(), "Host Framework hasn't been initialized");
+
     constexpr std::string_view ASSEMBLY_NAME = "Ge.Framework";
-    constexpr std::string_view NATIVE_EXPORT_CLASS = "NativeExport";
+    constexpr std::string_view NATIVE_EXPORT_CLASS = "Ge.Framework.NativeExports";
 
-    constexpr std::string_view LOAD_ASSEMBLY_FN_NAME = "LoadAssembly";
-    constexpr std::string_view UNLOAD_ASSEMBLY_FN_NAME = "UnloadAssembly";
-    constexpr std::string_view GET_FUNCTION_POINTER_FN_NAME = "GetFunctionPointer";
+    constexpr std::string_view LOAD_ASSEMBLY_FN_NAME = "AssemblyManager_LoadAssembly";
+    constexpr std::string_view UNLOAD_ASSEMBLY_FN_NAME = "AssemblyManager_UnloadAssembly";
+    constexpr std::string_view GET_FUNCTION_POINTER_FN_NAME = "AssemblyManager_GetFunctionPointer";
 
-    if (!DelegateLoader::getDelegate(&m_load_assembly_fn, ASSEMBLY_NAME, NATIVE_EXPORT_CLASS,
-                                     LOAD_ASSEMBLY_FN_NAME) ||
-        !DelegateLoader::getDelegate(&m_unload_assembly_fn, ASSEMBLY_NAME, NATIVE_EXPORT_CLASS,
-                                     UNLOAD_ASSEMBLY_FN_NAME) ||
-        !DelegateLoader::getDelegate(&m_get_function_pointer_fn, ASSEMBLY_NAME, NATIVE_EXPORT_CLASS,
-                                     GET_FUNCTION_POINTER_FN_NAME)) {
+    if (!HostFramework::getFunctionPointer(&m_load_assembly_fn, ASSEMBLY_NAME, NATIVE_EXPORT_CLASS,
+                                           LOAD_ASSEMBLY_FN_NAME) ||
+        !HostFramework::getFunctionPointer(&m_unload_assembly_fn, ASSEMBLY_NAME,
+                                           NATIVE_EXPORT_CLASS, UNLOAD_ASSEMBLY_FN_NAME) ||
+        !HostFramework::getFunctionPointer(&m_get_function_pointer_fn, ASSEMBLY_NAME,
+                                           NATIVE_EXPORT_CLASS, GET_FUNCTION_POINTER_FN_NAME)) {
         GE_CORE_ERR("Failed to initialize Assembly Manager");
         return false;
     }
@@ -63,21 +65,25 @@ bool AssemblyManager::initialize()
 bool AssemblyManager::loadAssembly(std::string_view path) const
 {
     GE_CORE_ASSERT(m_load_assembly_fn, "Assembly Manager hasn't been initialized");
-    return m_load_assembly_fn(path.data());
+    return m_load_assembly_fn(path.data()) == 0;
 }
 
 bool AssemblyManager::unloadAssembly(std::string_view name) const
 {
     GE_CORE_ASSERT(m_unload_assembly_fn, "Assembly Manager hasn't been initialized");
-    return m_unload_assembly_fn(name.data());
+    return m_unload_assembly_fn(name.data()) == 0;
 }
 
 void* AssemblyManager::getFunctionPointer(std::string_view assembly_name,
                                           std::string_view type_name,
-                                          std::string_view method_name) const
+                                          std::string_view method_name,
+                                          std::string_view delegate_type_name) const
 {
     GE_CORE_ASSERT(m_get_function_pointer_fn, "Assembly Manager has no function pointer");
-    return m_get_function_pointer_fn(assembly_name.data(), type_name.data(), method_name.data());
+
+    const char* delegate = delegate_type_name.empty() ? nullptr : delegate_type_name.data();
+    return m_get_function_pointer_fn(assembly_name.data(), type_name.data(), method_name.data(),
+                                     delegate);
 }
 
 } // namespace GE::Script::Bindings

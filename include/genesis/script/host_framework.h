@@ -53,10 +53,14 @@ public:
     static bool initialize(std::string_view runtime_config_path);
     static void shutdown();
 
-    static LoadAssemblyAndGetFunctionPointerFn loadAssemblyAndGetFunctionPointerFn();
-    static GetFunctionPointerFn getFunctionPointerFn();
-    static LoadAssemblyFn loadAssemblyFn();
-    static LoadAssemblyBytesFn loadAssemblyBytesFn();
+    static bool loadAssembly(std::string_view assembly_path);
+
+    template<typename Signature>
+    static bool getFunctionPointer(std::function<Signature>* delegate,
+                                   std::string_view          assembly_name,
+                                   std::string_view          managed_class_name,
+                                   std::string_view          method_name,
+                                   std::string_view          delegate_type_name = {});
 
     static bool isInitialized();
 
@@ -72,7 +76,29 @@ private:
         return &instance;
     }
 
+    void* getFunctionPointer(std::string_view assembly_name,
+                             std::string_view managed_class_name,
+                             std::string_view method_name,
+                             std::string_view delegate_type_name);
+
     Scoped<Context> m_context;
 };
+
+template<typename Signature>
+bool HostFramework::getFunctionPointer(std::function<Signature>* delegate,
+                                       std::string_view          assembly_name,
+                                       std::string_view          managed_class_name,
+                                       std::string_view          method_name,
+                                       std::string_view          delegate_type_name)
+{
+    void* loaded_delegate = get()->getFunctionPointer(assembly_name, managed_class_name,
+                                                      method_name, delegate_type_name);
+    if (loaded_delegate == nullptr) {
+        return false;
+    }
+
+    *delegate = std::add_pointer_t<Signature>(loaded_delegate);
+    return true;
+}
 
 } // namespace GE::Script

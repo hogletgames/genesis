@@ -5,7 +5,7 @@ function(ge_add_gtest EXE_NAME)
         THIS
         "DO_NOT_LINK_MAIN"
         "WORKING_DIRECTORY"
-        "SOURCES;LIBS;DEPS"
+        "SOURCES;LIBS;DEPS;DEFINITIONS"
         ${ARGN})
 
     if (THIS_DO_NOT_LINK_MAIN)
@@ -28,6 +28,10 @@ function(ge_add_gtest EXE_NAME)
 
     if (THIS_DEPS)
         add_dependencies(${EXE_NAME} ${THIS_DEPS})
+    endif ()
+
+    if (THIS_DEFINITIONS)
+        target_compile_definitions(${EXE_NAME} PRIVATE ${THIS_DEFINITIONS})
     endif ()
 
     gtest_discover_tests(${EXE_NAME}

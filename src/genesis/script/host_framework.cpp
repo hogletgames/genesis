@@ -32,16 +32,16 @@
 
 #include "host_framework.h"
 
-#include "../../../apps/level-editor/gui/main_menu/menu_signals.h"
 #include "genesis/core/asserts.h"
 #include "genesis/core/enum.h"
+#include "genesis/core/format.h"
 #include "genesis/core/log.h"
 #include "genesis/dll/shared_library.h"
 
 #include <array>
-
 #include <hostfxr.h>
 #include <nethost.h>
+#include <type_traits>
 
 namespace GE::Script {
 namespace {
@@ -54,7 +54,7 @@ void hostfxrErrorWriter(const char_t* message)
 std::string getHostfxrLibraryPath()
 {
     std::array<char, 1024> buffer{};
-    size_t buffer_size = buffer.size();
+    size_t                 buffer_size = buffer.size();
 
     if (int rc = ::get_hostfxr_path(buffer.data(), &buffer_size, nullptr); rc != 0) {
         GE_CORE_ERR("Failed to get hostfxr path: {:#010x}", static_cast<uint32_t>(rc));
@@ -100,17 +100,17 @@ private:
     bool getRuntimeDelegate(std::function<Signature>* delegate, hostfxr_delegate_type type);
 
     Dll::SharedLibrary m_library;
-    hostfxr_handle m_context{nullptr};
+    hostfxr_handle     m_context{nullptr};
 
     HostfxrInitializeForRuntimeConfigFn m_hostfxr_initialize_for_runtime_config;
-    HostfxrCloseFn m_hostfxr_close;
-    HostfxrSetErrorWriterFn m_hostfxr_set_error_writer;
-    HostfxrGetRuntimeDelegateFn m_hostfxr_get_runtime_delegate;
+    HostfxrCloseFn                      m_hostfxr_close;
+    HostfxrSetErrorWriterFn             m_hostfxr_set_error_writer;
+    HostfxrGetRuntimeDelegateFn         m_hostfxr_get_runtime_delegate;
 
     LoadAssemblyAndGetFunctionPointerFn m_load_assembly_and_get_function_pointer;
-    GetFunctionPointerFn m_get_function_pointer;
-    LoadAssemblyFn m_load_assembly;
-    LoadAssemblyBytesFn m_load_assembly_bytes;
+    GetFunctionPointerFn                m_get_function_pointer;
+    LoadAssemblyFn                      m_load_assembly;
+    LoadAssemblyBytesFn                 m_load_assembly_bytes;
 };
 
 HostFramework::Context::~Context()
@@ -237,7 +237,7 @@ bool HostFramework::Context::getDelegates()
 
 template<typename Signature>
 bool HostFramework::Context::loadHostfxrFunction(std::function<Signature>* function,
-                                                 std::string_view function_name)
+                                                 std::string_view          function_name)
 {
     GE_CORE_ASSERT(function, "'function' is nullptr");
     GE_CORE_ASSERT(m_library.isOpen(), "'hostfxr' library hasn't been opened");
@@ -252,31 +252,63 @@ bool HostFramework::Context::loadHostfxrFunction(std::function<Signature>* funct
 
 template<typename Signature>
 bool HostFramework::Context::getRuntimeDelegate(std::function<Signature>* delegate,
-                                                hostfxr_delegate_type type)
+                                                hostfxr_delegate_type     type)
 {
     GE_CORE_ASSERT(delegate, "'delegate' is nullptr");
     GE_CORE_ASSERT(isInitialized(), "'hostfxr' hasn't been initialized");
 
-    using DelegateType = RawFunctionType<std::function<Signature>>;
-    DelegateType loaded_delegate{nullptr};
+    void* loaded_delegate{nullptr};
 
-    if (int rc = m_hostfxr_get_runtime_delegate(m_context, type,
-                                                reinterpret_cast<void**>(&loaded_delegate));
+    if (int rc = m_hostfxr_get_runtime_delegate(m_context, type, &loaded_delegate);
         rc != 0 || loaded_delegate == nullptr) {
         GE_CORE_ERR("Failed to get '{}' delegate: hresult={:#010x}, delegate={:p}",
-                    GE::toString(type), static_cast<uint32_t>(rc),
-                    reinterpret_cast<void*>(loaded_delegate));
-
+                    GE::toString(type), static_cast<uint32_t>(rc), loaded_delegate);
         return false;
     }
 
-    *delegate = reinterpret_cast<DelegateType>(loaded_delegate);
+    *delegate = std::add_pointer_t<Signature>(loaded_delegate);
     return true;
 }
 
 HostFramework::HostFramework() = default;
 
 HostFramework::~HostFramework() = default;
+
+void* HostFramework::getFunctionPointer(std::string_view assembly_name,
+                                        std::string_view managed_class_name,
+                                        std::string_view method_name,
+                                        std::string_view delegate_type_name)
+{
+    GE_CORE_ASSERT(isInitialized(), "Host Framework hasn't been initialized");
+    GE_CORE_DBG("Loading '{}.{}, {}' method", managed_class_name, method_name, assembly_name);
+
+    // Create an assembly qualified delegate type name if the passed value is not empty, otherwise
+    // use 'UNMANAGEDCALLERSONLY_METHOD'.
+
+    std::string   full_delegate_type_name;
+    const char_t* full_delegate_name_ptr = UNMANAGEDCALLERSONLY_METHOD;
+    if (!delegate_type_name.empty()) {
+        full_delegate_type_name = GE_FMTSTR("{}, {}", delegate_type_name, assembly_name);
+        full_delegate_name_ptr = full_delegate_type_name.data();
+    }
+
+    // Create an assembly qualified type name
+
+    auto type_name = GE_FMTSTR("{}, {}", managed_class_name, assembly_name);
+
+    void* function{nullptr};
+    int   rc = m_context->getFunctionPointerFn()(type_name.c_str(), method_name.data(),
+                                               full_delegate_name_ptr, nullptr, nullptr, &function);
+    if (rc != 0 || function == nullptr) {
+        GE_CORE_ERR("Failed to load '{}' method of '{}' class from '{}' assembly: "
+                    "hresult={:#010x}, function={:p}",
+                    method_name, managed_class_name, assembly_name, static_cast<uint32_t>(rc),
+                    function);
+        return nullptr;
+    }
+
+    return function;
+}
 
 bool HostFramework::initialize(std::string_view runtime_config_path)
 {
@@ -294,24 +326,18 @@ void HostFramework::shutdown()
     get()->m_context.reset();
 }
 
-LoadAssemblyAndGetFunctionPointerFn HostFramework::loadAssemblyAndGetFunctionPointerFn()
+bool HostFramework::loadAssembly(std::string_view assembly_path)
 {
-    return get()->m_context->loadAssemblyAndGetFunctionPointerFn();
-}
+    GE_CORE_ASSERT(isInitialized(), "Host Framework hasn't been initialized");
+    GE_CORE_INFO("Loading '{}' assembly", assembly_path);
 
-GetFunctionPointerFn HostFramework::getFunctionPointerFn()
-{
-    return get()->m_context->getFunctionPointerFn();
-}
+    int rc = get()->m_context->loadAssemblyFn()(assembly_path.data(), nullptr, nullptr);
+    if (rc != 0) {
+        GE_CORE_ERR("Failed to load assembly: {:#010x}", static_cast<uint32_t>(rc));
+        return false;
+    }
 
-LoadAssemblyFn HostFramework::loadAssemblyFn()
-{
-    return get()->m_context->loadAssemblyFn();
-}
-
-LoadAssemblyBytesFn HostFramework::loadAssemblyBytesFn()
-{
-    return get()->m_context->loadAssemblyBytesFn();
+    return true;
 }
 
 bool HostFramework::isInitialized()

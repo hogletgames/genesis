@@ -33,7 +33,6 @@
 #include "genesis/filesystem/filepath.h"
 #include "genesis/script/host_framework.h"
 
-#include "gmock/gmock-matchers.h"
 #include <gtest/gtest.h>
 
 using namespace GE;
@@ -46,20 +45,87 @@ namespace {
 // shutdown. Therefore, it is initialized during environment setup to ensure availability for all
 // components. For details, see main.cpp.
 
-class HostFrameworkResolverTest: public Test
-{};
+class HostFrameworkTest: public Test
+{
+protected:
+    static constexpr std::string_view TEST_ASSEMBLY_RELATIVE_PATH{"TestAssembly/TestAssembly.dll"};
+    inline static const std::string   TEST_ASSEMBLY_ABSOLUTE_PATH{
+        FS::joinPath(FS::currentDir(), TEST_ASSEMBLY_RELATIVE_PATH)};
 
-TEST_F(HostFrameworkResolverTest, IsInitialzed)
+    static constexpr std::string_view TEST_ASSEMBLY_UPDATED_RELATIVE_PATH{
+        "TestAssemblyUpdated/TestAssembly.dll"};
+    inline static const std::string TEST_ASSEMBLY_UPDATED_ABSOLUTE_PATH{
+        FS::joinPath(FS::currentDir(), TEST_ASSEMBLY_UPDATED_RELATIVE_PATH)};
+};
+
+TEST_F(HostFrameworkTest, IsInitialzed)
 {
     EXPECT_TRUE(HostFramework::isInitialized());
 }
 
-TEST_F(HostFrameworkResolverTest, GetDelegate)
+TEST_F(HostFrameworkTest, LoadAssembly_RelativePath)
 {
-    EXPECT_THAT(HostFramework::loadAssemblyAndGetFunctionPointerFn(), NotNull());
-    EXPECT_THAT(HostFramework::getFunctionPointerFn(), NotNull());
-    EXPECT_THAT(HostFramework::loadAssemblyFn(), NotNull());
-    EXPECT_THAT(HostFramework::loadAssemblyBytesFn(), NotNull());
+    EXPECT_FALSE(HostFramework::loadAssembly(TEST_ASSEMBLY_RELATIVE_PATH));
+}
+
+TEST_F(HostFrameworkTest, LoadAssembly_AbsolutePath)
+{
+    EXPECT_TRUE(HostFramework::loadAssembly(TEST_ASSEMBLY_ABSOLUTE_PATH));
+}
+
+TEST_F(HostFrameworkTest, LoadAssembly_MultipleTimes)
+{
+    EXPECT_TRUE(HostFramework::loadAssembly(TEST_ASSEMBLY_ABSOLUTE_PATH));
+    EXPECT_TRUE(HostFramework::loadAssembly(TEST_ASSEMBLY_ABSOLUTE_PATH));
+}
+
+class HostFrameworkTest_GivenLoadedTestAssembly: public HostFrameworkTest
+{
+protected:
+    using ReturnIntFunc = std::function<int(int)>;
+
+    void SetUp() override
+    {
+        HostFrameworkTest::SetUp();
+        EXPECT_TRUE(HostFramework::loadAssembly(TEST_ASSEMBLY_ABSOLUTE_PATH));
+    }
+
+    static constexpr std::string_view ASSEMBLY_NAME{"TestAssembly"};
+    static constexpr std::string_view MANAGED_CLASS_NAME{"TestAssembly.TestClass"};
+    static constexpr std::string_view RETURN_INT_METHOD_NAME{"returnInt"};
+    static constexpr std::string_view RETURN_INT_METHOD_UNMANAGED_ONLY_NAME{
+        "returnIntUnmanagedOnly"};
+    static constexpr std::string_view RETURN_INT_DELEGATE_TYPE_NAME{
+        "TestAssembly.TestClass+ReturnIntDelegate"};
+};
+
+TEST_F(HostFrameworkTest_GivenLoadedTestAssembly, GetDelegate_ByDelegateName)
+{
+    ReturnIntFunc return_int_fn;
+    ASSERT_TRUE(HostFramework::getFunctionPointer(&return_int_fn, ASSEMBLY_NAME, MANAGED_CLASS_NAME,
+                                                  RETURN_INT_METHOD_NAME,
+                                                  RETURN_INT_DELEGATE_TYPE_NAME));
+
+    constexpr int EXPECTED_VALUE{42};
+    EXPECT_EQ(return_int_fn(EXPECTED_VALUE), EXPECTED_VALUE);
+}
+
+TEST_F(HostFrameworkTest_GivenLoadedTestAssembly,
+       GetDelegate_DoNotPassDelegateNameWuthoutManagerCallersOnly)
+{
+    ReturnIntFunc return_int_fn;
+    EXPECT_FALSE(HostFramework::getFunctionPointer(&return_int_fn, ASSEMBLY_NAME,
+                                                   MANAGED_CLASS_NAME, RETURN_INT_METHOD_NAME));
+}
+
+TEST_F(HostFrameworkTest_GivenLoadedTestAssembly, GetDelegate_UnamagedCallersOnly)
+{
+    ReturnIntFunc return_int_fn;
+    ASSERT_TRUE(HostFramework::getFunctionPointer(&return_int_fn, ASSEMBLY_NAME, MANAGED_CLASS_NAME,
+                                                  RETURN_INT_METHOD_UNMANAGED_ONLY_NAME));
+
+    constexpr int EXPECTED_VALUE{42};
+    EXPECT_EQ(return_int_fn(EXPECTED_VALUE), EXPECTED_VALUE);
 }
 
 } // namespace

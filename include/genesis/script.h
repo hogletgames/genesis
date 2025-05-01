@@ -33,5 +33,5 @@
 #pragma once
 
 #include <genesis/script/bindings.h>
-#include <genesis/script/delegate_loader.h>
 #include <genesis/script/host_framework.h>
+#include <genesis/script/scripting_engine.h>

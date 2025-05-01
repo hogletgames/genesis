@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Ge.Framework/Ge.Framework.csproj" />
+  <Project Path="ReflectionApp/ReflectionApp.csproj" />
+</Solution>

@@ -40,29 +40,40 @@ namespace GE {
 
 // Traits
 template<typename T>
-struct function_signature_t;
+struct raw_function_signature_t;
 
 template<typename ResultType, typename... Args>
-struct function_signature_t<ResultType (*)(Args...)> {
+struct raw_function_signature_t<ResultType (*)(Args...)> {
     using Type = ResultType(Args...);
 };
 
 template<typename T>
-struct raw_function_signature_t;
+struct raw_function_type_t;
 
 template<typename ResultType, typename... Args>
-struct raw_function_signature_t<std::function<ResultType(Args...)>> {
+struct raw_function_type_t<std::function<ResultType(Args...)>> {
     using Type = ResultType (*)(Args...);
+};
+
+template<typename T>
+struct function_signature_t;
+
+template<typename Signature>
+struct function_signature_t<std::function<Signature>> {
+    using Type = Signature;
 };
 
 // Aliases
 template<IsRawFunction RawFunction>
-using FunctionSignature = typename function_signature_t<RawFunction>::Type;
-
-template<IsRawFunction RawFunction>
-using FunctionType = std::function<FunctionSignature<RawFunction>>;
+using RawFunctionSignature = typename raw_function_signature_t<RawFunction>::Type;
 
 template<IsStdFunction Function>
-using RawFunctionType = typename raw_function_signature_t<Function>::Type;
+using RawFunctionType = typename raw_function_type_t<Function>::Type;
+
+template<IsStdFunction Function>
+using FunctionSignature = typename function_signature_t<Function>::Type;
+
+template<IsRawFunction RawFunction>
+using FunctionType = std::function<RawFunctionSignature<RawFunction>>;
 
 } // namespace GE
