@@ -41,11 +41,11 @@ namespace GE::Script::Bindings {
 bool AssemblyManager::initialize()
 {
     constexpr std::string_view ASSEMBLY_NAME = "Ge.Framework";
-    constexpr std::string_view NATIVE_EXPORT_CLASS = "NativeExport";
+    constexpr std::string_view NATIVE_EXPORT_CLASS = "Ge.Framework.NativeExports";
 
-    constexpr std::string_view LOAD_ASSEMBLY_FN_NAME = "LoadAssembly";
-    constexpr std::string_view UNLOAD_ASSEMBLY_FN_NAME = "UnloadAssembly";
-    constexpr std::string_view GET_FUNCTION_POINTER_FN_NAME = "GetFunctionPointer";
+    constexpr std::string_view LOAD_ASSEMBLY_FN_NAME = "AssemblyManager_LoadAssembly";
+    constexpr std::string_view UNLOAD_ASSEMBLY_FN_NAME = "AssemblyManager_UnloadAssembly";
+    constexpr std::string_view GET_FUNCTION_POINTER_FN_NAME = "AssemblyManager_GetFunctionPointer";
 
     if (!DelegateLoader::getDelegate(&m_load_assembly_fn, ASSEMBLY_NAME, NATIVE_EXPORT_CLASS,
                                      LOAD_ASSEMBLY_FN_NAME) ||
@@ -63,13 +63,13 @@ bool AssemblyManager::initialize()
 bool AssemblyManager::loadAssembly(std::string_view path) const
 {
     GE_CORE_ASSERT(m_load_assembly_fn, "Assembly Manager hasn't been initialized");
-    return m_load_assembly_fn(path.data());
+    return m_load_assembly_fn(path.data()) == 0;
 }
 
 bool AssemblyManager::unloadAssembly(std::string_view name) const
 {
     GE_CORE_ASSERT(m_unload_assembly_fn, "Assembly Manager hasn't been initialized");
-    return m_unload_assembly_fn(name.data());
+    return m_unload_assembly_fn(name.data()) == 0;
 }
 
 void* AssemblyManager::getFunctionPointer(std::string_view assembly_name,

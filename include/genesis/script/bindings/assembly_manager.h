@@ -33,6 +33,7 @@
 #pragma once
 
 #include <genesis/core/export.h>
+#include <genesis/core/function_traits.h>
 
 #include <functional>
 #include <string_view>
@@ -52,8 +53,8 @@ public:
                      std::string_view type_name, std::string_view method_name) const;
 
 private:
-    using LoadAssemblyFn = std::function<bool(const char* path)>;
-    using UnloadAssemblyFn = std::function<bool(const char* name)>;
+    using LoadAssemblyFn = std::function<int(const char* path)>;
+    using UnloadAssemblyFn = std::function<int(const char* name)>;
     using GetFunctionPointerFn = std::function<void*(
         const char* assembly_name, const char* type_name, const char* method_name)>;
 
@@ -63,12 +64,21 @@ private:
     LoadAssemblyFn m_load_assembly_fn;
     UnloadAssemblyFn m_unload_assembly_fn;
     GetFunctionPointerFn m_get_function_pointer_fn;
-}
+};
 
 template<typename Signature>
 bool AssemblyManager::getDelegate(std::function<Signature>* delegate,
                                   std::string_view assembly_name, std::string_view type_name,
                                   std::string_view method_name) const
-{}
+{
+    void* loaded_delegate = getFunctionPointer(assembly_name, type_name, method_name);
+    if (loaded_delegate == nullptr) {
+        return false;
+    }
+
+    using DelegateType = RawFunctionType<std::function<Signature>>;
+    *delegate = reinterpret_cast<DelegateType>(loaded_delegate);
+    return true;
+}
 
 } // namespace GE::Script::Bindings

@@ -21,8 +21,11 @@ public static class AssemblyManager
 
     public static bool LoadAssembly(string path)
     {
+        Console.WriteLine($"Loading '{path}' assembly...");
+
         if (string.IsNullOrWhiteSpace(path))
         {
+            Console.WriteLine($"Failed to load '{path}' assembly: invalid path ");
             return false;
         }
 
@@ -57,31 +60,32 @@ public static class AssemblyManager
         return true;
     }
 
-    public static IntPtr GetAssemblyMethodPtr(string assemblyName, string typeName,
+    public static IntPtr GetFunctionPointer(string assemblyName, string typeName,
         string methodName)
     {
-        assemblyName = Path.GetFullPath(assemblyName);
-
         if (!_assemblies.TryGetValue(assemblyName, out var managed))
         {
+            Console.WriteLine($"Failed to find '{assemblyName}' assembly");
             return IntPtr.Zero;
         }
 
         var type = managed.Assembly.GetType(typeName);
         if (type == null)
         {
+            Console.WriteLine($"Failed to find '{typeName}' type");
             return IntPtr.Zero;
         }
 
         var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
         if (method == null)
         {
+            Console.WriteLine($"Failed to find '{methodName}' method");
             return IntPtr.Zero;
         }
 
         var d = method.CreateDelegate(
             Expression.GetDelegateType(
-                Type.EmptyTypes.Concat([method.ReturnType]).ToArray()));
+                Type.EmptyTypes.Concat(new[] { method.ReturnType }).ToArray()));
 
         return Marshal.GetFunctionPointerForDelegate(d);
     }

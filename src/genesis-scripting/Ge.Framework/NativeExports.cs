@@ -4,28 +4,29 @@ using System.Runtime.InteropServices;
 
 public static class NativeExports
 {
-    [UnmanagedCallersOnly(EntryPoint = "LoadAssembly")]
-    public static bool LoadAssembly(IntPtr pathPtr)
+    [UnmanagedCallersOnly]
+    public static int AssemblyManager_LoadAssembly(IntPtr pathPtr)
     {
         var path = Marshal.PtrToStringAnsi(pathPtr)!;
-        return AssemblyManager.LoadAssembly(path);
+        return AssemblyManager.LoadAssembly(path) ? 0 : 1;
     }
 
-    [UnmanagedCallersOnly(EntryPoint = "UnloadAssembly")]
-    public static bool UnloadAssembly(IntPtr pathPtr)
+    [UnmanagedCallersOnly]
+    public static int AssemblyManager_UnloadAssembly(IntPtr pathPtr)
     {
         var path = Marshal.PtrToStringAnsi(pathPtr)!;
-        return AssemblyManager.UnloadAssembly(path);
+        return AssemblyManager.UnloadAssembly(path) ? 0 : 1;
     }
 
-    [UnmanagedCallersOnly(EntryPoint = "GetAssemblyMethodPtr")]
-    public static IntPtr GetAssemblyMethodPtr(IntPtr assemblyNamePtr, IntPtr typeNamePtr,
+    [UnmanagedCallersOnly]
+    public static IntPtr AssemblyManager_GetFunctionPointer(IntPtr assemblyNamePtr,
+        IntPtr typeNamePtr,
         IntPtr methodNamePtr)
     {
         var path = Marshal.PtrToStringAnsi(assemblyNamePtr)!;
         var typeName = Marshal.PtrToStringAnsi(typeNamePtr)!;
         var methodName = Marshal.PtrToStringAnsi(methodNamePtr)!;
 
-        return AssemblyManager.GetAssemblyMethodPtr(path, typeName, methodName);
+        return AssemblyManager.GetFunctionPointer(path, typeName, methodName);
     }
 }
