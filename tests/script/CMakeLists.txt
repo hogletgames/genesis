@@ -10,8 +10,10 @@ ge_add_gtest(genesis_script_test
         genesis::filesystem
         genesis::script
     DEPS
+        GenesisScripting
         TestAssembly
     DEFINITIONS
+        GE_SCRIPTING_DIR="${GenesisScripting_BINARY_DIR}"
         TEST_ASSEMBLY_DIR="${TestAssembly_BINARY_DIR}"
     DO_NOT_LINK_MAIN
     )
