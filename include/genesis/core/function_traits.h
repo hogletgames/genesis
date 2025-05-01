@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2024, Dmitry Shilnenkov
+ * Copyright (c) 2025, Dmitry Shilnenkov
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,29 +32,37 @@
 
 #pragma once
 
-#include <concepts>
+#include <genesis/core/concepts.h>
+
 #include <functional>
 
 namespace GE {
 
 // Traits
 template<typename T>
-struct is_std_function_t: std::false_type {};
+struct function_signature_t;
 
 template<typename ResultType, typename... Args>
-struct is_std_function_t<std::function<ResultType(Args...)>>: std::true_type {};
-
-// Concepts
-template<typename Func, typename ResultType, typename... Args>
-concept FuncReturns = requires(Func f, Args... args) {
-    std::invocable<Func, Args...>;
-    { std::invoke(f, args...) } -> std::same_as<ResultType>;
+struct function_signature_t<ResultType (*)(Args...)> {
+    using Type = ResultType(Args...);
 };
 
 template<typename T>
-concept IsRawFunction = std::is_pointer_v<T> && std::is_function_v<std::remove_pointer_t<T>>;
+struct raw_function_signature_t;
 
-template<typename T>
-concept IsStdFunction = is_std_function_t<T>::value;
+template<typename ResultType, typename... Args>
+struct raw_function_signature_t<std::function<ResultType(Args...)>> {
+    using Type = ResultType (*)(Args...);
+};
+
+// Aliases
+template<IsRawFunction RawFunction>
+using FunctionSignature = typename function_signature_t<RawFunction>::Type;
+
+template<IsRawFunction RawFunction>
+using FunctionType = std::function<FunctionSignature<RawFunction>>;
+
+template<IsStdFunction Function>
+using RawFunctionType = typename raw_function_signature_t<Function>::Type;
 
 } // namespace GE
