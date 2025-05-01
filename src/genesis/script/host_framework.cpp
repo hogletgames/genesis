@@ -54,7 +54,7 @@ void hostfxrErrorWriter(const char_t* message)
 std::string getHostfxrLibraryPath()
 {
     std::array<char, 1024> buffer{};
-    size_t buffer_size = buffer.size();
+    size_t                 buffer_size = buffer.size();
 
     if (int rc = ::get_hostfxr_path(buffer.data(), &buffer_size, nullptr); rc != 0) {
         GE_CORE_ERR("Failed to get hostfxr path: {:#010x}", static_cast<uint32_t>(rc));
@@ -100,17 +100,17 @@ private:
     bool getRuntimeDelegate(std::function<Signature>* delegate, hostfxr_delegate_type type);
 
     Dll::SharedLibrary m_library;
-    hostfxr_handle m_context{nullptr};
+    hostfxr_handle     m_context{nullptr};
 
     HostfxrInitializeForRuntimeConfigFn m_hostfxr_initialize_for_runtime_config;
-    HostfxrCloseFn m_hostfxr_close;
-    HostfxrSetErrorWriterFn m_hostfxr_set_error_writer;
-    HostfxrGetRuntimeDelegateFn m_hostfxr_get_runtime_delegate;
+    HostfxrCloseFn                      m_hostfxr_close;
+    HostfxrSetErrorWriterFn             m_hostfxr_set_error_writer;
+    HostfxrGetRuntimeDelegateFn         m_hostfxr_get_runtime_delegate;
 
     LoadAssemblyAndGetFunctionPointerFn m_load_assembly_and_get_function_pointer;
-    GetFunctionPointerFn m_get_function_pointer;
-    LoadAssemblyFn m_load_assembly;
-    LoadAssemblyBytesFn m_load_assembly_bytes;
+    GetFunctionPointerFn                m_get_function_pointer;
+    LoadAssemblyFn                      m_load_assembly;
+    LoadAssemblyBytesFn                 m_load_assembly_bytes;
 };
 
 HostFramework::Context::~Context()
@@ -237,7 +237,7 @@ bool HostFramework::Context::getDelegates()
 
 template<typename Signature>
 bool HostFramework::Context::loadHostfxrFunction(std::function<Signature>* function,
-                                                 std::string_view function_name)
+                                                 std::string_view          function_name)
 {
     GE_CORE_ASSERT(function, "'function' is nullptr");
     GE_CORE_ASSERT(m_library.isOpen(), "'hostfxr' library hasn't been opened");
@@ -252,7 +252,7 @@ bool HostFramework::Context::loadHostfxrFunction(std::function<Signature>* funct
 
 template<typename Signature>
 bool HostFramework::Context::getRuntimeDelegate(std::function<Signature>* delegate,
-                                                hostfxr_delegate_type type)
+                                                hostfxr_delegate_type     type)
 {
     GE_CORE_ASSERT(delegate, "'delegate' is nullptr");
     GE_CORE_ASSERT(isInitialized(), "'hostfxr' hasn't been initialized");

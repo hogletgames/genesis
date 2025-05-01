@@ -30,9 +30,53 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "genesis/core/result.h"
 
-#include <genesis/script/bindings.h>
-#include <genesis/script/delegate_loader.h>
-#include <genesis/script/host_framework.h>
-#include <genesis/script/scripting_engine.h>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+
+using namespace GE;
+using namespace testing;
+
+namespace {
+
+TEST(ResultTest, Success)
+{
+    constexpr int SUCCESS_RESULT = 42;
+
+    auto result = Success::make(SUCCESS_RESULT);
+    EXPECT_TRUE(result);
+}
+
+TEST(ResultTest, Failure)
+{
+    constexpr std::string_view ERROR_MESSAGE = "An error message";
+    constexpr std::string_view FULL_ERROR_MESSAGE = "#0 result_test.cpp:54: An error message";
+
+    auto error_result = Failure::make<int>(ERROR_MESSAGE);
+    EXPECT_FALSE(error_result);
+    EXPECT_EQ(error_result.errorMessage(), FULL_ERROR_MESSAGE);
+}
+
+TEST(ResultTest, NestedFailure)
+{
+    constexpr std::string_view FIRST_ERROR_MESSAGE = "First error message";
+    constexpr std::string_view SECOND_ERROR_MESSAGE = "Second error message";
+    constexpr std::string_view FULL_ERROR_MESSAGE = "#0 result_test.cpp:67: Second error message\n"
+                                                    "#1 result_test.cpp:66: First error message";
+
+    auto first_error_result = Failure::make<int>(FIRST_ERROR_MESSAGE);
+    auto second_error_result = Failure::make<int>(SECOND_ERROR_MESSAGE, first_error_result);
+
+    EXPECT_FALSE(first_error_result);
+    EXPECT_FALSE(second_error_result);
+    EXPECT_EQ(second_error_result.errorMessage(), FULL_ERROR_MESSAGE);
+}
+
+TEST(ResultTest, SuccessResultASNestedError)
+{
+    constexpr std::string_view ERROR_MESSAGE = "An error message";
+    EXPECT_EXIT(Failure::make<int>(ERROR_MESSAGE, Success::make(1)), KilledBySignal(SIGTRAP), "");
+}
+
+} // namespace

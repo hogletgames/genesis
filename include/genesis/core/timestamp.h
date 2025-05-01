@@ -52,23 +52,23 @@ public:
     using Micro = std::chrono::duration<double, std::micro>;
     using Nano = std::chrono::duration<double, std::nano>;
 
-    constexpr Timestamp(double time_sec = 0.0) // NOLINT
+    constexpr Timestamp(double time_sec = 0.0) // NOLINT(*-explicit-conversions)
         : m_duration{Sec{time_sec}}
     {}
 
-    constexpr Timestamp(Sec duration) // NOLINT
+    constexpr Timestamp(Sec duration) // NOLINT(*-explicit-conversions)
         : m_duration{duration}
     {}
 
-    constexpr Timestamp(Milli duration) // NOLINT
+    constexpr Timestamp(Milli duration) // NOLINT(*-explicit-conversions)
         : m_duration{duration}
     {}
 
-    constexpr Timestamp(Micro duration) // NOLINT
+    constexpr Timestamp(Micro duration) // NOLINT(*-explicit-conversions)
         : m_duration{duration}
     {}
 
-    constexpr Timestamp(Nano duration) // NOLINT
+    constexpr Timestamp(Nano duration) // NOLINT(*-explicit-conversions)
         : m_duration{duration}
     {}
 
@@ -78,7 +78,7 @@ public:
         return durationCast<Nano>(Clock::now().time_since_epoch());
     }
 
-    constexpr operator double() const { return sec(); } // NOLINT
+    constexpr operator double() const { return sec(); } // NOLINT(*-explicit-conversions)
 
     constexpr Timestamp operator-(Timestamp rhs) const { return m_duration - rhs.m_duration; }
 

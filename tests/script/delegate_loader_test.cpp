@@ -48,7 +48,7 @@ class DelegateLoaderTest: public Test
 {
 protected:
     static constexpr std::string_view TEST_ASSEMBLY_RELATIVE_PATH{"TestAssembly/TestAssembly.dll"};
-    inline static const std::string TEST_ASSEMBLY_ABSOLUTE_PATH{
+    inline static const std::string   TEST_ASSEMBLY_ABSOLUTE_PATH{
         FS::joinPath(FS::currentDir(), TEST_ASSEMBLY_RELATIVE_PATH)};
 
     static constexpr std::string_view TEST_ASSEMBLY_UPDATED_RELATIVE_PATH{

@@ -47,9 +47,11 @@ public:
     static bool loadAssembly(std::string_view assembly_path);
 
     template<typename Signature>
-    static bool getDelegate(std::function<Signature>* delegate, std::string_view assembly_name,
-                            std::string_view managed_class_name, std::string_view method_name,
-                            std::string_view delegate_type_name = {});
+    static bool getDelegate(std::function<Signature>* delegate,
+                            std::string_view          assembly_name,
+                            std::string_view          managed_class_name,
+                            std::string_view          method_name,
+                            std::string_view          delegate_type_name = {});
 
 private:
     static void* getFunctionPointer(std::string_view assembly_name,
@@ -59,9 +61,11 @@ private:
 };
 
 template<typename Signature>
-bool DelegateLoader::getDelegate(std::function<Signature>* delegate, std::string_view assembly_name,
-                                 std::string_view managed_class_name, std::string_view method_name,
-                                 std::string_view delegate_type_name)
+bool DelegateLoader::getDelegate(std::function<Signature>* delegate,
+                                 std::string_view          assembly_name,
+                                 std::string_view          managed_class_name,
+                                 std::string_view          method_name,
+                                 std::string_view          delegate_type_name)
 {
     void* loaded_delegate =
         getFunctionPointer(assembly_name, managed_class_name, method_name, delegate_type_name);

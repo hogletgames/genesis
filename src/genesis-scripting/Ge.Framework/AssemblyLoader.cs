@@ -1,12 +1,9 @@
-﻿namespace Ge.Framework;
-
-using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Linq.Expressions;
+﻿using System.Collections.Concurrent;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
+
+namespace Ge.Framework;
 
 public static class AssemblyManager
 {
@@ -21,8 +18,11 @@ public static class AssemblyManager
 
     public static bool LoadAssembly(string path)
     {
+        Console.WriteLine($"Loading '{path}' assembly...");
+
         if (string.IsNullOrWhiteSpace(path))
         {
+            Console.WriteLine($"Failed to load '{path}' assembly: invalid path ");
             return false;
         }
 
@@ -57,32 +57,55 @@ public static class AssemblyManager
         return true;
     }
 
-    public static IntPtr GetAssemblyMethodPtr(string assemblyName, string typeName,
-        string methodName)
+    public static IntPtr GetFunctionPointer(string assemblyName, string typeName,
+        string methodName, string? delegateTypeName)
     {
-        assemblyName = Path.GetFullPath(assemblyName);
-
         if (!_assemblies.TryGetValue(assemblyName, out var managed))
         {
+            Console.WriteLine($"Failed to find '{assemblyName}' assembly");
             return IntPtr.Zero;
         }
 
         var type = managed.Assembly.GetType(typeName);
         if (type == null)
         {
+            Console.WriteLine($"Failed to find '{typeName}' type");
             return IntPtr.Zero;
         }
 
         var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
         if (method == null)
         {
+            Console.WriteLine($"Failed to find '{methodName}' method");
             return IntPtr.Zero;
         }
 
-        var d = method.CreateDelegate(
-            Expression.GetDelegateType(
-                Type.EmptyTypes.Concat([method.ReturnType]).ToArray()));
+        // If no delegate type is specified, we check if the method is marked with
+        // UnmanagedCallersOnlyAttribute
 
-        return Marshal.GetFunctionPointerForDelegate(d);
+        if (delegateTypeName == null)
+        {
+            if (method.GetCustomAttribute<UnmanagedCallersOnlyAttribute>() == null)
+            {
+                Console.WriteLine(
+                    $"'{methodName}' method is not marked with 'UnmanagedCallersOnlyAttribute'");
+                return IntPtr.Zero;
+            }
+
+            return method.MethodHandle.GetFunctionPointer();
+        }
+
+        // If a delegate type is specified, we create a delegate from the method and return its
+        // pointer
+
+        var delegateType = managed.Assembly.GetType(delegateTypeName);
+        if (delegateType == null)
+        {
+            Console.WriteLine($"Failed to find '{delegateTypeName}' delegate type");
+            return IntPtr.Zero;
+        }
+
+        var methodDelegate = Delegate.CreateDelegate(delegateType, method);
+        return Marshal.GetFunctionPointerForDelegate(methodDelegate);
     }
 }

@@ -59,9 +59,6 @@ public:
 
     bool isOpen() const { return m_library != nullptr; }
 
-    static std::string platformDependentName(std::string_view name);
-    static std::string path(std::string_view name);
-
 private:
     void* loadFunctionPtr(std::string_view name) const;
 

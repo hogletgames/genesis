@@ -32,4 +32,4 @@
 
 #pragma once
 
-#include <genesis/scrupt/bindings/assembly_loader.h>
+#include <genesis/script/bindings/assembly_manager.h>

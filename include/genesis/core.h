@@ -45,6 +45,7 @@
 #include <genesis/core/interface.h>
 #include <genesis/core/log.h>
 #include <genesis/core/memory.h>
+#include <genesis/core/result.h>
 #include <genesis/core/string_utils.h>
 #include <genesis/core/timestamp.h>
 #include <genesis/core/type_list.h>

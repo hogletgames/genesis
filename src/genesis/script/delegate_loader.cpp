@@ -66,7 +66,7 @@ void* DelegateLoader::getFunctionPointer(std::string_view assembly_name,
     // Create an assembly qualified delegate type name if the passed value is not empty, otherwise
     // use 'UNMANAGEDCALLERSONLY_METHOD'.
 
-    std::string full_delegate_type_name;
+    std::string   full_delegate_type_name;
     const char_t* full_delegate_name_ptr = UNMANAGEDCALLERSONLY_METHOD;
     if (!delegate_type_name.empty()) {
         full_delegate_type_name = GE_FMTSTR("{}, {}", delegate_type_name, assembly_name);
@@ -78,7 +78,7 @@ void* DelegateLoader::getFunctionPointer(std::string_view assembly_name,
     auto type_name = GE_FMTSTR("{}, {}", managed_class_name, assembly_name);
 
     void* function{nullptr};
-    int rc = HostFramework::getFunctionPointerFn()(
+    int   rc = HostFramework::getFunctionPointerFn()(
         type_name.c_str(), method_name.data(), full_delegate_name_ptr, nullptr, nullptr, &function);
     if (rc != 0 || function == nullptr) {
         GE_CORE_ERR("Failed to load '{}' method of '{}' class from '{}' assembly: "
