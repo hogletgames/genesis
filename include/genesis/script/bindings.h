@@ -32,5 +32,4 @@
 
 #pragma once
 
-#include <genesis/script/bindings.h>
-#include <genesis/script/host_framework.h>
+#include <genesis/script/bindings/assembly_manager.h>

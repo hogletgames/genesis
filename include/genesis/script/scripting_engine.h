@@ -31,6 +31,3 @@
  */
 
 #pragma once
-
-#include <genesis/script/bindings.h>
-#include <genesis/script/host_framework.h>
