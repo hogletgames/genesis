@@ -32,6 +32,4 @@
 
 #pragma once
 
-#include <genesis/script/bindings.h>
-#include <genesis/script/delegate_loader.h>
-#include <genesis/script/host_framework.h>
+#include <genesis/scrupt/bindings/assembly_loader.h>
