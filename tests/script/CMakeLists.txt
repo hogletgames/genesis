@@ -2,6 +2,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/DotNetHelpers.cmake)
 
 ge_add_gtest(genesis_script_test
     SOURCES
+        assembly_manager_test.cpp
         delegate_loader_test.cpp
         host_framework_test.cpp
         main.cpp
