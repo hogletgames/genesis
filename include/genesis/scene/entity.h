@@ -97,7 +97,7 @@ private:
     Entity(NativeHandle native_handle, entt::registry* registry);
     Entity makeEntity(NativeHandle entity_handle) const { return {entity_handle, m_registry}; }
 
-    NativeHandle m_handle{NULL_ID};
+    NativeHandle    m_handle{NULL_ID};
     entt::registry* m_registry{nullptr};
 };
 

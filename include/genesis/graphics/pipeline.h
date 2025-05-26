@@ -48,7 +48,8 @@ public:
     using NativeHandle = void*;
 
     virtual void bind(GPUCommandQueue* queue) = 0;
-    virtual void bind(GPUCommandQueue* queue, const std::string& name,
+    virtual void bind(GPUCommandQueue*     queue,
+                      const std::string&   name,
                       const UniformBuffer& ubo) = 0;
     virtual void bind(GPUCommandQueue* queue, const std::string& name, const Texture& texture) = 0;
 
@@ -57,14 +58,18 @@ public:
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, uint32_t value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, float value) = 0;
     virtual void pushConstant(GPUCommandQueue* queue, const std::string& name, double value) = 0;
-    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
-                              const Vec2& value) = 0;
-    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
-                              const Vec3& value) = 0;
-    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
-                              const Vec4& value) = 0;
-    virtual void pushConstant(GPUCommandQueue* queue, const std::string& name,
-                              const Mat4& value) = 0;
+    virtual void pushConstant(GPUCommandQueue*   queue,
+                              const std::string& name,
+                              const Vec2&        value) = 0;
+    virtual void pushConstant(GPUCommandQueue*   queue,
+                              const std::string& name,
+                              const Vec3&        value) = 0;
+    virtual void pushConstant(GPUCommandQueue*   queue,
+                              const std::string& name,
+                              const Vec4&        value) = 0;
+    virtual void pushConstant(GPUCommandQueue*   queue,
+                              const std::string& name,
+                              const Mat4&        value) = 0;
 
     virtual NativeHandle nativeHandle() const = 0;
 };

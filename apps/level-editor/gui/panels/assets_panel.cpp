@@ -47,7 +47,7 @@ namespace {
 
 constexpr TreeNode::Flags TREE_NODE_FLAGS{TreeNode::SPAN_AVAIL_WIDTH | TreeNode::FRAME_PADDING};
 
-GE::Vec2 scaledTextureSize(const GE::Vec2 &texture_size, float window_width)
+GE::Vec2 scaledTextureSize(const GE::Vec2& texture_size, float window_width)
 {
     float scale = window_width / texture_size.x;
     return texture_size * scale;
@@ -55,17 +55,17 @@ GE::Vec2 scaledTextureSize(const GE::Vec2 &texture_size, float window_width)
 
 } // namespace
 
-void DeferredAssetsPanelCommands::removePackage(const std::string &name)
+void DeferredAssetsPanelCommands::removePackage(const std::string& name)
 {
     enqueue([this, name] { m_assets->removePackage(name); });
 }
 
-void DeferredAssetsPanelCommands::removeResource(const ResourceID &id)
+void DeferredAssetsPanelCommands::removeResource(const ResourceID& id)
 {
     enqueue([this, id] { m_assets->removeResource(id); });
 }
 
-AssetsPanel::AssetsPanel(Registry *assets)
+AssetsPanel::AssetsPanel(Registry* assets)
     : WindowBase{NAME}
     , m_assets{assets}
     , m_commands(assets)
@@ -86,7 +86,7 @@ void AssetsPanel::updateWindowParameters()
     m_window_size = m_window.availableRegion();
 }
 
-void AssetsPanel::drawContextMenu(WidgetNode *node)
+void AssetsPanel::drawContextMenu(WidgetNode* node)
 {
     auto flags = PopupFlag::MOUSE_BUTTON_RIGHT | PopupFlag::NO_OPEN_OVER_ITEMS |
                  PopupFlag::NO_OPEN_OVER_EXISTING_POPUP;
@@ -105,7 +105,7 @@ void AssetsPanel::drawContextMenu(WidgetNode *node)
     }
 }
 
-void AssetsPanel::drawAssets(WidgetNode *node)
+void AssetsPanel::drawAssets(WidgetNode* node)
 {
     if (!node->isOpened()) {
         return;
@@ -113,14 +113,14 @@ void AssetsPanel::drawAssets(WidgetNode *node)
 
     auto packages = m_assets->allPackages();
     std::ranges::sort(packages,
-                      [](const auto *lhs, const auto *rhs) { return lhs->name() < rhs->name(); });
+                      [](const auto* lhs, const auto* rhs) { return lhs->name() < rhs->name(); });
 
-    for (const auto *package : packages) {
+    for (const auto* package : packages) {
         drawPackage(node, *package);
     }
 }
 
-void AssetsPanel::drawPackage(WidgetNode *node, const Package &package)
+void AssetsPanel::drawPackage(WidgetNode* node, const Package& package)
 {
     auto package_node = node->makeSubNode<TreeNode>(package.name(), TREE_NODE_FLAGS);
 
@@ -136,7 +136,7 @@ void AssetsPanel::drawPackage(WidgetNode *node, const Package &package)
     }
 }
 
-void AssetsPanel::drawResource(WidgetNode *node, const GE::Shared<MeshResource> &resource)
+void AssetsPanel::drawResource(WidgetNode* node, const GE::Shared<MeshResource>& resource)
 {
     auto mesh_node = node->makeSubNode<TreeNode>(resource->id().name(), TREE_NODE_FLAGS);
     mesh_node.call<Text>("Use count: %d", resource->mesh().use_count());
@@ -148,7 +148,7 @@ void AssetsPanel::drawResource(WidgetNode *node, const GE::Shared<MeshResource> 
     }
 }
 
-void AssetsPanel::drawResource(WidgetNode *node, const GE::Shared<PipelineResource> &resource)
+void AssetsPanel::drawResource(WidgetNode* node, const GE::Shared<PipelineResource>& resource)
 {
     auto pipeline_node = node->makeSubNode<TreeNode>(resource->id().name(), TREE_NODE_FLAGS);
 
@@ -174,9 +174,9 @@ void AssetsPanel::drawResource(WidgetNode *node, const GE::Shared<PipelineResour
     }
 }
 
-void AssetsPanel::drawResource(WidgetNode *node, const GE::Shared<TextureResource> &resource)
+void AssetsPanel::drawResource(WidgetNode* node, const GE::Shared<TextureResource>& resource)
 {
-    auto *texture = resource->texture().get();
+    auto* texture = resource->texture().get();
 
     auto texture_node = node->makeSubNode<TreeNode>(resource->id().name(), TREE_NODE_FLAGS);
     texture_node.call<Text>("Use count: %d", resource->texture().use_count());
@@ -192,7 +192,7 @@ void AssetsPanel::drawResource(WidgetNode *node, const GE::Shared<TextureResourc
 }
 
 template<typename T>
-void AssetsPanel::drawResources(WidgetNode *node, const Package &package)
+void AssetsPanel::drawResources(WidgetNode* node, const Package& package)
 {
     auto resources = package.getAllOf<T>();
     if (resources.empty()) {
@@ -205,7 +205,7 @@ void AssetsPanel::drawResources(WidgetNode *node, const Package &package)
         return;
     }
 
-    for (const auto &resource : resources) {
+    for (const auto& resource : resources) {
         drawResource(&resources_node, resource);
     }
 }

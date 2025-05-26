@@ -355,7 +355,8 @@ void Pipeline::createPipeline(Vulkan::pipeline_config_t config)
     }
 }
 
-void Pipeline::bindResource(GPUCommandQueue* queue, const std::string& name,
+void Pipeline::bindResource(GPUCommandQueue*      queue,
+                            const std::string&    name,
                             VkWriteDescriptorSet* write_descriptor_set)
 {
     auto resource = m_resources->resource(name);
@@ -395,8 +396,9 @@ void Pipeline::pushConstantIfValid(GPUCommandQueue* queue, const std::string& na
 }
 
 template<typename T>
-void Pipeline::pushConstantCmd(GPUCommandQueue* queue, const push_constant_t& push_constant,
-                               T value)
+void Pipeline::pushConstantCmd(GPUCommandQueue*       queue,
+                               const push_constant_t& push_constant,
+                               T                      value)
 {
     queue->enqueue([this, &push_constant, value](void* cmd_buffer) {
         vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
@@ -406,8 +408,9 @@ void Pipeline::pushConstantCmd(GPUCommandQueue* queue, const push_constant_t& pu
 }
 
 template<>
-void Pipeline::pushConstantCmd<bool>(GPUCommandQueue* queue, const push_constant_t& push_constant,
-                                     bool value)
+void Pipeline::pushConstantCmd<bool>(GPUCommandQueue*       queue,
+                                     const push_constant_t& push_constant,
+                                     bool                   value)
 {
     queue->enqueue([this, &push_constant, vk_value = toVkBool(value)](void* cmd_buffer) {
         vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
@@ -417,8 +420,9 @@ void Pipeline::pushConstantCmd<bool>(GPUCommandQueue* queue, const push_constant
 }
 
 template<>
-void Pipeline::pushConstantCmd<const Vec2&>(GPUCommandQueue* queue,
-                                            const push_constant_t& push_constant, const Vec2& value)
+void Pipeline::pushConstantCmd<const Vec2&>(GPUCommandQueue*       queue,
+                                            const push_constant_t& push_constant,
+                                            const Vec2&            value)
 {
     queue->enqueue([this, &push_constant, &value](void* cmd_buffer) {
         vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
@@ -428,8 +432,9 @@ void Pipeline::pushConstantCmd<const Vec2&>(GPUCommandQueue* queue,
 }
 
 template<>
-void Pipeline::pushConstantCmd<const Vec3&>(GPUCommandQueue* queue,
-                                            const push_constant_t& push_constant, const Vec3& value)
+void Pipeline::pushConstantCmd<const Vec3&>(GPUCommandQueue*       queue,
+                                            const push_constant_t& push_constant,
+                                            const Vec3&            value)
 {
     queue->enqueue([this, &push_constant, &value](void* cmd_buffer) {
         vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
@@ -439,8 +444,9 @@ void Pipeline::pushConstantCmd<const Vec3&>(GPUCommandQueue* queue,
 }
 
 template<>
-void Pipeline::pushConstantCmd<const Vec4&>(GPUCommandQueue* queue,
-                                            const push_constant_t& push_constant, const Vec4& value)
+void Pipeline::pushConstantCmd<const Vec4&>(GPUCommandQueue*       queue,
+                                            const push_constant_t& push_constant,
+                                            const Vec4&            value)
 {
     queue->enqueue([this, &push_constant, &value](void* cmd_buffer) {
         vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,
@@ -450,8 +456,9 @@ void Pipeline::pushConstantCmd<const Vec4&>(GPUCommandQueue* queue,
 }
 
 template<>
-void Pipeline::pushConstantCmd<const Mat4&>(GPUCommandQueue* queue,
-                                            const push_constant_t& push_constant, const Mat4& value)
+void Pipeline::pushConstantCmd<const Mat4&>(GPUCommandQueue*       queue,
+                                            const push_constant_t& push_constant,
+                                            const Mat4&            value)
 {
     queue->enqueue([this, &push_constant, &value](void* cmd_buffer) {
         vkCmdPushConstants(toVkCommandBuffer(cmd_buffer), m_pipeline_layout,

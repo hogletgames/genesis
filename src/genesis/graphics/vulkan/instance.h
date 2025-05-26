@@ -64,7 +64,7 @@ private:
 
     void destroyVulkanHandles();
 
-    VkInstance m_instance{VK_NULL_HANDLE};
+    VkInstance               m_instance{VK_NULL_HANDLE};
     VkDebugUtilsMessengerEXT m_debug_utils{VK_NULL_HANDLE};
 };
 

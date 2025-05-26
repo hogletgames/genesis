@@ -42,18 +42,18 @@ class Framebuffer;
 class FramebufferRenderer: public RendererBase
 {
 public:
-    FramebufferRenderer(Shared<Device> device, Vulkan::Framebuffer *framebuffer);
+    FramebufferRenderer(Shared<Device> device, Vulkan::Framebuffer* framebuffer);
     ~FramebufferRenderer();
 
     bool beginFrame(ClearMode clear_mode = CLEAR_ALL) override;
     void endFrame() override;
     void swapBuffers() override;
 
-    void onEvent([[maybe_unused]] Event *event) override {};
+    void onEvent([[maybe_unused]] Event* event) override {};
 
     Vec2 size() const override;
 
-    Scoped<GE::Pipeline> createPipeline(const pipeline_config_t &config) override;
+    Scoped<GE::Pipeline> createPipeline(const pipeline_config_t& config) override;
 
 private:
     void createSyncObjects();
@@ -68,13 +68,13 @@ private:
     VkExtent2D extent() const override;
     VkViewport viewport() const override;
 
-    const std::vector<VkRenderingAttachmentInfo> &
+    const std::vector<VkRenderingAttachmentInfo>&
     colorRenderingAttachments(ClearMode clear_mode) override;
     std::optional<VkRenderingAttachmentInfo>
     depthRenderingAttachment(ClearMode clear_mode) override;
 
-    Vulkan::Framebuffer *m_framebuffer{nullptr};
-    VkFence m_in_flight_fence{VK_NULL_HANDLE};
+    Vulkan::Framebuffer* m_framebuffer{nullptr};
+    VkFence              m_in_flight_fence{VK_NULL_HANDLE};
 };
 
 } // namespace GE::Vulkan

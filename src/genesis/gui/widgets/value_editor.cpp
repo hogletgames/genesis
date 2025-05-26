@@ -38,8 +38,13 @@
 
 namespace GE::GUI {
 
-bool ValueEditor::call(std::string_view label, Vec2* value, float v_speed, float v_min, float v_max,
-                       std::string_view format, ValueEditor::Flags flags)
+bool ValueEditor::call(std::string_view   label,
+                       Vec2*              value,
+                       float              v_speed,
+                       float              v_min,
+                       float              v_max,
+                       std::string_view   format,
+                       ValueEditor::Flags flags)
 {
     ImGui::PushID(value);
     Defer defer{[] { ImGui::PopID(); }};
@@ -47,8 +52,13 @@ bool ValueEditor::call(std::string_view label, Vec2* value, float v_speed, float
                              flags);
 }
 
-bool ValueEditor::call(std::string_view label, Vec3* value, float v_speed, float v_min, float v_max,
-                       std::string_view format, Flags flags)
+bool ValueEditor::call(std::string_view label,
+                       Vec3*            value,
+                       float            v_speed,
+                       float            v_min,
+                       float            v_max,
+                       std::string_view format,
+                       Flags            flags)
 {
     ImGui::PushID(value);
     Defer defer{[] { ImGui::PopID(); }};
@@ -56,8 +66,13 @@ bool ValueEditor::call(std::string_view label, Vec3* value, float v_speed, float
                              flags);
 }
 
-bool ValueEditor::call(std::string_view label, float* value, float v_speed, float v_min,
-                       float v_max, std::string_view format, ValueEditor::Flags flags)
+bool ValueEditor::call(std::string_view   label,
+                       float*             value,
+                       float              v_speed,
+                       float              v_min,
+                       float              v_max,
+                       std::string_view   format,
+                       ValueEditor::Flags flags)
 {
     ImGui::PushID(value);
     Defer defer{[] { ImGui::PopID(); }};

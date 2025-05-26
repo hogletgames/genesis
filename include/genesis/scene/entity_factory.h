@@ -58,7 +58,7 @@ public:
 private:
     void appendToTail(const Entity& entity);
 
-    Scene* m_scene{nullptr};
+    Scene*            m_scene{nullptr};
     Assets::Registry* m_assets{nullptr};
 };
 

@@ -61,10 +61,10 @@ protected:
     Shared<Device> m_device;
 
     Scoped<Image> m_image;
-    Vec2 m_size{0.0f, 0.0f};
+    Vec2          m_size{0.0f, 0.0f};
     TextureFormat m_format{TextureFormat::UNKNOWN};
-    bool m_is_opaque{true};
-    VkSampler m_sampler{VK_NULL_HANDLE};
+    bool          m_is_opaque{true};
+    VkSampler     m_sampler{VK_NULL_HANDLE};
 
     mutable VkDescriptorSet m_descriptor_set{VK_NULL_HANDLE};
 

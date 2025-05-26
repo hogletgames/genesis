@@ -57,8 +57,8 @@ protected:
     void renderPackageCombobox(GE::GUI::WidgetNode* node);
 
     LevelEditorContext* m_ctx{nullptr};
-    std::string m_package_name;
-    std::string m_resource_name;
+    std::string         m_package_name;
+    std::string         m_resource_name;
 
     ErrorSignal m_error_signal;
 };

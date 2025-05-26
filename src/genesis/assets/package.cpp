@@ -38,7 +38,7 @@ namespace GE::Assets {
 namespace {
 
 template<typename T>
-void appendIds(std::vector<ResourceID>* resource_ids,
+void appendIds(std::vector<ResourceID>*                          resource_ids,
                const std::unordered_map<std::string, Shared<T>>& resources)
 {
     resource_ids->reserve(resource_ids->size() + resources.size());

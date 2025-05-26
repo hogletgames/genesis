@@ -58,7 +58,7 @@ protected:
 
 private:
     Scoped<VertexBuffer> m_vbo;
-    Scoped<IndexBuffer> m_ibo;
+    Scoped<IndexBuffer>  m_ibo;
 };
 
 } // namespace GE::Examples

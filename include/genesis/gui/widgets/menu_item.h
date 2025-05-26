@@ -39,10 +39,12 @@ namespace GE::GUI {
 class MenuItem
 {
 public:
-    static bool call(std::string_view label, std::string_view shortcut = {}, bool selected = false,
-                     bool enabled = true);
-    static bool call(std::string_view label, std::string_view shortcut, bool* selected,
-                     bool enabled = true);
+    static bool call(std::string_view label,
+                     std::string_view shortcut = {},
+                     bool             selected = false,
+                     bool             enabled = true);
+    static bool
+    call(std::string_view label, std::string_view shortcut, bool* selected, bool enabled = true);
 };
 
 } // namespace GE::GUI

@@ -57,9 +57,9 @@ struct queue_family_indices_t {
 };
 
 struct swap_chain_support_details_t {
-    VkSurfaceCapabilitiesKHR capabilities{};
+    VkSurfaceCapabilitiesKHR        capabilities{};
     std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> present_mode;
+    std::vector<VkPresentModeKHR>   present_mode;
 
     bool isValid() const { return !formats.empty() && !present_mode.empty(); }
 };
@@ -88,8 +88,9 @@ public:
         return querySwapChainSupport(m_physical_device);
     }
 
-    VkFormat getSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling,
-                                VkFormatFeatureFlags features);
+    VkFormat getSupportedFormat(const std::vector<VkFormat>& candidates,
+                                VkImageTiling                tiling,
+                                VkFormatFeatureFlags         features);
     uint32_t findMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
 
 private:
@@ -105,17 +106,17 @@ private:
     bool checkPhysicalDeviceExtSupport(VkPhysicalDevice physical_device);
     swap_chain_support_details_t querySwapChainSupport(VkPhysicalDevice physical_device) const;
 
-    VkSurfaceKHR m_surface{VK_NULL_HANDLE};
+    VkSurfaceKHR     m_surface{VK_NULL_HANDLE};
     VkPhysicalDevice m_physical_device{VK_NULL_HANDLE};
-    VkDevice m_device{VK_NULL_HANDLE};
-    VkCommandPool m_command_pool{VK_NULL_HANDLE};
+    VkDevice         m_device{VK_NULL_HANDLE};
+    VkCommandPool    m_command_pool{VK_NULL_HANDLE};
 
     VkQueue m_graphics_queue{VK_NULL_HANDLE};
     VkQueue m_present_queue{VK_NULL_HANDLE};
     VkQueue m_transfer_queue{VK_NULL_HANDLE};
     VkQueue m_compute_queue{VK_NULL_HANDLE};
 
-    queue_family_indices_t m_queue_indices{};
+    queue_family_indices_t    m_queue_indices{};
     GraphicsContext::limits_t m_limits{};
 
     std::vector<const char*> m_extensions;

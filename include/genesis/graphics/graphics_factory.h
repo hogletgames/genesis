@@ -53,7 +53,7 @@ public:
     virtual Scoped<Framebuffer> createFramebuffer(const Framebuffer::config_t& config) const = 0;
 
     virtual Scoped<IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                                  uint32_t count) const = 0;
+                                                  uint32_t        count) const = 0;
     virtual Scoped<VertexBuffer> createVertexBuffer(uint32_t size, const void* vertices) const = 0;
     virtual Scoped<StagingBuffer> createStagingBuffer() const = 0;
     virtual Scoped<UniformBuffer> createUniformBuffer(uint32_t size, const void* data) const = 0;

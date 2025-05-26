@@ -57,7 +57,8 @@ public:
     ~Pipeline();
 
     void bind(GPUCommandQueue* queue) override;
-    void bind(GPUCommandQueue* queue, const std::string& name,
+    void bind(GPUCommandQueue*         queue,
+              const std::string&       name,
               const GE::UniformBuffer& ubo) override;
     void bind(GPUCommandQueue* queue, const std::string& name, const GE::Texture& texture) override;
 
@@ -79,7 +80,8 @@ private:
     void createPipelineLayout();
     void createPipeline(Vulkan::pipeline_config_t config);
 
-    void bindResource(GPUCommandQueue* queue, const std::string& name,
+    void bindResource(GPUCommandQueue*      queue,
+                      const std::string&    name,
                       VkWriteDescriptorSet* write_descriptor_set);
 
     template<typename T>
@@ -89,9 +91,9 @@ private:
 
     void destroyVkHandles();
 
-    Shared<Device> m_device;
-    VkPipeline m_pipeline{VK_NULL_HANDLE};
-    VkPipelineLayout m_pipeline_layout{VK_NULL_HANDLE};
+    Shared<Device>            m_device;
+    VkPipeline                m_pipeline{VK_NULL_HANDLE};
+    VkPipelineLayout          m_pipeline_layout{VK_NULL_HANDLE};
     Scoped<PipelineResources> m_resources;
 };
 

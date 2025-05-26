@@ -53,8 +53,8 @@ namespace {
 
 void mapKeys()
 {
-    auto &io = ImGui::GetIO();
-    auto cast_key = [](GE::KeyCode key) { return static_cast<int>(key); };
+    auto& io = ImGui::GetIO();
+    auto  cast_key = [](GE::KeyCode key) { return static_cast<int>(key); };
 
     io.KeyMap[ImGuiKey_Tab] = cast_key(GE::KeyCode::TAB);
     io.KeyMap[ImGuiKey_LeftArrow] = cast_key(GE::KeyCode::LEFT);
@@ -84,7 +84,7 @@ void mapKeys()
 
 namespace GE::Vulkan::SDL {
 
-GUIContext::GUIContext(void *window, Shared<Device> device, WindowRenderer *window_renderer)
+GUIContext::GUIContext(void* window, Shared<Device> device, WindowRenderer* window_renderer)
     : m_device{std::move(device)}
     , m_event_handler{makeScoped<Vulkan::SDL::EventHandler>()}
 {
@@ -93,7 +93,7 @@ GUIContext::GUIContext(void *window, Shared<Device> device, WindowRenderer *wind
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-    ImGuiIO &io = ImGui::GetIO();
+    ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -102,12 +102,12 @@ GUIContext::GUIContext(void *window, Shared<Device> device, WindowRenderer *wind
     ImGui::StyleColorsDark();
 
     if (isDockingEnabled()) {
-        ImGuiStyle &style = ImGui::GetStyle();
+        ImGuiStyle& style = ImGui::GetStyle();
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
-    auto *sdl_window = reinterpret_cast<SDL_Window *>(window);
+    auto* sdl_window = reinterpret_cast<SDL_Window*>(window);
 
     if (!ImGui_ImplSDL2_InitForVulkan(sdl_window)) {
         throw Vulkan::Exception{"Failed to initialize SDL2 for Vulkan"};
@@ -115,7 +115,7 @@ GUIContext::GUIContext(void *window, Shared<Device> device, WindowRenderer *wind
 
     createDescriptorPool();
 
-    auto *swap_chain = window_renderer->swapChain();
+    auto* swap_chain = window_renderer->swapChain();
 
     std::array<VkFormat, 1> color_formats{swap_chain->colorFormat()};
 
@@ -179,14 +179,14 @@ void GUIContext::end()
     }
 }
 
-void GUIContext::draw(GPUCommandQueue *queue)
+void GUIContext::draw(GPUCommandQueue* queue)
 {
-    queue->enqueue([](void *cmd) {
+    queue->enqueue([](void* cmd) {
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), toVkCommandBuffer(cmd));
     });
 }
 
-GUI::EventHandler *GUIContext::eventHandler()
+GUI::EventHandler* GUIContext::eventHandler()
 {
     return m_event_handler.get();
 }
@@ -238,7 +238,7 @@ bool GUIContext::isViewportEnabled() const
     return (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0;
 }
 
-VkDescriptorSet createGuiTextureID(const Vulkan::Texture &texture)
+VkDescriptorSet createGuiTextureID(const Vulkan::Texture& texture)
 {
     static constexpr VkImageLayout image_layout{VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
     return ::ImGui_ImplVulkan_AddTexture(texture.sampler(), texture.image()->view(), image_layout);

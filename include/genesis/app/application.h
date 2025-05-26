@@ -52,8 +52,8 @@ class GE_API Application: public EventListener
 {
 public:
     struct settings_t {
-        Log::settings_t log{};
-        Window::settings_t window{};
+        Log::settings_t      log{};
+        Window::settings_t   window{};
         Graphics::settings_t graphics{};
     };
 
@@ -101,12 +101,12 @@ private:
     void renderLayers();
     void clearLayers();
 
-    Shared<Window> m_window;
+    Shared<Window>            m_window;
     std::deque<Shared<Layer>> m_layers;
-    WindowState m_window_state{WindowState::NONE};
+    WindowState               m_window_state{WindowState::NONE};
 
     volatile bool m_running{true};
-    Timestamp m_prev_frame_ts;
+    Timestamp     m_prev_frame_ts;
 };
 
 } // namespace GE

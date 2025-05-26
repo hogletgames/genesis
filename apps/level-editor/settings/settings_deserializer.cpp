@@ -41,7 +41,7 @@
 namespace LE {
 namespace {
 
-bool validate(const YAML::Node &node)
+bool validate(const YAML::Node& node)
 {
     if (auto project = node["projects"]; !project || !project.IsMap()) {
         GE_ERR("Failed to load a settings config file: 'projects' node is not a map");
@@ -58,17 +58,17 @@ bool validate(const YAML::Node &node)
 
 } // namespace
 
-SettingsDeserializer::SettingsDeserializer(Settings *settings)
+SettingsDeserializer::SettingsDeserializer(Settings* settings)
     : m_settings{settings}
 {}
 
-bool SettingsDeserializer::deserialize(const std::string &filepath)
+bool SettingsDeserializer::deserialize(const std::string& filepath)
 {
     YAML::Node node;
 
     try {
         node = YAML::LoadFile(filepath);
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         GE_CORE_ERR("Failed to load a settings config file from the '{}': {}", filepath, e.what());
         return false;
     }
@@ -79,13 +79,13 @@ bool SettingsDeserializer::deserialize(const std::string &filepath)
 
     try {
         m_settings->setAppSettings(node["app_settings"].as<AppSettings>());
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         GE_WARN("Failed to load app settings: {}", e.what());
     }
 
     try {
         m_settings->setProjectPaths(node["projects"].as<Settings::ProjectPaths>());
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         GE_WARN("Failed to load projects settings: {}", e.what());
     }
 
@@ -94,7 +94,7 @@ bool SettingsDeserializer::deserialize(const std::string &filepath)
             !current_project.empty()) {
             return m_settings->setCurrentProject(current_project);
         }
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         GE_WARN("Failed to current project settings: {}", e.what());
     }
 

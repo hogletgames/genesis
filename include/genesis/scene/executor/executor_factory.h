@@ -64,10 +64,10 @@ public:
 private:
     using FactoryMethod = std::function<Scoped<IExecutor>()>;
 
-    Scene* m_scene{nullptr};
-    Assets::Registry* m_assets{nullptr};
-    P2D::World* m_world{nullptr};
-    std::string m_saved_scene_path;
+    Scene*                                              m_scene{nullptr};
+    Assets::Registry*                                   m_assets{nullptr};
+    P2D::World*                                         m_world{nullptr};
+    std::string                                         m_saved_scene_path;
     std::unordered_map<std::string_view, FactoryMethod> m_factory_methods;
 };
 

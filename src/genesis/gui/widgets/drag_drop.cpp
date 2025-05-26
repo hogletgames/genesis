@@ -118,8 +118,9 @@ bool DragDropPayload::validateAcceptedPayload(size_t requested_size) const
     return true;
 }
 
-DragDropSource::DragDropSource(const DragDropPayload& payload, std::string_view dragging_text,
-                               Flags flags)
+DragDropSource::DragDropSource(const DragDropPayload& payload,
+                               std::string_view       dragging_text,
+                               Flags                  flags)
 {
     setBeginFunc([&payload, dragging_text, flags] {
         if (ImGui::BeginDragDropSource(fromSourceFlags(flags))) {

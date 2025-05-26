@@ -44,7 +44,7 @@
 namespace GE::Assets {
 namespace {
 
-bool writeToFile(const std::string &filepath, const YAML::Node &node)
+bool writeToFile(const std::string& filepath, const YAML::Node& node)
 {
     std::ofstream fout{filepath};
     if (!fout) {
@@ -58,11 +58,11 @@ bool writeToFile(const std::string &filepath, const YAML::Node &node)
 
 } // namespace
 
-ResourceSerializer::ResourceSerializer(Registry *registry)
+ResourceSerializer::ResourceSerializer(Registry* registry)
     : m_registry{registry}
 {}
 
-bool ResourceSerializer::serialize(const std::string &config_filepath)
+bool ResourceSerializer::serialize(const std::string& config_filepath)
 {
     auto assets = serializeAssets();
 
@@ -80,7 +80,7 @@ YAML::Node ResourceSerializer::serializeAssets()
 
     auto resources_node = assets_node["packages"];
 
-    for (const auto *package : m_registry->allPackages()) {
+    for (const auto* package : m_registry->allPackages()) {
         auto package_node = serializePackage(*package);
 
         if (writeToFile(package->filepath(), package_node)) {
@@ -91,22 +91,22 @@ YAML::Node ResourceSerializer::serializeAssets()
     return assets_node;
 }
 
-YAML::Node ResourceSerializer::serializePackage(const Package &package)
+YAML::Node ResourceSerializer::serializePackage(const Package& package)
 {
     YAML::Node package_node;
 
     package_node["name"] = package.name();
     auto resources_node = package_node["resources"];
 
-    for (const auto &pipeline : package.getAllOf<PipelineResource>()) {
+    for (const auto& pipeline : package.getAllOf<PipelineResource>()) {
         resources_node[GE::toString(Group::PIPELINES)].push_back(YAML::Node{*pipeline});
     }
 
-    for (const auto &mesh : package.getAllOf<MeshResource>()) {
+    for (const auto& mesh : package.getAllOf<MeshResource>()) {
         resources_node[GE::toString(Group::MESHES)].push_back(YAML::Node{*mesh});
     }
 
-    for (const auto &texture : package.getAllOf<TextureResource>()) {
+    for (const auto& texture : package.getAllOf<TextureResource>()) {
         resources_node[GE::toString(Group::TEXTURES)].push_back(YAML::Node{*texture});
     }
 

@@ -58,8 +58,8 @@ bool isOpaque(const Entity& entity)
 
 } // namespace
 
-WeightedBlendedOITRenderer::WeightedBlendedOITRenderer(GE::Renderer* renderer,
-                                                       const Assets::Registry& assets,
+WeightedBlendedOITRenderer::WeightedBlendedOITRenderer(GE::Renderer*               renderer,
+                                                       const Assets::Registry&     assets,
                                                        const ViewProjectionCamera* camera)
     : RendererBase{renderer, camera}
 {
@@ -122,7 +122,7 @@ void WeightedBlendedOITRenderer::recreateWbOitFramebuffer(const Vec2& size)
     m_wb_oit_fbo = Framebuffer::create(config);
 }
 
-void WeightedBlendedOITRenderer::createOpaqueColorPipeline(GE::Renderer* renderer,
+void WeightedBlendedOITRenderer::createOpaqueColorPipeline(GE::Renderer*           renderer,
                                                            const Assets::Registry& assets)
 {
     auto pipeline_resource = assets.get<Assets::PipelineResource>(COLOR_PIPELINE);
@@ -141,7 +141,7 @@ void WeightedBlendedOITRenderer::createOpaqueColorPipeline(GE::Renderer* rendere
     GE_CORE_ASSERT(m_color_pipeline, "Failed to create color pipeline");
 }
 
-void WeightedBlendedOITRenderer::createAccumulationPipeline(GE::Renderer* renderer,
+void WeightedBlendedOITRenderer::createAccumulationPipeline(GE::Renderer*           renderer,
                                                             const Assets::Registry& assets)
 {
     auto pipeline_resource = assets.get<Assets::PipelineResource>(ACCUMULATION_PIPELINE);
@@ -174,7 +174,7 @@ void WeightedBlendedOITRenderer::createAccumulationPipeline(GE::Renderer* render
     GE_CORE_ASSERT(m_accumulation_pipeline, "Failed to create accumulation pipeline");
 }
 
-void WeightedBlendedOITRenderer::createComposingPipeline(GE::Renderer* renderer,
+void WeightedBlendedOITRenderer::createComposingPipeline(GE::Renderer*           renderer,
                                                          const Assets::Registry& assets)
 {
     auto pipeline_resource = assets.get<Assets::PipelineResource>(COMPOSING_PIPELINE);
@@ -207,7 +207,7 @@ void WeightedBlendedOITRenderer::renderOpaqueEntities(GE::Renderer* renderer, co
 }
 
 void WeightedBlendedOITRenderer::renderTransparentEntities(GE::Renderer* renderer,
-                                                           const Scene& scene)
+                                                           const Scene&  scene)
 {
     scene.forEach<SpriteComponent>([this, renderer](const auto& entity) {
         if (!isOpaque(entity)) {

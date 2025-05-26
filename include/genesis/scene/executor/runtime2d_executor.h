@@ -63,9 +63,9 @@ private:
     void initializePhysics2D();
     void resetRigidBody2D();
 
-    Scene* m_scene{nullptr};
+    Scene*      m_scene{nullptr};
     P2D::World* m_world{nullptr};
-    bool m_is_paused{false};
+    bool        m_is_paused{false};
 };
 
 } // namespace GE::Scene

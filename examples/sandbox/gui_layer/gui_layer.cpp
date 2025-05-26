@@ -59,7 +59,7 @@ void drawView(GE::GUI::WidgetNode* node, const GE::Shared<GE::Scene::ViewProject
     }
 }
 
-void drawProjectionCombo(GE::GUI::WidgetNode* node,
+void drawProjectionCombo(GE::GUI::WidgetNode*                               node,
                          const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
     static const std::vector<std::string> PROJECTIONS = {
@@ -67,7 +67,7 @@ void drawProjectionCombo(GE::GUI::WidgetNode* node,
         GE::toString(GE::Scene::ViewProjectionCamera::PERSPECTIVE),
     };
 
-    auto current_projection = GE::toString(camera->type());
+    auto              current_projection = GE::toString(camera->type());
     GE::GUI::ComboBox combo{"Projection type", PROJECTIONS, current_projection};
     node->subNode(&combo);
 
@@ -76,7 +76,7 @@ void drawProjectionCombo(GE::GUI::WidgetNode* node,
     }
 }
 
-void drawPerspectiveProjection(GE::GUI::WidgetNode* node,
+void drawPerspectiveProjection(GE::GUI::WidgetNode*                               node,
                                const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
     auto [fov, near, far] = camera->perspectiveOptions();
@@ -87,7 +87,7 @@ void drawPerspectiveProjection(GE::GUI::WidgetNode* node,
     camera->setPerspectiveOptions({.fov = fov, .near = near, .far = far});
 }
 
-void drawOrthoProjection(GE::GUI::WidgetNode* node,
+void drawOrthoProjection(GE::GUI::WidgetNode*                               node,
                          const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
     auto [size, near, far] = camera->orthographicOptions();
@@ -98,7 +98,7 @@ void drawOrthoProjection(GE::GUI::WidgetNode* node,
     camera->setOrthoOptions({.size = size, .near = near, .far = far});
 }
 
-void drawProjectionOptions(GE::GUI::WidgetNode* node,
+void drawProjectionOptions(GE::GUI::WidgetNode*                               node,
                            const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
     switch (camera->type()) {
@@ -111,7 +111,7 @@ void drawProjectionOptions(GE::GUI::WidgetNode* node,
     }
 }
 
-void drawReadOnlyOptions(GE::GUI::WidgetNode* node,
+void drawReadOnlyOptions(GE::GUI::WidgetNode*                               node,
                          const GE::Shared<GE::Scene::ViewProjectionCamera>& camera)
 {
     node->call<GE::GUI::Text>("Direction: %s", GE::toString(camera->direction()).c_str());
@@ -175,7 +175,7 @@ void GUILayer::onRender()
 
 void GUILayer::drawCheckboxWindow()
 {
-    GUI::Window window{"Windows Checkbox"};
+    GUI::Window     window{"Windows Checkbox"};
     GUI::WidgetNode node{&window};
 
     for (auto& gui_window : m_gui_windows) {

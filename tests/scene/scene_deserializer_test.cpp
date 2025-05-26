@@ -70,10 +70,10 @@ protected:
 
     std::string tmpSceneFilepath() const { return GE::FS::joinPath(tmpDir.path(), "scene.yaml"); }
 
-    GE::FS::TmpDirGuard tmpDir;
-    Scene scene;
+    GE::FS::TmpDirGuard  tmpDir;
+    Scene                scene;
     GE::Assets::Registry assets;
-    SceneDeserializer deserializer{&scene, &assets};
+    SceneDeserializer    deserializer{&scene, &assets};
 };
 
 TEST_F(SceneDeserializerTest, MultipleLevelsOfEntitiesGoFirst)

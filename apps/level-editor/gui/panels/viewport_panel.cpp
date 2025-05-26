@@ -109,10 +109,10 @@ void ViewportPanel::drawGizmos(GE::Scene::Entity* entity)
     const auto& projection = camera->projection();
 
     auto& tc = entity->get<GE::Scene::TransformComponent>();
-    auto parent_transform = GE::Scene::parentTransform(*entity);
-    auto transform_matrix = parent_transform * tc.transform();
-    bool is_ortho = camera->type() == GE::Scene::ProjectionCamera::ORTHOGRAPHIC;
-    auto position = m_window.position() + m_window.contentRegionMin();
+    auto  parent_transform = GE::Scene::parentTransform(*entity);
+    auto  transform_matrix = parent_transform * tc.transform();
+    bool  is_ortho = camera->type() == GE::Scene::ProjectionCamera::ORTHOGRAPHIC;
+    auto  position = m_window.position() + m_window.contentRegionMin();
 
     Gizmos gizmos{position, m_viewport, is_ortho};
     gizmos.draw(view, projection, Gizmos::TRANSLATE, Gizmos::LOCAL, &transform_matrix);

@@ -36,7 +36,7 @@
 
 namespace GE {
 
-Scoped<UniformBuffer> UniformBuffer::create(uint32_t size, const void *data)
+Scoped<UniformBuffer> UniformBuffer::create(uint32_t size, const void* data)
 {
     return Graphics::factory()->createUniformBuffer(size, data);
 }

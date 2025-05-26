@@ -46,19 +46,19 @@ GraphicsFactory::GraphicsFactory(Shared<Device> device)
 {}
 
 Scoped<GE::Framebuffer>
-GraphicsFactory::createFramebuffer(const Framebuffer::config_t &config) const
+GraphicsFactory::createFramebuffer(const Framebuffer::config_t& config) const
 {
     return tryMakeScoped<Vulkan::Framebuffer>(m_device, config);
 }
 
-Scoped<GE::IndexBuffer> GraphicsFactory::createIndexBuffer(const uint32_t *indices,
-                                                           uint32_t count) const
+Scoped<GE::IndexBuffer> GraphicsFactory::createIndexBuffer(const uint32_t* indices,
+                                                           uint32_t        count) const
 {
     return tryMakeScoped<Vulkan::IndexBuffer>(m_device, indices, count);
 }
 
-Scoped<GE::VertexBuffer> GraphicsFactory::createVertexBuffer(uint32_t size,
-                                                             const void *vertices) const
+Scoped<GE::VertexBuffer> GraphicsFactory::createVertexBuffer(uint32_t    size,
+                                                             const void* vertices) const
 
 {
     return tryMakeScoped<Vulkan::VertexBuffer>(m_device, size, vertices);
@@ -69,8 +69,8 @@ Scoped<GE::StagingBuffer> GraphicsFactory::createStagingBuffer() const
     return tryMakeScoped<Vulkan::StagingBuffer>(m_device);
 }
 
-Scoped<GE::UniformBuffer> GraphicsFactory::createUniformBuffer(uint32_t size,
-                                                               const void *data) const
+Scoped<GE::UniformBuffer> GraphicsFactory::createUniformBuffer(uint32_t    size,
+                                                               const void* data) const
 {
     return tryMakeScoped<Vulkan::UniformBuffer>(m_device, size, data);
 }
@@ -80,7 +80,7 @@ Scoped<GE::Shader> GraphicsFactory::createShader(Shader::Type type)
     return tryMakeScoped<Vulkan::Shader>(m_device, type);
 }
 
-Scoped<GE::Texture> GraphicsFactory::createTexture(const texture_config_t &config)
+Scoped<GE::Texture> GraphicsFactory::createTexture(const texture_config_t& config)
 {
     switch (config.type) {
         case TextureType::TEXTURE_2D: return tryMakeScoped<Vulkan::Texture2D>(m_device, config);

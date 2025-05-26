@@ -53,14 +53,14 @@ Options:
 )";
 
 struct args_t {
-    bool show_help{false};
+    bool        show_help{false};
     std::string config;
 };
 
 std::optional<args_t> parseArgs(int argc, char** argv)
 {
     std::map<std::string, docopt::value> parsed_args;
-    args_t args{};
+    args_t                               args{};
 
     try {
         parsed_args = docopt::docopt_parse(USAGE, {argv + 1, argv + argc}, true, false);

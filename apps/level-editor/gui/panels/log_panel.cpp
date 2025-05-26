@@ -96,7 +96,7 @@ public:
     }
 
 private:
-    void sink_it_(const spdlog::details::log_msg &msg) override
+    void sink_it_(const spdlog::details::log_msg& msg) override
     {
         spdlog::memory_buf_t formatted;
         formatter_->format(msg, formatted);
@@ -106,7 +106,7 @@ private:
     void flush_() override {};
 
     mutable std::mutex m_lines_mtx;
-    LogBuffer m_lines;
+    LogBuffer          m_lines;
 };
 
 LogPanel::LogPanel()
@@ -132,14 +132,14 @@ void LogPanel::onRender()
     }
 }
 
-void LogPanel::drawControls(WidgetNode *node)
+void LogPanel::drawControls(WidgetNode* node)
 {
     if (node->call<Button>("Clear")) {
         m_log_sink->clear();
     }
     node->call<SameLine>();
 
-    auto level_string = toString(m_log_sink->level());
+    auto     level_string = toString(m_log_sink->level());
     ComboBox level{"level", LEVELS, level_string};
     node->subNode(&level);
 
@@ -148,7 +148,7 @@ void LogPanel::drawControls(WidgetNode *node)
     }
 }
 
-void LogPanel::drawLogs(WidgetNode *node)
+void LogPanel::drawLogs(WidgetNode* node)
 {
     auto logs = m_log_sink->lines();
     auto log_lines = GE::joinString(logs.begin(), logs.end());

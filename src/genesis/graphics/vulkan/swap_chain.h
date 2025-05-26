@@ -49,8 +49,8 @@ class SwapChain
 public:
     struct options_t {
         VkSurfaceKHR surface{VK_NULL_HANDLE};
-        Vec2 window_size{0.0f, 0.0f};
-        uint8_t msaa_samples{1};
+        Vec2         window_size{0.0f, 0.0f};
+        uint8_t      msaa_samples{1};
     };
 
     SwapChain(Shared<Vulkan::Device> device, const options_t& options);
@@ -93,17 +93,19 @@ private:
     void destroySwapChain(VkSwapchainKHR swap_chain);
     void destroyVkHandles();
 
-    VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspect_flags,
-                                uint32_t mip_levels);
+    VkImageView createImageView(VkImage            image,
+                                VkFormat           format,
+                                VkImageAspectFlags aspect_flags,
+                                uint32_t           mip_levels);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
-                                const Vec2& window_size) const;
+                                const Vec2&                     window_size) const;
 
     Shared<Vulkan::Device> m_device;
-    VkSurfaceKHR m_surface{VK_NULL_HANDLE};
-    uint8_t m_msaa_samples{1};
+    VkSurfaceKHR           m_surface{VK_NULL_HANDLE};
+    uint8_t                m_msaa_samples{1};
 
-    VkSwapchainKHR m_swap_chain{VK_NULL_HANDLE};
-    std::vector<VkImage> m_swap_chain_images;
+    VkSwapchainKHR           m_swap_chain{VK_NULL_HANDLE};
+    std::vector<VkImage>     m_swap_chain_images;
     std::vector<VkImageView> m_swap_chain_image_views;
 
     uint32_t m_min_image_count{0};
@@ -115,11 +117,11 @@ private:
 
     std::vector<VkSemaphore> m_image_available_semaphores;
     std::vector<VkSemaphore> m_render_finished_semaphores;
-    std::vector<VkFence> m_in_flight_fences;
-    std::vector<VkFence> m_images_in_flight;
+    std::vector<VkFence>     m_in_flight_fences;
+    std::vector<VkFence>     m_images_in_flight;
 
-    VkFormat m_image_format{VK_FORMAT_UNDEFINED};
-    VkFormat m_depth_format{VK_FORMAT_UNDEFINED};
+    VkFormat   m_image_format{VK_FORMAT_UNDEFINED};
+    VkFormat   m_depth_format{VK_FORMAT_UNDEFINED};
     VkExtent2D m_extent{};
 };
 

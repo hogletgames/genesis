@@ -34,7 +34,7 @@
 
 namespace GE::Vulkan {
 
-UniformBuffer::UniformBuffer(Shared<Device> device, uint32_t size, const void *data)
+UniformBuffer::UniformBuffer(Shared<Device> device, uint32_t size, const void* data)
     : Vulkan::BufferBase{std::move(device)}
 {
     VkBufferUsageFlags usage =
@@ -47,7 +47,7 @@ UniformBuffer::UniformBuffer(Shared<Device> device, uint32_t size, const void *d
     }
 }
 
-void UniformBuffer::setData(size_t size, const void *data)
+void UniformBuffer::setData(size_t size, const void* data)
 {
     copyFromHost(size, data, 0);
 }

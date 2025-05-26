@@ -37,8 +37,11 @@
 namespace GE::GUI {
 namespace {
 
-bool beginCombo(std::string_view name, const ComboBox::Items& items, std::string_view current_item,
-                ComboBox::Flags flags, std::string_view* selected_item)
+bool beginCombo(std::string_view       name,
+                const ComboBox::Items& items,
+                std::string_view       current_item,
+                ComboBox::Flags        flags,
+                std::string_view*      selected_item)
 {
     *selected_item = current_item;
 

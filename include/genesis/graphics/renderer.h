@@ -55,8 +55,11 @@ public:
         CLEAR_ALL
     };
 
-    virtual void draw(GPUCommandQueue* queue, uint32_t vertex_count, uint32_t instance_count,
-                      uint32_t first_vertex, uint32_t first_instance) = 0;
+    virtual void draw(GPUCommandQueue* queue,
+                      uint32_t         vertex_count,
+                      uint32_t         instance_count,
+                      uint32_t         first_vertex,
+                      uint32_t         first_instance) = 0;
 
     virtual bool beginFrame(ClearMode clear_mode = CLEAR_ALL) = 0;
     virtual void endFrame() = 0;

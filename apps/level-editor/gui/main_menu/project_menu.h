@@ -56,8 +56,8 @@ private:
     Settings* m_settings{nullptr};
 
     SaveFileSignal m_save_signal;
-    SaveSignal m_save_as_signal;
-    LoadSignal m_load_signal;
+    SaveSignal     m_save_as_signal;
+    LoadSignal     m_load_signal;
     LoadFileSignal m_load_recent_signal;
 };
 

@@ -41,12 +41,12 @@ namespace GE::Vulkan {
 class UniformBuffer: public GE::UniformBuffer, BufferBase
 {
 public:
-    UniformBuffer(Shared<Device> device, uint32_t size, const void *data);
+    UniformBuffer(Shared<Device> device, uint32_t size, const void* data);
 
     NativeHandle nativeHandle() const override { return buffer(); }
     uint32_t size() const override { return m_size; }
 
-    void setData(size_t size, const void *data) override;
+    void setData(size_t size, const void* data) override;
 };
 
 } // namespace GE::Vulkan

@@ -51,7 +51,8 @@ class Entity;
 class WeightedBlendedOITRenderer: public RendererBase
 {
 public:
-    WeightedBlendedOITRenderer(GE::Renderer* renderer, const Assets::Registry& assets,
+    WeightedBlendedOITRenderer(GE::Renderer*               renderer,
+                               const Assets::Registry&     assets,
                                const ViewProjectionCamera* camera);
 
     void render(const Scene& scene) override;
@@ -71,9 +72,9 @@ private:
     void composeScene(GE::Renderer* renderer);
 
     Scoped<Framebuffer> m_wb_oit_fbo;
-    Shared<Pipeline> m_color_pipeline;
-    Shared<Pipeline> m_accumulation_pipeline;
-    Shared<Pipeline> m_composing_pipeline;
+    Shared<Pipeline>    m_color_pipeline;
+    Shared<Pipeline>    m_accumulation_pipeline;
+    Shared<Pipeline>    m_composing_pipeline;
 };
 
 } // namespace GE::Scene

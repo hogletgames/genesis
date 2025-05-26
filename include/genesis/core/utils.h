@@ -51,7 +51,7 @@
 #endif
 
 // Bind member function
-#define GE_EVENT_MEM_FN(mem_func) \
+#define GE_EVENT_MEM_FN(mem_func)                                                                  \
     [this](auto&&... args) { return mem_func(std::forward<decltype(args)>(args)...); }
 
 // Concat names
@@ -72,8 +72,9 @@ auto toEventHandler(Func&& f, Type* instance)
 }
 
 template<typename Key, typename Value>
-Value getValue(const std::unordered_map<Key, Value>& map, const Key& key,
-               const Value& default_value = {})
+Value getValue(const std::unordered_map<Key, Value>& map,
+               const Key&                            key,
+               const Value&                          default_value = {})
 {
     if (auto it = map.find(key); it != map.end()) {
         return it->second;

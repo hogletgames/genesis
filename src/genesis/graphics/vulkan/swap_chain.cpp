@@ -44,7 +44,7 @@
 namespace {
 
 constexpr uint64_t VULKAN_TIMEOUT_NONE = std::numeric_limits<uint64_t>::max();
-constexpr size_t MAX_FRAMES_IN_FLIGHT{3};
+constexpr size_t   MAX_FRAMES_IN_FLIGHT{3};
 
 uint32_t imageCountFromCaps(const VkSurfaceCapabilitiesKHR& capabilities)
 {
@@ -201,8 +201,8 @@ void SwapChain::createSwapChain(VkSwapchainKHR old_swap_chain, const Vec2& windo
     VkDevice device = m_device->device();
 
     const auto& swap_chain_details = m_device->swapChainDetails();
-    auto surface_format = chooseSurfaceFormat(swap_chain_details.formats);
-    auto present_mode = choosePresentMode(swap_chain_details.present_mode);
+    auto        surface_format = chooseSurfaceFormat(swap_chain_details.formats);
+    auto        present_mode = choosePresentMode(swap_chain_details.present_mode);
     m_extent = chooseSwapExtent(swap_chain_details.capabilities, window_size);
     m_min_image_count = imageCountFromCaps(swap_chain_details.capabilities);
 
@@ -221,7 +221,7 @@ void SwapChain::createSwapChain(VkSwapchainKHR old_swap_chain, const Vec2& windo
     create_info.clipped = VK_TRUE;
     create_info.oldSwapchain = old_swap_chain;
 
-    const auto& indices = m_device->queueIndices();
+    const auto&             indices = m_device->queueIndices();
     std::array<uint32_t, 2> queue_family_indices = {indices.graphics_family.value(),
                                                     indices.present_family.value()};
 
@@ -354,8 +354,10 @@ void SwapChain::destroyVkHandles()
     m_device.reset();
 }
 
-VkImageView SwapChain::createImageView(VkImage image, VkFormat format,
-                                       VkImageAspectFlags aspect_flags, uint32_t mip_levels)
+VkImageView SwapChain::createImageView(VkImage            image,
+                                       VkFormat           format,
+                                       VkImageAspectFlags aspect_flags,
+                                       uint32_t           mip_levels)
 {
     VkImageView image_view{VK_NULL_HANDLE};
 
@@ -378,7 +380,7 @@ VkImageView SwapChain::createImageView(VkImage image, VkFormat format,
 }
 
 VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
-                                       const Vec2& window_size) const
+                                       const Vec2&                     window_size) const
 {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
         return capabilities.currentExtent;

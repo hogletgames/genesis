@@ -77,7 +77,7 @@ protected:
 
 private:
     BeginFunc m_begin{nullptr};
-    EndFunc m_end{nullptr};
+    EndFunc   m_end{nullptr};
 
     bool m_is_opened{false};
     bool m_force_end{false};

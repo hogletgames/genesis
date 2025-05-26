@@ -45,7 +45,7 @@ namespace GE::GUI {
 bool InputText::call(std::string_view label, std::string* output, Flags flags)
 {
     static constexpr size_t BUFFER_SIZE{1024};
-    std::vector<char> buffer(BUFFER_SIZE, 0);
+    std::vector<char>       buffer(BUFFER_SIZE, 0);
     std::ranges::copy(*output, buffer.begin());
 
     ImGui::PushID(output);

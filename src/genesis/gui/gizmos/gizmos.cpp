@@ -72,8 +72,12 @@ Gizmos::Gizmos(const Vec2& window_pos, const Vec2& window_size, bool is_ortho)
     ImGuizmo::SetRect(window_pos.x, window_pos.y, window_size.x, window_size.y);
 }
 
-void Gizmos::draw(const Mat4& view, const Mat4& projection, Operation operation, Mode mode,
-                  Mat4* matrix, float* snap)
+void Gizmos::draw(const Mat4& view,
+                  const Mat4& projection,
+                  Operation   operation,
+                  Mode        mode,
+                  Mat4*       matrix,
+                  float*      snap)
 {
     ImGuizmo::Manipulate(value_ptr(view), value_ptr(projection), toImGuizmo(operation),
                          toImGuizmo(mode), value_ptr(*matrix), value_ptr(m_matrix_delta), snap);

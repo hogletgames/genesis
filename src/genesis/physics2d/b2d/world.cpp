@@ -63,8 +63,9 @@ void World::step(Timestamp ts, int32_t sub_step_count)
     b2World_Step(m_world, ts.sec(), sub_step_count);
 }
 
-Scoped<P2D::RigidBody> World::createRigidBody(RigidBody::Type type, const Vec2& position,
-                                              float angle)
+Scoped<P2D::RigidBody> World::createRigidBody(RigidBody::Type type,
+                                              const Vec2&     position,
+                                              float           angle)
 {
     b2BodyDef body_def{b2DefaultBodyDef()};
     body_def.type = fromRigidBody(type);

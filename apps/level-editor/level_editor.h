@@ -86,7 +86,7 @@ private:
     void onLoadProject();
     void onSaveProject();
 
-    LevelEditorContext m_ctx;
+    LevelEditorContext         m_ctx;
     GE::Scoped<LevelEditorGUI> m_gui;
 
     GE::Vec2 m_viewport{1.0f, 1.0f};

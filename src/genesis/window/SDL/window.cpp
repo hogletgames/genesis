@@ -48,7 +48,7 @@ namespace {
 #ifndef GE_DISABLE_DEBUG
 const char* categoryToString(int category)
 {
-    const char* default_category = "Unknown";
+    const char*                                       default_category = "Unknown";
     static const std::unordered_map<int, const char*> cat_to_str = {
         {SDL_LOG_CATEGORY_APPLICATION, "App"}, {SDL_LOG_CATEGORY_ERROR, "Error"},
         {SDL_LOG_CATEGORY_ASSERT, "Assert"},   {SDL_LOG_CATEGORY_SYSTEM, "System"},
@@ -59,8 +59,10 @@ const char* categoryToString(int category)
     return GE::getValue(cat_to_str, category, default_category);
 }
 
-void debugCallback([[maybe_unused]] void* userdata, int category, SDL_LogPriority priority,
-                   const char* message)
+void debugCallback([[maybe_unused]] void* userdata,
+                   int                    category,
+                   SDL_LogPriority        priority,
+                   const char*            message)
 {
     const char* category_str = categoryToString(category);
     const char* pattern = "[SDL {}]: {}";
@@ -81,9 +83,9 @@ int renderAPIToWindowFlag(GE::Graphics::API api)
 {
     using API = GE::Graphics::API;
 
-    static constexpr int default_flag{0};
+    static constexpr int                default_flag{0};
     static std::unordered_map<API, int> api_to_flag = {{API::VULKAN, SDL_WINDOW_VULKAN}};
-    int flag = GE::getValue(api_to_flag, api, default_flag);
+    int                                 flag = GE::getValue(api_to_flag, api, default_flag);
 
     if (flag == default_flag) {
         GE_CORE_ERR("Failed to get SDL Window Flag: unsupported API '{}'", toString(api));
@@ -98,8 +100,8 @@ namespace GE::SDL {
 
 Window::Window(settings_t settings, Graphics::API api)
 {
-    int width = static_cast<int>(settings.size.x);
-    int height = static_cast<int>(settings.size.y);
+    int  width = static_cast<int>(settings.size.x);
+    int  height = static_cast<int>(settings.size.y);
     auto flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN |
                  renderAPIToWindowFlag(api);
 
@@ -240,13 +242,13 @@ void Window::onMouseEvent(const SDL_Event& sdl_event)
             break;
         }
         case SDL_MOUSEBUTTONDOWN: {
-            MouseButton button = Input::fromNativeButton(sdl_event.button.button);
+            MouseButton             button = Input::fromNativeButton(sdl_event.button.button);
             MouseButtonPressedEvent event{button};
             emitEvent(&event);
             break;
         }
         case SDL_MOUSEBUTTONUP: {
-            MouseButton button = Input::fromNativeButton(sdl_event.button.button);
+            MouseButton              button = Input::fromNativeButton(sdl_event.button.button);
             MouseButtonReleasedEvent event{button};
             emitEvent(&event);
             break;
@@ -259,16 +261,16 @@ void Window::onKeyboardEvent(const SDL_Event& sdl_event)
 {
     switch (sdl_event.type) {
         case SDL_KEYDOWN: {
-            KeyCode code = Input::fromNativeKeyCode(sdl_event.key.keysym.sym);
-            KeyModFlags mod = Input::fromNativeKeyMod(sdl_event.key.keysym.mod);
-            uint32_t repeat_count = sdl_event.key.repeat;
+            KeyCode         code = Input::fromNativeKeyCode(sdl_event.key.keysym.sym);
+            KeyModFlags     mod = Input::fromNativeKeyMod(sdl_event.key.keysym.mod);
+            uint32_t        repeat_count = sdl_event.key.repeat;
             KeyPressedEvent event{code, mod, repeat_count};
             emitEvent(&event);
             break;
         }
         case SDL_KEYUP: {
-            KeyCode code = Input::fromNativeKeyCode(sdl_event.key.keysym.sym);
-            KeyModFlags mod = Input::fromNativeKeyMod(sdl_event.key.keysym.mod);
+            KeyCode          code = Input::fromNativeKeyCode(sdl_event.key.keysym.sym);
+            KeyModFlags      mod = Input::fromNativeKeyMod(sdl_event.key.keysym.mod);
             KeyReleasedEvent event{code, mod};
             emitEvent(&event);
             break;
@@ -288,13 +290,13 @@ void Window::onWindowEvent(const SDL_Event& sdl_event)
 
     switch (sdl_event.window.event) {
         case SDL_WINDOWEVENT_MOVED: {
-            Vec2 position{sdl_event.window.data1, sdl_event.window.data2};
+            Vec2             position{sdl_event.window.data1, sdl_event.window.data2};
             WindowMovedEvent event{id, position};
             emitEvent(&event);
             break;
         }
         case SDL_WINDOWEVENT_RESIZED: {
-            Vec2 size{sdl_event.window.data1, sdl_event.window.data2};
+            Vec2               size{sdl_event.window.data1, sdl_event.window.data2};
             WindowResizedEvent event{id, size};
             emitEvent(&event);
             break;

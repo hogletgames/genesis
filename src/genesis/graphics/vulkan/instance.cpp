@@ -69,9 +69,11 @@ VkDebugUtilsMessageSeverityFlagsEXT debugMessageSeverity()
     return toDebugMessageSeverity(getEnv(GE::GRAPHICS_SEVERITY));
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT severity, VkDebugUtilsMessageTypeFlagsEXT type,
-    const VkDebugUtilsMessengerCallbackDataEXT* callback_data, [[maybe_unused]] void* user_data)
+VKAPI_ATTR VkBool32 VKAPI_CALL
+debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT      severity,
+              VkDebugUtilsMessageTypeFlagsEXT             type,
+              const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+              [[maybe_unused]] void*                      user_data)
 {
     const char* type_str = "Unknown";
     const char* pattern = "[Vk {}]: {}";
@@ -133,7 +135,7 @@ void Instance::createInstance(void* native_window, std::string_view app_name)
 {
     GE_CORE_INFO("Creating Vulkan Instance...");
     auto* window = reinterpret_cast<SDL_Window*>(native_window);
-    auto window_extensions = vulkanGet<const char*>(::SDL_Vulkan_GetInstanceExtensions, window);
+    auto  window_extensions = vulkanGet<const char*>(::SDL_Vulkan_GetInstanceExtensions, window);
 
 #ifndef GE_DISABLE_DEBUG
     window_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -161,7 +163,7 @@ void Instance::createInstance(void* native_window, std::string_view app_name)
 #endif // GE_PLATFORM_APPLE
 
 #ifndef GE_DISABLE_DEBUG
-    auto debug_info = getDebugMsgrCreateInfo(debugMessageSeverity());
+    auto                       debug_info = getDebugMsgrCreateInfo(debugMessageSeverity());
     std::array<const char*, 1> validation_layers = {"VK_LAYER_KHRONOS_validation"};
 
     instance_info.ppEnabledLayerNames = validation_layers.data();

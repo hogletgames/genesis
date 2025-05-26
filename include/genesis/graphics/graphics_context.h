@@ -49,9 +49,9 @@ class GE_API GraphicsContext: public Interface
 {
 public:
     struct config_t {
-        void* window{nullptr};
+        void*            window{nullptr};
         std::string_view app_name;
-        uint8_t msaa_samples{1};
+        uint8_t          msaa_samples{1};
     };
 
     struct limits_t {

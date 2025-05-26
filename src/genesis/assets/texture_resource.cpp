@@ -51,7 +51,7 @@ TextureResource::TextureResource(const std::string& package, const config_t& con
 }
 
 Shared<TextureResource> TextureResource::Factory::create(const std::string& package,
-                                                         const config_t& config)
+                                                         const config_t&    config)
 {
     try {
         return Shared<TextureResource>{new TextureResource{package, config}};

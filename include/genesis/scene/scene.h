@@ -83,8 +83,8 @@ public:
 
 private:
     std::string m_name;
-    Registry m_registry;
-    Entity m_main_camera;
+    Registry    m_registry;
+    Entity      m_main_camera;
 };
 
 template<typename... Args>

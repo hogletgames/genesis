@@ -34,8 +34,10 @@
 
 namespace GE::Vulkan {
 
-void PipelineBarrier::submit(VkCommandBuffer cmd, const std::vector<VkImageMemoryBarrier> &barriers,
-                             VkPipelineStageFlagBits src_stage, VkPipelineStageFlagBits dst_stage)
+void PipelineBarrier::submit(VkCommandBuffer                          cmd,
+                             const std::vector<VkImageMemoryBarrier>& barriers,
+                             VkPipelineStageFlagBits                  src_stage,
+                             VkPipelineStageFlagBits                  dst_stage)
 {
     vkCmdPipelineBarrier(cmd, src_stage, dst_stage, 0, 0, nullptr, 0, nullptr, barriers.size(),
                          barriers.data());

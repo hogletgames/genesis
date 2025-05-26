@@ -53,7 +53,7 @@ std::optional<shaderc_shader_kind> toShaderKind(GE::Shader::Type type)
     }
 }
 
-std::string readShaderCode(const std::string &filepath)
+std::string readShaderCode(const std::string& filepath)
 {
     if (auto file = GE::FS::readFile<char>(filepath); !file.empty()) {
         return {file.begin(), file.end()};
@@ -67,20 +67,21 @@ std::string readShaderCode(const std::string &filepath)
 
 namespace GE {
 
-ShaderCache ShaderPrecompiler::compileFromFile(Shader::Type shader_type,
-                                               const std::string &filepath)
+ShaderCache ShaderPrecompiler::compileFromFile(Shader::Type       shader_type,
+                                               const std::string& filepath)
 {
     return compileShader(shader_type, readShaderCode(filepath), filepath);
 }
 
-ShaderCache ShaderPrecompiler::compileFromSource(Shader::Type shader_type,
-                                                 const std::string &source_code)
+ShaderCache ShaderPrecompiler::compileFromSource(Shader::Type       shader_type,
+                                                 const std::string& source_code)
 {
     return compileShader(shader_type, source_code, "<no-filename>");
 }
 
-ShaderCache ShaderPrecompiler::compileShader(Shader::Type type, const std::string &source_code,
-                                             const std::string &filepath)
+ShaderCache ShaderPrecompiler::compileShader(Shader::Type       type,
+                                             const std::string& source_code,
+                                             const std::string& filepath)
 {
     if (source_code.empty()) {
         GE_CORE_ERR("Shader Source code is empty");
@@ -105,7 +106,7 @@ ShaderCache ShaderPrecompiler::compileShader(Shader::Type type, const std::strin
     return {result.begin(), result.end()};
 }
 
-ShaderCache ShaderPrecompiler::loadShaderCache(const std::string &filepath)
+ShaderCache ShaderPrecompiler::loadShaderCache(const std::string& filepath)
 {
     if (std::ifstream file{filepath, std::ios::binary}; file) {
         file >> std::noskipws;
@@ -116,10 +117,10 @@ ShaderCache ShaderPrecompiler::loadShaderCache(const std::string &filepath)
     return {};
 }
 
-bool ShaderPrecompiler::saveShaderCache(const ShaderCache &shader_cache,
-                                        const std::string &filepath)
+bool ShaderPrecompiler::saveShaderCache(const ShaderCache& shader_cache,
+                                        const std::string& filepath)
 {
-    auto cache_dir = std::filesystem::path{filepath}.parent_path();
+    auto            cache_dir = std::filesystem::path{filepath}.parent_path();
     std::error_code error_code;
 
     if (!std::filesystem::exists(cache_dir) &&

@@ -79,8 +79,8 @@ private:
     void renderResumeButton(GE::GUI::WidgetNode* node);
     void renderStopButton(GE::GUI::WidgetNode* node);
 
-    LevelEditorContext* m_ctx{nullptr};
-    RenderState m_render_state{nullptr};
+    LevelEditorContext*        m_ctx{nullptr};
+    RenderState                m_render_state{nullptr};
     GE::Scene::ExecutorFactory m_factory;
 
     GE::Shared<GE::Texture> m_play_button_icon;

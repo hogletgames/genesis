@@ -119,8 +119,8 @@ bool LevelEditor::createFramebuffer()
 
 void LevelEditor::createSceneRenderer()
 {
-    auto* renderer = m_ctx.sceneFbo()->renderer();
-    auto* assets = m_ctx.assets();
+    auto*       renderer = m_ctx.sceneFbo()->renderer();
+    auto*       assets = m_ctx.assets();
     const auto* camera = m_ctx.cameraController()->camera().get();
 
     m_ctx.sceneRenderer() =
@@ -129,8 +129,8 @@ void LevelEditor::createSceneRenderer()
 
 void LevelEditor::createEntityPicker()
 {
-    auto* scene = m_ctx.scene();
-    auto* assets = m_ctx.assets();
+    auto*       scene = m_ctx.scene();
+    auto*       assets = m_ctx.assets();
     const auto* camera = m_ctx.cameraController()->camera().get();
 
     m_ctx.entityPicker() = GE::makeScoped<GE::Scene::EntityPicker>(scene, *assets, camera);

@@ -64,8 +64,11 @@ protected:
     void updateDynamicState();
     bool endRendering();
 
-    void draw(GPUCommandQueue* queue, uint32_t vertex_count, uint32_t instance_count,
-              uint32_t first_vertex, uint32_t first_instance) override;
+    void draw(GPUCommandQueue* queue,
+              uint32_t         vertex_count,
+              uint32_t         instance_count,
+              uint32_t         first_vertex,
+              uint32_t         first_instance) override;
 
     virtual void transitImageLayoutBeforeRendering(VkCommandBuffer cmd) = 0;
     virtual void transitImageLayoutAfterRendering(VkCommandBuffer cmd) = 0;
@@ -81,9 +84,9 @@ protected:
 
     Shared<Device> m_device;
 
-    VkPipelineCache m_pipeline_cache{VK_NULL_HANDLE};
-    VkCommandPool m_command_pool{VK_NULL_HANDLE};
-    Shared<DescriptorPool> m_descriptor_pool;
+    VkPipelineCache              m_pipeline_cache{VK_NULL_HANDLE};
+    VkCommandPool                m_command_pool{VK_NULL_HANDLE};
+    Shared<DescriptorPool>       m_descriptor_pool;
     std::vector<VkCommandBuffer> m_cmd_buffers;
 
     RenderCommand m_render_command{this};

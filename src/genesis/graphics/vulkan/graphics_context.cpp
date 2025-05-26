@@ -47,7 +47,7 @@ namespace {
 VkSurfaceKHR createSurface(void* window)
 {
     VkSurfaceKHR surface{VK_NULL_HANDLE};
-    auto* sdl_window = reinterpret_cast<SDL_Window*>(window);
+    auto*        sdl_window = reinterpret_cast<SDL_Window*>(window);
 
     if (::SDL_Vulkan_CreateSurface(sdl_window, GE::Vulkan::Instance::instance(), &surface) ==
         SDL_FALSE) {
@@ -60,8 +60,8 @@ VkSurfaceKHR createSurface(void* window)
 inline GE::Vec2 getWindowSize(void* window)
 {
     auto* sdl_window = reinterpret_cast<SDL_Window*>(window);
-    int width{0};
-    int height{0};
+    int   width{0};
+    int   height{0};
     ::SDL_GetWindowSize(sdl_window, &width, &height);
     return {width, height};
 }

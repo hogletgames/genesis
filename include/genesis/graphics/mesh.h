@@ -64,7 +64,7 @@ private:
     bool populateBuffers(const tinyobj::ObjReader& reader);
 
     Scoped<VertexBuffer> m_vbo;
-    Scoped<IndexBuffer> m_ibo;
+    Scoped<IndexBuffer>  m_ibo;
 };
 
 } // namespace GE

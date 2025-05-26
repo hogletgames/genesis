@@ -80,8 +80,8 @@ private:
     std::string m_filepath;
 
     std::unordered_map<std::string, Shared<PipelineResource>> m_pipelines;
-    std::unordered_map<std::string, Shared<MeshResource>> m_meshes;
-    std::unordered_map<std::string, Shared<TextureResource>> m_textures;
+    std::unordered_map<std::string, Shared<MeshResource>>     m_meshes;
+    std::unordered_map<std::string, Shared<TextureResource>>  m_textures;
 };
 
 template<typename T>
@@ -108,7 +108,7 @@ template<typename T>
 std::vector<Shared<T>> Package::getAllOf() const
 {
     std::vector<Shared<T>> resources;
-    auto get_value = [](const auto& item) { return item.second; };
+    auto                   get_value = [](const auto& item) { return item.second; };
 
     if constexpr (T::GROUP == Group::PIPELINES) {
         resources.resize(m_pipelines.size());

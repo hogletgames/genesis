@@ -82,10 +82,10 @@ void Mesh::destroy()
 
 bool Mesh::populateBuffers(const tinyobj::ObjReader& reader)
 {
-    const auto& attrib = reader.GetAttrib();
+    const auto&                            attrib = reader.GetAttrib();
     std::unordered_map<vertex_t, uint32_t> unique_vertices;
-    std::vector<vertex_t> vertices;
-    std::vector<uint32_t> indices;
+    std::vector<vertex_t>                  vertices;
+    std::vector<uint32_t>                  indices;
 
     for (const auto& shape : reader.GetShapes()) {
         for (const auto& index : shape.mesh.indices) {

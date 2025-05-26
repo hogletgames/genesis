@@ -79,7 +79,7 @@ private:
     void move(ResourceID& other);
 
     std::string m_package;
-    Group m_group{Group::UNKNOWN};
+    Group       m_group{Group::UNKNOWN};
     std::string m_name;
 };
 

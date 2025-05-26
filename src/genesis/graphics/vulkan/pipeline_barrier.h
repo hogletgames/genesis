@@ -40,8 +40,10 @@ namespace GE::Vulkan {
 class PipelineBarrier
 {
 public:
-    static void submit(VkCommandBuffer cmd, const std::vector<VkImageMemoryBarrier>& barriers,
-                       VkPipelineStageFlagBits src_stage, VkPipelineStageFlagBits dst_stage);
+    static void submit(VkCommandBuffer                          cmd,
+                       const std::vector<VkImageMemoryBarrier>& barriers,
+                       VkPipelineStageFlagBits                  src_stage,
+                       VkPipelineStageFlagBits                  dst_stage);
 };
 
 constexpr VkImageAspectFlags toVkAspect(VkFormat format)

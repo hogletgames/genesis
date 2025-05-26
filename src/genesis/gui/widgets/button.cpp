@@ -42,8 +42,13 @@ bool Button::call(std::string_view label, Vec2 size)
     return ImGui::Button(label.data(), toImVec2(size));
 }
 
-bool ImageButton::call(std::string_view str_id, void* texture_id, const Vec2& image_size,
-                       const Vec2& uv0, const Vec2& uv1, const Vec4& bg_col, const Vec4& tint_col)
+bool ImageButton::call(std::string_view str_id,
+                       void*            texture_id,
+                       const Vec2&      image_size,
+                       const Vec2&      uv0,
+                       const Vec2&      uv1,
+                       const Vec4&      bg_col,
+                       const Vec4&      tint_col)
 {
     return ImGui::ImageButton(str_id.data(), texture_id, toImVec2(image_size), toImVec2(uv0),
                               toImVec2(uv1), toImVec4(bg_col), toImVec4(tint_col));
