@@ -59,7 +59,7 @@ struct convert<GE::Scene::ProjectionCamera::Type> {
 
 template<>
 struct convert<GE::Scene::ProjectionCamera::ortho_options_t> {
-    static bool decode(const Node& node,
+    static bool decode(const Node&                                   node,
                        GE::Scene::ProjectionCamera::ortho_options_t& ortho_options)
     {
         ortho_options = {
@@ -84,7 +84,7 @@ struct convert<GE::Scene::ProjectionCamera::ortho_options_t> {
 
 template<>
 struct convert<GE::Scene::ProjectionCamera::perspective_options_t> {
-    static bool decode(const Node& node,
+    static bool decode(const Node&                                         node,
                        GE::Scene::ProjectionCamera::perspective_options_t& perspective_options)
     {
         perspective_options = {

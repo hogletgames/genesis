@@ -62,7 +62,7 @@ Mat4 rigidBodyTransform(const P2D::RigidBody& rigid_body)
 void updateTransform(Entity* entity, const Mat4& parent_transform)
 {
     const auto& rigid_body = *entity->get<RigidBody2DComponent>().body;
-    auto local_transform = affineInverse(parent_transform) * rigidBodyTransform(rigid_body);
+    auto        local_transform = affineInverse(parent_transform) * rigidBodyTransform(rigid_body);
     auto [translation, rotation, scale] = decompose(local_transform);
 
     auto& transform = entity->get<TransformComponent>();
@@ -117,7 +117,7 @@ void Runtime2DExecutor::initializePhysics2D()
 {
     m_scene->forEach<RigidBody2DComponent>([this](Entity& entity) {
         const auto& transform_component = entity.get<TransformComponent>();
-        auto transform = parentTransform(entity) * transform_component.transform();
+        auto        transform = parentTransform(entity) * transform_component.transform();
         auto [translation, rotation, scale] = decompose(transform);
 
         auto& rigid_body = entity.get<RigidBody2DComponent>();

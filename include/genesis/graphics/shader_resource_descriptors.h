@@ -49,17 +49,17 @@ struct GE_API resource_descriptor_t {
     };
 
     std::string name;
-    Type type{UNKNOWN};
-    uint32_t set{0};
-    uint32_t binding{0};
-    uint32_t count{0};
+    Type        type{UNKNOWN};
+    uint32_t    set{0};
+    uint32_t    binding{0};
+    uint32_t    count{0};
 };
 
 struct GE_API push_constant_t {
     std::string name;
-    uint32_t offset{0};
-    uint32_t size{0};
-    uint32_t pipeline_stages{0};
+    uint32_t    offset{0};
+    uint32_t    size{0};
+    uint32_t    pipeline_stages{0};
 };
 
 constexpr bool operator==(const resource_descriptor_t& lhs, const resource_descriptor_t& rhs)

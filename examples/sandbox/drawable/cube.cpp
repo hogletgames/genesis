@@ -34,7 +34,7 @@
 
 namespace GE::Examples {
 
-Cube::Cube(Renderer *renderer)
+Cube::Cube(Renderer* renderer)
     : Shape(renderer)
 {
     static const std::vector<vertex_t> VERTICES = {

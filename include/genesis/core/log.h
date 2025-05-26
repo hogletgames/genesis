@@ -116,7 +116,10 @@ public:
 
 private:
     template<typename... Args>
-    void log(spdlog::level::level_enum level, const char* file, int line, std::string_view fmt,
+    void log(spdlog::level::level_enum level,
+             const char*               file,
+             int                       line,
+             std::string_view          fmt,
              Args&&... args)
     {
         if (m_logger) {
@@ -125,8 +128,8 @@ private:
         }
     }
 
-    std::string m_logger_name;
-    Level m_level{Level::INFO};
+    std::string                     m_logger_name;
+    Level                           m_level{Level::INFO};
     std::shared_ptr<spdlog::logger> m_logger;
 };
 

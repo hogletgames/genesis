@@ -78,17 +78,17 @@ private:
     void createDescriptorSetLayouts(const Vulkan::pipeline_config_t& pipeline_config);
     SetLayoutBindings createSetLayoutBindings(const Resources& descriptor_resources);
     void updatePushConstants(VkShaderStageFlagBits shader_stage,
-                             const PushConstants& push_constants);
+                             const PushConstants&  push_constants);
     void createPushConstantRanges();
 
     void destroyVkHandles();
 
-    Shared<Device> m_device;
-    Shared<DescriptorPool> m_descriptor_pool;
-    DescriptorSetLayouts m_descriptor_set_layouts;
-    PushConstantRanges m_push_constant_ranges;
+    Shared<Device>                                         m_device;
+    Shared<DescriptorPool>                                 m_descriptor_pool;
+    DescriptorSetLayouts                                   m_descriptor_set_layouts;
+    PushConstantRanges                                     m_push_constant_ranges;
     std::unordered_map<std::string, resource_descriptor_t> m_resources;
-    std::unordered_map<std::string, push_constant_t> m_push_constants;
+    std::unordered_map<std::string, push_constant_t>       m_push_constants;
 };
 
 constexpr VkDescriptorType toVkDescriptorType(resource_descriptor_t::Type type)

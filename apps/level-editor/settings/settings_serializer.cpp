@@ -41,17 +41,17 @@
 
 namespace LE {
 
-SettingsSerializer::SettingsSerializer(Settings *settings)
+SettingsSerializer::SettingsSerializer(Settings* settings)
     : m_settings{settings}
 {}
 
-bool SettingsSerializer::serialize(const std::string &filepath)
+bool SettingsSerializer::serialize(const std::string& filepath)
 {
     YAML::Node yaml_settings;
     return serializeSettings(&yaml_settings) && writeSettings(yaml_settings, filepath);
 }
 
-bool SettingsSerializer::serializeSettings(YAML::Node *node)
+bool SettingsSerializer::serializeSettings(YAML::Node* node)
 {
     (*node)["app_settings"] = m_settings->appSettings();
     (*node)["current_project"] = m_settings->currentProject()->name();
@@ -59,7 +59,7 @@ bool SettingsSerializer::serializeSettings(YAML::Node *node)
     return true;
 }
 
-bool SettingsSerializer::writeSettings(const YAML::Node &node, const std::string &filepath)
+bool SettingsSerializer::writeSettings(const YAML::Node& node, const std::string& filepath)
 {
     std::ofstream fout{filepath};
 

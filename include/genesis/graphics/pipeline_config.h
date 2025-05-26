@@ -95,23 +95,23 @@ struct GE_API blending_t {
 
     BlendFactor src_color_factor{BlendFactor::SRC_ALPHA};
     BlendFactor dst_color_factor{BlendFactor::ONE_MINUS_SRC_ALPHA};
-    BlendOp color_op{BlendOp::ADD};
+    BlendOp     color_op{BlendOp::ADD};
 
     BlendFactor src_alpha_factor{BlendFactor::SRC_ALPHA};
     BlendFactor dst_alpha_factor{BlendFactor::ONE_MINUS_SRC_ALPHA};
-    BlendOp alpha_op{BlendOp::ADD};
+    BlendOp     alpha_op{BlendOp::ADD};
 };
 
 struct pipeline_config_t {
     using BlendingConfig = std::variant<blending_t, std::vector<blending_t>>;
 
-    Shared<Shader> vertex_shader{Shader::create(Shader::Type::VERTEX)};
-    Shared<Shader> fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
-    BlendingConfig blending{blending_t{.enabled = false}};
+    Shared<Shader>    vertex_shader{Shader::create(Shader::Type::VERTEX)};
+    Shared<Shader>    fragment_shader{Shader::create(Shader::Type::FRAGMENT)};
+    BlendingConfig    blending{blending_t{.enabled = false}};
     PrimitiveTopology primitive_topology{PrimitiveTopology::TRIANGLE_LIST};
-    PolygonMode polygon_mode{PolygonMode::FILL};
-    bool depth_test_enable{true};
-    bool depth_write_enable{true};
+    PolygonMode       polygon_mode{PolygonMode::FILL};
+    bool              depth_test_enable{true};
+    bool              depth_write_enable{true};
 };
 
 } // namespace GE

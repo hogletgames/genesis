@@ -41,7 +41,7 @@ using namespace GE::GUI;
 
 namespace LE {
 
-MenuBar::MenuBar(LevelEditorGUI *gui)
+MenuBar::MenuBar(LevelEditorGUI* gui)
     : m_project{GE::makeShared<ProjectMenu>(gui->context()->settings())}
     , m_assets{GE::makeShared<AssetsMenu>()}
     , m_scene{GE::makeShared<SceneMenu>()}
@@ -58,7 +58,7 @@ void MenuBar::onUpdate(GE::Timestamp ts)
     m_menus.onUpdate(ts);
 }
 
-void MenuBar::onEvent(GE::Event *event)
+void MenuBar::onEvent(GE::Event* event)
 {
     m_menus.onEvent(event);
 }
@@ -66,7 +66,7 @@ void MenuBar::onEvent(GE::Event *event)
 void MenuBar::onRender()
 {
     MainMenuBar bar;
-    WidgetNode bar_node{&bar};
+    WidgetNode  bar_node{&bar};
     m_menus.onRender(&bar_node);
 }
 

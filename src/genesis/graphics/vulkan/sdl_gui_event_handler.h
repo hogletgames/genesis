@@ -39,22 +39,22 @@ namespace GE::Vulkan::SDL {
 class GE_API EventHandler: public GE::GUI::EventHandler
 {
 public:
-    bool onKeyPressedEvent(const KeyPressedEvent &event) override;
-    bool onKeyReleasedEvent(const KeyReleasedEvent &event) override;
-    bool onKeyTypedEvent(const KeyTypedEvent &event) override;
+    bool onKeyPressedEvent(const KeyPressedEvent& event) override;
+    bool onKeyReleasedEvent(const KeyReleasedEvent& event) override;
+    bool onKeyTypedEvent(const KeyTypedEvent& event) override;
 
-    bool onMouseButtonPressedEvent(const MouseButtonPressedEvent &event) override;
-    bool onMouseButtonReleasedEvent(const MouseButtonReleasedEvent &event) override;
-    bool onMouseMovedEvent(const MouseMovedEvent &event) override;
-    bool onMouseScrolledEvent(const MouseScrolledEvent &event) override;
+    bool onMouseButtonPressedEvent(const MouseButtonPressedEvent& event) override;
+    bool onMouseButtonReleasedEvent(const MouseButtonReleasedEvent& event) override;
+    bool onMouseMovedEvent(const MouseMovedEvent& event) override;
+    bool onMouseScrolledEvent(const MouseScrolledEvent& event) override;
 
-    bool onWindowMovedEvent(const WindowMovedEvent &event) override;
-    bool onWindowResizedEvent(const WindowResizedEvent &event) override;
-    bool onWindowEnteredEvent(const WindowEnteredEvent &event) override;
-    bool onWindowLeftEvent(const WindowLeftEvent &event) override;
-    bool onWindowFocusGainedEvent(const WindowFocusGainedEvent &event) override;
-    bool onWindowFocusLostEvent(const WindowFocusLostEvent &event) override;
-    bool onWindowClosedEvent(const WindowClosedEvent &event) override;
+    bool onWindowMovedEvent(const WindowMovedEvent& event) override;
+    bool onWindowResizedEvent(const WindowResizedEvent& event) override;
+    bool onWindowEnteredEvent(const WindowEnteredEvent& event) override;
+    bool onWindowLeftEvent(const WindowLeftEvent& event) override;
+    bool onWindowFocusGainedEvent(const WindowFocusGainedEvent& event) override;
+    bool onWindowFocusLostEvent(const WindowFocusLostEvent& event) override;
+    bool onWindowClosedEvent(const WindowClosedEvent& event) override;
 };
 
 } // namespace GE::Vulkan::SDL

@@ -43,7 +43,7 @@ namespace GE {
 class GE_API ShaderReflection
 {
 public:
-    explicit ShaderReflection(const std::vector<uint32_t> &shader_cache);
+    explicit ShaderReflection(const std::vector<uint32_t>& shader_cache);
     ~ShaderReflection();
 
     ShaderInputLayout inputLayout() const;

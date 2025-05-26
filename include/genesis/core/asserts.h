@@ -36,12 +36,12 @@
 #include <genesis/core/utils.h>
 
 #ifndef GE_DISABLE_ASSERTS
-#define GE_CORE_ASSERT(expr, ...)                  \
-    static_cast<bool>(expr) ? static_cast<void>(0) \
+#define GE_CORE_ASSERT(expr, ...)                                                                  \
+    static_cast<bool>(expr) ? static_cast<void>(0)                                                 \
                             : ::GE::Details::coreAssert(__FILE__, __LINE__, #expr, __VA_ARGS__)
 
-#define GE_ASSERT(expr, ...)                       \
-    static_cast<bool>(expr) ? static_cast<void>(0) \
+#define GE_ASSERT(expr, ...)                                                                       \
+    static_cast<bool>(expr) ? static_cast<void>(0)                                                 \
                             : ::GE::Details::clientAssert(__FILE__, __LINE__, #expr, __VA_ARGS__)
 
 namespace GE::Details {

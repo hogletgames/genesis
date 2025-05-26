@@ -36,7 +36,7 @@
 
 namespace GE::GUI {
 
-bool Checkbox::call(std::string_view title, bool *value)
+bool Checkbox::call(std::string_view title, bool* value)
 {
     return ImGui::Checkbox(title.data(), value);
 }

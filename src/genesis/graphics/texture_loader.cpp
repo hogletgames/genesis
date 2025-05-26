@@ -72,10 +72,13 @@ TextureFormat toTextureFormat(int channel_count, bool is_hdr)
     return TextureFormat::UNKNOWN;
 }
 
-void* stbiLoadWrapper(const std::vector<uint8_t>& memory, int* width, int* height,
-                      int* channel_count, int desired_channels)
+void* stbiLoadWrapper(const std::vector<uint8_t>& memory,
+                      int*                        width,
+                      int*                        height,
+                      int*                        channel_count,
+                      int                         desired_channels)
 {
-    int memory_size = static_cast<int>(memory.size());
+    int  memory_size = static_cast<int>(memory.size());
     bool is_hdr = ::stbi_is_hdr_from_memory(memory.data(), memory_size) != 0;
 
     if (!is_hdr) {
@@ -129,9 +132,9 @@ bool isOpaque(const void* texture_data, int width, int height, int channel_count
 
 std::pair<void*, texture_config_t> loadStbiTexture(const std::vector<uint8_t>& data)
 {
-    int width{};
-    int height{};
-    int channel_count{};
+    int   width{};
+    int   height{};
+    int   channel_count{};
     void* texture_data{nullptr};
 
     texture_data = stbiLoadWrapper(data, &width, &height, &channel_count, 0);
@@ -156,8 +159,8 @@ std::pair<void*, texture_config_t> loadStbiTexture(const std::vector<uint8_t>& d
         return {};
     }
 
-    int data_size = static_cast<int>(data.size());
-    bool is_hdr = ::stbi_is_hdr_from_memory(data.data(), data_size) != 0;
+    int           data_size = static_cast<int>(data.size());
+    bool          is_hdr = ::stbi_is_hdr_from_memory(data.data(), data_size) != 0;
     TextureFormat format = toTextureFormat(channel_count, is_hdr);
 
     texture_config_t config{};

@@ -47,7 +47,7 @@ public:
     Scoped<GE::Framebuffer> createFramebuffer(const Framebuffer::config_t& config) const override;
 
     Scoped<GE::IndexBuffer> createIndexBuffer(const uint32_t* indices,
-                                              uint32_t count) const override;
+                                              uint32_t        count) const override;
     Scoped<GE::VertexBuffer> createVertexBuffer(uint32_t size, const void* vertices) const override;
     Scoped<GE::StagingBuffer> createStagingBuffer() const override;
     Scoped<GE::UniformBuffer> createUniformBuffer(uint32_t size, const void* data) const override;

@@ -63,9 +63,9 @@ public:
     ProjectSettings& createProject(const std::string& name);
 
 private:
-    AppSettings m_app_settings;
+    AppSettings     m_app_settings;
     ProjectSettings m_current_project;
-    ProjectPaths m_projects;
+    ProjectPaths    m_projects;
 };
 
 } // namespace LE

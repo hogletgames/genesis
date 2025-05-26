@@ -60,12 +60,12 @@ protected:
     void renderCircleCollider2D(const Entity& entity);
     void renderBoxCollider2D(const Entity& entit);
 
-    bool isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
-                 Mesh* mesh) const;
+    bool
+    isValid(std::string_view entity_name, Pipeline* material, Texture* texture, Mesh* mesh) const;
 
-    GE::Renderer* m_renderer{nullptr};
-    PipelineLibrary m_pipeline_library;
-    PrimitivesRenderer m_primitives_renderer;
+    GE::Renderer*               m_renderer{nullptr};
+    PipelineLibrary             m_pipeline_library;
+    PrimitivesRenderer          m_primitives_renderer;
     const ViewProjectionCamera* m_camera{nullptr};
 };
 

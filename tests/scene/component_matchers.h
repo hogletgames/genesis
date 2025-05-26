@@ -38,7 +38,8 @@ namespace GE::Tests {
 
 using testing::DescribeMatcher;
 
-MATCHER_P(isTagComponent, tag,
+MATCHER_P(isTagComponent,
+          tag,
           std::string{negation ? "isn't" : "is"} + " a 'Tag' component whose tag " +
               DescribeMatcher<std::string>(tag))
 {

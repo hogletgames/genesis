@@ -38,7 +38,7 @@ namespace GE::Scene {
 
 struct CameraComponent {
     ProjectionCamera camera;
-    bool fixed_aspect_ratio{false};
+    bool             fixed_aspect_ratio{false};
 
     static constexpr std::string_view NAME{"Camera"};
 };

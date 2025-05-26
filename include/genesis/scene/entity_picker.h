@@ -72,12 +72,12 @@ private:
 
     void renderEntityId(const Entity& entity);
 
-    Scene* m_scene{nullptr};
+    Scene*                      m_scene{nullptr};
     const ViewProjectionCamera* m_camera{nullptr};
-    Scoped<Framebuffer> m_entity_id_fbo;
-    Scoped<Pipeline> m_entity_id_pipeline;
-    Scoped<StagingBuffer> m_entity_id_buffer;
-    bool m_is_buffer_updated{false};
+    Scoped<Framebuffer>         m_entity_id_fbo;
+    Scoped<Pipeline>            m_entity_id_pipeline;
+    Scoped<StagingBuffer>       m_entity_id_buffer;
+    bool                        m_is_buffer_updated{false};
 };
 
 } // namespace GE::Scene

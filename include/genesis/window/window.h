@@ -49,8 +49,8 @@ class GE_API Window: public Interface
 public:
     struct settings_t {
         std::string title{TITLE_DEFAULT};
-        Vec2 size{SIZE_DEFAULT};
-        bool vsync{VSYNC_DEFAULT};
+        Vec2        size{SIZE_DEFAULT};
+        bool        vsync{VSYNC_DEFAULT};
 
         static constexpr auto TITLE_DEFAULT = "Genesis";
         static constexpr Vec2 SIZE_DEFAULT{1280.0f, 720.0f};

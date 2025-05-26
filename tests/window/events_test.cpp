@@ -43,8 +43,8 @@ class KeyEventsTest: public testing::Test
 
 TEST_F(KeyEventsTest, KeyPressedEvent)
 {
-    static constexpr auto CODE{GE::KeyCode::LALT};
-    static constexpr auto MOD{GE::KeyModFlags::CAPS_LOCK_BIT};
+    static constexpr auto     CODE{GE::KeyCode::LALT};
+    static constexpr auto     MOD{GE::KeyModFlags::CAPS_LOCK_BIT};
     static constexpr uint32_t REPEAT_COUNT{49};
 
     GE::KeyPressedEvent event{CODE, MOD, REPEAT_COUNT};
@@ -236,14 +236,25 @@ class EventDispatcherTest: public ::testing::Test
 
 using EventTypeList = ::testing::Types<
     // Key events
-    GE::KeyPressedEvent, GE::KeyReleasedEvent, GE::KeyTypedEvent,
+    GE::KeyPressedEvent,
+    GE::KeyReleasedEvent,
+    GE::KeyTypedEvent,
     // Mouse events
-    GE::MouseMovedEvent, GE::MouseScrolledEvent, GE::MouseButtonPressedEvent,
+    GE::MouseMovedEvent,
+    GE::MouseScrolledEvent,
+    GE::MouseButtonPressedEvent,
     GE::MouseButtonReleasedEvent,
     // Window events
-    GE::WindowMovedEvent, GE::WindowResizedEvent, GE::WindowMinimizedEvent,
-    GE::WindowMaximizedEvent, GE::WindowRestoredEvent, GE::WindowEnteredEvent, GE::WindowLeftEvent,
-    GE::WindowFocusGainedEvent, GE::WindowFocusLostEvent, GE::WindowClosedEvent>;
+    GE::WindowMovedEvent,
+    GE::WindowResizedEvent,
+    GE::WindowMinimizedEvent,
+    GE::WindowMaximizedEvent,
+    GE::WindowRestoredEvent,
+    GE::WindowEnteredEvent,
+    GE::WindowLeftEvent,
+    GE::WindowFocusGainedEvent,
+    GE::WindowFocusLostEvent,
+    GE::WindowClosedEvent>;
 
 TYPED_TEST_SUITE(EventDispatcherTest, EventTypeList);
 

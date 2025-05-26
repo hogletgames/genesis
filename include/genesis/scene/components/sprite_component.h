@@ -40,31 +40,31 @@ namespace GE::Scene {
 
 struct GE_API SpriteComponent {
     Shared<Texture> texture;
-    Shared<Mesh> mesh;
-    Vec3 color{0.0f, 0.0f, 0.0f};
+    Shared<Mesh>    mesh;
+    Vec3            color{0.0f, 0.0f, 0.0f};
 
     static constexpr std::string_view NAME{"Sprite"};
 
     bool isValid() const { return texture && mesh; }
 
-    const Assets::ResourceID &textureID() const { return m_texture_id; }
-    const Assets::ResourceID &meshID() const { return m_mesh_id; }
+    const Assets::ResourceID& textureID() const { return m_texture_id; }
+    const Assets::ResourceID& meshID() const { return m_mesh_id; }
 
     void setTextureID(Assets::ResourceID id) { m_texture_id = std::move(id); }
     void setMeshID(Assets::ResourceID id) { m_mesh_id = std::move(id); }
 
-    bool loadTexture(Assets::Registry *assets);
-    bool loadMesh(Assets::Registry *assets);
-    bool loadAll(Assets::Registry *assets);
+    bool loadTexture(Assets::Registry* assets);
+    bool loadMesh(Assets::Registry* assets);
+    bool loadAll(Assets::Registry* assets);
 
 private:
     Assets::ResourceID m_texture_id;
     Assets::ResourceID m_mesh_id;
 };
 
-inline bool SpriteComponent::loadTexture(Assets::Registry *assets)
+inline bool SpriteComponent::loadTexture(Assets::Registry* assets)
 {
-    if (const auto &resource = assets->get<Assets::TextureResource>(m_texture_id);
+    if (const auto& resource = assets->get<Assets::TextureResource>(m_texture_id);
         resource != nullptr) {
         texture = resource->texture();
         return true;
@@ -73,9 +73,9 @@ inline bool SpriteComponent::loadTexture(Assets::Registry *assets)
     return false;
 }
 
-inline bool SpriteComponent::loadMesh(Assets::Registry *assets)
+inline bool SpriteComponent::loadMesh(Assets::Registry* assets)
 {
-    if (const auto &resource = assets->get<Assets::MeshResource>(m_mesh_id); resource != nullptr) {
+    if (const auto& resource = assets->get<Assets::MeshResource>(m_mesh_id); resource != nullptr) {
         mesh = resource->mesh();
         return true;
     }
@@ -83,7 +83,7 @@ inline bool SpriteComponent::loadMesh(Assets::Registry *assets)
     return false;
 }
 
-inline bool SpriteComponent::loadAll(Assets::Registry *assets)
+inline bool SpriteComponent::loadAll(Assets::Registry* assets)
 {
     return loadTexture(assets) && loadMesh(assets);
 }

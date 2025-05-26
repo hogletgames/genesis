@@ -66,9 +66,9 @@ private:
     bool isDockingEnabled() const;
     bool isViewportEnabled() const;
 
-    Shared<Device> m_device;
+    Shared<Device>                    m_device;
     Scoped<Vulkan::SDL::EventHandler> m_event_handler;
-    VkDescriptorPool m_descriptor_pool{VK_NULL_HANDLE};
+    VkDescriptorPool                  m_descriptor_pool{VK_NULL_HANDLE};
 };
 
 VkDescriptorSet createGuiTextureID(const Vulkan::Texture& texture);

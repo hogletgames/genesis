@@ -38,7 +38,7 @@ using namespace GE::GUI;
 
 namespace LE {
 
-void SceneMenu::onRender(WidgetNode *bar_node)
+void SceneMenu::onRender(WidgetNode* bar_node)
 {
     auto menu = bar_node->makeSubNode<Menu>("Scene");
     if (menu.call<MenuItem>("Load...")) {

@@ -61,7 +61,7 @@ protected:
     Drawable(Renderer* renderer, const std::string& vert_shader, const std::string& frag_shader);
     void bind(Renderer* renderer, const mvp_t& mvp);
 
-    Scoped<Pipeline> m_pipeline;
+    Scoped<Pipeline>      m_pipeline;
     Scoped<UniformBuffer> m_mpv;
 };
 

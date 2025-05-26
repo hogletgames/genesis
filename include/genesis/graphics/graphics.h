@@ -49,9 +49,9 @@ public:
     };
 
     struct settings_t {
-        API api{API_DEFAULT};
+        API         api{API_DEFAULT};
         std::string app_name;
-        uint8_t msaa_samples{1};
+        uint8_t     msaa_samples{1};
 
         static constexpr API API_DEFAULT{API::VULKAN};
     };
@@ -78,7 +78,7 @@ private:
         return &instance;
     }
 
-    API m_api{API::NONE};
+    API                     m_api{API::NONE};
     Scoped<GraphicsContext> m_context;
 };
 

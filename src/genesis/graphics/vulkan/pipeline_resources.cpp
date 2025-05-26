@@ -81,7 +81,7 @@ uint32_t maxSetValue(const GE::Vulkan::PipelineResources::Resources& descriptor_
 
 namespace GE::Vulkan {
 
-PipelineResources::PipelineResources(Shared<Device> device,
+PipelineResources::PipelineResources(Shared<Device>                   device,
                                      const Vulkan::pipeline_config_t& pipeline_config)
     : m_device{std::move(device)}
     , m_descriptor_pool{pipeline_config.descriptor_pool}
@@ -110,7 +110,7 @@ std::optional<resource_descriptor_t> PipelineResources::resource(const std::stri
 
 VkDescriptorSet PipelineResources::descriptorSet(const resource_descriptor_t& set_descriptor)
 {
-    auto* set_layout = m_descriptor_set_layouts[set_descriptor.set];
+    auto*    set_layout = m_descriptor_set_layouts[set_descriptor.set];
     uint32_t binding = set_descriptor.binding;
 
     // This is a hack to reuse descriptor sets created for multi-binded resources. That
@@ -180,7 +180,7 @@ PipelineResources::createSetLayoutBindings(const Resources& descriptor_resources
 }
 
 void PipelineResources::updatePushConstants(VkShaderStageFlagBits shader_stage,
-                                            const PushConstants& push_constants)
+                                            const PushConstants&  push_constants)
 {
     for (const auto& push_constant : push_constants) {
         const auto& name = push_constant.name;

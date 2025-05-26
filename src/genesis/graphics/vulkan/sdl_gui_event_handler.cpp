@@ -43,7 +43,7 @@ namespace {
 bool onKeyEvent(const GE::KeyEvent& event, bool is_pressed)
 {
     auto& io = ImGui::GetIO();
-    int key = static_cast<int>(event.getCode());
+    int   key = static_cast<int>(event.getCode());
 
     io.KeysDown[key] = is_pressed;
     io.KeyShift = (event.getMod() & GE::KeyModFlags::SHIFT_BIT) != 0;
@@ -109,7 +109,7 @@ bool EventHandler::onMouseButtonReleasedEvent(const MouseButtonReleasedEvent& ev
 bool EventHandler::onMouseMovedEvent(const MouseMovedEvent& event)
 {
     auto& io = ImGui::GetIO();
-    auto mouse_pos = event.getPosition();
+    auto  mouse_pos = event.getPosition();
 
     if ((io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
         mouse_pos += Application::window()->position();

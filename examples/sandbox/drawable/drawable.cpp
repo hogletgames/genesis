@@ -39,8 +39,9 @@ namespace GE::Examples {
 
 Drawable::~Drawable() = default;
 
-Drawable::Drawable(Renderer *renderer, const std::string &vert_shader,
-                   const std::string &frag_shader)
+Drawable::Drawable(Renderer*          renderer,
+                   const std::string& vert_shader,
+                   const std::string& frag_shader)
 {
     auto vert = Shader::create(Shader::Type::VERTEX);
     GE_ASSERT(vert->compileFromFile(vert_shader), "Failed to compile vertex shader");
@@ -58,7 +59,7 @@ Drawable::Drawable(Renderer *renderer, const std::string &vert_shader,
     m_mpv = UniformBuffer::create(sizeof(mvp_t), nullptr);
 }
 
-void Drawable::bind(Renderer *renderer, const mvp_t &mvp)
+void Drawable::bind(Renderer* renderer, const mvp_t& mvp)
 {
     m_mpv->setData(sizeof(mvp_t), &mvp);
 

@@ -43,13 +43,13 @@ struct body_shape_config_base_t {
 };
 
 struct box_body_shape_config_t: body_shape_config_base_t {
-    Vec2 size{1.0f, 1.0f};
-    Vec2 center{0.0f, 0.0f};
+    Vec2  size{1.0f, 1.0f};
+    Vec2  center{0.0f, 0.0f};
     float angle{0.0f};
 };
 
 struct circle_body_shape_config_t: body_shape_config_base_t {
-    Vec2 offset{0.0f, 0.0f};
+    Vec2  offset{0.0f, 0.0f};
     float radius{0.5f};
 };
 

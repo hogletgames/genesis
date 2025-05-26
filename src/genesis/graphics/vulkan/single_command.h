@@ -62,8 +62,8 @@ private:
 
     VkQueue getQueue(QueueFamily family);
 
-    Shared<Device> m_device;
-    QueueFamily m_queue_family{QUEUE_UNKNOWN};
+    Shared<Device>  m_device;
+    QueueFamily     m_queue_family{QUEUE_UNKNOWN};
     VkCommandBuffer m_cmd_buffer{VK_NULL_HANDLE};
 };
 

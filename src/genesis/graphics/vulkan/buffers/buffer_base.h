@@ -56,9 +56,9 @@ protected:
     void destroyVkHandles();
 
     Shared<Device> m_device;
-    VkBuffer m_buffer{VK_NULL_HANDLE};
+    VkBuffer       m_buffer{VK_NULL_HANDLE};
     VkDeviceMemory m_memory{VK_NULL_HANDLE};
-    uint32_t m_size{};
+    uint32_t       m_size{};
 };
 
 constexpr VkBuffer toVkBuffer(void* buffer)

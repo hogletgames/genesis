@@ -110,7 +110,7 @@ void TriangleLayer::onDetached()
 
 void TriangleLayer::onUpdate([[maybe_unused]] Timestamp ts) {}
 
-void TriangleLayer::onEvent([[maybe_unused]] Event *event) {}
+void TriangleLayer::onEvent([[maybe_unused]] Event* event) {}
 
 void TriangleLayer::onRender()
 {

@@ -127,7 +127,7 @@ void ScenePanel::drawEntity(WidgetNode* node, const Entity& entity)
     }
 
     std::string_view tag = entity.get<TagComponent>().tag;
-    auto entity_tree_node = node->makeSubNode<TreeNode>(tag, flags);
+    auto             entity_tree_node = node->makeSubNode<TreeNode>(tag, flags);
 
     if (auto popup_context = WidgetNode::create<PopupContextItem>();
         popup_context.call<MenuItem>(GE_FMTSTR("Remove '{}'", tag))) {
@@ -152,7 +152,7 @@ void ScenePanel::drawEntityDragDrop(const Entity& entity)
     constexpr std::string_view PAYLOAD_TYPE{"entity_payload"};
     constexpr std::string_view POPUP_ID{"scene_panel_entity_drop_popup"};
 
-    auto entity_handle = entity.nativeHandle();
+    auto        entity_handle = entity.nativeHandle();
     const auto& tag = entity.get<TagComponent>();
 
     DragDropPayload drag_drop_paylaod{PAYLOAD_TYPE.data(), &entity_handle};
@@ -189,7 +189,7 @@ void ScenePanel::drawContextMenu(WidgetNode* node)
     constexpr std::string_view POPUP_ID{"empty_space_popup"};
 
     EntityFactory entity_factory{m_ctx->scene(), m_ctx->assets()};
-    auto flags = PopupFlag::MOUSE_BUTTON_RIGHT | PopupFlag::NO_OPEN_OVER_EXISTING_POPUP |
+    auto          flags = PopupFlag::MOUSE_BUTTON_RIGHT | PopupFlag::NO_OPEN_OVER_EXISTING_POPUP |
                  PopupFlag::NO_OPEN_OVER_ITEMS;
 
     auto context_menu_node = node->makeSubNode<PopupContextWindow>(POPUP_ID, flags);

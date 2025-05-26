@@ -41,7 +41,9 @@ class Image
 public:
     using NativeID = void*;
 
-    static void call(NativeID image_id, const Vec2& size, const Vec2& uv0 = {0.0f, 1.0f},
+    static void call(NativeID    image_id,
+                     const Vec2& size,
+                     const Vec2& uv0 = {0.0f, 1.0f},
                      const Vec2& uv1 = {1.0f, 0.0f},
                      const Vec4& tint_col = {1.0f, 1.0f, 1.0f, 1.0f},
                      const Vec4& border_col = {0.0f, 0.0f, 0.0f, 0.0f});

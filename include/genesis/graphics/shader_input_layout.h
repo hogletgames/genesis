@@ -49,13 +49,13 @@ struct shader_attribute_t {
         DOUBLE
     };
 
-    BaseType base_type{BaseType::NONE};
+    BaseType    base_type{BaseType::NONE};
     std::string name;
-    uint32_t location{};
-    uint32_t size{0};
-    uint32_t vec_size{0};
-    uint32_t vec_column{0};
-    uint32_t offset{0};
+    uint32_t    location{};
+    uint32_t    size{0};
+    uint32_t    vec_size{0};
+    uint32_t    vec_column{0};
+    uint32_t    offset{0};
 
     uint32_t fullSize() const { return size * vec_size * vec_column; }
 };
@@ -80,7 +80,7 @@ public:
 
 private:
     std::deque<shader_attribute_t> m_attributes;
-    uint32_t m_stride{0};
+    uint32_t                       m_stride{0};
 };
 
 } // namespace GE

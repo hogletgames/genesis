@@ -41,61 +41,65 @@
 
 namespace GE {
 
-RenderCommand::RenderCommand(Renderer *renderer)
+RenderCommand::RenderCommand(Renderer* renderer)
     : m_renderer{renderer}
 {}
 
-void RenderCommand::bind(Pipeline *pipeline)
+void RenderCommand::bind(Pipeline* pipeline)
 {
     pipeline->bind(&m_cmd_queue);
 }
 
-void RenderCommand::bind(VertexBuffer *buffer)
+void RenderCommand::bind(VertexBuffer* buffer)
 {
     buffer->bind(&m_cmd_queue);
 }
 
-void RenderCommand::bind(IndexBuffer *buffer)
+void RenderCommand::bind(IndexBuffer* buffer)
 {
     buffer->bind(&m_cmd_queue);
 }
 
-void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name,
-                         const UniformBuffer &buffer)
+void RenderCommand::bind(Pipeline*            pipeline,
+                         const std::string&   resource_name,
+                         const UniformBuffer& buffer)
 {
     pipeline->bind(&m_cmd_queue, resource_name, buffer);
 }
 
-void RenderCommand::bind(Pipeline *pipeline, const std::string &resource_name,
-                         const Texture &texture)
+void RenderCommand::bind(Pipeline*          pipeline,
+                         const std::string& resource_name,
+                         const Texture&     texture)
 {
     pipeline->bind(&m_cmd_queue, resource_name, texture);
 }
 
-void RenderCommand::draw(const Mesh &mesh)
+void RenderCommand::draw(const Mesh& mesh)
 {
     mesh.draw(&m_cmd_queue);
 }
 
-void RenderCommand::draw(VertexBuffer *buffer, uint32_t vertex_count)
+void RenderCommand::draw(VertexBuffer* buffer, uint32_t vertex_count)
 {
     buffer->bind(&m_cmd_queue);
     buffer->draw(&m_cmd_queue, vertex_count);
 }
 
-void RenderCommand::draw(VertexBuffer *vbo, IndexBuffer *ibo)
+void RenderCommand::draw(VertexBuffer* vbo, IndexBuffer* ibo)
 {
     vbo->bind(&m_cmd_queue);
     ibo->bind(&m_cmd_queue);
     vbo->draw(&m_cmd_queue, ibo);
 }
 
-void RenderCommand::draw(GUI::Context *gui_layer)
+void RenderCommand::draw(GUI::Context* gui_layer)
 {
     gui_layer->draw(&m_cmd_queue);
 }
 
-void RenderCommand::draw(uint32_t vertex_count, uint32_t instance_count, uint32_t first_vertex,
+void RenderCommand::draw(uint32_t vertex_count,
+                         uint32_t instance_count,
+                         uint32_t first_vertex,
                          uint32_t first_instance)
 {
     m_renderer->draw(&m_cmd_queue, vertex_count, instance_count, first_vertex, first_instance);

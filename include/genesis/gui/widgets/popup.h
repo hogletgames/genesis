@@ -61,14 +61,14 @@ class GE_API PopupContextWindow: public Widget
 {
 public:
     explicit PopupContextWindow(std::string_view str_id = {},
-                                PopupFlags flags = PopupFlag::MOUSE_BUTTON_RIGHT);
+                                PopupFlags       flags = PopupFlag::MOUSE_BUTTON_RIGHT);
 };
 
 class GE_API PopupContextItem: public Widget
 {
 public:
     explicit PopupContextItem(std::string_view str_id = {},
-                              PopupFlags flags = PopupFlag::MOUSE_BUTTON_RIGHT);
+                              PopupFlags       flags = PopupFlag::MOUSE_BUTTON_RIGHT);
 };
 
 class GE_API Popup: public Widget

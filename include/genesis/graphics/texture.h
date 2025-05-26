@@ -88,20 +88,20 @@ enum class TextureWrap : uint8_t
 };
 
 struct texture_config_t {
-    TextureType type{TextureType::UNKNOWN};
+    TextureType   type{TextureType::UNKNOWN};
     TextureFormat format{TextureFormat::SRGB8};
-    uint32_t width{1};
-    uint32_t height{1};
-    uint8_t depth{1};
-    uint8_t layers{1};
+    uint32_t      width{1};
+    uint32_t      height{1};
+    uint8_t       depth{1};
+    uint8_t       layers{1};
     TextureFilter min_filter{TextureFilter::LINEAR_MIPMAP_LINEAR};
     TextureFilter mag_filter{TextureFilter::LINEAR};
-    TextureWrap wrap_u{TextureWrap::REPEAT};
-    TextureWrap wrap_v{TextureWrap::REPEAT};
-    TextureWrap wrap_w{TextureWrap::REPEAT};
-    uint32_t mip_levels{MIP_LEVELS_AUTO};
-    bool image_storage{false};
-    bool is_opaque{true};
+    TextureWrap   wrap_u{TextureWrap::REPEAT};
+    TextureWrap   wrap_v{TextureWrap::REPEAT};
+    TextureWrap   wrap_w{TextureWrap::REPEAT};
+    uint32_t      mip_levels{MIP_LEVELS_AUTO};
+    bool          image_storage{false};
+    bool          is_opaque{true};
 
     static constexpr uint32_t MIP_LEVELS_AUTO{0};
 };

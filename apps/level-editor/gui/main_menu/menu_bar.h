@@ -68,9 +68,9 @@ private:
     GE::GUI::MenuList m_menus;
 
     GE::Shared<ProjectMenu> m_project;
-    GE::Shared<AssetsMenu> m_assets;
-    GE::Shared<SceneMenu> m_scene;
-    GE::Shared<ViewMenu> m_view;
+    GE::Shared<AssetsMenu>  m_assets;
+    GE::Shared<SceneMenu>   m_scene;
+    GE::Shared<ViewMenu>    m_view;
 };
 
 } // namespace LE

@@ -70,16 +70,16 @@ public:
     void resetSelectedEntity() { m_selected_entity = {}; }
 
 private:
-    GE::Scoped<Settings> m_settings{GE::makeScoped<Settings>()};
-    GE::Scoped<GE::Framebuffer> m_scene_fbo;
-    GE::Scoped<GE::Scene::IRenderer> m_scene_renderer;
+    GE::Scoped<Settings>                m_settings{GE::makeScoped<Settings>()};
+    GE::Scoped<GE::Framebuffer>         m_scene_fbo;
+    GE::Scoped<GE::Scene::IRenderer>    m_scene_renderer;
     GE::Scoped<GE::Scene::EntityPicker> m_entity_picker;
 
-    GE::Scoped<GE::P2D::World> m_world;
-    GE::Assets::Registry m_assets;
-    GE::Scene::Scene m_scene;
-    GE::Scene::VPCameraController m_camera_controller;
-    GE::Scene::Entity m_selected_entity;
+    GE::Scoped<GE::P2D::World>       m_world;
+    GE::Assets::Registry             m_assets;
+    GE::Scene::Scene                 m_scene;
+    GE::Scene::VPCameraController    m_camera_controller;
+    GE::Scene::Entity                m_selected_entity;
     GE::Scoped<GE::Scene::IExecutor> m_scene_executor{GE::makeScoped<GE::Scene::DummyExecutor>()};
 };
 

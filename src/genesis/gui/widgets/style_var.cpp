@@ -175,7 +175,7 @@ StyleColor::~StyleColor()
 std::array<Vec4, StyleColor::COUNT> getStyleColors()
 {
     std::array<Vec4, StyleColor::COUNT> result{};
-    auto* colors = ImGui::GetStyle().Colors;
+    auto*                               colors = ImGui::GetStyle().Colors;
     std::transform(colors, colors + ImGuiCol_COUNT, result.begin(), &toVec4);
     return result;
 }

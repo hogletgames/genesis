@@ -42,7 +42,7 @@ template<typename ForwardIt>
 std::string joinString(ForwardIt begin, ForwardIt end, std::string_view delimiter = {})
 {
     std::string result;
-    auto it = begin;
+    auto        it = begin;
 
     if (it != end) {
         result += std::string{*it};

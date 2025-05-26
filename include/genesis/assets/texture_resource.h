@@ -60,7 +60,7 @@ public:
 private:
     TextureResource(const std::string& package, const config_t& config);
 
-    std::string m_filepath;
+    std::string     m_filepath;
     Shared<Texture> m_texture;
 };
 

@@ -69,12 +69,12 @@ private:
     void clearResources();
     void destroyVulkanHandles();
 
-    VkSurfaceKHR m_surface{VK_NULL_HANDLE};
+    VkSurfaceKHR           m_surface{VK_NULL_HANDLE};
     Shared<Vulkan::Device> m_device;
 
     Scoped<GE::GraphicsFactory> m_factory;
-    Scoped<WindowRenderer> m_window_renderer;
-    Scoped<GE::GUI::Context> m_gui;
+    Scoped<WindowRenderer>      m_window_renderer;
+    Scoped<GE::GUI::Context>    m_gui;
 };
 
 } // namespace GE::Vulkan
