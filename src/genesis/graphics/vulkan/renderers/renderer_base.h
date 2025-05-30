@@ -97,7 +97,7 @@ VkClearValue toVkClearColorValue(const GE::ClearColorType& clear_color);
 constexpr VkClearValue toVkClearDepthStencilValue(float clear_depth)
 {
     VkClearValue clear_value{};
-    clear_value.depthStencil = {clear_depth, 0};
+    clear_value.depthStencil = {.depth = clear_depth, .stencil = 0};
     return clear_value;
 }
 

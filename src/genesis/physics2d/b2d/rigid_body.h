@@ -59,6 +59,6 @@ private:
 };
 
 RigidBody::Type toRigidBody(b2BodyType type);
-b2BodyType fromRigidBody(RigidBody::Type);
+b2BodyType fromRigidBody(RigidBody::Type type);
 
 } // namespace GE::P2D::Box2D

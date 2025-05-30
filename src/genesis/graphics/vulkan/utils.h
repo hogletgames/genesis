@@ -80,13 +80,13 @@ inline void destroyDebugUtilsMessengerEXT(VkInstance instance,
 }
 
 template<typename T, typename Func, typename... Args>
-std::vector<T> vulkanGet(Func&& f, Args&&... args)
+std::vector<T> vulkanGet(const Func& f, const Args&... args)
 {
     uint32_t count{0};
-    std::invoke(std::forward<Func>(f), std::forward<Args>(args)..., &count, nullptr);
+    std::invoke(f, args..., &count, nullptr);
 
     std::vector<T> data(count);
-    std::invoke(std::forward<Func>(f), std::forward<Args>(args)..., &count, data.data());
+    std::invoke(f, args..., &count, data.data());
 
     return data;
 }

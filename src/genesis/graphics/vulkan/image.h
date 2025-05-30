@@ -42,7 +42,7 @@
 
 namespace GE {
 class StagingBuffer;
-}
+} // namespace GE
 
 namespace GE::Vulkan {
 

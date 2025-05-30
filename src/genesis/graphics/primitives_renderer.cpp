@@ -99,7 +99,7 @@ Scoped<VertexBuffer> createCircleVBO(uint64_t segment_count)
     float angle = 2.0f * M_PI / segment_count;
     std::vector<Vec2> vertices(segment_count);
 
-    for (int i{0}; i < segment_count; i++) {
+    for (uint64_t i{0}; i < segment_count; i++) {
         float point_angle = angle * i;
         vertices[i] = Vec2{std::sin(point_angle), std::cos(point_angle)} * CIRCLE_RADIUS;
     }

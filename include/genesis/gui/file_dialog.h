@@ -46,7 +46,7 @@ class GE_API FileDialog
 public:
     using SingleResultSignal = boost::signals2::signal<void(std::string_view)>;
     using MultipleResultsSignal = boost::signals2::signal<void(const std::vector<std::string>&)>;
-    using CancelSingal = boost::signals2::signal<void()>;
+    using CancelSignal = boost::signals2::signal<void()>;
     using ErrorSignal = boost::signals2::signal<void(std::string_view)>;
 
     enum Type : uint8_t
@@ -64,7 +64,7 @@ public:
 
     SingleResultSignal* singleResultSignal() { return &m_single_result_file; }
     MultipleResultsSignal* multipleResultsSignal() { return &m_multiple_files_signal; }
-    CancelSingal* cancelSignal() { return &m_cancel_signal; }
+    CancelSignal* cancelSignal() { return &m_cancel_signal; }
     ErrorSignal* errorSignal() { return &m_error_signal; }
 
 private:
@@ -72,7 +72,7 @@ private:
 
     SingleResultSignal m_single_result_file;
     MultipleResultsSignal m_multiple_files_signal;
-    CancelSingal m_cancel_signal;
+    CancelSignal m_cancel_signal;
     ErrorSignal m_error_signal;
 };
 
