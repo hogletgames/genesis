@@ -55,6 +55,7 @@ Checks:             '*,
                     -modernize-use-nodiscard,
                     -modernize-use-trailing-return-type,
                     -portability-simd-intrinsics,
+                    -portability-template-virtual-member-function,
                     -readability-convert-member-functions-to-static,
                     -readability-identifier-length,
                     -readability-uppercase-literal-suffix'
