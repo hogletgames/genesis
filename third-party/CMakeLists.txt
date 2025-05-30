@@ -29,7 +29,7 @@ set(DEPS_DIR ${FETCHCONTENT_BASE_DIR})
 # fmt
 FetchContent_Declare(fmt
     GIT_REPOSITORY https://github.com/hogletgames/fmt.git
-    GIT_TAG 11.0.2)
+    GIT_TAG 11.2.0)
 FetchContent_MakeAvailable(fmt)
 
 # glm
