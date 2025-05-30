@@ -33,7 +33,7 @@
 #pragma once
 
 #include <fmt/format.h>
-#include <magic_enum.hpp>
+#include <magic_enum/magic_enum.hpp>
 
 #define GE_EXTEND_ENUM_RANGE(enum_type, min_value, max_value)  \
     namespace magic_enum::customize {                          \

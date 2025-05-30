@@ -36,7 +36,7 @@
 #include "genesis/core/utils.h"
 
 #include <SDL.h>
-#include <magic_enum.hpp>
+#include <magic_enum/magic_enum.hpp>
 
 namespace {
 
