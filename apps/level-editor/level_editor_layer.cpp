@@ -49,7 +49,7 @@ void LevelEditorLayer::onUpdate(GE::Timestamp ts)
     m_editor.onUpdate(ts);
 }
 
-void LevelEditorLayer::onEvent(GE::Event *event)
+void LevelEditorLayer::onEvent(GE::Event* event)
 {
     BaseLayer::onEvent(event);
     m_editor.onEvent(event);

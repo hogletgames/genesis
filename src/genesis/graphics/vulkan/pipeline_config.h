@@ -41,20 +41,22 @@ namespace GE::Vulkan {
 class DescriptorPool;
 
 struct pipeline_config_t: GE::pipeline_config_t {
-    VkPipelineCache pipeline_cache{VK_NULL_HANDLE};
-    std::vector<VkFormat> color_formats{VK_FORMAT_UNDEFINED};
-    VkFormat depth_format{VK_FORMAT_UNDEFINED};
-    VkFrontFace front_face{VK_FRONT_FACE_COUNTER_CLOCKWISE};
-    VkSampleCountFlagBits msaa_samples{VK_SAMPLE_COUNT_1_BIT};
-    Shared<DescriptorPool> descriptor_pool{}; // NOLINT(readability-redundant-member-init)
+    VkPipelineCache        pipeline_cache{VK_NULL_HANDLE};
+    std::vector<VkFormat>  color_formats{VK_FORMAT_UNDEFINED};
+    VkFormat               depth_format{VK_FORMAT_UNDEFINED};
+    VkFrontFace            front_face{VK_FRONT_FACE_COUNTER_CLOCKWISE};
+    VkSampleCountFlagBits  msaa_samples{VK_SAMPLE_COUNT_1_BIT};
+    // NOLINTNEXTLINE(readability-redundant-member-init)
+    Shared<DescriptorPool> descriptor_pool{};
 
-    VkPipelineViewportStateCreateInfo viewport_state{};
+    VkPipelineViewportStateCreateInfo      viewport_state{};
     VkPipelineInputAssemblyStateCreateInfo input_assembly_state{};
     VkPipelineRasterizationStateCreateInfo rasterization_state{};
-    VkPipelineMultisampleStateCreateInfo multisample_state{};
-    VkPipelineDepthStencilStateCreateInfo depth_stencil_state{};
-    std::vector<VkDynamicState> dynamic_state_list{}; // NOLINT(readability-redundant-member-init)
-    VkPipelineDynamicStateCreateInfo dynamic_state{};
+    VkPipelineMultisampleStateCreateInfo   multisample_state{};
+    VkPipelineDepthStencilStateCreateInfo  depth_stencil_state{};
+    // NOLINTNEXTLINE(readability-redundant-member-init)
+    std::vector<VkDynamicState>            dynamic_state_list{};
+    VkPipelineDynamicStateCreateInfo       dynamic_state{};
 };
 
 VkBlendFactor toVkBlendFactor(BlendFactor factor);

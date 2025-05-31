@@ -118,7 +118,7 @@ std::optional<GE::Application::settings_t> Options::load(std::string_view option
         return {};
     }
 
-    nlohmann::json json;
+    nlohmann::json              json;
     GE::Application::settings_t settings;
 
     try {

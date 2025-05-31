@@ -152,8 +152,11 @@ bool RendererBase::endRendering()
     return true;
 }
 
-void RendererBase::draw(GPUCommandQueue* queue, uint32_t vertex_count, uint32_t instance_count,
-                        uint32_t first_vertex, uint32_t first_instance)
+void RendererBase::draw(GPUCommandQueue* queue,
+                        uint32_t         vertex_count,
+                        uint32_t         instance_count,
+                        uint32_t         first_vertex,
+                        uint32_t         first_instance)
 {
     queue->enqueue([vertex_count, instance_count, first_vertex, first_instance](void* cmd) {
         vkCmdDraw(toVkCommandBuffer(cmd), vertex_count, instance_count, first_vertex,

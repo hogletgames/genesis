@@ -63,7 +63,7 @@ void GuiLayerWindow::draw()
         return;
     }
 
-    GUI::StyleVar padding{GUI::StyleVar::WINDOW_PADDING, {0.0f, 0.0f}};
+    GUI::StyleVar   padding{GUI::StyleVar::WINDOW_PADDING, {0.0f, 0.0f}};
     GUI::WidgetNode node{&m_window};
     node.call(&GuiLayerWindow::updateWindowParameters, this);
 

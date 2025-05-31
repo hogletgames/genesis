@@ -37,8 +37,12 @@
 
 namespace GE::GUI {
 
-void Image::call(NativeID image_id, const Vec2& size, const Vec2& uv0, const Vec2& uv1,
-                 const Vec4& tint_col, const Vec4& border_col)
+void Image::call(NativeID    image_id,
+                 const Vec2& size,
+                 const Vec2& uv0,
+                 const Vec2& uv1,
+                 const Vec4& tint_col,
+                 const Vec4& border_col)
 {
     auto* texture_id = reinterpret_cast<ImTextureID>(image_id);
     ImGui::Image(texture_id, toImVec2(size), toImVec2(uv0), toImVec2(uv1), toImVec4(tint_col),

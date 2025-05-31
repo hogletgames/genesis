@@ -77,19 +77,19 @@ private:
 
     void clearResources();
 
-    Shared<Device> m_device;
+    Shared<Device>              m_device;
     Scoped<FramebufferRenderer> m_renderer;
-    config_t m_config;
+    config_t                    m_config;
 
-    std::vector<Scoped<Vulkan::Texture>> m_color_textures;
-    std::vector<Scoped<Image>> m_color_msaa_images;
+    std::vector<Scoped<Vulkan::Texture>>   m_color_textures;
+    std::vector<Scoped<Image>>             m_color_msaa_images;
     std::vector<VkRenderingAttachmentInfo> m_color_rendering_attachments;
-    std::vector<Vec4> m_clear_color;
+    std::vector<Vec4>                      m_clear_color;
 
-    Scoped<Vulkan::Texture> m_depth_texture;
-    Scoped<Image> m_depth_msaa_image;
+    Scoped<Vulkan::Texture>   m_depth_texture;
+    Scoped<Image>             m_depth_msaa_image;
     VkRenderingAttachmentInfo m_depth_rendering_attachment{};
-    float m_clear_depth{1.0f};
+    float                     m_clear_depth{1.0f};
 };
 
 } // namespace GE::Vulkan

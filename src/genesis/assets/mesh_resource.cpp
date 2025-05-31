@@ -47,7 +47,7 @@ MeshResource::MeshResource(const std::string& package, const config_t& config)
 }
 
 Shared<MeshResource> MeshResource::Factory::create(const std::string& package,
-                                                   const config_t& config)
+                                                   const config_t&    config)
 {
     try {
         return Shared<MeshResource>{new MeshResource{package, config}};

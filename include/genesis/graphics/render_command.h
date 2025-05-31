@@ -67,13 +67,15 @@ public:
     void draw(VertexBuffer* buffer, uint32_t vertex_count);
     void draw(VertexBuffer* vbo, IndexBuffer* ibo);
     void draw(GUI::Context* gui_layer);
-    void draw(uint32_t vertex_count, uint32_t instance_count, uint32_t first_vertex,
+    void draw(uint32_t vertex_count,
+              uint32_t instance_count,
+              uint32_t first_vertex,
               uint32_t first_instance);
 
     void submit(GPUCommandBuffer cmd);
 
 private:
-    Renderer* m_renderer{nullptr};
+    Renderer*       m_renderer{nullptr};
     GPUCommandQueue m_cmd_queue;
 };
 

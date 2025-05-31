@@ -53,8 +53,8 @@ class WindowRenderer: public RendererBase
 public:
     struct config_t {
         VkSurfaceKHR surface{VK_NULL_HANDLE};
-        Vec2 window_size{0.0f, 0.0f};
-        uint8_t msaa_samples{1};
+        Vec2         window_size{0.0f, 0.0f};
+        uint8_t      msaa_samples{1};
     };
 
     WindowRenderer(Shared<Device> device, const config_t& config);
@@ -90,13 +90,13 @@ private:
     depthRenderingAttachment(ClearMode clear_mode) override;
 
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
-    Vec2 m_window_size{0.0f, 0.0f};
-    uint8_t m_msaa_samples{1};
+    Vec2         m_window_size{0.0f, 0.0f};
+    uint8_t      m_msaa_samples{1};
 
     std::vector<VkRenderingAttachmentInfo> m_color_rendering_attachments;
-    VkRenderingAttachmentInfo m_depth_rendering_attachment{};
+    VkRenderingAttachmentInfo              m_depth_rendering_attachment{};
 
-    bool m_is_framebuffer_resized{false};
+    bool              m_is_framebuffer_resized{false};
     Scoped<SwapChain> m_swap_chain;
 };
 

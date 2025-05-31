@@ -56,17 +56,18 @@ public:
     static constexpr uint32_t MAX_COUNT_DEFAULT{1000};
 
 private:
-    VkResult allocateDescriptorSet(VkDescriptorPool pool, VkDescriptorSetLayout layout,
-                                   VkDescriptorSet* set);
+    VkResult allocateDescriptorSet(VkDescriptorPool      pool,
+                                   VkDescriptorSetLayout layout,
+                                   VkDescriptorSet*      set);
     VkDescriptorPool getPool();
     VkDescriptorPool createPool();
 
     void destroyVkHandles();
 
-    Shared<Device> m_device;
-    std::list<VkDescriptorPool> m_pools;
-    std::vector<VkDescriptorPoolSize> m_sizes;
-    uint32_t m_max_count{};
+    Shared<Device>                                             m_device;
+    std::list<VkDescriptorPool>                                m_pools;
+    std::vector<VkDescriptorPoolSize>                          m_sizes;
+    uint32_t                                                   m_max_count{};
     std::unordered_map<VkDescriptorSetLayout, VkDescriptorSet> m_cache;
 };
 

@@ -144,7 +144,7 @@ private:
     }
 
     Scoped<Widget> m_internal_widget;
-    Widget* m_widget{nullptr};
+    Widget*        m_widget{nullptr};
 };
 
 } // namespace GE::GUI

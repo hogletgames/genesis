@@ -85,10 +85,10 @@ private:
 
     void resetDragDropEntities();
 
-    LevelEditorContext* m_ctx{nullptr};
+    LevelEditorContext*        m_ctx{nullptr};
     DeferredScenePanelCommands m_commands;
 
-    bool m_is_select_entity_handled{false};
+    bool              m_is_select_entity_handled{false};
     GE::Scene::Entity m_drag_drop_src_entity;
     GE::Scene::Entity m_drag_drop_dst_entity;
 };

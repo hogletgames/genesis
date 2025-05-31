@@ -245,7 +245,7 @@ VkViewport WindowRenderer::viewport() const
 const std::vector<VkRenderingAttachmentInfo>&
 WindowRenderer::colorRenderingAttachments(ClearMode clear_mode)
 {
-    bool should_clear = clear_mode == CLEAR_COLOR || clear_mode == CLEAR_ALL;
+    bool  should_clear = clear_mode == CLEAR_COLOR || clear_mode == CLEAR_ALL;
     auto& color_attachment = m_color_rendering_attachments[0];
 
     if (m_msaa_samples > 1) {

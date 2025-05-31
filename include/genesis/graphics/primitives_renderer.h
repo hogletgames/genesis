@@ -56,8 +56,8 @@ public:
     void renderSquare(const Mat4& transform, const Vec4& color);
 
 private:
-    Renderer* m_renderer{nullptr};
-    Scoped<Pipeline> m_pipeline;
+    Renderer*            m_renderer{nullptr};
+    Scoped<Pipeline>     m_pipeline;
     Scoped<VertexBuffer> m_circle_vbo;
     Scoped<VertexBuffer> m_square_vbo;
 };

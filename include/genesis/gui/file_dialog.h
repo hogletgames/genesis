@@ -70,10 +70,10 @@ public:
 private:
     void error(std::string_view error);
 
-    SingleResultSignal m_single_result_file;
+    SingleResultSignal    m_single_result_file;
     MultipleResultsSignal m_multiple_files_signal;
-    CancelSignal m_cancel_signal;
-    ErrorSignal m_error_signal;
+    CancelSignal          m_cancel_signal;
+    ErrorSignal           m_error_signal;
 };
 
 GE_API std::string openSingleFile(std::string_view filters);

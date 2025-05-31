@@ -56,20 +56,20 @@ struct fb_attachment_t {
         DEPTH_STENCIL
     };
 
-    Type type{Type::UNKNOWN};
-    TextureType texture_type{TextureType::UNKNOWN};
-    TextureFormat texture_format{TextureFormat::UNKNOWN};
+    Type           type{Type::UNKNOWN};
+    TextureType    texture_type{TextureType::UNKNOWN};
+    TextureFormat  texture_format{TextureFormat::UNKNOWN};
     ClearColorType clear_color{Vec4{1.0f, 1.0f, 1.0f, 1.0f}};
-    float clear_depth{1.0f};
+    float          clear_depth{1.0f};
 };
 
 class GE_API Framebuffer: public NonCopyable
 {
 public:
     struct config_t {
-        Vec2 size{1920.0f, 1080.0f};
-        uint32_t layers{1};
-        uint32_t msaa_samples{1};
+        Vec2                         size{1920.0f, 1080.0f};
+        uint32_t                     layers{1};
+        uint32_t                     msaa_samples{1};
         std::vector<fb_attachment_t> attachments = {
             {.type = fb_attachment_t::Type::COLOR,
              .texture_type = TextureType::TEXTURE_2D,

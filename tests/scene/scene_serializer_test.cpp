@@ -56,8 +56,8 @@ protected:
     std::string tmpSceneFilepath() const { return GE::FS::joinPath(tmpDir.path(), "scene.yaml"); }
 
     GE::FS::TmpDirGuard tmpDir;
-    Scene scene;
-    SceneSerializer serializer{&scene};
+    Scene               scene;
+    SceneSerializer     serializer{&scene};
 };
 
 TEST_F(SceneSerializerTest, MultipleLevelsOfEntitiesGoFirst)
@@ -95,7 +95,7 @@ TEST_F(SceneSerializerTest, MultipleLevelsOfEntitiesInTheMiddle)
 {
     {
         EntityNode parent_node_1{scene.createEntity("parent 1")};
-        auto parent_node_2 = parent_node_1.insert(scene.createEntity("parent 2"));
+        auto       parent_node_2 = parent_node_1.insert(scene.createEntity("parent 2"));
         parent_node_2.insert(scene.createEntity("parent 3"));
 
         auto child_node_1 = parent_node_2.appendChild(scene.createEntity("child 2-1"));
@@ -130,8 +130,8 @@ TEST_F(SceneSerializerTest, MultipleLevelsOfEntitiesGoLast)
 {
     {
         EntityNode parent_node_1{scene.createEntity("parent 1")};
-        auto parent_node_2 = parent_node_1.insert(scene.createEntity("parent 2"));
-        auto parent_node_3 = parent_node_2.insert(scene.createEntity("parent 3"));
+        auto       parent_node_2 = parent_node_1.insert(scene.createEntity("parent 2"));
+        auto       parent_node_3 = parent_node_2.insert(scene.createEntity("parent 3"));
 
         auto child_node_1 = parent_node_3.appendChild(scene.createEntity("child 3-1"));
         child_node_1.appendChild(scene.createEntity("child 3-2"));

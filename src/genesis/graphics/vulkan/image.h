@@ -50,16 +50,16 @@ class Device;
 struct memory_barrier_config_t;
 
 struct image_config_t {
-    VkImageViewType view_type{VK_IMAGE_VIEW_TYPE_2D};
-    VkExtent3D extent{0, 0, 1};
-    uint32_t mip_levels{1};
-    uint32_t layers{1};
+    VkImageViewType       view_type{VK_IMAGE_VIEW_TYPE_2D};
+    VkExtent3D            extent{0, 0, 1};
+    uint32_t              mip_levels{1};
+    uint32_t              layers{1};
     VkSampleCountFlagBits samples{VK_SAMPLE_COUNT_1_BIT};
-    VkFormat format{};
-    VkImageTiling tiling{};
-    VkImageUsageFlags usage{};
+    VkFormat              format{};
+    VkImageTiling         tiling{};
+    VkImageUsageFlags     usage{};
     VkMemoryPropertyFlags memory_properties{};
-    VkImageAspectFlags aspect_mask{};
+    VkImageAspectFlags    aspect_mask{};
 };
 
 class Image
@@ -91,21 +91,21 @@ private:
     uint32_t getMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
 
     void transitionImageLayout(VkImageLayout new_layout);
-    void copyToImage(const GE::StagingBuffer& buffer,
+    void copyToImage(const GE::StagingBuffer&              buffer,
                      const std::vector<VkBufferImageCopy>& regions);
     void copyFromImage(const GE::StagingBuffer& buffer);
     void createMipmaps();
 
     Shared<Device> m_device;
 
-    VkImage m_image{VK_NULL_HANDLE};
+    VkImage        m_image{VK_NULL_HANDLE};
     VkDeviceMemory m_memory{VK_NULL_HANDLE};
-    VkImageView m_image_view{VK_NULL_HANDLE};
+    VkImageView    m_image_view{VK_NULL_HANDLE};
 
     VkExtent3D m_extent{};
-    VkFormat m_format{VK_FORMAT_UNDEFINED};
-    uint32_t m_mip_levels{};
-    uint32_t m_layers{};
+    VkFormat   m_format{VK_FORMAT_UNDEFINED};
+    uint32_t   m_mip_levels{};
+    uint32_t   m_layers{};
 };
 
 } // namespace GE::Vulkan

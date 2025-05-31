@@ -52,8 +52,8 @@ public:
     GE_DECLARE_EVENT_DESCRIPTOR(MouseMovedEvent);
 
 private:
-    Vec2 m_position{};
-    Vec2 m_offset{};
+    Vec2     m_position{};
+    Vec2     m_offset{};
     uint32_t m_window_id{0};
 };
 

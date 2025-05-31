@@ -43,13 +43,13 @@
 
 namespace GE::Scene {
 
-SceneSerializer::SceneSerializer(Scene *scene)
+SceneSerializer::SceneSerializer(Scene* scene)
     : m_scene{scene}
 {}
 
-bool SceneSerializer::serialize(const std::string &config_filepath)
+bool SceneSerializer::serialize(const std::string& config_filepath)
 {
-    auto serialized_scene = serializeScene();
+    auto          serialized_scene = serializeScene();
     std::ofstream fout{config_filepath};
 
     if (!fout) {
@@ -76,9 +76,9 @@ YAML::Node SceneSerializer::serializeScene()
 }
 
 // NOLINTNEXTLINE(misc-no-recursion)
-void SceneSerializer::serializeEntityNode(YAML::Node *root, const EntityNode &entity)
+void SceneSerializer::serializeEntityNode(YAML::Node* root, const EntityNode& entity)
 {
-    forEachType<ComponentList>([root, &entity = entity.entity()](const auto &component) {
+    forEachType<ComponentList>([root, &entity = entity.entity()](const auto& component) {
         using Component = std::decay_t<decltype(component)>;
         auto components_node = (*root)["components"];
 
@@ -94,7 +94,7 @@ void SceneSerializer::serializeEntityNode(YAML::Node *root, const EntityNode &en
 }
 
 // NOLINTNEXTLINE(misc-no-recursion)
-void SceneSerializer::serializeEntityNodes(YAML::Node *root, const EntityNode &entity)
+void SceneSerializer::serializeEntityNodes(YAML::Node* root, const EntityNode& entity)
 {
     for (auto current_entity = entity; !current_entity.isNull();
          current_entity = current_entity.nextNode()) {

@@ -53,14 +53,14 @@ public:
 
 private:
     std::list<Scoped<WindowBase>> m_modals;
-    int m_id{0};
+    int                           m_id{0};
 };
 
 template<typename T, typename... Args>
 T* ModalWindows::open(const std::string& name, Args&&... args)
 {
-    auto unique_name = GE_FMTSTR("{}##{}", name, m_id++);
-    auto window = makeScoped<T>(unique_name, std::forward<Args>(args)...);
+    auto  unique_name = GE_FMTSTR("{}##{}", name, m_id++);
+    auto  window = makeScoped<T>(unique_name, std::forward<Args>(args)...);
     auto* modal = window.get();
 
     m_modals.push_back(std::move(window));

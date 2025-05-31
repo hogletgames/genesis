@@ -87,7 +87,7 @@ uint32_t toResourceDescriptorCount(const spirv_cross::SmallVector<uint32_t>& typ
 
 GE::resource_descriptor_t toResourceDescriptors(const spirv_cross::Compiler& compiler,
                                                 const spirv_cross::Resource& resource,
-                                                DescType type)
+                                                DescType                     type)
 {
     return {
         .name = resource.name,
@@ -111,7 +111,7 @@ std::string toPushConstantName(const spirv_cross::Resource& resource, std::strin
 
 GE::push_constant_t toPushConstant(const spirv_cross::Compiler& compiler,
                                    const spirv_cross::Resource& push_constant_buffer,
-                                   uint32_t member_index)
+                                   uint32_t                     member_index)
 {
     const auto& buffer_type = compiler.get_type(push_constant_buffer.base_type_id);
     const auto& member_name = compiler.get_member_name(buffer_type.self, member_index);
@@ -148,7 +148,7 @@ ShaderInputLayout ShaderReflection::inputLayout() const
         return {};
     }
 
-    const auto& resources = m_pimpl->compiler.get_shader_resources();
+    const auto&                    resources = m_pimpl->compiler.get_shader_resources();
     std::deque<shader_attribute_t> attributes;
 
     for (const auto& resource : resources.stage_inputs) {
@@ -177,8 +177,8 @@ ResourceDescriptors ShaderReflection::resourceDescriptors() const
     using Resources = spirv_cross::SmallVector<spirv_cross::Resource>;
 
     ResourceDescriptors descriptors;
-    const auto& compiler = m_pimpl->compiler;
-    const auto& resources = compiler.get_shader_resources();
+    const auto&         compiler = m_pimpl->compiler;
+    const auto&         resources = compiler.get_shader_resources();
 
     auto fill_descriptors = [&compiler, &descriptors](const Resources& resources, DescType type) {
         for (const auto& resource : resources) {
@@ -198,8 +198,8 @@ PushConstants ShaderReflection::pushConstants() const
     }
 
     PushConstants push_constants;
-    const auto& compiler = m_pimpl->compiler;
-    const auto& resources = compiler.get_shader_resources();
+    const auto&   compiler = m_pimpl->compiler;
+    const auto&   resources = compiler.get_shader_resources();
 
     for (const auto& push_constant_buffer : resources.push_constant_buffers) {
         const auto& buffer_type = compiler.get_type(push_constant_buffer.base_type_id);

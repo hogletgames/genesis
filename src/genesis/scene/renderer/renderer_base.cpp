@@ -58,8 +58,8 @@ void RendererBase::renderEntity(GE::Renderer* renderer, Pipeline* pipeline, cons
     std::string_view entity_tag = entity.get<TagComponent>().tag;
 
     const auto& sprite = entity.get<SpriteComponent>();
-    auto* texture = sprite.texture.get();
-    auto* mesh = sprite.mesh.get();
+    auto*       texture = sprite.texture.get();
+    auto*       mesh = sprite.mesh.get();
 
     if (!isValid(entity_tag, pipeline, texture, mesh)) {
         return;
@@ -99,7 +99,7 @@ void RendererBase::renderCircleCollider2D(const Entity& entity)
     float scale_max = std::max(entity_scale.x, entity_scale.y);
 
     constexpr float COLLIDER_ANGLE{0.0f};
-    Vec2 collider_size{collider.radius * 2.0f, collider.radius * 2.0f};
+    Vec2            collider_size{collider.radius * 2.0f, collider.radius * 2.0f};
 
     auto transform =
         m_camera->viewProjection() *
@@ -126,8 +126,10 @@ void RendererBase::renderBoxCollider2D(const Entity& entity)
     m_primitives_renderer.renderSquare(transform, COLLIDER_COLOR);
 }
 
-bool RendererBase::isValid(std::string_view entity_name, Pipeline* material, Texture* texture,
-                           Mesh* mesh) const
+bool RendererBase::isValid(std::string_view entity_name,
+                           Pipeline*        material,
+                           Texture*         texture,
+                           Mesh*            mesh) const
 {
     if (material == nullptr) {
         GE_CORE_ERR("A pipeline for an entity '{}' is null", entity_name);

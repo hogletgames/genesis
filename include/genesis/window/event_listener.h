@@ -39,7 +39,7 @@ namespace GE {
 class GE_API EventListener: public Interface
 {
 public:
-    virtual void onEvent(Event *event) = 0;
+    virtual void onEvent(Event* event) = 0;
 };
 
 } // namespace GE

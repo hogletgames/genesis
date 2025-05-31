@@ -46,7 +46,7 @@ namespace {
 
 std::vector<std::string_view> getPackageNames(LevelEditorContext* ctx)
 {
-    auto packages = ctx->assets()->allPackages();
+    auto                          packages = ctx->assets()->allPackages();
     std::vector<std::string_view> package_names(packages.size());
     std::ranges::transform(packages, package_names.begin(),
                            [](const auto* package) { return std::string_view{package->name()}; });

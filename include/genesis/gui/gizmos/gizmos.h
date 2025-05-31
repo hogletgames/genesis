@@ -55,8 +55,12 @@ public:
 
     Gizmos(const Vec2& window_pos, const Vec2& window_size, bool is_ortho = false);
 
-    void draw(const Mat4& view, const Mat4& projection, Operation operation, Mode mode,
-              Mat4* matrix, float* snap = nullptr);
+    void draw(const Mat4& view,
+              const Mat4& projection,
+              Operation   operation,
+              Mode        mode,
+              Mat4*       matrix,
+              float*      snap = nullptr);
 
     bool isOver() const;
     bool isUsing() const;

@@ -36,7 +36,7 @@
 
 namespace GE {
 
-Scoped<IndexBuffer> IndexBuffer::create(const uint32_t *indices, uint32_t count)
+Scoped<IndexBuffer> IndexBuffer::create(const uint32_t* indices, uint32_t count)
 {
     return Graphics::factory()->createIndexBuffer(indices, count);
 }

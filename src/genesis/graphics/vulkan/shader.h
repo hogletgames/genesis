@@ -46,33 +46,33 @@ public:
     Shader(Shared<Device> device, Type type);
     ~Shader();
 
-    bool compileFromFile(const std::string &filepath) override;
-    bool compileFromSource(const std::string &source_code) override;
+    bool compileFromFile(const std::string& filepath) override;
+    bool compileFromSource(const std::string& source_code) override;
 
     Type type() const override { return m_type; }
-    void *nativeHandle() const override { return m_shader_module; }
-    const ShaderInputLayout &inputLayout() const override { return m_input_layout; }
+    void* nativeHandle() const override { return m_shader_module; }
+    const ShaderInputLayout& inputLayout() const override { return m_input_layout; }
 
-    const ResourceDescriptors &resourceDescriptors() const override
+    const ResourceDescriptors& resourceDescriptors() const override
     {
         return m_resource_descriptors;
     }
 
-    const PushConstants &pushConstants() const override { return m_push_constants; }
+    const PushConstants& pushConstants() const override { return m_push_constants; }
 
 private:
-    bool compileFromFileOrSource(const std::string &filepath, const std::string &source_code);
-    bool createShaderModule(const std::vector<uint32_t> &shader_code);
+    bool compileFromFileOrSource(const std::string& filepath, const std::string& source_code);
+    bool createShaderModule(const std::vector<uint32_t>& shader_code);
 
-    Shared<Device> m_device;
-    Type m_type{Type::NONE};
-    VkShaderModule m_shader_module{VK_NULL_HANDLE};
-    ShaderInputLayout m_input_layout;
+    Shared<Device>      m_device;
+    Type                m_type{Type::NONE};
+    VkShaderModule      m_shader_module{VK_NULL_HANDLE};
+    ShaderInputLayout   m_input_layout;
     ResourceDescriptors m_resource_descriptors;
-    PushConstants m_push_constants;
+    PushConstants       m_push_constants;
 };
 
-inline VkShaderModule toVkShaderModule(const GE::Shader &shader)
+inline VkShaderModule toVkShaderModule(const GE::Shader& shader)
 {
     return reinterpret_cast<VkShaderModule>(shader.nativeHandle());
 }

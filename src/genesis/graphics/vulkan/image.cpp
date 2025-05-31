@@ -50,7 +50,7 @@ constexpr int32_t divideMip(int32_t value)
     return value > 1 ? value / 2 : value;
 }
 
-constexpr VkOffset3D toVkOffset3D(const VkExtent3D &extent)
+constexpr VkOffset3D toVkOffset3D(const VkExtent3D& extent)
 {
     return {
         .x = static_cast<int32_t>(extent.width),
@@ -59,17 +59,17 @@ constexpr VkOffset3D toVkOffset3D(const VkExtent3D &extent)
     };
 }
 
-constexpr VkOffset3D toVkBlitDstOffset(const VkOffset3D &offset)
+constexpr VkOffset3D toVkBlitDstOffset(const VkOffset3D& offset)
 {
     return {divideBlit(offset.x), divideBlit(offset.y), divideBlit(offset.z)};
 }
 
-constexpr VkOffset3D toNextMipOffset(const VkOffset3D &offset)
+constexpr VkOffset3D toNextMipOffset(const VkOffset3D& offset)
 {
     return {divideMip(offset.x), divideMip(offset.y), divideMip(offset.z)};
 }
 
-bool isLinearFilterSupported(const Device &device, VkFormat format)
+bool isLinearFilterSupported(const Device& device, VkFormat format)
 {
     VkFormatProperties format_properties{};
     vkGetPhysicalDeviceFormatProperties(device.physicalDevice(), format, &format_properties);
@@ -78,8 +78,11 @@ bool isLinearFilterSupported(const Device &device, VkFormat format)
             VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT) != 0;
 }
 
-void generateMipLevel(VkCommandBuffer cmd, VkImage image, VkImageMemoryBarrier *barrier,
-                      const VkOffset3D &mip_offset, uint32_t mip_level)
+void generateMipLevel(VkCommandBuffer       cmd,
+                      VkImage               image,
+                      VkImageMemoryBarrier* barrier,
+                      const VkOffset3D&     mip_offset,
+                      uint32_t              mip_level)
 {
     barrier->subresourceRange.baseMipLevel = mip_level - 1;
     barrier->srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -118,7 +121,7 @@ void generateMipLevel(VkCommandBuffer cmd, VkImage image, VkImageMemoryBarrier *
 
 } // namespace
 
-Image::Image(Shared<Device> device, const image_config_t &config)
+Image::Image(Shared<Device> device, const image_config_t& config)
     : m_device{std::move(device)}
     , m_extent{config.extent}
     , m_format{config.format}
@@ -135,14 +138,14 @@ Image::~Image()
     destroyVulkanHandles();
 }
 
-void Image::copyFrom(const GE::StagingBuffer &buffer, const std::vector<VkBufferImageCopy> &regions)
+void Image::copyFrom(const GE::StagingBuffer& buffer, const std::vector<VkBufferImageCopy>& regions)
 {
     transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     copyToImage(buffer, regions);
     createMipmaps();
 }
 
-void Image::copyTo(const GE::StagingBuffer &buffer)
+void Image::copyTo(const GE::StagingBuffer& buffer)
 {
     transitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
     copyFromImage(buffer);
@@ -168,7 +171,7 @@ VkImageMemoryBarrier Image::imageMemoryBarrier() const
     return barrier;
 }
 
-void Image::createImage(const image_config_t &config)
+void Image::createImage(const image_config_t& config)
 {
     VkImageCreateInfo image_info{};
     image_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -206,7 +209,7 @@ void Image::allocateMemory(VkMemoryPropertyFlags properties)
     vkBindImageMemory(m_device->device(), m_image, m_memory, 0);
 }
 
-void Image::createImageView(const image_config_t &config)
+void Image::createImageView(const image_config_t& config)
 {
     VkImageViewCreateInfo view_info{};
     view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -243,8 +246,8 @@ uint32_t Image::getMemoryType(uint32_t type_filter, VkMemoryPropertyFlags proper
 
     for (uint32_t i{0}; i < mem_properties.memoryTypeCount; i++) {
         uint32_t mem_type = 1 << i;
-        bool is_type_suitable = (type_filter & mem_type) != 0;
-        bool is_properties_suitable =
+        bool     is_type_suitable = (type_filter & mem_type) != 0;
+        bool     is_properties_suitable =
             (mem_properties.memoryTypes[i].propertyFlags & properties) != 0;
 
         if (is_type_suitable && is_properties_suitable) {
@@ -267,15 +270,15 @@ void Image::transitionImageLayout(VkImageLayout new_layout)
                             VK_PIPELINE_STAGE_TRANSFER_BIT);
 }
 
-void Image::copyToImage(const GE::StagingBuffer &buffer,
-                        const std::vector<VkBufferImageCopy> &regions)
+void Image::copyToImage(const GE::StagingBuffer&              buffer,
+                        const std::vector<VkBufferImageCopy>& regions)
 {
     SingleCommand cmd{m_device, SingleCommand::QUEUE_TRANSFER};
     vkCmdCopyBufferToImage(cmd.buffer(), toVkBuffer(buffer.nativeHandle()), m_image,
                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.size(), regions.data());
 }
 
-void Image::copyFromImage(const GE::StagingBuffer &buffer)
+void Image::copyFromImage(const GE::StagingBuffer& buffer)
 {
     VkBufferImageCopy region{};
     region.bufferOffset = 0;
@@ -300,7 +303,7 @@ void Image::createMipmaps()
     }
 
     SingleCommand cmd{m_device, SingleCommand::QUEUE_COMPUTE};
-    VkOffset3D mip_offset = toVkOffset3D(m_extent);
+    VkOffset3D    mip_offset = toVkOffset3D(m_extent);
 
     auto barrier = imageMemoryBarrier();
     barrier.subresourceRange.levelCount = 1;

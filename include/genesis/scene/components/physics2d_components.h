@@ -41,7 +41,7 @@ namespace GE::Scene {
 
 struct RigidBody2DComponent {
     P2D::RigidBody::Type body_type{P2D::RigidBody::Type::STATIC};
-    bool fixed_rotation{false};
+    bool                 fixed_rotation{false};
 
     Scoped<P2D::RigidBody> body;
 

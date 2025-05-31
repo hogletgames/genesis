@@ -43,19 +43,19 @@
 
 #include <unordered_map>
 
-#define BIND_LOADER(mem_function) \
-    [this](auto *entity, const auto &node) { mem_function(entity, node); }
+#define BIND_LOADER(mem_function)                                                                  \
+    [this](auto* entity, const auto& node) { mem_function(entity, node); }
 
 #define ADD_LOADER(component_type) {component_type::NAME.data(), &load<component_type>}
 
-#define ADD_MEM_FN_LOADER(component_type) \
+#define ADD_MEM_FN_LOADER(component_type)                                                          \
     {component_type::NAME.data(), BIND_LOADER(load##component_type)}
 
 namespace GE::Scene {
 namespace {
 
 template<typename ComponentType>
-void load(Entity *entity, const YAML::Node &node)
+void load(Entity* entity, const YAML::Node& node)
 {
     if (!entity->has<ComponentType>()) {
         entity->add<ComponentType>();
@@ -66,12 +66,12 @@ void load(Entity *entity, const YAML::Node &node)
 
 } // namespace
 
-SceneDeserializer::SceneDeserializer(Scene *scene, Assets::Registry *assets)
+SceneDeserializer::SceneDeserializer(Scene* scene, Assets::Registry* assets)
     : m_scene{scene}
     , m_assets{assets}
 {}
 
-bool SceneDeserializer::deserialize(const std::string &config_filepath)
+bool SceneDeserializer::deserialize(const std::string& config_filepath)
 {
     m_scene_buffer.clear();
 
@@ -90,7 +90,7 @@ bool SceneDeserializer::deserialize(const std::string &config_filepath)
         if (auto entities = node["scene"]["entities"]; entities.size() > 0) {
             loadEntities(&m_scene_buffer, entities);
         }
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         GE_CORE_ERR("Failed to deserialize a scene from a file '{}': '{}'", config_filepath,
                     e.what());
         return false;
@@ -101,7 +101,7 @@ bool SceneDeserializer::deserialize(const std::string &config_filepath)
 }
 
 // NOLINTNEXTLINE(misc-no-recursion)
-Entity SceneDeserializer::loadEntities(Scene *scene, const YAML::Node &node)
+Entity SceneDeserializer::loadEntities(Scene* scene, const YAML::Node& node)
 {
     auto first_entity = loadEntity(scene, node[0]);
     auto last_entity = first_entity;
@@ -116,7 +116,7 @@ Entity SceneDeserializer::loadEntities(Scene *scene, const YAML::Node &node)
 }
 
 // NOLINTNEXTLINE(misc-no-recursion)
-Entity SceneDeserializer::loadEntity(Scene *scene, const YAML::Node &node)
+Entity SceneDeserializer::loadEntity(Scene* scene, const YAML::Node& node)
 {
     auto entity = scene->createEntity();
 
@@ -133,9 +133,9 @@ Entity SceneDeserializer::loadEntity(Scene *scene, const YAML::Node &node)
     return entity;
 }
 
-bool SceneDeserializer::loadComponent(Entity *entity, const YAML::Node &node)
+bool SceneDeserializer::loadComponent(Entity* entity, const YAML::Node& node)
 {
-    using Loader = std::function<void(Entity *, const YAML::Node &)>;
+    using Loader = std::function<void(Entity*, const YAML::Node&)>;
 
     const std::unordered_map<std::string, Loader> LOADERS = {
         ADD_LOADER(CameraComponent),
@@ -158,7 +158,7 @@ bool SceneDeserializer::loadComponent(Entity *entity, const YAML::Node &node)
     if (auto loader = getValue(LOADERS, type); loader) {
         try {
             std::invoke(loader, entity, node);
-        } catch (const std::exception &e) {
+        } catch (const std::exception& e) {
             GE_CORE_WARN("Failed to load component '{}': '{}'", type, e.what());
         }
     }
@@ -166,14 +166,14 @@ bool SceneDeserializer::loadComponent(Entity *entity, const YAML::Node &node)
     return true;
 }
 
-void SceneDeserializer::loadMaterialComponent(Entity *entity, const YAML::Node &node)
+void SceneDeserializer::loadMaterialComponent(Entity* entity, const YAML::Node& node)
 {
     if (auto material = node.as<MaterialComponent>(); material.loadMaterial(m_assets)) {
         entity->add<MaterialComponent>() = material;
     }
 }
 
-void SceneDeserializer::loadSpriteComponent(Entity *entity, const YAML::Node &node)
+void SceneDeserializer::loadSpriteComponent(Entity* entity, const YAML::Node& node)
 {
     if (auto sprite = node.as<SpriteComponent>(); sprite.loadAll(m_assets)) {
         entity->add<SpriteComponent>() = sprite;

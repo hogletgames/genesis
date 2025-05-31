@@ -45,13 +45,15 @@ using glm::rotate;
 using glm::scale;
 using glm::translate;
 
-inline Mat4 makeTransform3D(const Vec3& translation, const Vec3& rotation,
+inline Mat4 makeTransform3D(const Vec3& translation,
+                            const Vec3& rotation,
                             const Vec3& scale = Vec3{1.0f})
 {
     return GE::translate(Mat4{1.0f}, translation) * toMat4(Quat{rotation}) * GE::scale(scale);
 }
 
-inline Mat4 makeTransform2D(const Vec2& translation, float rotation_z,
+inline Mat4 makeTransform2D(const Vec2& translation,
+                            float       rotation_z,
                             const Vec2& scale = Vec2{1.0f, 1.0f})
 {
     return makeTransform3D(Vec3{translation, 0.0f}, Vec3{0.0f, 0.0f, rotation_z},

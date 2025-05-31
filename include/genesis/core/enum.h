@@ -35,13 +35,13 @@
 #include <fmt/format.h>
 #include <magic_enum/magic_enum.hpp>
 
-#define GE_EXTEND_ENUM_RANGE(enum_type, min_value, max_value)  \
-    namespace magic_enum::customize {                          \
-    template<>                                                 \
-    struct enum_range<enum_type> {                             \
-        static constexpr int min{static_cast<int>(min_value)}; \
-        static constexpr int max{static_cast<int>(max_value)}; \
-    };                                                         \
+#define GE_EXTEND_ENUM_RANGE(enum_type, min_value, max_value)                                      \
+    namespace magic_enum::customize {                                                              \
+    template<>                                                                                     \
+    struct enum_range<enum_type> {                                                                 \
+        static constexpr int min{static_cast<int>(min_value)};                                     \
+        static constexpr int max{static_cast<int>(max_value)};                                     \
+    };                                                                                             \
     } // namespace magic_enum::customize
 
 namespace GE {

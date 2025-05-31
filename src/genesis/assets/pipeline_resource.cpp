@@ -40,7 +40,7 @@
 
 namespace GE::Assets {
 
-Scoped<Pipeline> PipelineResource::createPipeline(GE::Renderer *renderer,
+Scoped<Pipeline> PipelineResource::createPipeline(GE::Renderer*     renderer,
                                                   pipeline_config_t config) const
 {
     config.vertex_shader = m_vertex_shader;
@@ -48,7 +48,7 @@ Scoped<Pipeline> PipelineResource::createPipeline(GE::Renderer *renderer,
     return renderer->createPipeline(config);
 }
 
-PipelineResource::PipelineResource(const std::string &package, const config_t &config)
+PipelineResource::PipelineResource(const std::string& package, const config_t& config)
     : ResourceBase{{package, GROUP, config.name}}
     , m_vertex_shader_path{config.vertex_shader_path}
     , m_fragment_shader_path{config.fragment_shader_path}
@@ -64,12 +64,12 @@ PipelineResource::PipelineResource(const std::string &package, const config_t &c
     }
 }
 
-Shared<PipelineResource> PipelineResource::Factory::create(const std::string &package,
-                                                           const config_t &config)
+Shared<PipelineResource> PipelineResource::Factory::create(const std::string& package,
+                                                           const config_t&    config)
 {
     try {
         return Shared<PipelineResource>{new PipelineResource{package, config}};
-    } catch (const GE::Exception &e) {
+    } catch (const GE::Exception& e) {
         GE_CORE_ERR("Failed to create a pipeline resource: '{}'", e.what());
         return nullptr;
     }

@@ -40,7 +40,7 @@
 
 namespace GE::Vulkan {
 
-VertexBuffer::VertexBuffer(Shared<Device> device, uint32_t size, const void *vertices)
+VertexBuffer::VertexBuffer(Shared<Device> device, uint32_t size, const void* vertices)
     : BufferBase{std::move(device)}
 {
     VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
@@ -52,27 +52,27 @@ VertexBuffer::VertexBuffer(Shared<Device> device, uint32_t size, const void *ver
     }
 }
 
-void VertexBuffer::bind(GPUCommandQueue *queue) const
+void VertexBuffer::bind(GPUCommandQueue* queue) const
 {
-    queue->enqueue([this](void *cmd) {
+    queue->enqueue([this](void* cmd) {
         constexpr VkDeviceSize offsets{0};
         vkCmdBindVertexBuffers(toVkCommandBuffer(cmd), 0, 1, &m_buffer, &offsets);
     });
 }
 
-void VertexBuffer::draw(GPUCommandQueue *queue, uint32_t vertex_count) const
+void VertexBuffer::draw(GPUCommandQueue* queue, uint32_t vertex_count) const
 {
     queue->enqueue(
-        [vertex_count](void *cmd) { vkCmdDraw(toVkCommandBuffer(cmd), vertex_count, 1, 0, 0); });
+        [vertex_count](void* cmd) { vkCmdDraw(toVkCommandBuffer(cmd), vertex_count, 1, 0, 0); });
 }
 
-void VertexBuffer::draw(GPUCommandQueue *queue, GE::IndexBuffer *ibo) const
+void VertexBuffer::draw(GPUCommandQueue* queue, GE::IndexBuffer* ibo) const
 {
     queue->enqueue(
-        [ibo](void *cmd) { vkCmdDrawIndexed(toVkCommandBuffer(cmd), ibo->count(), 1, 0, 0, 0); });
+        [ibo](void* cmd) { vkCmdDrawIndexed(toVkCommandBuffer(cmd), ibo->count(), 1, 0, 0, 0); });
 }
 
-void VertexBuffer::setVertices(const void *vertices, uint32_t size)
+void VertexBuffer::setVertices(const void* vertices, uint32_t size)
 {
     GE_ASSERT(m_size >= size, "Vertex Buffer overflow");
     copyFromHost(size, vertices, 0);

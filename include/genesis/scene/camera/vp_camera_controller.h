@@ -89,8 +89,8 @@ private:
     void zoom(float delta);
 
     Shared<VPCamera> m_camera;
-    Mode m_mode{MODE_NONE};
-    Vec2 m_mouse_offset{0.0f};
+    Mode             m_mode{MODE_NONE};
+    Vec2             m_mouse_offset{0.0f};
 };
 
 } // namespace GE::Scene

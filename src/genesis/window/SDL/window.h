@@ -75,7 +75,7 @@ private:
     void onKeyboardEvent(const SDL_Event& sdl_event);
     void onWindowEvent(const SDL_Event& sdl_event);
 
-    SDL_Window* m_window{nullptr};
+    SDL_Window*               m_window{nullptr};
     std::list<EventListener*> m_event_listeners;
 };
 

@@ -87,8 +87,8 @@ private:
 
     float aspectRatio() const;
 
-    Type m_type{Type::ORTHOGRAPHIC};
-    ortho_options_t m_ortho_options;
+    Type                  m_type{Type::ORTHOGRAPHIC};
+    ortho_options_t       m_ortho_options;
     perspective_options_t m_perspective_options;
 
     Mat4 m_projection{1.0f};

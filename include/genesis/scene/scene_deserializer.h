@@ -61,8 +61,8 @@ private:
     void loadMaterialComponent(Entity* entity, const YAML::Node& node);
     void loadSpriteComponent(Entity* entity, const YAML::Node& node);
 
-    Scene m_scene_buffer;
-    Scene* m_scene{nullptr};
+    Scene             m_scene_buffer;
+    Scene*            m_scene{nullptr};
     Assets::Registry* m_assets{nullptr};
 };
 

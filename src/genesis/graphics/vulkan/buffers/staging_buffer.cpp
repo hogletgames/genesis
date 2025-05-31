@@ -44,7 +44,7 @@
 namespace GE::Vulkan {
 namespace {
 
-constexpr VkBufferUsageFlags USAGE{VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+constexpr VkBufferUsageFlags    USAGE{VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
                                    VK_BUFFER_USAGE_TRANSFER_DST_BIT};
 constexpr VkMemoryPropertyFlags PROPERTIES{VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                                            VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
@@ -55,14 +55,14 @@ StagingBuffer::StagingBuffer(Shared<Device> device)
     : BufferBase{std::move(device)}
 {}
 
-StagingBuffer::StagingBuffer(Shared<Device> device, uint32_t size, const void *data)
+StagingBuffer::StagingBuffer(Shared<Device> device, uint32_t size, const void* data)
     : BufferBase{std::move(device)}
 {
     createBuffer(size, USAGE, PROPERTIES);
     copyData(size, data, 0);
 }
 
-void *StagingBuffer::data()
+void* StagingBuffer::data()
 {
     if (m_size == 0) {
         return nullptr;
@@ -93,21 +93,21 @@ void StagingBuffer::clear()
     m_size = 0;
 }
 
-void StagingBuffer::copyTo(BufferBase *dest, uint32_t offset)
+void StagingBuffer::copyTo(BufferBase* dest, uint32_t offset)
 {
     GE_CORE_ASSERT(m_size > 0, "Trying to copy empty buffer");
 
     SingleCommand cmd{m_device};
-    VkBufferCopy copy_region{};
+    VkBufferCopy  copy_region{};
     copy_region.srcOffset = 0;
     copy_region.dstOffset = offset;
     copy_region.size = m_size;
     vkCmdCopyBuffer(cmd.buffer(), m_buffer, dest->buffer(), 1, &copy_region);
 }
 
-void StagingBuffer::copyData(uint32_t size, const void *data, uint32_t offset)
+void StagingBuffer::copyData(uint32_t size, const void* data, uint32_t offset)
 {
-    void *mem_ptr{nullptr};
+    void* mem_ptr{nullptr};
     vkMapMemory(m_device->device(), m_memory, offset, size, 0, &mem_ptr);
     std::memcpy(mem_ptr, data, size);
     vkUnmapMemory(m_device->device(), m_memory);

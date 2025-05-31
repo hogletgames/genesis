@@ -47,20 +47,20 @@ namespace LE {
 namespace {
 
 template<typename T>
-const char *isLoaded(const GE::Shared<T> &resource)
+const char* isLoaded(const GE::Shared<T>& resource)
 {
     return resource != nullptr ? "loaded" : "null";
 }
 
 template<typename T>
-bool isNewComponentSuitable(const Entity &entity)
+bool isNewComponentSuitable(const Entity& entity)
 {
     return !entity.has<T>();
 }
 
 } // namespace
 
-ComponentsPanel::ComponentsPanel(LevelEditorContext *ctx)
+ComponentsPanel::ComponentsPanel(LevelEditorContext* ctx)
     : WindowBase{NAME}
     , m_ctx{ctx}
 {}
@@ -74,9 +74,9 @@ void ComponentsPanel::onRender()
     }
 }
 
-void ComponentsPanel::drawEntityComponents(Entity *entity)
+void ComponentsPanel::drawEntityComponents(Entity* entity)
 {
-    GE::forEachType<ComponentList>([this, entity](const auto &component) {
+    GE::forEachType<ComponentList>([this, entity](const auto& component) {
         using Component = std::decay_t<decltype(component)>;
         if (entity->has<Component>()) {
             draw<Component>(entity);
@@ -84,7 +84,7 @@ void ComponentsPanel::drawEntityComponents(Entity *entity)
     });
 }
 
-void ComponentsPanel::drawAddNewComponents(WidgetNode *node, Entity *entity)
+void ComponentsPanel::drawAddNewComponents(WidgetNode* node, Entity* entity)
 {
     constexpr std::string_view ADD_COMPONENT_POPUP{"add_component_popup"};
 
@@ -93,7 +93,7 @@ void ComponentsPanel::drawAddNewComponents(WidgetNode *node, Entity *entity)
     }
 
     auto add_component_popup = WidgetNode::create<Popup>(ADD_COMPONENT_POPUP);
-    GE::forEachType<ComponentList>([&add_component_popup, entity](const auto &component) {
+    GE::forEachType<ComponentList>([&add_component_popup, entity](const auto& component) {
         using Component = std::decay_t<decltype(component)>;
 
         if (isNewComponentSuitable<Component>(*entity) &&
@@ -105,7 +105,7 @@ void ComponentsPanel::drawAddNewComponents(WidgetNode *node, Entity *entity)
 }
 
 template<typename Component>
-void ComponentsPanel::draw(Entity *entity)
+void ComponentsPanel::draw(Entity* entity)
 {
     auto flags = TreeNode::DEFAULT_OPEN | TreeNode::FRAMED | TreeNode::SPAN_AVAIL_WIDTH |
                  TreeNode::ALLOW_ITEM_OVERLAP | TreeNode::FRAME_PADDING;
@@ -119,7 +119,7 @@ void ComponentsPanel::draw(Entity *entity)
     }
 }
 
-void ComponentsPanel::draw(WidgetNode *node, CameraComponent *camera)
+void ComponentsPanel::draw(WidgetNode* node, CameraComponent* camera)
 {
     bool is_primary_camera = *m_ctx->selectedEntity() == m_ctx->scene()->mainCamera();
 
@@ -130,7 +130,7 @@ void ComponentsPanel::draw(WidgetNode *node, CameraComponent *camera)
     node->call<Checkbox>("Fixed aspect ratio", &camera->fixed_aspect_ratio);
 }
 
-void ComponentsPanel::draw(WidgetNode *node, MaterialComponent *material)
+void ComponentsPanel::draw(WidgetNode* node, MaterialComponent* material)
 {
     auto material_id = material->materialID().asString();
 
@@ -141,12 +141,12 @@ void ComponentsPanel::draw(WidgetNode *node, MaterialComponent *material)
     }
 }
 
-void ComponentsPanel::draw(WidgetNode *node, TagComponent *tag)
+void ComponentsPanel::draw(WidgetNode* node, TagComponent* tag)
 {
     node->call<InputText>("Tag", &tag->tag);
 }
 
-void ComponentsPanel::draw(WidgetNode *node, TransformComponent *transform)
+void ComponentsPanel::draw(WidgetNode* node, TransformComponent* transform)
 {
     node->call<ValueEditor>("Translation", &transform->translation, 0.05f, -10.0f, 10.0f);
     if (auto angles = GE::degrees(transform->rotation);
@@ -156,7 +156,7 @@ void ComponentsPanel::draw(WidgetNode *node, TransformComponent *transform)
     node->call<ValueEditor>("Scale", &transform->scale, 0.1, 0.0f, 10.0f);
 }
 
-void ComponentsPanel::draw(WidgetNode *node, SpriteComponent *sprite)
+void ComponentsPanel::draw(WidgetNode* node, SpriteComponent* sprite)
 {
     auto mesh_id = sprite->meshID().asString();
     auto texture_id = sprite->textureID().asString();
@@ -168,7 +168,7 @@ void ComponentsPanel::draw(WidgetNode *node, SpriteComponent *sprite)
     }
 }
 
-void ComponentsPanel::draw(WidgetNode *node, RigidBody2DComponent *rigid_body)
+void ComponentsPanel::draw(WidgetNode* node, RigidBody2DComponent* rigid_body)
 {
     static const std::vector<std::string> BODY_TYPES = {
         GE::toString(RigidBody::Type::STATIC),
@@ -176,7 +176,7 @@ void ComponentsPanel::draw(WidgetNode *node, RigidBody2DComponent *rigid_body)
         GE::toString(RigidBody::Type::KINEMATIC),
     };
 
-    auto type_string = GE::toString(rigid_body->body_type);
+    auto     type_string = GE::toString(rigid_body->body_type);
     ComboBox type_combo{"Type", BODY_TYPES, type_string};
     node->subNode(&type_combo);
 
@@ -187,17 +187,17 @@ void ComponentsPanel::draw(WidgetNode *node, RigidBody2DComponent *rigid_body)
     node->call<Checkbox>("Fixed rotation", &rigid_body->fixed_rotation);
 }
 
-void ComponentsPanel::draw(WidgetNode *node, body_shape_config_base_t *shape_config)
+void ComponentsPanel::draw(WidgetNode* node, body_shape_config_base_t* shape_config)
 {
     node->call<ValueEditor>("Friction", &shape_config->friction, 0.1f, 0.0f, 10.0f);
     node->call<ValueEditor>("Restitution", &shape_config->restitution, 0.1f, 0.0f, 10.0f);
     node->call<ValueEditor>("Density", &shape_config->density, 0.1f, 0.0f, 10.0f);
 }
 
-void ComponentsPanel::draw(WidgetNode *node, BoxCollider2DComponent *collider)
+void ComponentsPanel::draw(WidgetNode* node, BoxCollider2DComponent* collider)
 {
     node->call<Checkbox>("Show collider", &collider->show_collider);
-    draw(node, static_cast<body_shape_config_base_t *>(collider));
+    draw(node, static_cast<body_shape_config_base_t*>(collider));
     node->call<ValueEditor>("Size", &collider->size, 0.1f, 0.0f, 10.0f);
     node->call<ValueEditor>("Center", &collider->center, 0.05f, -10.0f, 10.0f);
     if (float angle = GE::degrees(collider->angle);
@@ -206,10 +206,10 @@ void ComponentsPanel::draw(WidgetNode *node, BoxCollider2DComponent *collider)
     }
 }
 
-void ComponentsPanel::draw(WidgetNode *node, CircleCollider2DComponent *collider)
+void ComponentsPanel::draw(WidgetNode* node, CircleCollider2DComponent* collider)
 {
     node->call<Checkbox>("Show collider", &collider->show_collider);
-    draw(node, static_cast<body_shape_config_base_t *>(collider));
+    draw(node, static_cast<body_shape_config_base_t*>(collider));
     node->call<ValueEditor>("Offset", &collider->offset, 0.05f, -10.0f, 10.0f);
     node->call<ValueEditor>("Radius", &collider->radius, 0.05f, 0.0f, 10.0f);
 }

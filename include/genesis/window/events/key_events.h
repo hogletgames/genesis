@@ -47,7 +47,7 @@ protected:
     KeyEvent() = default;
     KeyEvent(KeyCode code, KeyModFlags mod);
 
-    KeyCode m_code{KeyCode::UNKNOWN};
+    KeyCode     m_code{KeyCode::UNKNOWN};
     KeyModFlags m_mod{KeyModFlags::NONE};
 };
 

@@ -60,7 +60,8 @@ inline bool isPositionInBounds(const Vec2& position, const Vec2& bounds)
 
 } // namespace
 
-EntityPicker::EntityPicker(Scene* scene, const Assets::Registry& assets,
+EntityPicker::EntityPicker(Scene*                      scene,
+                           const Assets::Registry&     assets,
                            const ViewProjectionCamera* camera)
     : m_scene{scene}
     , m_camera{camera}
@@ -114,8 +115,8 @@ Entity EntityPicker::getEntityByPosition(const Vec2& position)
     Vec2 inverted_position = {position.x, texture_size.y - position.y - 1};
 
     const auto* pixels = static_cast<const int32_t*>(texture);
-    size_t index = (inverted_position.y * texture_size.x) + inverted_position.x;
-    int32_t entity_id = pixels[index];
+    size_t      index = (inverted_position.y * texture_size.x) + inverted_position.x;
+    int32_t     entity_id = pixels[index];
 
     if (entity_id == ENTITY_ID_NONE) {
         return {};
@@ -167,7 +168,7 @@ void EntityPicker::renderEntityId(const Entity& entity)
 {
     auto* pipeline = m_entity_id_pipeline.get();
     auto* mesh = entity.get<SpriteComponent>().mesh.get();
-    auto mvp = m_camera->viewProjection() * parentTransform(entity) *
+    auto  mvp = m_camera->viewProjection() * parentTransform(entity) *
                entity.get<TransformComponent>().transform();
 
     auto* cmd = m_entity_id_fbo->renderer()->command();

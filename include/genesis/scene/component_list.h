@@ -37,8 +37,13 @@
 
 namespace GE::Scene {
 
-using ComponentList =
-    TypeList<CameraComponent, TagComponent, TransformComponent, SpriteComponent, MaterialComponent,
-             RigidBody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
+using ComponentList = TypeList<CameraComponent,
+                               TagComponent,
+                               TransformComponent,
+                               SpriteComponent,
+                               MaterialComponent,
+                               RigidBody2DComponent,
+                               BoxCollider2DComponent,
+                               CircleCollider2DComponent>;
 
 } // namespace GE::Scene

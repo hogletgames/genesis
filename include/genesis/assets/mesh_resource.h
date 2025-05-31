@@ -60,7 +60,7 @@ public:
 private:
     MeshResource(const std::string& package, const config_t& config);
 
-    std::string m_filepath;
+    std::string  m_filepath;
     Shared<Mesh> m_mesh{makeShared<Mesh>()};
 };
 

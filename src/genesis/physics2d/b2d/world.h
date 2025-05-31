@@ -47,8 +47,9 @@ public:
 
     void step(Timestamp ts, int32_t sub_step_count) override;
 
-    Scoped<P2D::RigidBody> createRigidBody(RigidBody::Type type, const Vec2& position,
-                                           float angle) override;
+    Scoped<P2D::RigidBody> createRigidBody(RigidBody::Type type,
+                                           const Vec2&     position,
+                                           float           angle) override;
 
 private:
     b2WorldId m_world{b2_nullWorldId};

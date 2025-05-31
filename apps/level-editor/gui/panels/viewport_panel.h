@@ -75,12 +75,12 @@ private:
 
     bool onMouseButtonReleased(const GE::MouseButtonReleasedEvent& event);
 
-    LevelEditorContext* m_ctx{nullptr};
-    GE::Vec2 m_viewport{0.0f, 0.0f};
+    LevelEditorContext*   m_ctx{nullptr};
+    GE::Vec2              m_viewport{0.0f, 0.0f};
     ViewportChangedSignal m_viewport_changed_signal;
 
-    bool m_is_focused{false};
-    bool m_is_hovered{false};
+    bool     m_is_focused{false};
+    bool     m_is_hovered{false};
     GE::Vec2 m_mouse_position{0.0f, 0.0f};
 };
 

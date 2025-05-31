@@ -88,18 +88,18 @@ private:
     void drawContextMenu(GE::GUI::WidgetNode* node);
     void drawAssets(GE::GUI::WidgetNode* node);
     void drawPackage(GE::GUI::WidgetNode* node, const GE::Assets::Package& package);
-    void drawResource(GE::GUI::WidgetNode* node,
+    void drawResource(GE::GUI::WidgetNode*                        node,
                       const GE::Shared<GE::Assets::MeshResource>& resource);
-    void drawResource(GE::GUI::WidgetNode* node,
+    void drawResource(GE::GUI::WidgetNode*                            node,
                       const GE::Shared<GE::Assets::PipelineResource>& resource);
-    void drawResource(GE::GUI::WidgetNode* node,
+    void drawResource(GE::GUI::WidgetNode*                           node,
                       const GE::Shared<GE::Assets::TextureResource>& resource);
 
     template<typename T>
     void drawResources(GE::GUI::WidgetNode* node, const GE::Assets::Package& package);
 
     GE::Assets::Registry* m_assets{nullptr};
-    GE::Vec2 m_window_size{0.0f, 0.0f};
+    GE::Vec2              m_window_size{0.0f, 0.0f};
 
     DeferredAssetsPanelCommands m_commands;
 

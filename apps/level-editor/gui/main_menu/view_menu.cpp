@@ -39,17 +39,17 @@ using namespace GE::GUI;
 
 namespace LE {
 
-ViewMenu::ViewMenu(WindowMap *panels)
+ViewMenu::ViewMenu(WindowMap* panels)
     : m_panels{panels}
 {}
 
-void ViewMenu::onRender(WidgetNode *bar_node)
+void ViewMenu::onRender(WidgetNode* bar_node)
 {
     auto view_menu = bar_node->makeSubNode<Menu>("View");
     drawPanels(&view_menu);
 }
 
-void ViewMenu::drawPanels(WidgetNode *view_node)
+void ViewMenu::drawPanels(WidgetNode* view_node)
 {
     static constexpr std::array PANEL_NAMES = {
         EditorCameraPanel::NAME, AssetsPanel::NAME,     ViewportPanel::NAME,
@@ -57,8 +57,8 @@ void ViewMenu::drawPanels(WidgetNode *view_node)
     };
 
     auto panels_menu = view_node->makeSubNode<Menu>("Panels");
-    for (const char *panel_name : PANEL_NAMES) {
-        if (auto *panel = m_panels->get(panel_name);
+    for (const char* panel_name : PANEL_NAMES) {
+        if (auto* panel = m_panels->get(panel_name);
             panels_menu.call<MenuItem>(panel_name, "", panel->isOpen())) {
             panel->setIsOpen(!panel->isOpen());
         }

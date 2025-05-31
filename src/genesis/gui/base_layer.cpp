@@ -42,7 +42,7 @@ namespace GE::GUI {
 
 void BaseLayer::onEvent(Event* event)
 {
-    auto* handler = Graphics::gui()->eventHandler();
+    auto*           handler = Graphics::gui()->eventHandler();
     EventDispatcher dispatcher{event};
 
     dispatcher.dispatch<KeyPressedEvent>(toEventHandler(&EventHandler::onKeyPressedEvent, handler));

@@ -47,15 +47,15 @@ class TextureResource;
 class GE_API ResourceSerializer
 {
 public:
-    explicit ResourceSerializer(Registry *registry);
+    explicit ResourceSerializer(Registry* registry);
 
-    bool serialize(const std::string &config_filepath);
+    bool serialize(const std::string& config_filepath);
 
 private:
     YAML::Node serializeAssets();
-    YAML::Node serializePackage(const Package &package);
+    YAML::Node serializePackage(const Package& package);
 
-    Registry *m_registry{nullptr};
+    Registry* m_registry{nullptr};
 };
 
 } // namespace GE::Assets

@@ -49,11 +49,11 @@ public:
     void onDetached() override;
 
     void onUpdate(Timestamp ts) override;
-    void onEvent(Event *event) override;
+    void onEvent(Event* event) override;
     void onRender() override;
 
 private:
-    Scoped<Pipeline> m_pipeline;
+    Scoped<Pipeline>     m_pipeline;
     Scoped<VertexBuffer> m_vbo;
 };
 

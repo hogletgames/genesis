@@ -93,8 +93,8 @@ VkDescriptorSet DescriptorPool::allocateDescriptorSet(VkDescriptorSetLayout layo
     }
 
     VkDescriptorSet set{VK_NULL_HANDLE};
-    auto* pool = getPool();
-    auto result = allocateDescriptorSet(pool, layout, &set);
+    auto*           pool = getPool();
+    auto            result = allocateDescriptorSet(pool, layout, &set);
 
     if (result == VK_SUCCESS) {
         return m_cache[layout] = set;
@@ -119,8 +119,9 @@ void DescriptorPool::reset()
         m_pools, [this](auto pool) { vkResetDescriptorPool(m_device->device(), pool, 0); });
 }
 
-VkResult DescriptorPool::allocateDescriptorSet(VkDescriptorPool pool, VkDescriptorSetLayout layout,
-                                               VkDescriptorSet* set)
+VkResult DescriptorPool::allocateDescriptorSet(VkDescriptorPool      pool,
+                                               VkDescriptorSetLayout layout,
+                                               VkDescriptorSet*      set)
 {
     VkDescriptorSetAllocateInfo alloc_info{};
     alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;

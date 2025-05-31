@@ -59,8 +59,10 @@ public:
     };
 
     template<typename Items>
-    ComboBox(std::string_view name, const Items& items, std::string_view current_item,
-             Flags flags = NONE)
+    ComboBox(std::string_view name,
+             const Items&     items,
+             std::string_view current_item,
+             Flags            flags = NONE)
         : ComboBox(name, {items.begin(), items.end()}, current_item, flags)
     {}
 
@@ -69,7 +71,7 @@ public:
     std::string_view selectedItem() const { return m_selected_item; }
 
 private:
-    Items m_items;
+    Items            m_items;
     std::string_view m_current_item;
     std::string_view m_selected_item;
 };

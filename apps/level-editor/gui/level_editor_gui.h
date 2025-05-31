@@ -73,11 +73,11 @@ private:
     void createPanels();
     void createWindows();
 
-    LevelEditorContext* m_ctx{nullptr};
-    MenuBar m_menu_bar;
-    Toolbar m_toolbar;
-    GE::GUI::WindowMap m_panels;
-    GE::GUI::WindowMap m_windows;
+    LevelEditorContext*   m_ctx{nullptr};
+    MenuBar               m_menu_bar;
+    Toolbar               m_toolbar;
+    GE::GUI::WindowMap    m_panels;
+    GE::GUI::WindowMap    m_windows;
     GE::GUI::ModalWindows m_modals;
 
     ViewportChangedSignal m_viewport_changed_signal;

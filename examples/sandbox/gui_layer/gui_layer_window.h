@@ -61,7 +61,7 @@ public:
     template<typename T, typename... Args>
     static Scoped<GuiLayerWindow> create(const std::string& name, Args&&... args)
     {
-        auto window = Scoped<GuiLayerWindow>(new GuiLayerWindow{name});
+        auto  window = Scoped<GuiLayerWindow>(new GuiLayerWindow{name});
         auto* renderer = window->m_fbo->renderer();
         window->m_draw_object = makeScoped<T>(renderer, std::forward<Args>(args)...);
         return window;
@@ -72,16 +72,16 @@ private:
 
     void updateWindowParameters();
 
-    bool m_is_open{false};
-    bool m_is_focused{false};
+    bool        m_is_open{false};
+    bool        m_is_focused{false};
     std::string m_name;
     GUI::Window m_window{m_name, &m_is_open};
 
     Scoped<Framebuffer> m_fbo;
-    Scoped<Drawable> m_draw_object;
+    Scoped<Drawable>    m_draw_object;
 
     Shared<Scene::ViewProjectionCamera> m_camera;
-    Scoped<Scene::VPCameraController> m_camera_controller;
+    Scoped<Scene::VPCameraController>   m_camera_controller;
 };
 
 } // namespace GE::Examples

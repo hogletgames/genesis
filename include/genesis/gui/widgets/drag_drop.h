@@ -82,10 +82,10 @@ private:
     bool acceptPaylaod();
     bool validateAcceptedPayload(size_t requested_size) const;
 
-    Flags m_flags{NONE};
+    Flags       m_flags{NONE};
     std::string m_payload_type;
     const void* m_payload_data{nullptr};
-    size_t m_paylaod_size{0};
+    size_t      m_paylaod_size{0};
 
     std::vector<uint8_t> m_accepted_payload;
 };
@@ -106,8 +106,9 @@ public:
         AUTO_EXPIRE_PAYLOAD = bit<uint8_t>(5),
     };
 
-    DragDropSource(const DragDropPayload& payload, std::string_view dragging_text,
-                   Flags flags = NONE);
+    DragDropSource(const DragDropPayload& payload,
+                   std::string_view       dragging_text,
+                   Flags                  flags = NONE);
 };
 
 class GE_API DragDropTarget: public Widget

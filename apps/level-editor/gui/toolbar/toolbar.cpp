@@ -168,8 +168,8 @@ void Toolbar::onRender()
     button_hovered.w = 0.5f;
     button_active.w = 0.5f;
 
-    StyleVar window_padding_style{StyleVar::WINDOW_PADDING, GE::Vec2{0.0f, 2.0f}};
-    StyleVar item_inner_spacing_style{StyleVar::ITEM_INNER_SPACING, GE::Vec2{0.0f, 0.0f}};
+    StyleVar   window_padding_style{StyleVar::WINDOW_PADDING, GE::Vec2{0.0f, 2.0f}};
+    StyleVar   item_inner_spacing_style{StyleVar::ITEM_INNER_SPACING, GE::Vec2{0.0f, 0.0f}};
     StyleColor button_color{StyleColor::BUTTON, GE::Vec4{0.0f, 0.0f, 0.0f, 0.0f}};
     StyleColor button_hovered_style{StyleColor::BUTTON_HOVERED, button_hovered};
     StyleColor button_active_style{StyleColor::BUTTON_ACTIVE, button_active};

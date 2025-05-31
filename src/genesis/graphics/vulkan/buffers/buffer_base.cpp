@@ -48,13 +48,14 @@ BufferBase::~BufferBase()
     destroyVkHandles();
 }
 
-void BufferBase::copyFromHost(uint32_t size, const void *data, uint32_t offset)
+void BufferBase::copyFromHost(uint32_t size, const void* data, uint32_t offset)
 {
     StagingBuffer staging_buffer{m_device, size, data};
     staging_buffer.copyTo(this, offset);
 }
 
-void BufferBase::createBuffer(uint32_t size, VkBufferUsageFlags usage,
+void BufferBase::createBuffer(uint32_t              size,
+                              VkBufferUsageFlags    usage,
                               VkMemoryPropertyFlags properties)
 {
     GE_ASSERT(m_buffer == VK_NULL_HANDLE, "Buffer has already been allocated");

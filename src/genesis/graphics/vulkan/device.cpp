@@ -50,12 +50,12 @@ std::string toString(VkPhysicalDevice physical_device)
     return device_properties.deviceName;
 }
 
-std::string toString(const std::vector<VkPhysicalDevice> &physical_devices)
+std::string toString(const std::vector<VkPhysicalDevice>& physical_devices)
 {
     std::string string;
 
     for (size_t i{0}; i < physical_devices.size(); i++) {
-        const auto &device = physical_devices[i];
+        const auto& device = physical_devices[i];
         string += GE_FMTSTR("- Name: {}", toString(device));
         string += i != physical_devices.size() - 1 ? "\n" : "";
     }
@@ -78,8 +78,9 @@ bool isComputeQueue(VkQueueFamilyProperties queue_family)
     return (queue_family.queueFlags & VK_QUEUE_COMPUTE_BIT) != 0;
 }
 
-bool isPresentSupported(VkPhysicalDevice physical_device, VkSurfaceKHR surface,
-                        uint32_t queue_family_idx)
+bool isPresentSupported(VkPhysicalDevice physical_device,
+                        VkSurfaceKHR     surface,
+                        uint32_t         queue_family_idx)
 {
     VkBool32 is_present_supported{VK_FALSE};
     vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, queue_family_idx, surface,
@@ -104,8 +105,8 @@ uint8_t getMaxMSAA(VkSampleCountFlags device_count)
     return static_cast<uint8_t>(VK_SAMPLE_COUNT_1_BIT);
 }
 
-void appendMandatoryDeviceExtensions(VkPhysicalDevice physical_device,
-                                     std::vector<const char *> *ext)
+void appendMandatoryDeviceExtensions(VkPhysicalDevice          physical_device,
+                                     std::vector<const char*>* ext)
 {
     static const std::unordered_set<std::string_view> mandatory_ext = {
         "VK_KHR_portability_subset",
@@ -114,7 +115,7 @@ void appendMandatoryDeviceExtensions(VkPhysicalDevice physical_device,
     auto device_extensions = vulkanGet<VkExtensionProperties>(
         ::vkEnumerateDeviceExtensionProperties, physical_device, nullptr);
 
-    for (const auto &device_ext : device_extensions) {
+    for (const auto& device_ext : device_extensions) {
         if (auto it = mandatory_ext.find(device_ext.extensionName); it != mandatory_ext.end()) {
             ext->push_back(it->data());
         }
@@ -148,8 +149,9 @@ void Device::waitIdle()
     vkDeviceWaitIdle(m_device);
 }
 
-VkFormat Device::getSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling,
-                                    VkFormatFeatureFlags features)
+VkFormat Device::getSupportedFormat(const std::vector<VkFormat>& candidates,
+                                    VkImageTiling                tiling,
+                                    VkFormatFeatureFlags         features)
 {
     for (auto format : candidates) {
         VkFormatProperties props{};
@@ -175,11 +177,11 @@ VkFormat Device::getSupportedFormat(const std::vector<VkFormat> &candidates, VkI
 void Device::pickPhysicalDevice()
 {
     VkInstance instance = Instance::instance();
-    auto devices = vulkanGet<VkPhysicalDevice>(::vkEnumeratePhysicalDevices, instance);
+    auto       devices = vulkanGet<VkPhysicalDevice>(::vkEnumeratePhysicalDevices, instance);
 
     GE_CORE_INFO("Physical Device List: \n{}", toString(devices));
 
-    for (const auto &device : devices) {
+    for (const auto& device : devices) {
         if (isPhysicalDeviceSuitable(device)) {
             GE_CORE_INFO("Picked Physical Device: {}", toString(device));
             m_physical_device = device;
@@ -194,7 +196,7 @@ void Device::pickPhysicalDevice()
 void Device::createLogicalDevice()
 {
     std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
-    std::unordered_set<uint32_t> unique_queue_families = {
+    std::unordered_set<uint32_t>         unique_queue_families = {
         m_queue_indices.graphics_family.value(),
         m_queue_indices.present_family.value(),
         m_queue_indices.transfer_family.value(),
@@ -301,7 +303,7 @@ bool Device::isPhysicalDeviceSuitable(VkPhysicalDevice physical_device)
 queue_family_indices_t Device::findQueueFamilies(VkPhysicalDevice physical_device)
 {
     queue_family_indices_t indices{};
-    auto queue_families = vulkanGet<VkQueueFamilyProperties>(
+    auto                   queue_families = vulkanGet<VkQueueFamilyProperties>(
         ::vkGetPhysicalDeviceQueueFamilyProperties, physical_device);
 
     for (uint32_t i{0}; i < queue_families.size(); i++) {
@@ -336,8 +338,8 @@ uint32_t Device::findMemoryType(uint32_t type_filter, VkMemoryPropertyFlags prop
 
     for (uint32_t i{0}; i < mem_properties.memoryTypeCount; i++) {
         uint32_t mem_type = 1 << i;
-        bool is_type_suitable = (type_filter & mem_type) != 0;
-        bool is_properties_suitable =
+        bool     is_type_suitable = (type_filter & mem_type) != 0;
+        bool     is_properties_suitable =
             (mem_properties.memoryTypes[i].propertyFlags & properties) != 0;
 
         if (is_type_suitable && is_properties_suitable) {
@@ -355,7 +357,7 @@ bool Device::checkPhysicalDeviceExtSupport(VkPhysicalDevice physical_device)
     std::unordered_set<std::string> required_extensions = {m_extensions.begin(),
                                                            m_extensions.end()};
 
-    for (const auto &extension : device_extensions) {
+    for (const auto& extension : device_extensions) {
         required_extensions.erase(extension.extensionName);
     }
 

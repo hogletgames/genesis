@@ -50,7 +50,7 @@ public:
     void draw(Renderer* renderer, const mvp_t& mvp) override;
 
 private:
-    Mesh m_mesh;
+    Mesh            m_mesh;
     Scoped<Texture> m_texture;
 };
 

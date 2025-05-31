@@ -63,13 +63,13 @@ Options:
 
 constexpr GE::Logger::Level LOG_LEVEL{GE::Logger::Level::TRACE};
 constexpr GE::Graphics::API RENDER_API{GE::Graphics::API::VULKAN};
-constexpr auto APP_NAME = "Sandbox";
-constexpr uint8_t MSAA_SAMPLES{4};
+constexpr auto              APP_NAME = "Sandbox";
+constexpr uint8_t           MSAA_SAMPLES{4};
 
 args_t parseArgs(int argc, char** argv)
 {
     std::map<std::string, docopt::value> parsed_args;
-    args_t args{};
+    args_t                               args{};
 
     try {
         parsed_args = docopt::docopt_parse(USAGE, {argv + 1, argv + argc}, true, false);

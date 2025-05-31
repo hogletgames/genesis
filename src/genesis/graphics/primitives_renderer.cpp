@@ -96,7 +96,7 @@ Scoped<VertexBuffer> createCircleVBO(uint64_t segment_count)
 {
     constexpr float CIRCLE_RADIUS{0.5f};
 
-    float angle = 2.0f * M_PI / segment_count;
+    float             angle = 2.0f * M_PI / segment_count;
     std::vector<Vec2> vertices(segment_count);
 
     for (uint64_t i{0}; i < segment_count; i++) {

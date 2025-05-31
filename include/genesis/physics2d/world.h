@@ -45,8 +45,9 @@ class World: public NonCopyable
 public:
     virtual void step(Timestamp ts, int32_t sub_step_count) = 0;
 
-    virtual Scoped<RigidBody> createRigidBody(RigidBody::Type type, const Vec2& position,
-                                              float angle) = 0;
+    virtual Scoped<RigidBody> createRigidBody(RigidBody::Type type,
+                                              const Vec2&     position,
+                                              float           angle) = 0;
 
     static Scoped<World> create(const Vec2& gravity);
 };
