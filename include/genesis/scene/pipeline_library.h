@@ -52,7 +52,7 @@ public:
         m_registry[id] = pipeline;
     }
 
-    bool has(const Assets::ResourceID& id) const { return m_registry.find(id) != m_registry.end(); }
+    bool has(const Assets::ResourceID& id) const { return m_registry.contains(id); }
     const Shared<Pipeline>& get(const Assets::ResourceID& id) const { return m_registry.at(id); }
 
 private:

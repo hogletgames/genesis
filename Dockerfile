@@ -42,10 +42,10 @@ RUN bash /tmp/tools/install_boost_linux.sh "/opt/boost"
 # Genesis image
 FROM ubuntu:jammy AS genesis-image
 ARG GCC_VER=11                                                                 \
-    CLANG_VER=19
+    CLANG_VER=20
 ENV DEBIAN_FRONTEND="noninteractive"
 
-# Install reuqired packages from previous stages
+# Install required packages from previous stages
 COPY --from=vulkan-sdk-builder /opt/vulkan-sdk /opt/vulkan-sdk
 COPY --from=boost-builder      /opt/boost      /opt/boost
 

@@ -100,7 +100,7 @@ bool Mesh::populateBuffers(const tinyobj::ObjReader& reader)
                               attrib.texcoords[(2 * index.texcoord_index) + 1]},
             };
 
-            if (unique_vertices.find(vertex) == unique_vertices.end()) {
+            if (!unique_vertices.contains(vertex)) {
                 unique_vertices[vertex] = vertices.size();
                 vertices.push_back(vertex);
             }

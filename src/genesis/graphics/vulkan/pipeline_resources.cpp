@@ -185,7 +185,7 @@ void PipelineResources::updatePushConstants(VkShaderStageFlagBits shader_stage,
     for (const auto& push_constant : push_constants) {
         const auto& name = push_constant.name;
 
-        if (m_push_constants.find(name) == m_push_constants.end()) {
+        if (!m_push_constants.contains(name)) {
             m_push_constants[name] = push_constant;
         }
 

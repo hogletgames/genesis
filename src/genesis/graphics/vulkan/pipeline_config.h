@@ -46,14 +46,14 @@ struct pipeline_config_t: GE::pipeline_config_t {
     VkFormat depth_format{VK_FORMAT_UNDEFINED};
     VkFrontFace front_face{VK_FRONT_FACE_COUNTER_CLOCKWISE};
     VkSampleCountFlagBits msaa_samples{VK_SAMPLE_COUNT_1_BIT};
-    Shared<DescriptorPool> descriptor_pool{};
+    Shared<DescriptorPool> descriptor_pool{}; // NOLINT(readability-redundant-member-init)
 
     VkPipelineViewportStateCreateInfo viewport_state{};
     VkPipelineInputAssemblyStateCreateInfo input_assembly_state{};
     VkPipelineRasterizationStateCreateInfo rasterization_state{};
     VkPipelineMultisampleStateCreateInfo multisample_state{};
     VkPipelineDepthStencilStateCreateInfo depth_stencil_state{};
-    std::vector<VkDynamicState> dynamic_state_list{};
+    std::vector<VkDynamicState> dynamic_state_list{}; // NOLINT(readability-redundant-member-init)
     VkPipelineDynamicStateCreateInfo dynamic_state{};
 };
 

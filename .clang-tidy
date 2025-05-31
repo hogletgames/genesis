@@ -51,14 +51,16 @@ Checks:             '*,
                     -misc-include-cleaner,
                     -misc-non-private-member-variables-in-classes,
                     -modernize-avoid-bind,
+                    -modernize-use-constraints,
                     -modernize-use-nodiscard,
                     -modernize-use-trailing-return-type,
                     -portability-simd-intrinsics,
+                    -portability-template-virtual-member-function,
                     -readability-convert-member-functions-to-static,
                     -readability-identifier-length,
                     -readability-uppercase-literal-suffix'
 WarningsAsErrors:   '*'
-HeaderFilterRegex:  'include/genesis/.*\.h'
+HeaderFilterRegex:  '^.*genesis/(include|src)/genesis/.*\.h$'
 FormatStyle:        'file'
 UseColor:           true
 CheckOptions:

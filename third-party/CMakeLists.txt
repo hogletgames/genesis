@@ -29,7 +29,7 @@ set(DEPS_DIR ${FETCHCONTENT_BASE_DIR})
 # fmt
 FetchContent_Declare(fmt
     GIT_REPOSITORY https://github.com/hogletgames/fmt.git
-    GIT_TAG 11.0.2)
+    GIT_TAG 11.2.0)
 FetchContent_MakeAvailable(fmt)
 
 # glm
@@ -41,7 +41,7 @@ FetchContent_MakeAvailable(glm)
 # magic_enum
 FetchContent_Declare(magic_enum
     GIT_REPOSITORY https://github.com/hogletgames/magic_enum.git
-    GIT_TAG v0.8.2)
+    GIT_TAG v0.9.7)
 FetchContent_MakeAvailable(magic_enum)
 
 # tinyobjloader
@@ -59,7 +59,7 @@ FetchContent_MakeAvailable(SDL2)
 # spdlog
 FetchContent_Declare(spdlog
     GIT_REPOSITORY https://github.com/hogletgames/spdlog.git
-    GIT_TAG v1.14.1)
+    GIT_TAG v1.15.3)
 FetchContent_MakeAvailable(spdlog)
 
 # imgui

@@ -1,26 +1,23 @@
+x-base-config: &base-config
+  build:
+    dockerfile: Dockerfile
+    target: genesis-image
+    context: .
+  user: ${USERID:-1000}:${GROUPID:-1000}
+  volumes:
+    - ${PWD}:${PWD}
+  working_dir: ${PWD}
+
 services:
   build-env:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: genesis-image
+    <<: *base-config
     environment:
       BUILD_DIR: ${BUILD_DIR:-./build}/docker
       CMAKE_OPTIONS: ${CMAKE_OPTIONS:-}
-    user: ${USERID:-1000}:${GROUPID:-1000}
-    volumes:
-      - ${PWD}:${PWD}
-    working_dir: ${PWD}
     command: bash -c "make -j$(nproc)"
 
   runtime-env:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: genesis-image
-    user: ${USERID:-1000}:${GROUPID:-1000}
-    volumes:
-      - ${PWD}:${PWD}
-    tty: true
-    working_dir: ${PWD}
+    <<: *base-config
+    environment:
+      BUILD_DIR: ${BUILD_DIR:-./build}/docker
     command: bash -c "tail -f /dev/null"
