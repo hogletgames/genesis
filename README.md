@@ -1,6 +1,7 @@
 ## genesis
 
-[![CI](https://github.com/hogletgames/genesis/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/hogletgames/genesis/actions/workflows/ci.yml)
+[![CI](https://github.com/hogletgames/genesis/actions/workflows/ci.yml/badge.svg?branch=master)]
+(https://github.com/hogletgames/genesis/actions/workflows/ci.yml)
 
 ### Acknowledgements
 
@@ -22,7 +23,6 @@
 - [nativefiledialog](https://github.com/mlabbe/nativefiledialog) ([zlib](https://github.com/mlabbe/nativefiledialog/blob/master/LICENSE))
 - [nlohmann_json](https://github.com/nlohmann/json) ([MIT](https://github.com/nlohmann/json/blob/develop/LICENSE.MIT))
 - [box2d](https://github.com/erincatto/box2d) ([MIT](https://github.com/erincatto/box2d/blob/main/LICENSE))
-- [Mono](https://github.com/mono/mono) ([MIT](https://github.com/mono/mono/blob/main/LICENSE))
 
 ### Dependencies
 
@@ -31,7 +31,6 @@ You need to install the following dependencies to build the project:
 - [CMake](https://cmake.org/download/) v3.22 or higher
 - [Vulkan SDK](https://vulkan.lunarg.com/sdk/home) v1.3.268 or higher
 - [Boost](https://www.boost.org/) v1.82 or higher
-- [Mono](https://www.mono-project.com/) v6.12 or higher
 
 ### To build manually
 
@@ -86,8 +85,8 @@ depending on OS type.
   `VK_LAYER_LUNARG_standard_validation.json` is located
 - For MacOS `VK_ICD_FILENAMES` should point to the directory where
   `MoltenVK_icd.json`
-- A path to `mcs` application should be added to `PATH` environment variable to be able to
-  create .NET assemblies
+- A path to `mcs` application should be added to `PATH` environment variable to
+  be able to create .NET assemblies
 
 #### Linux
 
