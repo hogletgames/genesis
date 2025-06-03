@@ -20,6 +20,7 @@ list(APPEND CORE_HEADERS
     ${INCLUDE_DIR}/interface.h
     ${INCLUDE_DIR}/log.h
     ${INCLUDE_DIR}/memory.h
+    ${INCLUDE_DIR}/result.h
     ${INCLUDE_DIR}/string_utils.h
     ${INCLUDE_DIR}/timestamp.h
     ${INCLUDE_DIR}/type_list.h
