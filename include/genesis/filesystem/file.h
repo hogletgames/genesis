@@ -38,6 +38,20 @@
 
 namespace GE::FS {
 
+constexpr std::string_view pathDelimiter()
+{
+#ifdef GE_PLATFORM_WINDOWS
+    return std::string_view("\\", 1);
+#else
+    return std::string_view{"/", 1};
+#endif
+}
+
+constexpr std::string_view baseNameView(std::string_view path)
+{
+    return path.substr(path.find_last_of(pathDelimiter()) + 1);
+}
+
 GE_API bool exists(std::string_view filepath);
 GE_API bool createDir(std::string_view filepath);
 GE_API bool removeAll(std::string_view filepath);
